@@ -1,0 +1,3 @@
+from imp import reload 
+from faceRig import main as faceRigUI
+reload(faceRigUI)
