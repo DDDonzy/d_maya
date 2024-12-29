@@ -13,14 +13,14 @@ def set_string_operation():
         right_string = "_R"
         mirror_dict = {"L": left_string,
                        "R": right_string}
-        message = '<hl> %s ----> %s </hl>' % (left_string, right_string)
+        message = '<hl> %s <----> %s </hl>' % (left_string, right_string)
         cmds.inViewMessage(amg=message, pos='midCenterBot', fade=True)
     elif mirror_clickCount % 2 == 1:
         left_string = "L_"
         right_string = "R_"
         mirror_dict = {"L": left_string,
                        "R": right_string}
-        message = '<hl> %s ----> %s </hl>' % (left_string, right_string)
+        message = '<hl> %s <----> %s </hl>' % (left_string, right_string)
         cmds.inViewMessage(amg=message, pos='midCenterBot', fade=True)
     mirror_clickCount += 1
     return mirror_dict
