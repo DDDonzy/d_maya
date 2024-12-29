@@ -4,7 +4,7 @@
 
 import maya.cmds as cmds
 import maya.api.OpenMaya as om
-from . import transform as t
+from .import transform as t
 
 
 def parentSpace(enum_name='Parent',
