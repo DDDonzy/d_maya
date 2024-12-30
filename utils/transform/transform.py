@@ -1,89 +1,172 @@
-import math
-import maya.api.OpenMaya as om
 import maya.cmds as cmds
+import maya.api.OpenMaya as om
 
 
-def mirrorTransform(source_object, target_object, mirrorAxis="X"):
-    # create mirror matrix
-    mirror_matrix = om.MMatrix()
-    if mirrorAxis == "X":
-        mirror_matrix = om.MMatrix(((-1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1)))
-    if mirrorAxis == "Y":
-        mirror_matrix = om.MMatrix(((1, 0, 0, 0), (0, -1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1)))
-    if mirrorAxis == "Z":
-        mirror_matrix = om.MMatrix(((1, 0, 0, 0), (0, 1, 0, 0), (0, 0, -1, 0), (0, 0, 0, 1)))
-    # get target parent inverse matrix !!!(parent inverse matrix = parent world inverse matrix)!!!
-    targetParentInverse_matrix = om.MMatrix(cmds.getAttr("%s.parentInverseMatrix" % target_object))
-    # get source parent matrix   !!!(parent matrix = parent world matrix)!!!
-    sourceParent_matrix = om.MMatrix(cmds.getAttr("%s.parentMatrix" % source_object))
-    # get source matrix
-    source_matrix = om.MMatrix(cmds.getAttr("%s.worldMatrix" % source_object))
-    # get offset Matrix after mirror source
-    offset_matrix = sourceParent_matrix * mirror_matrix * targetParentInverse_matrix
-    # get mirror source matrix
-    mirrorSource_matrix = source_matrix * mirror_matrix
-    # remap to target and get matrix
-    output = offset_matrix * mirrorSource_matrix * targetParentInverse_matrix
-    # matrix to transform
-    outputTRS = matrix_to_TRS(output, cmds.getAttr("%s.rotateOrder" % source_object))
-    # set target transform
-    set_TRS(target_object, outputTRS)
+class MIRROR_MATRIX():
+    x = om.MMatrix([[-1, 0, 0, 0],
+                    [0, 1, 0, 0],
+                    [0, 0, 1, 0],
+                    [0, 0, 0, 1]])
+    y = om.MMatrix([[1, 0, 0, 0],
+                    [0, -1, 0, 0],
+                    [0, 0, 1, 0],
+                    [0, 0, 0, 1]])
+    z = om.MMatrix([[1, 0, 0, 0],
+                    [0, 1, 0, 0],
+                    [0, 0, -1, 0],
+                    [0, 0, 0, 1]])
+
+    def __init__(self, axis: str = "x"):
+        if axis not in ["x", "y", "z"]:
+            raise ValueError("Invalid axis. Choose from 'x', 'y', or 'z'.")
+
+    def __new__(cls, axis: str = "x"):
+        return getattr(MIRROR_MATRIX, axis)
 
 
-def matrix_to_TRS(inputMatrix, rotateOrder=0):
-    omMTranMat = om.MTransformationMatrix(inputMatrix)
-    T = omMTranMat.translation(1)
-    ER = omMTranMat.rotation()
-    ER.reorderIt(rotateOrder)
-    R = [math.degrees(angle) for angle in [ER.x, ER.y, ER.z]]
-    S = omMTranMat.scale(1)
-    outputList = [T[0], T[1], T[2],
-                  R[0], R[1], R[2],
-                  S[0], S[1], S[2], ]
+class UNIT_CONVERT():
+    mm = 10.0
+    cm = 1.0
+    m = 0.01
+
+    def __init__(self, unit: str = cmds.currentUnit(q=1)):
+        if unit not in ["mm", "cm", "m"]:
+            raise ValueError("Invalid axis. Choose from 'mm', 'cm', or 'm'.")
+
+    def __new__(cls, unit: str = cmds.currentUnit(q=1)):
+        return getattr(UNIT_CONVERT, unit)
+
+
+def mirror_transform(sour_obj: str,
+                     target_obj: str,
+                     mirror_axis: str = "x",):
+    '''set object mirror world matrix'''
+    sour_world_matrix = get_world_matrix(sour_obj)
+    sour_parent_matrix = get_parent_matrix(sour_obj)
+    sour_world_matrix_flip = flip_matrix(sour_world_matrix, mirror_axis)
+    sour_parent_matrix_flip = flip_matrix(sour_parent_matrix, mirror_axis)
+    target_parent_matrix = get_parent_matrix(target_obj)
+    flip_offset_matrix = get_offset_matrix(sour_parent_matrix_flip, target_parent_matrix)
+    set_world_matrix(target_obj, flip_offset_matrix * sour_world_matrix_flip)
+
+
+def flip_matrix(world_matrix: om.MMatrix,
+                mirror_axis: str = "x") -> om.MMatrix:
+    mirror_matrix = world_matrix * MIRROR_MATRIX(mirror_axis)
+    return mirror_matrix
+
+
+def get_offset_matrix(child_world_matrix: om.MMatrix,
+                      parent_world_matrix: om.MMatrix) -> om.MMatrix:
+    """
+    get offset matrix
+    get local matrix when child in parent space
+
+    Args:
+        child_world_matrix (om.MMatrix): child world matrix
+        parent_world_matrix (om.MMatrix): parent world matrix
+
+    Returns:
+        om.MMatrix: local matrix when child in parent space
+    """
+    # child_world_matrix = child_local_matrix * parent_world_matrix
+    # child_world_matrix * parent_world_matrix.inverse = child_local_matrix
+    child_local_matrix = child_world_matrix * parent_world_matrix.inverse()
+    return child_local_matrix
+
+
+def get_local_matrix(obj: str) -> om.MMatrix:
+    sel_list = om.MSelectionList()
+    sel_list.add(obj)
+    return om.MFnTransform(sel_list.getDagPath(0)).transformation().asMatrix()
+
+
+def get_world_matrix(obj: str) -> om.MMatrix:
+    sel_list = om.MSelectionList()
+    sel_list.add(obj)
+    return sel_list.getDagPath(0).inclusiveMatrix()
+
+
+def get_parent_matrix(obj: str) -> om.MMatrix:
+    sel_list = om.MSelectionList()
+    sel_list.add(obj)
+    return sel_list.getDagPath(0).exclusiveMatrix()
+
+
+def set_local_matrix(obj: str, matrix: om.MMatrix) -> None:
+    if cmds.objectType(obj) == "joint":
+        try:
+            cmds.setAttr(f"{obj}.jointOrient", 0, 0, 0)
+        except Exception as e:
+            om.MGlobal.displayWarning(str(e))
+    set_trs(obj, matrix_to_trs(matrix))
+
+
+def set_world_matrix(obj: str, matrix: om.MMatrix) -> None:
+    sel_list = om.MSelectionList()
+    sel_list.add(obj)
+    local_matrix = matrix * sel_list.getDagPath(0).exclusiveMatrixInverse()
+    if cmds.objectType(obj) == "joint":
+        try:
+            cmds.setAttr(f"{obj}.jointOrient", 0, 0, 0)
+        except Exception as e:
+            om.MGlobal.displayWarning(str(e))
+    set_trs(obj, matrix_to_trs(local_matrix))
+
+
+def matrix_to_trs(matrix: om.MMatrix, rotateOrder: int = 0) -> list:
+    om_transformation = om.MTransformationMatrix(matrix)
+    translate = om_transformation.translation(1) * UNIT_CONVERT()
+    euler_radians = om_transformation.rotation()
+    euler_radians.reorderIt(rotateOrder)
+    euler_angle = [57.29577951308232*radians for radians in [euler_radians.x, euler_radians.y, euler_radians.z]]
+    scale = om_transformation.scale(1)
+    outputList = [translate[0], translate[1], translate[2],
+                  euler_angle[0], euler_angle[1], euler_angle[2],
+                  scale[0], scale[1], scale[2], ]
     return outputList
 
 
-def TRS_to_matrix(TRS, rotateOrder=0):
-    omMTranMat = om.MTransformationMatrix()
-    T = om.MVector(TRS[0], TRS[1], TRS[2])
-    ER = om.MEulerRotation(math.radians(TRS[3]), math.radians(TRS[4]), math.radians(TRS[5]), rotateOrder)
-    S = om.MVector(TRS[6], TRS[7], TRS[8])
-    omMTranMat.setTranslation(T, 1)
-    omMTranMat.setRotation(ER)
-    omMTranMat.setScale(S, 1)
-    return omMTranMat.asMatrix()
+def trs_to_matrix(trs: list, rotateOrder: int = 0) -> om.MMatrix:
+    om_transformation = om.MTransformationMatrix()
+    translate = om.MVector(trs[0], trs[1], trs[2]) / UNIT_CONVERT()
+    euler_radians = om.MEulerRotation(*[0.017453292520882225*angle for angle in trs[3:6]], rotateOrder)
+    scale = om.MVector(trs[6], trs[7], trs[8])
+    om_transformation.setTranslation(translate, 1)
+    om_transformation.setRotation(euler_radians)
+    om_transformation.setScale(scale, 1)
+    return om_transformation.asMatrix()
 
 
-def get_TRS(obj):
+def get_trs(obj: str) -> list:
     attrs = ["tx", "ty", "tz", "rx", "ry", "rz", "sx", "sy", "sz"]
-    TRS = []
-    for a in attrs:
-        TRS.append(cmds.getAttr("%s.%s" % (obj, a)))
-    return TRS
+    trs = []
+    for attr in attrs:
+        trs.append(cmds.getAttr(f"{obj}.{attr}"))
+    return trs
 
 
-def set_TRS(obj, inputTRS):
+def set_trs(obj: str, trs: list) -> None:
     attrs = ["tx", "ty", "tz", "rx", "ry", "rz", "sx", "sy", "sz"]
-    for a in attrs:
-        i = attrs.index(a)
-        cmds.setAttr("%s.%s" % (obj, a), inputTRS[i])
+    for i, attr in enumerate(attrs):
+        try:
+            cmds.setAttr(f"{obj}.{attr}", trs[i])
+        except Exception as e:
+            om.MGlobal.displayWarning(str(e))
 
 
-def createNode_FBF(matrix, name=None):
-    matrix = list(matrix)
+def createNode_fbf(matrix: om.MMatrix = om.MMatrix(), **kwargs) -> str:
+    '''
+    Create maya node "fourByFourMatrix". And set matrix data
+
+    Return node name
+    '''
     matrix_attrs = ["in00", "in01", "in02", "in03",
                     "in10", "in11", "in12", "in13",
                     "in20", "in21", "in22", "in23",
                     "in30", "in31", "in32", "in33"]
-    if name:
-        FBF = cmds.createNode("fourByFourMatrix", name=name)
-    else:
-        FBF = cmds.createNode("fourByFourMatrix")
-
-    iterIndex = 0
-    for num in matrix:
-        attr_name = matrix_attrs[iterIndex]
-        cmds.setAttr("%s.%s" % (FBF, attr_name), num)
-        iterIndex += 1
-
-    return FBF
+    fbf_node = cmds.createNode("fourByFourMatrix", **kwargs)
+    for iter_idx, num in enumerate(matrix):
+        attr_name = matrix_attrs[iter_idx]
+        cmds.setAttr(f"{fbf_node}.{attr_name}", num)
+    return fbf_node
