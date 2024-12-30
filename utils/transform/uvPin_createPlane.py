@@ -27,7 +27,6 @@ def createPlane(name="uvPinPlane", num=1):
     u = []
     v = base_v * num
     uvIds = []
-
     # num
     for i in range(num):
         # pos_ary
@@ -51,4 +50,6 @@ def createPlane(name="uvPinPlane", num=1):
 
     fnMesh.setUVs(u, v)
     fnMesh.assignUVs(uvCounts, uvIds)
+
+
 createPlane(num=10)

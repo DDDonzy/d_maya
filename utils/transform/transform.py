@@ -40,7 +40,13 @@ class UNIT_CONVERT():
 def mirror_transform(sour_obj: str,
                      target_obj: str,
                      mirror_axis: str = "x",):
-    '''set object mirror world matrix'''
+    """flip source object's world space matrix  as target object's world space matrix 
+
+    Args:
+        sour_obj (str): source transform object
+        target_obj (str): target transform object
+        mirror_axis (str, optional): mirror axis. Defaults to "x".
+    """
     sour_world_matrix = get_world_matrix(sour_obj)
     sour_parent_matrix = get_parent_matrix(sour_obj)
     sour_world_matrix_flip = flip_matrix(sour_world_matrix, mirror_axis)
@@ -52,6 +58,15 @@ def mirror_transform(sour_obj: str,
 
 def flip_matrix(world_matrix: om.MMatrix,
                 mirror_axis: str = "x") -> om.MMatrix:
+    """flip matrix by mirror matrix
+
+    Args:
+        world_matrix (om.MMatrix): input world matrix 
+        mirror_axis (str, optional): mirror axis x y or z. Defaults to "x".
+
+    Returns:
+        om.MMatrix: flip matrix 
+    """
     mirror_matrix = world_matrix * MIRROR_MATRIX(mirror_axis)
     return mirror_matrix
 
@@ -76,24 +91,54 @@ def get_offset_matrix(child_world_matrix: om.MMatrix,
 
 
 def get_local_matrix(obj: str) -> om.MMatrix:
+    """get object's local space matrix
+
+    Args:
+        obj (str): maya transform name
+
+    Returns:
+        om.MMatrix: local matrix
+    """
     sel_list = om.MSelectionList()
     sel_list.add(obj)
     return om.MFnTransform(sel_list.getDagPath(0)).transformation().asMatrix()
 
 
 def get_world_matrix(obj: str) -> om.MMatrix:
+    """get object's world space matrix 
+
+    Args:
+        obj (str): maya transform name
+
+    Returns:
+        om.MMatrix: world matrix
+    """
     sel_list = om.MSelectionList()
     sel_list.add(obj)
     return sel_list.getDagPath(0).inclusiveMatrix()
 
 
 def get_parent_matrix(obj: str) -> om.MMatrix:
+    """get object's parent object's world space matrix
+
+    Args:
+        obj (str): maya transform name
+
+    Returns:
+        om.MMatrix: parent object's world space matrix
+    """
     sel_list = om.MSelectionList()
     sel_list.add(obj)
     return sel_list.getDagPath(0).exclusiveMatrix()
 
 
 def set_local_matrix(obj: str, matrix: om.MMatrix) -> None:
+    """set maya object's local as input matrix
+
+    Args:
+        obj (str): maya transform name
+        matrix (om.MMatrix): input local matrix
+    """
     if cmds.objectType(obj) == "joint":
         try:
             cmds.setAttr(f"{obj}.jointOrient", 0, 0, 0)
@@ -103,6 +148,12 @@ def set_local_matrix(obj: str, matrix: om.MMatrix) -> None:
 
 
 def set_world_matrix(obj: str, matrix: om.MMatrix) -> None:
+    """ convert world space matrix to local space matrix and as object's local space matrix
+
+    Args:
+        obj (str): maya transform name 
+        matrix (om.MMatrix): input world space matrix
+    """
     sel_list = om.MSelectionList()
     sel_list.add(obj)
     local_matrix = matrix * sel_list.getDagPath(0).exclusiveMatrixInverse()
@@ -115,6 +166,15 @@ def set_world_matrix(obj: str, matrix: om.MMatrix) -> None:
 
 
 def matrix_to_trs(matrix: om.MMatrix, rotateOrder: int = 0) -> list:
+    """ convert matrix to maya's translate,rotate and scale
+
+    Args:
+        matrix (om.MMatrix): input matrix
+        rotateOrder (int, optional): rotate order. Defaults to 0.
+
+    Returns:
+        list: [tx,ty.tz,rx,ry,rz,sx,sy,sz]
+    """
     om_transformation = om.MTransformationMatrix(matrix)
     translate = om_transformation.translation(1) * UNIT_CONVERT()
     euler_radians = om_transformation.rotation()
@@ -128,6 +188,15 @@ def matrix_to_trs(matrix: om.MMatrix, rotateOrder: int = 0) -> list:
 
 
 def trs_to_matrix(trs: list, rotateOrder: int = 0) -> om.MMatrix:
+    """convert [tx,ty.tz,rx,ry,rz,sx,sy,sz] to matrix 
+
+    Args:
+        trs (list): input [tx,ty.tz,rx,ry,rz,sx,sy,sz]
+        rotateOrder (int, optional): rotate order. Defaults to 0.
+
+    Returns:
+        om.MMatrix: matrix
+    """
     om_transformation = om.MTransformationMatrix()
     translate = om.MVector(trs[0], trs[1], trs[2]) / UNIT_CONVERT()
     euler_radians = om.MEulerRotation(*[0.017453292520882225*angle for angle in trs[3:6]], rotateOrder)
@@ -139,6 +208,14 @@ def trs_to_matrix(trs: list, rotateOrder: int = 0) -> om.MMatrix:
 
 
 def get_trs(obj: str) -> list:
+    """get maya transform's transformation [tx,ty.tz,rx,ry,rz,sx,sy,sz]
+
+    Args:
+        obj (str): _description_
+
+    Returns:
+        list: [tx,ty.tz,rx,ry,rz,sx,sy,sz]
+    """
     attrs = ["tx", "ty", "tz", "rx", "ry", "rz", "sx", "sy", "sz"]
     trs = []
     for attr in attrs:
@@ -147,6 +224,12 @@ def get_trs(obj: str) -> list:
 
 
 def set_trs(obj: str, trs: list) -> None:
+    """set maya transform [tx,ty.tz,rx,ry,rz,sx,sy,sz] 
+
+    Args:
+        obj (str): maya transform object'name
+        trs (list): [tx,ty.tz,rx,ry,rz,sx,sy,sz]
+    """
     attrs = ["tx", "ty", "tz", "rx", "ry", "rz", "sx", "sy", "sz"]
     for i, attr in enumerate(attrs):
         try:
@@ -170,3 +253,45 @@ def createNode_fbf(matrix: om.MMatrix = om.MMatrix(), **kwargs) -> str:
         attr_name = matrix_attrs[iter_idx]
         cmds.setAttr(f"{fbf_node}.{attr_name}", num)
     return fbf_node
+
+
+def matrix_constraint(source_obj: str,
+                      target_object: str,
+                      keep_offset: bool = True) -> str:
+
+    offset_matrix = get_offset_matrix(get_world_matrix(target_object), get_world_matrix(source_obj))
+    node_multMatrix = cmds.createNode("multMatrix", name=f"{target_object}_MM_matrixConstraint")
+    cmds.addAttr(node_multMatrix, ln="constraintOffsetMatrix", at="matrix")
+    if keep_offset:
+        cmds.setAttr(f"{node_multMatrix}.constraintOffsetMatrix", offset_matrix, type="matrix")
+    cmds.connectAttr(f"{node_multMatrix}.constraintOffsetMatrix",
+                     f"{node_multMatrix}.matrixIn[0]")
+    cmds.connectAttr(f"{source_obj}.worldMatrix[0]",
+                     f"{node_multMatrix}.matrixIn[1]")
+    node_decomposeMatrix = cmds.createNode("decomposeMatrix", name=f"{target_object}_DM_matrixConstraint")
+    cmds.connectAttr(f"{target_object}.rotateOrder",
+                     f"{node_decomposeMatrix}.inputRotateOrder")
+    cmds.connectAttr(f"{node_multMatrix}.matrixSum",
+                     f"{node_decomposeMatrix}.inputMatrix")
+    cmds.connectAttr(f"{node_decomposeMatrix}.outputTranslate",
+                     f"{target_object}.translate")
+    cmds.connectAttr(f"{node_decomposeMatrix}.outputRotate",
+                     f"{target_object}.rotate")
+    cmds.connectAttr(f"{node_decomposeMatrix}.outputScale",
+                     f"{target_object}.scale")
+    cmds.connectAttr(f"{node_decomposeMatrix}.outputShear",
+                     f"{target_object}.shear")
+    cmds.connectAttr(f"{node_decomposeMatrix}.outputQuat",
+                     f"{target_object}.rotateQuaternion")
+    # assets box
+    if not cmds.ls("RigAssets"):
+        cmds.container(name="RigAssets")
+        cmds.setAttr("RigAssets.blackBox", 1)
+    if not cmds.ls("MatrixConstraintAssets"):
+        cmds.container(name="MatrixConstraintAssets")
+        cmds.container("RigAssets", e=1, addNode="MatrixConstraintAssets")
+        cmds.setAttr("MatrixConstraintAssets.blackBox", 1)
+
+    matrixConstraint_assets = cmds.container(name=f"{target_object}_matrixConstraint", addNode=[node_multMatrix, node_decomposeMatrix])
+    cmds.container("MatrixConstraintAssets", e=1, addNode=matrixConstraint_assets)
+    cmds.setAttr(f"{matrixConstraint_assets}.blackBox", 1)
