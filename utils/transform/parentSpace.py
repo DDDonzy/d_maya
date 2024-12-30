@@ -3,18 +3,51 @@ from maya.api import OpenMaya as om
 
 
 def get_spaceBox(object):
-    return cmds.listConnections(f"{object}.parentSpace_node", s=1, d=0)[0]
+    if not cmds.objExists(f"{object}.parentSpace_node"):
+        return None
+    spaceBox = cmds.listConnections(f"{object}.parentSpace_node", s=1, d=0)
+    if spaceBox:
+        return spaceBox[0]
+    else:
+        return None
 
 
 def get_blendMatrix(object):
     return cmds.listConnections(f"{object}.blendMatrix_node", s=1, d=0)[0]
 
 
+def create_rig_assets():
+    assets = "RigAssets"
+    if not cmds.ls(assets):
+        assets = cmds.container(name=assets)
+        cmds.setAttr(f"{assets}.blackBox", 1)
+    return assets
+
+
+def create_parentSpace_assets():
+    parentSpace_assets = "ParentSpaceAssets"
+    rig_assets = create_rig_assets()
+    if not cmds.ls(parentSpace_assets):
+        parentSpace_assets = cmds.container(name=parentSpace_assets)
+        cmds.container(rig_assets, e=1, addNode=[parentSpace_assets])
+        cmds.setAttr(f"{parentSpace_assets}.blackBox", 1)
+    return parentSpace_assets
+
+
 def create_spaceBox(object):
-    asset_box = cmds.container(type="dagContainer", name=f"{object}_spaceBox")
-    cmds.parent(asset_box, object)
+    asset_box = get_spaceBox(object)
+    if asset_box:
+        return asset_box
+    if cmds.ls(f"{object}.parentSpace_node"):
+        cmds.deleteAttr(f"{object}.parentSpace_node")
+    if cmds.ls(f"{object}.parentSpace"):
+        cmds.deleteAttr(f"{object}.parentSpace")
+    # assets box
+    parentSpace_assets = create_parentSpace_assets()
+    asset_box = cmds.container(name=f"{object}_spaceBox")
+    cmds.container(parentSpace_assets, e=1, addNode=[asset_box])
     node_bw = cmds.createNode("blendMatrix", name=f"{object}_spaceBW")
-    cmds.setAttr(f"{node_bw}.isHistoricallyInteresting",0)
+    cmds.setAttr(f"{node_bw}.isHistoricallyInteresting", 0)
     cmds.addAttr(object, ln="parentSpace_node", at="message")
     cmds.addAttr(asset_box, ln="blendMatrix_node", at="message")
     cmds.connectAttr(f"{asset_box}.message",
@@ -22,7 +55,7 @@ def create_spaceBox(object):
     cmds.connectAttr(f"{node_bw}.message",
                      f"{asset_box}.blendMatrix_node")
     node_multMatrix = cmds.createNode("multMatrix", name=f"{object}_spaceLocalMultMatrix")
-    cmds.setAttr(f"{node_multMatrix}.isHistoricallyInteresting",0)
+    cmds.setAttr(f"{node_multMatrix}.isHistoricallyInteresting", 0)
     p_list = cmds.listRelatives(object, p=1)
     if p_list:
         p = p_list[0]
@@ -39,12 +72,12 @@ def create_spaceBox(object):
     cmds.container(asset_box, e=1, addNode=[node_bw, node_multMatrix])
     cmds.addAttr(asset_box, ln="parentSpace", at="enum", en="Parent", k=1)
     cmds.addAttr(object, ln="parentSpace", pxy=f"{asset_box}.parentSpace", k=1)
-    return node_bw
+    return asset_box
 
 
 def parentSpace(object: str,
                 parent: str,
-                nice_name: str,
+                nice_name: str = None,
                 translate=True,
                 rotate=True,
                 scale=True,
@@ -53,9 +86,12 @@ def parentSpace(object: str,
     if not cmds.objExists(f"{object}.parentSpace_node"):
         asset_box = create_spaceBox(object)
 
-    asset_box = get_spaceBox(object)
+    asset_box = create_spaceBox(object)
+    print(asset_box)
     node_bw = get_blendMatrix(asset_box)
-
+    
+    if not nice_name:
+        nice_name = parent
     enum_str = cmds.addAttr(f"{asset_box}.parentSpace", q=1, en=1)
     nice_name_list = enum_str.split(":")
     nice_name_list.append(nice_name)
@@ -73,23 +109,23 @@ def parentSpace(object: str,
     cmds.setAttr(f"{asset_box}.{offset_matrix_attr_name}", offset_matrix, type="matrix", l=1)
 
     node_multMatrix = cmds.createNode("multMatrix", name=f"{parent}_{object}_multMatrix")
-    cmds.setAttr(f"{node_multMatrix}.isHistoricallyInteresting",0)
+    cmds.setAttr(f"{node_multMatrix}.isHistoricallyInteresting", 0)
     cmds.connectAttr(f"{asset_box}.{offset_matrix_attr_name}",
                      f"{node_multMatrix}.matrixIn[0]")
     cmds.connectAttr(f"{parent}.worldMatrix[0]",
                      f"{node_multMatrix}.matrixIn[1]")
     cmds.connectAttr(f'{node_multMatrix}.matrixSum',
                      f"{node_bw}.target[{parent_indices}].targetMatrix")
-    if cmds.about(api=True)>=20230000:
-        status = [translate,rotate,scale,shear]
-        for i,attr in enumerate(["translateWeight","rotateWeight","scaleWeight","shearWeight"]):
-            cmds.addAttr(asset_box,ln=f"{attr}_{parent_indices}",at="double",min=0,max=1,k=1,dv=float(status[i]))
+    if cmds.about(api=True) >= 20230000:
+        status = [translate, rotate, scale, shear]
+        for i, attr in enumerate(["translateWeight", "rotateWeight", "scaleWeight", "shearWeight"]):
+            cmds.addAttr(asset_box, ln=f"{attr}_{parent_indices}", at="double", min=0, max=1, k=1, dv=float(status[i]))
             cmds.connectAttr(f"{asset_box}.{attr}_{parent_indices}",
                              f"{node_bw}.target[{parent_indices}].{attr}", f=1)
     else:
-        status = [translate,rotate,scale,shear]
-        for i,attr in enumerate(["useTranslate","useRotate","useScale","useShear"]):
-            cmds.addAttr(asset_box,ln=f"{attr}_{parent_indices}",at="bool",min=0,max=1,k=1,dv=status[i])
+        status = [translate, rotate, scale, shear]
+        for i, attr in enumerate(["useTranslate", "useRotate", "useScale", "useShear"]):
+            cmds.addAttr(asset_box, ln=f"{attr}_{parent_indices}", at="bool", min=0, max=1, k=1, dv=status[i])
             cmds.connectAttr(f"{asset_box}.{attr}_{parent_indices}",
                              f"{node_bw}.target[{parent_indices}].{attr}", f=1)
 
@@ -114,9 +150,7 @@ def parentSpace_cmd(nice_name="",
                     scale=True,
                     shear=True):
     sel = cmds.ls(sl=1)
-    if not nice_name:
-        nice_name = sel[1]
-    parentSpace(object=sel[1], parent=sel[0], nice_name=nice_name,translate=translate,rotate=rotate,scale=scale,shear=shear)
+    parentSpace(object=sel[1], parent=sel[0], nice_name=nice_name, translate=translate, rotate=rotate, scale=scale, shear=shear)
 
 
 # parentSpace_cmd()

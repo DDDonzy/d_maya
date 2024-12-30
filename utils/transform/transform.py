@@ -268,6 +268,8 @@ def matrix_constraint(source_obj: str,
                      f"{node_multMatrix}.matrixIn[0]")
     cmds.connectAttr(f"{source_obj}.worldMatrix[0]",
                      f"{node_multMatrix}.matrixIn[1]")
+    cmds.connectAttr(f"{target_object}.parentInverseMatrix[0]",
+                     f"{node_multMatrix}.matrixIn[2]")
     node_decomposeMatrix = cmds.createNode("decomposeMatrix", name=f"{target_object}_DM_matrixConstraint")
     cmds.connectAttr(f"{target_object}.rotateOrder",
                      f"{node_decomposeMatrix}.inputRotateOrder")
@@ -283,6 +285,8 @@ def matrix_constraint(source_obj: str,
                      f"{target_object}.shear")
     cmds.connectAttr(f"{node_decomposeMatrix}.outputQuat",
                      f"{target_object}.rotateQuaternion")
+    if cmds.objectType(target_object) == "joint":
+        cmds.setAttr(f"{target_object}.jointOrient", 0, 0, 0)
     # assets box
     if not cmds.ls("RigAssets"):
         cmds.container(name="RigAssets")

@@ -2,15 +2,22 @@ from maya.api import OpenMaya as om
 from maya import cmds
 
 
-def createPlane(name="uvPinPlane", num=1):
-    if num < 1:
-        return None
+def get_world_matrix(obj: str) -> om.MMatrix:
+    sel_list = om.MSelectionList()
+    sel_list.add(obj)
+    return sel_list.getDagPath(0).inclusiveMatrix()
+
+
+def createPlane(object_list, size=1, name="uvPinPlane"):
+    if not object_list:
+        return
+    num = len(object_list)
     transform = cmds.createNode("transform", name=name)
     mSel = om.MSelectionList()
     mSel.add(transform)
     mObject = mSel.getDependNode(0)
 
-    base_vtx_pos_ary = [[0, 0, 0], [1, 0, 0], [0, 0, 1], [-1, 0, 0], [0, 0, -1]]
+    base_vtx_pos_ary = [[0.0, 0.0, 0.0], [0.0, 0.0, -1.0], [0.0, -1.0, 0.0], [0.0, 0.0, 1.0], [0.0, 1.0, 0.0]]
     base_poly_count = [3, 3, 3, 3]
     base_poly_connect = [1, 4, 0, 4, 3, 0, 3, 2, 0, 2, 1, 0]
     base_uvCounts = [3, 3, 3, 3]
@@ -30,18 +37,18 @@ def createPlane(name="uvPinPlane", num=1):
     # num
     for i in range(num):
         # pos_ary
-        mult_matrix = om.MFloatMatrix()
+        mult_matrix = get_world_matrix(object_list[i])
         for pos in base_vtx_pos_ary:
-            pos_ary.append(om.MFloatPoint(pos) * mult_matrix)
+            pos_ary.append(om.MPoint(pos) * size * mult_matrix)
         # face_connect_ary
         for vtx in base_poly_connect:
-            face_connect_ary.append(vtx + (i*base_vtx_num))
+            face_connect_ary.append(vtx + (i * base_vtx_num))
         # u
         for u_value in base_u:
             u.append(u_value+i)
         # uvIds
         for id in base_uvIds:
-            uvIds.append(id + (i*base_vtx_num))
+            uvIds.append(id + (i * base_vtx_num))
 
     fnMesh = om.MFnMesh()
     mObj = fnMesh.create(pos_ary, face_count_ary, face_connect_ary, parent=mObject)
@@ -50,6 +57,4 @@ def createPlane(name="uvPinPlane", num=1):
 
     fnMesh.setUVs(u, v)
     fnMesh.assignUVs(uvCounts, uvIds)
-
-
-createPlane(num=10)
+    return transform

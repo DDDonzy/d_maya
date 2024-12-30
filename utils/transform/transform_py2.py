@@ -1,5 +1,95 @@
 import maya.cmds as cmds
 import maya.api.OpenMaya as om
+import maya.cmds as cmds
+import maya.api.OpenMaya as om
+
+
+class MIRROR_MATRIX(object):
+    x = om.MMatrix([[-1, 0, 0, 0],
+                    [0, 1, 0, 0],
+                    [0, 0, 1, 0],
+                    [0, 0, 0, 1]])
+    y = om.MMatrix([[1, 0, 0, 0],
+                    [0, -1, 0, 0],
+                    [0, 0, 1, 0],
+                    [0, 0, 0, 1]])
+    z = om.MMatrix([[1, 0, 0, 0],
+                    [0, 1, 0, 0],
+                    [0, 0, -1, 0],
+                    [0, 0, 0, 1]])
+
+    def __init__(self, axis="x"):
+        if axis not in ["x", "y", "z"]:
+            raise ValueError("Invalid axis. Choose from 'x', 'y', or 'z'.")
+
+    def __new__(cls, axis="x"):
+        return getattr(MIRROR_MATRIX, axis)
+
+
+class UNIT_CONVERT(object):
+    mm = 10.0
+    cm = 1.0
+    m = 0.01
+
+    def __init__(self, unit=None):
+        if unit is None:
+            unit = cmds.currentUnit(q=1)
+        if unit not in ["mm", "cm", "m"]:
+            raise ValueError("Invalid axis. Choose from 'mm', 'cm', or 'm'.")
+
+    def __new__(cls, unit=None):
+        if unit is None:
+            unit = cmds.currentUnit(q=1)
+        return getattr(UNIT_CONVERT, unit)
+
+
+def mirror_transform(sour_obj, target_obj, mirror_axis="x"):
+    """flip source object's world space matrix  as target object's world space matrix 
+
+    Args:
+        sour_obj (str): source transform object
+        target_obj (str): target transform object
+        mirror_axis (str, optional): mirror axis. Defaults to "x".
+    """
+    sour_world_matrix = get_world_matrix(sour_obj)
+    sour_parent_matrix = get_parent_matrix(sour_obj)
+    sour_world_matrix_flip = flip_matrix(sour_world_matrix, mirror_axis)
+    sour_parent_matrix_flip = flip_matrix(sour_parent_matrix, mirror_axis)
+    target_parent_matrix = get_parent_matrix(target_obj)
+    flip_offset_matrix = get_offset_matrix(sour_parent_matrix_flip, target_parent_matrix)
+    set_world_matrix(target_obj, flip_offset_matrix * sour_world_matrix_flip)
+
+
+def flip_matrix(world_matrix, mirror_axis="x"):
+    """flip matrix by mirror matrix
+
+    Args:
+        world_matrix (om.MMatrix): input world matrix 
+        mirror_axis (str, optional): mirror axis x y or z. Defaults to "x".
+
+    Returns:
+        om.MMatrix: flip matrix 
+    """
+    mirror_matrix = world_matrix * MIRROR_MATRIX(mirror_axis)
+    return mirror_matrix
+
+
+def get_offset_matrix(child_world_matrix, parent_world_matrix):
+    """
+    get offset matrix
+    get local matrix when child in parent space
+
+    Args:
+        child_world_matrix (om.MMatrix): child world matrix
+        parent_world_matrix (om.MMatrix): parent world matrix
+
+    Returns:
+        om.MMatrix: local matrix when child in parent space
+    """
+    # child_world_matrix = child_local_matrix * parent_world_matrix
+    # child_world_matrix * parent_world_matrix.inverse = child_local_matrix
+    child_local_matrix = child_world_matrix * parent_world_matrix.inverse()
+    return child_local_matrix
 
 
 def get_local_matrix(obj):
@@ -99,7 +189,7 @@ def matrix_to_trs(matrix, rotateOrder=0):
     return outputList
 
 
-def trs_to_matrix(trs, rotateOrder = 0):
+def trs_to_matrix(trs, rotateOrder=0):
     """convert [tx,ty.tz,rx,ry,rz,sx,sy,sz] to matrix 
 
     Args:
@@ -177,6 +267,8 @@ def matrix_constraint(source_obj, target_object, keep_offset=True):
                      "%s.matrixIn[0]" % node_multMatrix)
     cmds.connectAttr("%s.worldMatrix[0]" % source_obj,
                      "%s.matrixIn[1]" % node_multMatrix)
+    cmds.connectAttr("%s.parentInverseMatrix[0]" % target_object,
+                     "%s.matrixIn[2]" % node_multMatrix)
     node_decomposeMatrix = cmds.createNode("decomposeMatrix", name="%s_DM_matrixConstraint" % target_object)
     cmds.connectAttr("%s.rotateOrder" % target_object,
                      "%s.inputRotateOrder" % node_decomposeMatrix)
@@ -192,6 +284,9 @@ def matrix_constraint(source_obj, target_object, keep_offset=True):
                      "%s.shear" % target_object)
     cmds.connectAttr("%s.outputQuat" % node_decomposeMatrix,
                      "%s.rotateQuaternion" % target_object)
+
+    if cmds.objectType(target_object) == "joint":
+        cmds.setAttr("%s.jointOrient" % target_object, 0, 0, 0)
     # assets box
     if not cmds.ls("RigAssets"):
         cmds.container(name="RigAssets")
