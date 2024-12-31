@@ -26,7 +26,7 @@ def get_current_uvSet_name(shape):
 
 def createPlane(object_list, size=1, name="uvPinPlane"):
     if not object_list:
-        return
+        raise ValueError("No object need to create plane, please input object list first.")
     num = len(object_list)
     transform = cmds.createNode("transform", name=name)
     mSel = om.MSelectionList()
@@ -78,11 +78,11 @@ def createPlane(object_list, size=1, name="uvPinPlane"):
 
 def create_uvPin(obj_list: list, new_transform=False, plane_size=0.3, name: str = "uvPin"):
     if not obj_list:
-        return
-    print("CREATE UV_PIN")
+        raise ValueError("No object need to create uvPin, please input object list first.")
+    # create mesh
     mesh = createPlane(obj_list, size=plane_size, name="uvPin")
 
-    print("    create uvPin node")
+    # create uvPin node
     node_uvPin = cmds.createNode("uvPin", name=name)
     orig_outMesh = cmds.deformableShape(mesh, cog=1)[0]
     cmds.setAttr(".normalAxis", 0)
@@ -95,27 +95,21 @@ def create_uvPin(obj_list: list, new_transform=False, plane_size=0.3, name: str 
                      f"{node_uvPin}.deformedGeometry")
 
     for i, obj in enumerate(obj_list):
-        print(f"        connect uvPin{i}")
-        p = cmds.xform(obj, q=1, t=1, ws=1)
+        # set uvPin.uv value
         cmds.setAttr(f"{node_uvPin}.coordinate[{i}].coordinateU", i + 0.5)
         cmds.setAttr(f"{node_uvPin}.coordinate[{i}].coordinateV", 0.5)
-        if new_transform:
+        # create new transform
+        if new_transform is True:
             loc = cmds.createNode("transform", name=f"{obj}_uvPinLoc")
             cmds.connectAttr(f"{node_uvPin}.outputMatrix[{i}]",
                              f"{loc}.offsetParentMatrix")
             cmds.parentConstraint(loc, obj)
-
         else:
             cmds.connectAttr(f"{node_uvPin}.outputMatrix[{i}]",
                              f"{obj}.offsetParentMatrix")
-
-    print("    result transform")
-    for x in obj_list:
-        for i in "xyz":
-            cmds.setAttr(f"{x}.t{i}", 0)
-            cmds.setAttr(f"{x}.r{i}", 0)
-
-    print("UV_PIN DONE")
+            for i in "xyz":
+                cmds.setAttr(f"{obj}.t{i}", 0)
+                cmds.setAttr(f"{obj}.r{i}", 0)
 
 
-create_uvPin(cmds.ls(sl=1), plane_size=0.3, new_transform=False)
+# create_uvPin(cmds.ls(sl=1), plane_size=0.3, new_transform=False)

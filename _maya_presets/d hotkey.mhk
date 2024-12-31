@@ -1,4 +1,4 @@
-//Maya Preference 2023 (Release 1)
+//Maya Preference 2024 (Release 1)
 //
 //
 
@@ -7,70 +7,37 @@
 //
 runTimeCommand
 	-label ""
-	-annotation ""
+	-annotation "d_hotbox (Press)"
 	-longAnnotation ""
-	-category "Custom Scripts"
+	-category "Other items.User Marking Menus"
 	-image ""
 	-tags ""
 	-keywords ""
 	-plugin ""
 	-helpUrl ""
 	-hotkeyCtx ""
-	-commandLanguage "python"
-	-command ("def reset_value(obj, transform=True, userDefined=True, displayable=False):\n    if transform:\n        for t in \"trs\":\n            v = 0\n            if t == \"s\":\n                v = 1\n            for a in \"xyz\":\n                try:\n                    cmds.setAttr(f\"{obj}.{t}{a}\", v)\n                except:\n                    print(f\"{obj}.{t}{a} ---> can't reset\")\n    if userDefined:\n        user_defined = cmds.listAttr(obj, k=not displayable, ud=1)\n        if user_defined is not None:\n            for x in user_defined:\n                x = f\"{obj}.{x}\"\n                v = cmds.addAttr(x, q=1, dv=1)\n                if v is not None:\n                    try:\n                        cmds.setAttr(x, v)\n                    except:\n                        print(f\"{x} ---> can't reset\")\n\n\nif __name__ == \"__main__\":\n    obj_list = cmds.ls(sl=1)\n    for obj in obj_list:\n        reset_value(obj,transform=True,userDefined=True,displayable=True)\n")
-	reset_object_transform_and_all_attrs;
+	-commandLanguage "mel"
+	-command ("if (`popupMenu -exists tempMM`) { deleteUI tempMM; }\npopupMenu -button 1 -ctl false -alt false -sh false -allowOptionBoxes true -parent `findPanelPopupParent` -mm 1 tempMM; \nsource \"menu_d_hotbox\";\n")
+	d_hotbox_Press;
 
 runTimeCommand
 	-label ""
-	-annotation ""
+	-annotation "d_hotbox (Release)"
 	-longAnnotation ""
-	-category "Custom Scripts"
+	-category "Other items.User Marking Menus"
 	-image ""
 	-tags ""
 	-keywords ""
 	-plugin ""
 	-helpUrl ""
 	-hotkeyCtx ""
-	-commandLanguage "python"
-	-command ("def reset_value(obj, transform=True, userDefined=True, displayable=False):\n    if transform:\n        for t in \"trs\":\n            v = 0\n            if t == \"s\":\n                v = 1\n            for a in \"xyz\":\n                try:\n                    cmds.setAttr(f\"{obj}.{t}{a}\", v)\n                except:\n                    print(f\"{obj}.{t}{a} ---> can't reset\")\n    if userDefined:\n        user_defined = cmds.listAttr(obj, k=not displayable, ud=1)\n        if user_defined is not None:\n            for x in user_defined:\n                x = f\"{obj}.{x}\"\n                v = cmds.addAttr(x, q=1, dv=1)\n                if v is not None:\n                    try:\n                        cmds.setAttr(x, v)\n                    except:\n                        print(f\"{x} ---> can't reset\")\n\n\nif __name__ == \"__main__\":\n    obj_list = cmds.ls(sl=1)\n    for obj in obj_list:\n        reset_value(obj,transform=True,userDefined=True,displayable=False)\n")
-	reset_object_transform_and_userDefined_attr;
-
-runTimeCommand
-	-label ""
-	-annotation ""
-	-longAnnotation ""
-	-category "Custom Scripts"
-	-image ""
-	-tags ""
-	-keywords ""
-	-plugin ""
-	-helpUrl ""
-	-hotkeyCtx ""
-	-commandLanguage "python"
-	-command ("def reset_value(obj, transform=True, userDefined=True, displayable=False):\n    if transform:\n        for t in \"trs\":\n            v = 0\n            if t == \"s\":\n                v = 1\n            for a in \"xyz\":\n                try:\n                    cmds.setAttr(f\"{obj}.{t}{a}\", v)\n                except:\n                    print(f\"{obj}.{t}{a} ---> can't reset\")\n    if userDefined:\n        user_defined = cmds.listAttr(obj, k=not displayable, ud=1)\n        if user_defined is not None:\n            for x in user_defined:\n                x = f\"{obj}.{x}\"\n                v = cmds.addAttr(x, q=1, dv=1)\n                if v is not None:\n                    try:\n                        cmds.setAttr(x, v)\n                    except:\n                        print(f\"{x} ---> can't reset\")\n\n\nif __name__ == \"__main__\":\n    obj_list = cmds.ls(sl=1)\n    for obj in obj_list:\n        reset_value(obj,transform=True,userDefined=False,displayable=False)\n")
-	reset_object_transform;
+	-commandLanguage "mel"
+	-command ("if (`popupMenu -exists tempMM`) { deleteUI tempMM; }")
+	d_hotbox_Release;
 
 //
 // The name commands referenced by the hotkeys
 //
-nameCommand
-	-annotation "reset_object_attrsNameCommand"
-	-sourceType "mel"
-	-command ("reset_object_transform")
-	reset_object_attrsNameCommand;
-
-nameCommand
-	-annotation "reset_object_transform_and_userDefined_attrNameCommand"
-	-sourceType "mel"
-	-command ("reset_object_transform_and_userDefined_attr")
-	reset_object_transform_and_userDefined_attrNameCommand;
-
-nameCommand
-	-annotation "reset_object_transform_and_all_attrsNameCommand"
-	-sourceType "mel"
-	-command ("reset_object_transform_and_all_attrs")
-	reset_object_transform_and_all_attrsNameCommand;
-
 nameCommand
 	-annotation "CopyVertexWeightsNameCommand"
 	-sourceType "mel"
@@ -83,6 +50,18 @@ nameCommand
 	-command ("PasteVertexWeights")
 	PasteVertexWeightsNameCommand;
 
+nameCommand
+	-annotation "d_hotbox_PressNameCommand"
+	-sourceType "mel"
+	-command ("d_hotbox_Press")
+	d_hotbox_PressNameCommand;
+
+nameCommand
+	-annotation "d_hotbox_ReleaseNameCommand"
+	-sourceType "mel"
+	-command ("d_hotbox_Release")
+	d_hotbox_ReleaseNameCommand;
+
 //
 // The user hotkeys
 //
@@ -93,29 +72,29 @@ hotkeySet -source "Maya_Default" -current d_hotkey;
 //
 // The hotkey contexts and hotkeys
 //
+hotkey -keyShortcut "`" -alt -name ("");
 hotkey -keyShortcut "c" -sht -name ("CopyVertexWeightsNameCommand");
+hotkey -keyShortcut "`" -name ("d_hotbox_PressNameCommand");
 hotkey -keyShortcut "c" -sht -releaseName ("");
+hotkey -keyShortcut "`" -releaseName ("d_hotbox_ReleaseNameCommand");
 hotkey -keyShortcut "v" -sht -name ("PasteVertexWeightsNameCommand");
 hotkey -keyShortcut "v" -sht -releaseName ("");
-hotkey -keyShortcut "`" -ctl -name ("reset_object_transform_and_all_attrsNameCommand");
-hotkey -keyShortcut "`" -name ("reset_object_attrsNameCommand");
-hotkey -keyShortcut "`" -releaseName ("");
-hotkey -keyShortcut "`" -alt -name ("reset_object_transform_and_userDefined_attrNameCommand");
-hotkeyCtx -type "Editor" -addClient "nodeEditorPanel";
-hotkeyCtx -type "Editor" -addClient "hyperGraphPanel";
-hotkeyCtx -type "Editor" -addClient "posePanel";
+hotkey -keyShortcut "`" -ctl -name ("");
 hotkeyCtx -type "Editor" -addClient "hyperShadePanel";
-hotkeyCtx -type "Editor" -addClient "shapePanel";
-hotkeyCtx -type "Editor" -addClient "timeEditorPanel";
-hotkeyCtx -type "Editor" -addClient "outlinerPanel";
-hotkeyCtx -type "Editor" -addClient "profilerPanel";
 hotkeyCtx -type "Editor" -addClient "graphEditor";
+hotkeyCtx -type "Editor" -addClient "nodeEditorPanel";
+hotkeyCtx -type "Editor" -addClient "posePanel";
+hotkeyCtx -type "Editor" -addClient "shapePanel";
+hotkeyCtx -type "Editor" -addClient "outlinerPanel";
 hotkeyCtx -type "Editor" -addClient "polyTexturePlacementPanel";
-hotkeyCtx -type "Tool" -addClient "texCutContext";
-hotkeyCtx -type "Tool" -addClient "xgmIGBrush";
-hotkeyCtx -type "Tool" -addClient "bpDraw";
+hotkeyCtx -type "Editor" -addClient "timeEditorPanel";
+hotkeyCtx -type "Editor" -addClient "hyperGraphPanel";
+hotkeyCtx -type "Editor" -addClient "profilerPanel";
 hotkeyCtx -type "Tool" -addClient "SymmetrizeUVBrush";
 hotkeyCtx -type "Tool" -addClient "texSculptCacheContext";
+hotkeyCtx -type "Tool" -addClient "Unfold3DBrush";
 hotkeyCtx -type "Tool" -addClient "sculptMeshCache";
 hotkeyCtx -type "Tool" -addClient "polyCutUV";
-hotkeyCtx -type "Tool" -addClient "Unfold3DBrush";
+hotkeyCtx -type "Tool" -addClient "xgmIGBrush";
+hotkeyCtx -type "Tool" -addClient "texCutContext";
+hotkeyCtx -type "Tool" -addClient "bpDraw";

@@ -10,7 +10,7 @@ def get_world_matrix(obj: str) -> om.MMatrix:
 
 def createPlane(object_list, size=1, name="uvPinPlane"):
     if not object_list:
-        return
+        raise ValueError("No object need to create plane, please input object list first.")
     num = len(object_list)
     transform = cmds.createNode("transform", name=name)
     mSel = om.MSelectionList()
