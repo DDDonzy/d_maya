@@ -1,4 +1,5 @@
 import maya.cmds as cmds
+
 global mirror_config
 
 
@@ -105,3 +106,6 @@ def mirror_selected(add=False):
     cmds.select(exchange_list, add=add)
     mirror_config._show_message(mirror_config)
     mirror_config._show_message("Mirror Selected Done")
+
+
+mirror_env()

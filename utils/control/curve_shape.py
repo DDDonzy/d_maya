@@ -5,6 +5,8 @@ from maya import mel
 from maya import cmds
 from maya.api import OpenMaya as om
 
+from ..mirror_env import mirror_config
+
 
 @dataclass
 class CurveShapeData(yaml.YAMLObject):
@@ -167,7 +169,8 @@ def get_nurbsCurveType_setAttrCmd(shape_obj):
     return cmd_str
 
 
-def replace_curve_shape(source, target,
+def replace_curve_shape(source: str,
+                        target: list,
                         setShape: bool = True,
                         setDrawInfo: bool = True):
     """ replace curve's shapes
@@ -190,28 +193,8 @@ def replace_curve_shape(source, target,
                         setDrawInfo=setDrawInfo)
 
 
-def name_replace(name: str,
-                 replace: list = ["L_", "R_"]):
-    """input a name and replace str
-
-    Args:
-        name (str): _description_
-        replace (list, optional): _description_. Defaults to ["L_", "R_"].
-    Returns:
-        str: replaced name
-    """
-    if replace[0] in name:
-        name = name.replace(*replace)
-    elif replace[1] in name:
-        replace.reverse()
-        name = name.replace(*replace)
-    else:
-        raise RuntimeError(f"object '{name}' replace error,'{replace[0]}' or '{replace[1]}' not in it.")
-    return name
-
-
-def mirror_curve_shape(object: list = [],
-                       replace: list = ["L_", "R_"],
+def mirror_curve_shape(source_list: list = [],
+                       target_list: list = [],
                        setShape: bool = True,
                        setDrawInfo: bool = False):
     """ Mirror the shape of one side to the other side.
@@ -223,19 +206,21 @@ def mirror_curve_shape(object: list = [],
         setDrawInfo (bool, optional): If False will be pass mirror shape draw information.
     """
 
-    if type(object) is str:
-        object = [object]
+    if type(source_list) is str:
+        source_list = [source_list]
 
-    for obj in object:
+    for i, obj in enumerate(source_list):
         # obj is true
         if not cmds.objExists(obj):
             om.MGlobal.displayInfo(f"Can not find '{obj}'.")
             continue
         # otherSize is true
-        try:
-            otherSide_obj = name_replace(obj, replace)
-        except RuntimeError:
+        otherSide_obj = target_list[i]
+        if not cmds.objExists(otherSide_obj):
             om.MGlobal.displayInfo(f"Can not find '{otherSide_obj}'.")
+            continue
+        # source == target will bee continue
+        if obj == otherSide_obj:
             continue
         # transf cv shape data
         cvData = CurveData(obj)
@@ -249,6 +234,16 @@ def mirror_curve_shape(object: list = [],
             for cv_i, cv_pos in enumerate(pos_ary):
                 cv_pos[0] *= -1
                 cmds.xform(f"{otherSide_obj_shape_list[shape_i]}.cv[{cv_i}]", t=cv_pos, ws=1)
+
+
+def select_curve_cv(curve_list: list):
+    if not curve_list:
+        raise RuntimeError("Please input curve.")
+    sel_list = []
+    for cv in curve_list:
+        long_name = f"{cv}.cv[*]"
+        sel_list += cmds.ls(long_name, fl=1)
+    cmds.select(sel_list)
 
 
 def export_curve_data(cv_list=None):
@@ -286,7 +281,39 @@ def import_curve_data():
     cmds.inViewMessage(amg=message, pos='midCenterBot', fade=True)
 
 
+def mirror_curve_shape_cmd():
+    sel_list = cmds.ls(sl=1, o=1)
+    for i, x in enumerate(sel_list):
+        if cmds.objectType(x) != "transform":
+            sel_list[i] = cmds.listRelatives(x, p=1)[0]
+    mirror_curve_shape(source_list=sel_list,
+                       target_list=mirror_config.exchange(sel_list),
+                       setShape=1,
+                       setDrawInfo=0)
+    msg = "Mirror curve shapes."
+    mirror_config._show_message(msg)
+
+
+def replace_curve_shape_cmd():
+    sel_list = cmds.ls(sl=1, o=1)
+    if len(sel_list) < 2:
+        raise RuntimeError("Please select at least two objects.")
+    for i, x in enumerate(sel_list):
+        if cmds.objectType(x) != "transform":
+            sel_list[i] = cmds.listRelatives(x, p=1)[0]
+    replace_curve_shape(sel_list[0], sel_list[1:], setShape=1, setDrawInfo=1)
+    msg = "Replace curve shapes."
+    mirror_config._show_message(msg)
+
+
+def select_curve_cv_cmd():
+    sel_list = cmds.ls(sl=1, o=1)
+    select_curve_cv(sel_list)
+    msg = "Select curve CV."
+    mirror_config._show_message(msg)
+
+
 # export_curve_data()
 # import_curve_data()
 # replace_curve_shape(cmds.ls(sl=1)[0],cmds.ls(sl=1)[1:])
-# mirror_curve_shape(cmds.ls(sl=1), setShape=1, setDrawInfo=0)
+# mirror_curve_shape_cmd()

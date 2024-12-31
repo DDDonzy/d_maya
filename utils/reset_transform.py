@@ -30,6 +30,14 @@ def reset_transform_value_cmd(transform=True, userDefined=False):
     for obj in cmds.ls(sl=1):
         reset_transform_value(obj, transform, userDefined)
 
+    def _show_message(msg):
+        message = f"<hl> {msg} </hl>"
+        cmds.inViewMessage(amg=message, pos='botRight', fade=True, fadeInTime=100, fadeStayTime=1000, fadeOutTime=100)
+    msg = "Reset transform value."
+    if userDefined:
+        msg = "Reset value (all)."
+    _show_message(msg)
+
 
 if __name__ == "__main__":
     reset_transform_value_cmd()
