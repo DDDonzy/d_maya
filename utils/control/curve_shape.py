@@ -305,7 +305,6 @@ def replace_curve_shape_cmd():
     msg = "Replace curve shapes."
     mirror_config._show_message(msg)
 
-
 def select_curve_cv_cmd():
     sel_list = cmds.ls(sl=1, o=1)
     select_curve_cv(sel_list)
