@@ -6,6 +6,7 @@ from maya import cmds, mel
 ENV_LIB = {
     "MAYA_NO_HOME": 1,
     "MAYA_NO_HOME_ICON": 1,
+    "MAYA_SKIP_BLOCK_CHECK": 1
 }
 
 THIS_Path = os.path.dirname(__file__)

@@ -6,7 +6,6 @@
         -tearOff 0
         -optionBox 0
         -enable 1
-        -visible 1
         -data 0
         -radialPosition "E" 
         -allowOptionBoxes 1
@@ -25,7 +24,6 @@
             -command "import utils.reset_transform\nutils.reset_transform.reset_transform_value_cmd(True,False)\n" 
             -optionBox 0
             -enable 1
-            -visible 1
             -data 0
             -radialPosition "E" 
             -allowOptionBoxes 1
@@ -46,7 +44,6 @@
             -command "import utils.reset_transform\nutils.reset_transform.reset_transform_value_cmd(True,True)\n" 
             -optionBox 0
             -enable 1
-            -visible 1
             -data 0
             -radialPosition "S" 
             -allowOptionBoxes 1
@@ -68,7 +65,6 @@
         -tearOff 0
         -optionBox 0
         -enable 1
-        -visible 1
         -data 0
         -radialPosition "W" 
         -allowOptionBoxes 1
@@ -86,7 +82,6 @@
             -tearOff 0
             -optionBox 0
             -enable 1
-            -visible 1
             -data 0
             -radialPosition "S" 
             -allowOptionBoxes 1
@@ -106,7 +101,6 @@
             -tearOff 0
             -optionBox 0
             -enable 1
-            -visible 1
             -data 0
             -radialPosition "E" 
             -allowOptionBoxes 1
@@ -126,7 +120,6 @@
             -tearOff 0
             -optionBox 0
             -enable 1
-            -visible 1
             -data 0
             -radialPosition "W" 
             -allowOptionBoxes 1
@@ -149,7 +142,6 @@
         -command "import utils.mirror_env\nutils.mirror_env.mirror_env_switch()" 
         -optionBox 0
         -enable 1
-        -visible 1
         -data 0
         -radialPosition "NE" 
         -allowOptionBoxes 1
@@ -169,7 +161,6 @@
         -tearOff 0
         -optionBox 0
         -enable 1
-        -visible 1
         -data 0
         -radialPosition "S" 
         -allowOptionBoxes 1
@@ -188,7 +179,6 @@
             -command "import utils.mirror_env\nutils.mirror_env.mirror_selected(False)" 
             -optionBox 0
             -enable 1
-            -visible 1
             -data 0
             -radialPosition "S" 
             -allowOptionBoxes 1
@@ -209,7 +199,6 @@
             -command "import utils.mirror_env\nutils.mirror_env.mirror_selected(True)" 
             -optionBox 0
             -enable 1
-            -visible 1
             -data 0
             -radialPosition "SE" 
             -allowOptionBoxes 1
@@ -228,7 +217,6 @@
             -tearOff 0
             -optionBox 0
             -enable 1
-            -visible 1
             -data 0
             -radialPosition "N" 
             -allowOptionBoxes 1
@@ -249,7 +237,6 @@
         -tearOff 0
         -optionBox 0
         -enable 1
-        -visible 1
         -data 0
         -radialPosition "N" 
         -allowOptionBoxes 1
@@ -267,7 +254,6 @@
             -tearOff 0
             -optionBox 0
             -enable 1
-            -visible 1
             -data 0
             -radialPosition "SE" 
             -allowOptionBoxes 1
@@ -287,7 +273,6 @@
             -command "AddInfluence" 
             -optionBox 0
             -enable 1
-            -visible 1
             -data 0
             -radialPosition "W" 
             -allowOptionBoxes 1
@@ -309,7 +294,6 @@
             -command "RemoveInfluence" 
             -optionBox 0
             -enable 1
-            -visible 1
             -data 0
             -radialPosition "NW" 
             -allowOptionBoxes 1
@@ -331,7 +315,6 @@
             -command "SmoothBindSkin" 
             -optionBox 0
             -enable 1
-            -visible 1
             -data 0
             -radialPosition "N" 
             -allowOptionBoxes 1
@@ -352,7 +335,6 @@
             -tearOff 0
             -optionBox 0
             -enable 1
-            -visible 1
             -data 0
             -radialPosition "E" 
             -allowOptionBoxes 1
@@ -372,7 +354,6 @@
             -command "DetachSkin" 
             -optionBox 0
             -enable 1
-            -visible 1
             -data 0
             -allowOptionBoxes 1
             -postMenuCommandOnce 0
@@ -393,7 +374,6 @@
             -command "GoToBindPose" 
             -optionBox 0
             -enable 1
-            -visible 1
             -data 0
             -allowOptionBoxes 1
             -postMenuCommandOnce 0
