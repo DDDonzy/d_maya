@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"name": "d_maya",
+			"path": ".."
+		}
+	],
+	"settings": {
+		"explorer.fileNesting.enabled": false
+	}
+}

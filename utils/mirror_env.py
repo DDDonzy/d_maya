@@ -1,7 +1,5 @@
 import maya.cmds as cmds
 
-global mirror_config
-
 
 class MIRROR_CONFIG:
     MIRROR_PAIRS = [("L", "R"),
@@ -29,7 +27,7 @@ class MIRROR_CONFIG:
         self._show_message(pair)
         return pair
 
-    def exchange(self, name: str | list[str]) -> list[str]:
+    def exchange(self, name: list) -> list:
         """交换名称中的左右标识符
 
         Args:
@@ -57,8 +55,10 @@ class MIRROR_CONFIG:
             for i in range(len(name_upper_split)):
                 if name_upper_split[i] == l_upper:
                     name_upper_split[i] = r_upper
+                    continue
                 elif name_upper_split[i] == r_upper:
                     name_upper_split[i] = l_upper
+                    continue
             exchanged_name = list("_".join(name_upper_split))
 
             for char_index in range(len(exchanged_name)):
@@ -77,35 +77,12 @@ class MIRROR_CONFIG:
         return str(self.current_pair)
 
 
-def mirror_env() -> MIRROR_CONFIG:
-    global mirror_config
-
-    try:
-        if not isinstance(mirror_config, MIRROR_CONFIG):
-            mirror_config = MIRROR_CONFIG()
-            print("yes")
-    except (NameError, AttributeError):
-        mirror_config = MIRROR_CONFIG()
-
-    return mirror_config
-
-
-def mirror_env_switch():
-    global mirror_config
-    try:
-        mirror_config
-        mirror_config.switch_mode()
-    except NameError:
-        mirror_env()
-
-
 def mirror_selected(add=False):
-    global mirror_config
-    mirror_config = mirror_env()
     exchange_list = mirror_config.exchange(cmds.ls(sl=1))
     cmds.select(exchange_list, add=add)
     mirror_config._show_message(mirror_config)
     mirror_config._show_message("Mirror Selected Done")
 
 
-mirror_env()
+global mirror_config
+mirror_config = MIRROR_CONFIG()

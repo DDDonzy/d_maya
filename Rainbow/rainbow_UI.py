@@ -1,18 +1,24 @@
 import maya.cmds as cmds
 import maya.mel as mel
-import os,sys
+import os
+import sys
 sys.path.append(os.path.dirname(__file__))
+
+
 def current_path():
     path = os.path.dirname(__file__)
     return path
 
+
 def rainbow_win():
-    if cmds.window('rainbow_win', exists=True): cmds.deleteUI('rainbow_win')
-    if cmds.windowPref('rainbow_win', exists=True): cmds.windowPref('rainbow_win', remove=True)
+    if cmds.window('rainbow_win', exists=True):
+        cmds.deleteUI('rainbow_win')
+    if cmds.windowPref('rainbow_win', exists=True):
+        cmds.windowPref('rainbow_win', remove=True)
 
     cmds.window('rainbow_win', wh=(406, 610), t='Rainbow')
 
-    mainLayout = cmds.paneLayout(configuration='horizontal2',ps = (1,100,68))
+    mainLayout = cmds.paneLayout(configuration='horizontal2', ps=(1, 100, 68))
 
     curve_frame = cmds.frameLayout(label='Curves', p=mainLayout)
 
@@ -20,27 +26,29 @@ def rainbow_win():
     cmds.gridLayout(numberOfColumns=8, cellWidthHeight=(50, 50))
     curve_grid()
 
-    cmds.rowLayout(p=curve_frame,nc = 3,cw3 = (300,50,50),cat = [(2,'left',10), (3,'left',5)])
-    cmds.floatSliderGrp('scale_slider', label='Scale : ', field=True, minValue=0, maxValue=1,  value=0.2 ,cw3 = (50,50,200),cat = (3,'both',5))
-    cmds.iconTextButton('sub_scale_button', image1='addClip.png', c = 'curve_scale(0)')
-    cmds.iconTextButton('add_scale_button', image1='addClip.png', c = 'curve_scale(1)')
+    cmds.rowLayout(p=curve_frame, nc=3, cw3=(300, 50, 50), cat=[(2, 'left', 10), (3, 'left', 5)])
+    cmds.floatSliderGrp('scale_slider', label='Scale : ', field=True, minValue=0, maxValue=1,  value=0.2, cw3=(50, 50, 200), cat=(3, 'both', 5))
+    cmds.iconTextButton('sub_scale_button', image1='addClip.png', c='curve_scale(0)')
+    cmds.iconTextButton('add_scale_button', image1='addClip.png', c='curve_scale(1)')
 
-    #cmds.separator(p = curve_frame)
+    # cmds.separator(p = curve_frame)
     color_frame = cmds.frameLayout(label='Colors', p=mainLayout)
     cmds.scrollLayout(childResizable=1, p=color_frame)
     cmds.gridLayout(numberOfColumns=8, cellWidthHeight=(50, 40))
     for i in range(32):
-        cmds.canvas(rgbValue=canvas_color(i),pc = 'change_color({})'.format(i))
+        cmds.canvas(rgbValue=canvas_color(i), pc='change_color({})'.format(i))
 
     cmds.showWindow('rainbow_win')
 
+
 def change_color(index):
-    sel = cmds.ls(sl =True)
+    sel = cmds.ls(sl=True)
     for i in sel:
         shapes = cmds.listRelatives(i, f=True, s=True)
         for shape in shapes:
             cmds.setAttr('{}.overrideEnabled'.format(shape), 1)
             cmds.setAttr('{}.overrideColor'.format(shape), index)
+
 
 def curve_grid():
     libpath = r'{}/lib'.format(current_path())
@@ -63,10 +71,8 @@ def curve_grid():
                             dcc='create_curve(1,"{}")'.format(icon))
 
 
-
 def create_curve(mod, name):
     libpath = r'{}/lib'.format(current_path())
-
 
     with open('{}/{}.cs'.format(libpath, name), 'r') as f:
         shape = f.read()
@@ -79,16 +85,13 @@ def create_curve(mod, name):
         else:
             sel = cmds.ls(sl=True)
             for i in sel:
-                type = cmds.listRelatives(i, f=True, s=True)
-                for t in type:                    
-                    if  not cmds.objectType(t) == 'nurbsCurve':
-                        cmds.error('Not a nurbsCurve : {}'.format(i))
-            for i in sel:
                 old_shape = cmds.listRelatives(i, f=True, s=True)
-                old_enabled = cmds.getAttr('{}.overrideEnabled'.format(old_shape[0]))
-                old_color = cmds.getAttr('{}.overrideColor'.format(old_shape[0]))
-                
-                cmds.delete(old_shape)
+                old_enabled = None
+                old_color = None
+                if old_shape:
+                    old_enabled = cmds.getAttr('{}.overrideEnabled'.format(old_shape[0]))
+                    old_color = cmds.getAttr('{}.overrideColor'.format(old_shape[0]))
+                    cmds.delete(old_shape)
 
                 new_shape = cmds.createNode('nurbsCurve', n='{}Shape'.format(i), p=i)
                 mel.eval(shape)
@@ -97,17 +100,18 @@ def create_curve(mod, name):
                     cmds.setAttr('{}.overrideColor'.format(new_shape), old_color)
             cmds.select(sel, r=True)
 
-def curve_scale(mod):
-    rate = cmds.floatSliderGrp('scale_slider',q = True, value = True)
 
-    sel = cmds.ls(sl = True)
+def curve_scale(mod):
+    rate = cmds.floatSliderGrp('scale_slider', q=True, value=True)
+
+    sel = cmds.ls(sl=True)
     for i in sel:
-        cmds.select('{}.cv[*]'.format(i),r = True)
+        cmds.select('{}.cv[*]'.format(i), r=True)
         if mod == 0:
-            cmds.scale((1-rate),(1-rate),(1-rate), r = True)
+            cmds.scale((1-rate), (1-rate), (1-rate), r=True)
         else:
-            cmds.scale((1+rate),(1+rate),(1+rate), r = True)
-    cmds.select(sel, r = True)
+            cmds.scale((1+rate), (1+rate), (1+rate), r=True)
+    cmds.select(sel, r=True)
 
 
 def canvas_color(index):
@@ -206,5 +210,3 @@ def canvas_color(index):
 
     else:
         return (0.627, 0.188, 0.412)
-
-

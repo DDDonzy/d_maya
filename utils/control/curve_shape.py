@@ -221,6 +221,7 @@ def mirror_curve_shape(source_list: list = [],
             continue
         # source == target will bee continue
         if obj == otherSide_obj:
+            om.MGlobal.displayInfo(f"'{obj}' pass.")
             continue
         # transf cv shape data
         cvData = CurveData(obj)
@@ -284,13 +285,14 @@ def import_curve_data():
 def mirror_curve_shape_cmd():
     sel_list = cmds.ls(sl=1, o=1)
     for i, x in enumerate(sel_list):
-        if cmds.objectType(x) != "transform":
+        if cmds.objectType(x) == "nurbsCurve":
             sel_list[i] = cmds.listRelatives(x, p=1)[0]
     mirror_curve_shape(source_list=sel_list,
                        target_list=mirror_config.exchange(sel_list),
                        setShape=1,
                        setDrawInfo=0)
     msg = "Mirror curve shapes."
+    mirror_config._show_message(mirror_config)
     mirror_config._show_message(msg)
 
 
@@ -299,16 +301,18 @@ def replace_curve_shape_cmd():
     if len(sel_list) < 2:
         raise RuntimeError("Please select at least two objects.")
     for i, x in enumerate(sel_list):
-        if cmds.objectType(x) != "transform":
+        if cmds.objectType(x) == "nurbsCurve":
             sel_list[i] = cmds.listRelatives(x, p=1)[0]
     replace_curve_shape(sel_list[0], sel_list[1:], setShape=1, setDrawInfo=1)
     msg = "Replace curve shapes."
     mirror_config._show_message(msg)
 
+
 def select_curve_cv_cmd():
     sel_list = cmds.ls(sl=1, o=1)
     select_curve_cv(sel_list)
     msg = "Select curve CV."
+    mirror_config._show_message(mirror_config)
     mirror_config._show_message(msg)
 
 
