@@ -6,6 +6,7 @@
         -tearOff 0
         -optionBox 0
         -enable 1
+        -visible 1
         -data 0
         -radialPosition "E" 
         -allowOptionBoxes 1
@@ -21,9 +22,10 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "import utils.reset_transform\nutils.reset_transform.reset_transform_value_cmd(True,False)\n" 
+            -command "from utils.transform.transform import reset_transform_value_cmd\nreset_transform_value_cmd(True,False)" 
             -optionBox 0
             -enable 1
+            -visible 1
             -data 0
             -radialPosition "E" 
             -allowOptionBoxes 1
@@ -41,9 +43,10 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "import utils.reset_transform\nutils.reset_transform.reset_transform_value_cmd(True,True)\n" 
+            -command "from utils.transform.transform import reset_transform_value_cmd\nreset_transform_value_cmd(True,True)" 
             -optionBox 0
             -enable 1
+            -visible 1
             -data 0
             -radialPosition "S" 
             -allowOptionBoxes 1
@@ -65,6 +68,7 @@
         -tearOff 0
         -optionBox 0
         -enable 1
+        -visible 1
         -data 0
         -radialPosition "W" 
         -allowOptionBoxes 1
@@ -83,6 +87,7 @@
             -command "import utils.control.curve_shape\nutils.control.curve_shape.mirror_curve_shape_cmd()" 
             -optionBox 0
             -enable 1
+            -visible 1
             -data 0
             -radialPosition "S" 
             -allowOptionBoxes 1
@@ -103,6 +108,7 @@
             -command "import utils.control.curve_shape\nutils.control.curve_shape.replace_curve_shape_cmd()" 
             -optionBox 0
             -enable 1
+            -visible 1
             -data 0
             -radialPosition "E" 
             -allowOptionBoxes 1
@@ -123,6 +129,7 @@
             -command "import utils.control.curve_shape\nutils.control.curve_shape.select_curve_cv_cmd()" 
             -optionBox 0
             -enable 1
+            -visible 1
             -data 0
             -radialPosition "W" 
             -allowOptionBoxes 1
@@ -140,8 +147,10 @@
             -divider 0
             -subMenu 0
             -tearOff 0
+            -command "from Rainbow.rainbow_UI import *\nrainbow_win()" 
             -optionBox 0
             -enable 1
+            -visible 1
             -data 0
             -radialPosition "N" 
             -allowOptionBoxes 1
@@ -149,11 +158,52 @@
             -enableCommandRepeat 1
             -echoCommand 0
             -italicized 0
-            -boldFont 0
+            -boldFont 1
             -sourceType "python" 
-            -command "from Rainbow.rainbow_UI import *\nrainbow_win()" 
             -longDivider 1
             menuEditorMenuItem4;
+
+        menuItem
+            -label "Export Curve Data" 
+            -divider 0
+            -subMenu 0
+            -tearOff 0
+            -command "from utils.control.curve_shape import export_curve_data\nexport_curve_data()" 
+            -optionBox 0
+            -enable 1
+            -visible 1
+            -data 0
+            -radialPosition "NW" 
+            -allowOptionBoxes 1
+            -postMenuCommandOnce 0
+            -enableCommandRepeat 1
+            -echoCommand 0
+            -italicized 0
+            -boldFont 1
+            -sourceType "python" 
+            -longDivider 1
+            menuEditorMenuItem5;
+
+        menuItem
+            -label "Import Curve Data" 
+            -divider 0
+            -subMenu 0
+            -tearOff 0
+            -command "from utils.control.curve_shape import import_curve_data\nimport_curve_data()" 
+            -optionBox 0
+            -enable 1
+            -visible 1
+            -data 0
+            -radialPosition "NE" 
+            -allowOptionBoxes 1
+            -postMenuCommandOnce 0
+            -enableCommandRepeat 1
+            -echoCommand 0
+            -italicized 0
+            -boldFont 1
+            -sourceType "python" 
+            -longDivider 1
+            menuEditorMenuItem6;
 
     setParent -m ..;
 
@@ -165,6 +215,7 @@
         -command "from utils.mirror_env import mirror_config\nmirror_config.switch_mode()" 
         -optionBox 0
         -enable 1
+        -visible 1
         -data 0
         -radialPosition "NE" 
         -allowOptionBoxes 1
@@ -184,6 +235,7 @@
         -tearOff 0
         -optionBox 0
         -enable 1
+        -visible 1
         -data 0
         -radialPosition "S" 
         -allowOptionBoxes 1
@@ -202,6 +254,7 @@
             -command "import utils.mirror_env\nutils.mirror_env.mirror_selected(False)" 
             -optionBox 0
             -enable 1
+            -visible 1
             -data 0
             -radialPosition "S" 
             -allowOptionBoxes 1
@@ -222,6 +275,7 @@
             -command "import utils.mirror_env\nutils.mirror_env.mirror_selected(True)" 
             -optionBox 0
             -enable 1
+            -visible 1
             -data 0
             -radialPosition "SE" 
             -allowOptionBoxes 1
@@ -241,6 +295,7 @@
             -tearOff 0
             -optionBox 0
             -enable 1
+            -visible 1
             -data 0
             -radialPosition "N" 
             -allowOptionBoxes 1
@@ -261,6 +316,7 @@
         -tearOff 0
         -optionBox 0
         -enable 1
+        -visible 1
         -data 0
         -radialPosition "N" 
         -allowOptionBoxes 1
@@ -276,16 +332,19 @@
             -divider 0
             -subMenu 0
             -tearOff 0
+            -command "from utils.skin.get_skinJoint import get_skin_joint_cmd\nget_skin_joint_cmd(True)" 
             -optionBox 0
             -enable 1
+            -visible 1
             -data 0
             -radialPosition "SE" 
             -allowOptionBoxes 1
             -postMenuCommandOnce 0
             -enableCommandRepeat 1
+            -echoCommand 0
             -italicized 0
             -boldFont 1
-            -sourceType "mel" 
+            -sourceType "python" 
             -longDivider 1
             menuEditorMenuItem2;
 
@@ -297,6 +356,7 @@
             -command "AddInfluence" 
             -optionBox 0
             -enable 1
+            -visible 1
             -data 0
             -radialPosition "W" 
             -allowOptionBoxes 1
@@ -318,6 +378,7 @@
             -command "RemoveInfluence" 
             -optionBox 0
             -enable 1
+            -visible 1
             -data 0
             -radialPosition "NW" 
             -allowOptionBoxes 1
@@ -339,6 +400,7 @@
             -command "SmoothBindSkin" 
             -optionBox 0
             -enable 1
+            -visible 1
             -data 0
             -radialPosition "N" 
             -allowOptionBoxes 1
@@ -348,9 +410,28 @@
             -echoCommand 0
             -italicized 0
             -boldFont 1
-            -sourceType "python" 
+            -sourceType "mel" 
             -longDivider 1
             menuEditorMenuItem7;
+
+        menuItem
+            -divider 0
+            -subMenu 0
+            -tearOff 0
+            -command "SmoothBindSkinOptions" 
+            -optionBox 1
+            -enable 1
+            -visible 0
+            -data 0
+            -allowOptionBoxes 1
+            -postMenuCommandOnce 0
+            -enableCommandRepeat 0
+            -echoCommand 0
+            -italicized 0
+            -boldFont 0
+            -sourceType "mel" 
+            -longDivider 1
+            menuEditorMenuItem1;
 
         menuItem
             -label "Copy Skin One To N" 
@@ -359,6 +440,7 @@
             -tearOff 0
             -optionBox 0
             -enable 1
+            -visible 1
             -data 0
             -radialPosition "E" 
             -allowOptionBoxes 1
@@ -366,7 +448,8 @@
             -enableCommandRepeat 1
             -italicized 0
             -boldFont 1
-            -sourceType "mel" 
+            -sourceType "python" 
+            -command "from utils.skin.copyWeightsOneToN import copyWeightsOneToN_cmd\ncopyWeightsOneToN_cmd()" 
             -longDivider 1
             menuEditorMenuItem9;
 
@@ -378,6 +461,7 @@
             -command "DetachSkin" 
             -optionBox 0
             -enable 1
+            -visible 1
             -data 0
             -allowOptionBoxes 1
             -postMenuCommandOnce 0
@@ -398,6 +482,7 @@
             -command "GoToBindPose" 
             -optionBox 0
             -enable 1
+            -visible 1
             -data 0
             -allowOptionBoxes 1
             -postMenuCommandOnce 0

@@ -9,7 +9,6 @@ ENV_LIB = {
     "MAYA_SKIP_BLOCK_CHECK": 1
 }
 
-THIS_Path = os.path.dirname(__file__)
 
 path = r"E:/d_maya"
 if path not in sys.path:
@@ -56,6 +55,7 @@ def modify_mayaEnvFile():
 
 
 def modify_mayaUserSetup():
+    THIS_Path = os.path.dirname(__file__)
     user_setup_file = "usersetup.py"
     userSetup_path = mel.eval('getenv "MAYA_APP_DIR"')
     maya_version = cmds.about(v=1)
@@ -81,7 +81,8 @@ def show_message(msg):
     cmds.inViewMessage(amg=message, pos='botCenter', fade=True, fadeInTime=100, fadeStayTime=1000, fadeOutTime=100)
 
 
-# reload_modules_in_path(path)
-modify_mayaEnvFile()
-modify_mayaUserSetup()
-show_message("Setup Done")
+def onMayaDroppedPythonFile(*args, **kwargs):
+    modify_mayaEnvFile()
+    modify_mayaUserSetup()
+    show_message("Setup Done")
+    # reload_modules_in_path(path)

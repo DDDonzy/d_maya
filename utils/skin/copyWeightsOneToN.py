@@ -1,30 +1,57 @@
 import maya.cmds as cmds
+from maya.api import OpenMaya as om
 
 
-def copyWeightsOneToN(sour="", target=None):
-    if sour == None or sour == "":
-        sour = cmds.ls(sl=1)[0]
-    if type(sour) == str:
-        sour = sour
-    if target == None or target == "":
-        target = cmds.ls(sl=1)[1:]
-    elif type(target) is not list:
-        target = [target]
-    influenceList = cmds.skinCluster(sour, q=1, inf=1)
-    his = cmds.listHistory(sour, pdo=1, il=1)
-    for node in his:
-        if cmds.objectType(node) == 'skinCluster':
-            ss = node
-    newSkin_List = []
-    skinningMethod = cmds.getAttr(ss+'.skinningMethod')
-    for geo in target:
-        ds = cmds.skinCluster(geo, influenceList, tsb=1)[0]
-        cmds.setAttr(ds+".skinningMethod", skinningMethod)
-        cmds.copySkinWeights(ss=ss, ds=ds, noMirror=1, surfaceAssociation="closestPoint",
-                             influenceAssociation="closestJoint")
-        newSkin_List.append(ds)
-    return newSkin_List
+def get_history(obj, type=None):
+    out_list = []
+    if not cmds.objExists(obj):
+        return out_list
+    history_list = cmds.listHistory(obj, pdo=1, il=1)
+    if not history_list:
+        return out_list
+
+    if type:
+        for his in history_list:
+            if cmds.objectType(his, i=type):
+                out_list.append(his)
+    return out_list
 
 
-if __name__ == "__main__":
-    copyWeightsOneToN()
+def copyWeightsOneToN(sour_mesh, target_mesh_list, **kwargs):
+    sour_skin_node = get_history(sour_mesh, 'skinCluster')
+    if not sour_skin_node:
+        om.MGlobal.displayInfo(f"Can not find skinCluster in '{sour_mesh}'.")
+        return
+    sour_skin_node = sour_skin_node[0]
+    influence_list = cmds.skinCluster(sour_skin_node, q=1, inf=1)
+    skinning_method = cmds.getAttr(sour_skin_node + '.skinningMethod')
+    maxInfluences = cmds.getAttr(sour_skin_node + '.maxInfluences')
+    maintainMaxInfluences = cmds.getAttr(sour_skin_node + '.maintainMaxInfluences')
+    new_skin_list = []
+    influenceAssociation = kwargs.get('influenceAssociation', 'closestJoint')
+    surfaceAssociation = kwargs.get('surfaceAssociation', 'closestPoint')
+    for target_mesh in target_mesh_list:
+        if get_history(target_mesh, 'skinCluster'):
+            om.MGlobal.displayInfo(f"{target_mesh} has skinCluster, skip")
+            continue
+        target_skin_node = cmds.skinCluster(target_mesh,
+                                            influence_list,
+                                            tsb=1,
+                                            rui=False,
+                                            mi=maxInfluences,
+                                            omi=maintainMaxInfluences,
+                                            sm=skinning_method)[0]
+        cmds.copySkinWeights(ss=sour_skin_node,
+                             ds=target_skin_node,
+                             noMirror=1,
+                             surfaceAssociation=surfaceAssociation,
+                             influenceAssociation=influenceAssociation)
+        new_skin_list.append(target_skin_node)
+    return new_skin_list
+
+
+def copyWeightsOneToN_cmd():
+    sour_mesh = cmds.ls(sl=1)[0]
+    target_mesh_list = cmds.ls(sl=1)[1:]
+    copyWeightsOneToN(sour_mesh, target_mesh_list)
+    return target_mesh_list
