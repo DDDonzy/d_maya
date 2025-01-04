@@ -6,7 +6,7 @@ def create_assets(name: str,
     if cmds.objExists(name):
         return name
     assets = cmds.container(name=name)
-    # cmds.setAttr(f"{assets}.blackBox", 1)
+    cmds.setAttr(f"{assets}.blackBox", 1)
     if parent_assets:
         if cmds.objExists(parent_assets):
             cmds.container(parent_assets, e=1, addNode=assets)
