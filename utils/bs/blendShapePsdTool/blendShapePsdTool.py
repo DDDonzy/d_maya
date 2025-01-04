@@ -272,8 +272,11 @@ def create_bs_by_psd(bs: str, psd_node_list: list = None):
         psd_node_list (list): poseInterpolator node list
     """
 
-    if psd_node_list is None:
+    if not psd_node_list:
         psd_node_list = cmds.ls(sl=1)
+        if not psd_node_list:
+            om.MGlobal.displayError("No poseInterpolator node selected.")
+            return
 
     out_attr_list = []
     pose_name_list = []
@@ -288,11 +291,13 @@ def create_bs_by_psd(bs: str, psd_node_list: list = None):
         name = pose_name_list[i]
         if "DefaultPose" in name:
             name = "__" + name.replace("DefaultPose", "_")
-            bs_wAttr = add_bs_target(bs, name)
-        else:
-            bs_wAttr = add_bs_target(bs, name)
-            cmds.setDrivenKeyframe(bs_wAttr, cd=attr, driverValue=0, v=0, inTangentType="linear", outTangentType="linear")
-            cmds.setDrivenKeyframe(bs_wAttr, cd=attr, driverValue=1, v=1, inTangentType="linear", outTangentType="linear")
+        if cmds.objExists(f"{bs}.{name}"):
+            cmds.setDrivenKeyframe(f"{bs}.{name}", cd=attr, driverValue=0, v=0, inTangentType="linear", outTangentType="linear")
+            cmds.setDrivenKeyframe(f"{bs}.{name}", cd=attr, driverValue=1, v=1, inTangentType="linear", outTangentType="linear")
+            continue
+        bs_wAttr = add_bs_target(bs, name)
+        cmds.setDrivenKeyframe(bs_wAttr, cd=attr, driverValue=0, v=0, inTangentType="linear", outTangentType="linear")
+        cmds.setDrivenKeyframe(bs_wAttr, cd=attr, driverValue=1, v=1, inTangentType="linear", outTangentType="linear")
 
 
 @dataclass

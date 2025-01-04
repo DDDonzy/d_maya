@@ -5,7 +5,7 @@ from maya import mel
 from maya import cmds
 from maya.api import OpenMaya as om
 
-from ..mirror_env import mirror_config
+from utils.mirror_env import mirror_config
 
 
 @dataclass
