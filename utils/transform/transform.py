@@ -271,14 +271,14 @@ def create_inverse_orient_node(name: str):
     cmds.connectAttr(f"{node_euler_to_quat}.inputRotateOrder",
                      f"{node_quat_to_euler}.inputRotateOrder")
     # assets box
-    assets = create_assets(name, add_node=[node_euler_to_quat, node_invert_quat, node_prod_quat, node_quat_to_euler])
+    _assets = create_assets(name, add_node=[node_euler_to_quat, node_invert_quat, node_prod_quat, node_quat_to_euler])
     bind_attr_dict = {"inputOrientRotate": f"{node_euler_to_quat}.inputRotate",
                       "inputRotateOrder": f'{node_euler_to_quat}.inputRotateOrder',
                       "inputRotateQuat": f"{node_prod_quat}.input1Quat",
                       "outputRotate": f"{node_quat_to_euler}.outputRotate",
                       "outputQuat": f"{node_prod_quat}.outputQuat"}
-    bind_attr(assets, bind_attr_dict)
-    return assets
+    bind_attr(_assets, bind_attr_dict)
+    return _assets
 
 
 def matrixConstraint(*args,
@@ -344,10 +344,10 @@ def matrixConstraint(*args,
             cmds.connectAttr(f"{node_decomposeMatrix}.outputQuat", f"{target_object}.rotateQuaternion", f=1)  # out quat
 
         # assets box
-        matrix_assets = generate_unique_name(f"{target_object}_matrixConstraint")
-        matrix_assets = create_assets(name=matrix_assets, parent_assets="MatrixConstraint",
-                                      add_node=add_node_list)
-        bind_attr(matrix_assets, bind_attr_dict)
+        _assets = generate_unique_name(f"{target_object}_matrixConstraint")
+        _assets = create_assets(name=_assets, parent_assets="MatrixConstraint",
+                                add_node=add_node_list)
+        bind_attr(_assets, bind_attr_dict)
 
         # add info
         # target attr
@@ -362,13 +362,13 @@ def matrixConstraint(*args,
         if not cmds.objExists(f"{source_obj}.{_info_name}"):
             cmds.addAttr(source_obj, ln=_info_name, at="message")
         # matrix constraint attr
-        cmds.addAttr(matrix_assets, ln=_info_name, at="message")
+        cmds.addAttr(_assets, ln=_info_name, at="message")
         # connect
         cmds.connectAttr(f"{source_obj}.{_info_name}",
-                         f"{matrix_assets}.{_info_name}")
-        cmds.connectAttr(f"{matrix_assets}.{_info_name}",
+                         f"{_assets}.{_info_name}")
+        cmds.connectAttr(f"{_assets}.{_info_name}",
                          f"{target_object}.{_info_name}")
-        return matrix_assets
+        return _assets
 
     def _query_matrix_constraint(obj: str,
                                  source: bool,
@@ -386,19 +386,19 @@ def matrixConstraint(*args,
         """
         dict_info = {}
         if source:
-            matrix_constraint = cmds.listConnections(f"{obj}.{_info_name}", s=1, d=0)
-            if matrix_constraint:
-                matrix_constraint = matrix_constraint[0]
-                source_obj = cmds.listConnections(f"{matrix_constraint}.{_info_name}", s=1, d=0)
+            _assets = cmds.listConnections(f"{obj}.{_info_name}", s=1, d=0)
+            if _assets:
+                _assets = _assets[0]
+                source_obj = cmds.listConnections(f"{_assets}.{_info_name}", s=1, d=0)
                 if source_obj:
                     source_obj = source_obj[0]
                     dict_info.update({source_obj: [obj]})
         if target:
-            matrix_constraint_list = cmds.listConnections(f"{obj}.{_info_name}", s=0, d=1)
-            if matrix_constraint_list:
+            _assets_list = cmds.listConnections(f"{obj}.{_info_name}", s=0, d=1)
+            if _assets_list:
                 target_obj_list = []
-                for matrix_constraint in matrix_constraint_list:
-                    target_obj = cmds.listConnections(f"{matrix_constraint}.{_info_name}", s=0, d=1)
+                for _assets in _assets_list:
+                    target_obj = cmds.listConnections(f"{_assets}.{_info_name}", s=0, d=1)
                     if target_obj:
                         target_obj_list.extend(target_obj)
                 dict_info.update({obj: target_obj_list})
@@ -430,8 +430,8 @@ def matrixConstraint(*args,
         return _query_matrix_constraint(source_obj, q_source, q_target)
     else:
         for target in target_object:
-            matrix_constraint = _create_matrix_constraint(source_obj, target, maintainOffset)
-        return matrix_constraint
+            _assets = _create_matrix_constraint(source_obj, target, maintainOffset)
+        return _assets
 
 
 def parentspaceConstraint(*args,
@@ -513,23 +513,23 @@ def parentspaceConstraint(*args,
             cmds.connectAttr(f"{node_decMatrix}.outputQuat", f"{target_obj}.rotateQuaternion")  # out quat
 
         # assets
-        assets_name = generate_unique_name(f"{target_obj}_parentspace")
-        parentspace_assets = create_assets(name=assets_name, parent_assets="ParentspaceAssets",
-                                           add_node=add_node_list)
-        bind_attr(parentspace_assets, bind_attr_dict)
+        _assets = generate_unique_name(f"{target_obj}_parentspace")
+        _assets = create_assets(name=_assets, parent_assets="ParentspaceAssets",
+                                add_node=add_node_list)
+        bind_attr(_assets, bind_attr_dict)
         # add parentspace attr to obj
         if not cmds.objExists(f"{target_obj}.{parentspace_attrName}"):
-            cmds.addAttr(target_obj, ln=parentspace_attrName, pxy=f"{parentspace_assets}.{parentspace_attrName}", k=1)
+            cmds.addAttr(target_obj, ln=parentspace_attrName, pxy=f"{_assets}.{parentspace_attrName}", k=1)
         else:
             cmds.addAttr(f"{target_obj}.{parentspace_attrName}", e=1, en="Parent", k=1)
         # add message info to obj
-        cmds.addAttr(parentspace_assets, ln=_info_name, at="message")
+        cmds.addAttr(_assets, ln=_info_name, at="message")
         if not cmds.objExists(f"{target_obj}.{_info_name}"):
             cmds.addAttr(target_obj, ln=_info_name, at="message")
-        cmds.connectAttr(f"{parentspace_assets}.{_info_name}",
+        cmds.connectAttr(f"{_assets}.{_info_name}",
                          f"{target_obj}.{_info_name}")
 
-        return parentspace_assets
+        return _assets
 
     def _add_parentspace(control_obj: str,
                          target_obj: str,
@@ -553,13 +553,13 @@ def parentspaceConstraint(*args,
 
         # get parentspace assets
         if not cmds.objExists(f"{target_obj}.{_info_name}"):
-            parentspace_assets = _pre_parentspace(target_obj)
+            _assets = _pre_parentspace(target_obj)
         else:
-            parentspace_assets = cmds.listConnections(f"{target_obj}.{_info_name}", s=1, d=0)[0]
+            _assets = cmds.listConnections(f"{target_obj}.{_info_name}", s=1, d=0)[0]
 
         # get node blendMatrix
-        node_bw_target_attr = cmds.ls(f"{parentspace_assets}.inputBlendTarget")[0]
-        node_bw = cmds.ls(f"{parentspace_assets}.inputBlendTarget", o=1)[0]
+        node_bw_target_attr = cmds.ls(f"{_assets}.inputBlendTarget")[0]
+        node_bw = cmds.ls(f"{_assets}.inputBlendTarget", o=1)[0]
 
         # nice name enum
         if not nice_name:
@@ -596,8 +596,8 @@ def parentspaceConstraint(*args,
         # publish trs attr
         status = [translate, rotate, scale, shear]
         for i, attr in enumerate(blend_attr):
-            cmds.container(parentspace_assets, e=1, publishName=f'{attr}_{parent_indices}')
-            cmds.container(parentspace_assets, e=1, bindAttr=[f"{node_bw_target_attr}[{parent_indices}].{attr}", f'{attr}_{parent_indices}'])
+            cmds.container(_assets, e=1, publishName=f'{attr}_{parent_indices}')
+            cmds.container(_assets, e=1, bindAttr=[f"{node_bw_target_attr}[{parent_indices}].{attr}", f'{attr}_{parent_indices}'])
             cmds.setAttr(f"{node_bw_target_attr}[{parent_indices}].{attr}", status[i])
 
         # sdk
@@ -611,7 +611,7 @@ def parentspaceConstraint(*args,
                                cd=f"{node_bw}.{parentspace_attrName}",
                                dv=parent_indices + 1, v=0)
         node_sdk = cmds.listConnections(f"{node_bw_target_attr}[{parent_indices}].weight", s=1, d=0)
-        cmds.container(parentspace_assets, e=1, addNode=[node_multMatrix]+node_sdk)
+        cmds.container(_assets, e=1, addNode=[node_multMatrix]+node_sdk)
     if len(args) == 0:
         sel = cmds.ls(sl=1)
         if len(sel) < 2:
@@ -626,6 +626,71 @@ def parentspaceConstraint(*args,
 
     for control_obj in control_obj_list:
         _add_parentspace(control_obj, target_obj, **kwargs)
+
+
+def offset_fk(control_list: list, offset_list: list):
+    """
+    Create an offset system for FK chains
+    For example, the hierarchy at the top of each FK chain is constrained,
+    causing us to lose control over the levels below the FK chain.
+    This function can achieve this by preserving control over the levels below the FK chain,
+    even when they are constrained.
+
+    Args:
+        control_list (list): Control the list of objects, paying attention to the order, from top to bottom.
+        offset_list (list): Control's offset transform objects, paying attention to the order, from top to bottom.
+    Example:
+        hierarchy ------GRP------Offset------CTL
+
+        control_list = ['Test_CTL', 'Test1_CTL', 'Test2_CTL', 'Test3_CTL']
+
+        offset_list = ['Test_Offset', 'Test1_Offset', 'Test2_Offset', 'Test3_Offset']
+
+        offset_fk(control_list, offset_list)
+
+    """
+    for i, control in enumerate(control_list[:-1]):
+        offset = offset_list[i]
+        next_offset = offset_list[i + 1]
+        next_control = control_list[i + 1]
+
+        node_multMatrix = cmds.createNode("multMatrix", name=f"{next_control}_multMatrix_offsetFK")
+        node_decomposeMatrix = cmds.createNode("decomposeMatrix", name=f"{next_control}_decomposeMatrix_offsetFK")
+        _add_node_list = [node_multMatrix, node_decomposeMatrix]
+        # get offset matrix from 'offset_obj' with 'next offset_obj'
+        cmds.connectAttr(f"{next_offset}.parentMatrix[0]",
+                         f"{node_multMatrix}.matrixIn[0]")
+        cmds.connectAttr(f"{offset}.parentInverseMatrix[0]",
+                         f"{node_multMatrix}.matrixIn[1]")
+        # control constraint it
+        cmds.connectAttr(f"{control}.worldMatrix[0]",
+                         f"{node_multMatrix}.matrixIn[2]")
+        # cal local matrix
+        cmds.connectAttr(f"{next_offset}.parentInverseMatrix[0]",
+                         f"{node_multMatrix}.matrixIn[3]")
+        # output
+        cmds.connectAttr(f"{node_multMatrix}.matrixSum",
+                         f"{node_decomposeMatrix}.inputMatrix")
+        cmds.connectAttr(f"{next_offset}.rotateOrder",
+                         f"{node_decomposeMatrix}.inputRotateOrder")
+
+        cmds.connectAttr(f"{node_decomposeMatrix}.outputTranslate", f"{next_offset}.translate", f=1)  # out translate
+        cmds.connectAttr(f"{node_decomposeMatrix}.outputScale", f"{next_offset}.scale", f=1)  # out scale
+        cmds.connectAttr(f"{node_decomposeMatrix}.outputShear", f"{next_offset}.shear", f=1)  # out shear
+        if cmds.objExists(f"{next_offset}.jointOrient"):
+            inverse_orient_node = generate_unique_name(f"{next_offset}_inverseJointOrient_matrixConstraint")
+            inverse_orient_node = create_inverse_orient_node(name=inverse_orient_node)
+            _add_node_list.append(inverse_orient_node)
+            cmds.connectAttr(f"{next_offset}.jointOrient", f"{inverse_orient_node}.inputOrientRotate")  # in orient rotate
+            cmds.connectAttr(f"{next_offset}.rotateOrder", f"{inverse_orient_node}.inputRotateOrder")  # in rotate order
+            cmds.connectAttr(f"{node_decomposeMatrix}.outputQuat", f"{inverse_orient_node}.inputRotateQuat")  # in rotate
+            cmds.connectAttr(f"{inverse_orient_node}.outputRotate", f"{next_offset}.rotate", f=1)  # out rotate
+            cmds.connectAttr(f"{inverse_orient_node}.outputQuat", f"{next_offset}.rotateQuaternion", f=1)  # out quat
+        else:
+            cmds.connectAttr(f"{node_decomposeMatrix}.outputRotate", f"{next_offset}.rotate", f=1)  # out rotate
+            cmds.connectAttr(f"{node_decomposeMatrix}.outputQuat", f"{next_offset}.rotateQuaternion", f=1)  # out quat
+        _assets = generate_unique_name(f"{next_control}_offsetFK")
+        _assets = create_assets(_assets, parent_assets="OffsetFK", add_node=_add_node_list)
 
 
 def reset_transform_value(obj, transform=True, userDefined=True):
