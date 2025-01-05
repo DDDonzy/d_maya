@@ -38,7 +38,7 @@ class MIRROR_CONFIG:
 
         Examples:
             >>> self.exchange("L_arm")
-            ["R_arm"]
+            return: ["R_arm"]
         """
         if isinstance(name, str):
             name = [name]

@@ -21,10 +21,10 @@ def reload_modules_in_path(path):
         try:
             modules_path = sys.modules[modules_name].__file__
             common_path = os.path.commonpath([path, modules_path])
-            if os.path.samefile(path, common_path):
-                reload_list.append(sys.modules[modules_name])
         except:
-            pass
+            continue
+        if os.path.samefile(path, common_path):
+            reload_list.append(sys.modules[modules_name])
     for x in reload_list:
         reload(x)
         print(f"Reload: {x}")

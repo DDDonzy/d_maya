@@ -3,7 +3,7 @@ import maya.cmds as cmds
 import maya.mel as mel
 import maya.api.OpenMaya as om
 import numpy as np
-import dslReverseShape as dsl
+import utils.bs.dslReverseShape as dsl
 
 
 import os
@@ -296,9 +296,11 @@ def remap_target(source_bsNode="", source_bsTarget=[],
     wrapBase = None
     wrapMeshShape = cmds.createNode("mesh", name="wrapTempShape")
     wrapMesh = cmds.listRelatives(wrapMeshShape, p=1)[0]
-    cmds.connectAttr("{}.outMesh".format(new_mesh), ".inMesh".format(wrapMeshShape))
+    cmds.connectAttr("{}.outMesh".format(new_mesh),
+                     "{}.inMesh".format(wrapMeshShape))
     cmds.refresh()
-    cmds.disconnectAttr("{}.outMesh".format(new_mesh), ".inMesh".format(wrapMeshShape))
+    cmds.disconnectAttr("{}.outMesh".format(new_mesh),
+                        "{}.inMesh".format(wrapMeshShape))
     if wrapMode == 0:
         wrapNode, wrapBase = createWrap(source_geometry, wrapMesh)
     if wrapMode == 1:
@@ -399,4 +401,4 @@ def autoRemap_target(**kwargs):
 
 # autoFlipPose()
 
-#reset_bsTargetData(cmds.ls(sl=1)[0],cmds.channelBox("mainChannelBox",q=1,sha=1))
+# reset_bsTargetData(cmds.ls(sl=1)[0],cmds.channelBox("mainChannelBox",q=1,sha=1))

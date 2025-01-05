@@ -1,20 +1,5 @@
 from maya import cmds
-
-
-def get_history_by_type(obj, his_type):
-    if type(his_type) is str:
-        his_type = [his_type]
-
-    history_list = cmds.listHistory(obj, pdo=1, il=1)
-    if not history_list:
-        raise RuntimeError(f"{obj} do not have history !")
-
-    out_list = []
-    for his in history_list:
-        if cmds.objectType(his) in his_type:
-            out_list.append(his)
-
-    return out_list
+from utils.get_history import get_history
 
 
 def update_bind_skin(node_skin):
@@ -33,7 +18,7 @@ def update_bind_skin_cmd(obj=None):
         if cmds.objectType(obj) == "skinCluster":
             update_bind_skin(obj)
         else:
-            skinCluster_list = get_history_by_type(obj, "skinCluster")
+            skinCluster_list = get_history(obj, "skinCluster")
             for sk in skinCluster_list:
                 update_bind_skin(sk)
 
