@@ -108,8 +108,6 @@ def create_uvPin(obj_list: list, new_transform=False, plane_size=0.3, name: str 
                 cmds.setAttr(f"{obj}.r{i}", 0)
 
 
-# create_uvPin(cmds.ls(sl=1), plane_size=0.3, new_transform=False)
-
 def create_follicle(obj_list: list, plane_size=0.3, name: str = "follicle"):
     if not obj_list:
         raise ValueError("No object need to create uvPin, please input object list first.")
@@ -126,3 +124,6 @@ def create_follicle(obj_list: list, plane_size=0.3, name: str = "follicle"):
         cmds.connectAttr(f"{follicle_shape}.outTranslate", f"{follicle}.translate")
         cmds.connectAttr(f"{follicle_shape}.outRotate", f"{follicle}.rotate")
         matrixConstraint(follicle, obj)
+
+# create_uvPin(cmds.ls(sl=1), plane_size=0.3, new_transform=False)
+# create_follicle(cmds.ls(sl=1), plane_size=0.3)
