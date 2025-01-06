@@ -392,6 +392,8 @@ def matrixConstraint(*args, **kwargs):
             dict: Constraint relationship dictionary
         """
         dict_info = {}
+        if not cmds.objExists("{0}.{1}".format(obj, _info_name)):
+            return dict_info
         if source:
             _assets = cmds.listConnections("{0}.{1}".format(obj, _info_name), s=1, d=0)
             if _assets:

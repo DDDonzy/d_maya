@@ -309,8 +309,8 @@ def matrixConstraint(*args,
     _info_name = "matrixConstraintInfo"
 
     def _create_matrixConstraint(source_obj: str,
-                                  target_object: str,
-                                  keep_offset: bool = True):
+                                 target_object: str,
+                                 keep_offset: bool = True):
         """
         Create matrix constraint between source and target
 
@@ -376,8 +376,8 @@ def matrixConstraint(*args,
         return _assets
 
     def _query_matrixConstraint(obj: str,
-                                 source: bool,
-                                 target: bool):
+                                source: bool,
+                                target: bool):
         """
         Query constraint relationships
 
@@ -390,6 +390,8 @@ def matrixConstraint(*args,
             dict: Constraint relationship dictionary
         """
         dict_info = {}
+        if not cmds.objExists(f"{obj}.{_info_name}"):
+            return dict_info
         if source:
             _assets = cmds.listConnections(f"{obj}.{_info_name}", s=1, d=0)
             if _assets:
