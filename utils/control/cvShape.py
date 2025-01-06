@@ -22,7 +22,7 @@ class CurveShapeData(yaml.YAMLObject):
     shapeSetAttrCmd: str = None
 
     def __post_init__(self):
-        self.get_from_shape(self.shapeName)
+        self.get_shapeData(self.shapeName)
 
     @property
     def attrs(self):
@@ -39,7 +39,7 @@ class CurveShapeData(yaml.YAMLObject):
         if cmds.objectType(shape) != "nurbsCurve":
             raise RuntimeError(f"'{shape}' is not nurbsCurve")
 
-    def get_from_shape(self, shape_object=None):
+    def get_shapeData(self, shape_object=None):
         self.check_shape(shape_object)
 
         self.shapeName = shape_object
@@ -50,9 +50,9 @@ class CurveShapeData(yaml.YAMLObject):
                 setattr(self, attr, cmds.getAttr(f"{shape_object}.{attr}"))
         self.shapeSetAttrCmd = get_setCvShapeCmd(self.shapeName)
 
-    def set_to_shape(self, shape_object=None,
-                     setShape: bool = True,
-                     setDrawInfo: bool = True):
+    def set_shapeData(self, shape_object=None,
+                      setShape: bool = True,
+                      setDrawInfo: bool = True):
         self.check_shape(shape_object)
 
         if setDrawInfo:
