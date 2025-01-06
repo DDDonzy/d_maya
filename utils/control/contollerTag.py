@@ -1,8 +1,8 @@
 from maya import cmds
 
 
-def create_controller_tag(transform):
-    if type(transform) != list:
+def create_controllerTag(transform: list):
+    if isinstance(transform, str):
         transform = [transform]
     # clear controller in scene
     old_controller_tag = cmds.ls(type="controller")
@@ -14,4 +14,4 @@ def create_controller_tag(transform):
         cmds.connectAttr(f"{obj}.message",
                          f"{tag}.controllerObject")
 
-# create_controller_tag(cmds.ls(sl=1))
+# create_controllerTag(cmds.ls(sl=1))

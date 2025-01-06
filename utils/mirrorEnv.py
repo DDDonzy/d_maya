@@ -1,13 +1,14 @@
 import maya.cmds as cmds
+from utils.showMessage import showMessage
 
 
-class MIRROR_CONFIG:
+class MIRROR_BASE:
     MIRROR_PAIRS = [("L", "R"),
                     ("Left", "Right")]
 
     def __init__(self):
         self._current_index: int = 0
-        self._show_message(self.current_pair)
+        showMessage(self.current_pair)
 
     @property
     def current_pair(self):
@@ -24,21 +25,23 @@ class MIRROR_CONFIG:
     def switch_mode(self):
         self._current_index += 1
         pair = self.current_pair
-        self._show_message(pair)
+        showMessage(pair)
         return pair
 
     def exchange(self, name: list) -> list:
-        """交换名称中的左右标识符
+        """Exchange left/right identifiers in names
 
         Args:
-            name: 输入的名称或名称列表
+            name (str|list): Input name or list of names to process
 
         Returns:
-            list[str]: 交换后的名称列表
+            list[str]: List of names with left/right identifiers swapped
 
         Examples:
             >>> self.exchange("L_arm")
             return: ["R_arm"]
+            >>> self.exchange(["L_arm", "R_leg"])
+            return: ["R_arm", "L_leg"]
         """
         if isinstance(name, str):
             name = [name]
@@ -68,21 +71,16 @@ class MIRROR_CONFIG:
             exchange_list.append(exchanged_name)
         return exchange_list
 
-    @staticmethod
-    def _show_message(pair):
-        message = f"<hl> {pair} </hl>"
-        cmds.inViewMessage(amg=message, pos='botRight', fade=True, fadeInTime=100, fadeStayTime=1000, fadeOutTime=100)
-
     def __repr__(self):
         return str(self.current_pair)
 
 
 def mirror_selected(add=False):
-    exchange_list = mirror_config.exchange(cmds.ls(sl=1))
+    exchange_list = MIRROR_CONFIG.exchange(cmds.ls(sl=1))
     cmds.select(exchange_list, add=add)
-    mirror_config._show_message(mirror_config)
-    mirror_config._show_message("Mirror Selected Done")
+    showMessage(MIRROR_CONFIG)
+    showMessage("Mirror Selected Done")
 
 
-global mirror_config
-mirror_config = MIRROR_CONFIG()
+global MIRROR_CONFIG
+MIRROR_CONFIG = MIRROR_BASE()

@@ -4,8 +4,8 @@ from dataclasses import dataclass, field
 from maya import mel
 from maya import cmds
 from maya.api import OpenMaya as om
-
-from utils.mirror_env import mirror_config
+from utils.showMessage import showMessage
+from utils.mirrorEnv import MIRROR_CONFIG
 
 
 @dataclass
@@ -48,7 +48,7 @@ class CurveShapeData(yaml.YAMLObject):
                 setattr(self, attr, list(cmds.getAttr(f"{shape_object}.{attr}")[0]))
             else:
                 setattr(self, attr, cmds.getAttr(f"{shape_object}.{attr}"))
-        self.shapeSetAttrCmd = get_nurbsCurveType_setAttrCmd(self.shapeName)
+        self.shapeSetAttrCmd = get_setCvShapeCmd(self.shapeName)
 
     def set_to_shape(self, shape_object=None,
                      setShape: bool = True,
@@ -94,7 +94,7 @@ class CurveData(yaml.YAMLObject):
             raise RuntimeError(f"Can not find '{transform_obj}'")
 
         self.transformName = transform_obj
-        shape_list = get_curve_shape(self.transformName)
+        shape_list = get_cvShapes(self.transformName)
         self.shapes.clear()
         for shape in shape_list:
             self.shapes.append(CurveShapeData(shape))
@@ -107,7 +107,7 @@ class CurveData(yaml.YAMLObject):
         if not cmds.objExists(transform_obj):
             raise RuntimeError(f"Can not find '{transform_obj}'")
 
-        target_shape_list = get_curve_shape(transform_obj)
+        target_shape_list = get_cvShapes(transform_obj)
 
         deviation = len(self.shapes) - len(target_shape_list)
         if deviation > 0:
@@ -121,7 +121,7 @@ class CurveData(yaml.YAMLObject):
         elif deviation < 0:
             for i in range(abs(deviation)):
                 cmds.delete(target_shape_list[-i])
-        target_shape_list = get_curve_shape(transform_object=transform_obj)
+        target_shape_list = get_cvShapes(transform_object=transform_obj)
 
         if len(self.shapes) == len(target_shape_list):
             for i, x in enumerate(self.shapes):
@@ -130,7 +130,7 @@ class CurveData(yaml.YAMLObject):
                                             setDrawInfo)
 
 
-def get_curve_shape(transform_object):
+def get_cvShapes(transform_object):
     """get nurbsCurve shapes
     Args:
         transform_object (str): transform name
@@ -153,7 +153,7 @@ def get_curve_shape(transform_object):
     return shape_list
 
 
-def get_nurbsCurveType_setAttrCmd(shape_obj):
+def get_setCvShapeCmd(shape_obj):
     """get mel about set nurbs curve cmd
     Args:
         shape_obj (str): nurbs curve shape's name
@@ -169,10 +169,10 @@ def get_nurbsCurveType_setAttrCmd(shape_obj):
     return cmd_str
 
 
-def replace_curve_shape(source: str,
-                        target: list,
-                        setShape: bool = True,
-                        setDrawInfo: bool = True):
+def replace_cvShape(source: str,
+                    target: list,
+                    setShape: bool = True,
+                    setDrawInfo: bool = True):
     """ replace curve's shapes
     Args:
         source (str): source curve object
@@ -182,7 +182,7 @@ def replace_curve_shape(source: str,
         raise RuntimeError("parameter source is not string")
     if type(target) is str:
         target = [target]
-    source_shape_list = get_curve_shape(source)
+    source_shape_list = get_cvShapes(source)
     if not source_shape_list:
         raise RuntimeError("source dont have nurbsCurve shape node")
 
@@ -193,10 +193,10 @@ def replace_curve_shape(source: str,
                         setDrawInfo=setDrawInfo)
 
 
-def mirror_curve_shape(source_list: list = [],
-                       target_list: list = [],
-                       setShape: bool = True,
-                       setDrawInfo: bool = False):
+def mirror_cvShape(source_list: list = [],
+                   target_list: list = [],
+                   setShape: bool = True,
+                   setDrawInfo: bool = False):
     """ Mirror the shape of one side to the other side.
 
     Args:
@@ -227,8 +227,8 @@ def mirror_curve_shape(source_list: list = [],
         cvData = CurveData(obj)
         cvData.set_data(otherSide_obj, setShape=setShape, setDrawInfo=setDrawInfo)
         # .cv[*] * -1
-        obj_shape_list = get_curve_shape(obj)
-        otherSide_obj_shape_list = get_curve_shape(otherSide_obj)
+        obj_shape_list = get_cvShapes(obj)
+        otherSide_obj_shape_list = get_cvShapes(otherSide_obj)
         for shape_i, shape in enumerate(obj_shape_list):
             pos_list = cmds.xform(f"{shape}.cv[*]", q=1, t=1, ws=1)
             pos_ary = [pos_list[i:i+3] for i in range(0, len(pos_list), 3)]
@@ -237,7 +237,7 @@ def mirror_curve_shape(source_list: list = [],
                 cmds.xform(f"{otherSide_obj_shape_list[shape_i]}.cv[{cv_i}]", t=cv_pos, ws=1)
 
 
-def select_curve_cv(curve_list: list):
+def select_cvControlVertex(curve_list: list):
     if not curve_list:
         raise RuntimeError("Please input curve.")
     sel_list = []
@@ -247,7 +247,7 @@ def select_curve_cv(curve_list: list):
     cmds.select(sel_list)
 
 
-def export_curve_data(cv_list=None):
+def export_cvData(cv_list=None):
     if cv_list:
         if type(cv_list) is str:
             cv_list = [cv_list]
@@ -255,7 +255,7 @@ def export_curve_data(cv_list=None):
         sel = cmds.ls(sl=1)
         cv_list = []
         for obj in sel:
-            if get_curve_shape(obj):
+            if get_cvShapes(obj):
                 cv_list.append(obj)
 
     data_list = []
@@ -269,7 +269,7 @@ def export_curve_data(cv_list=None):
     cmds.inViewMessage(amg=message, pos='midCenterBot', fade=True)
 
 
-def import_curve_data():
+def import_cvData():
     path = cmds.fileDialog2(dialogStyle=2, caption="Import nurbsCurve data", fileFilter="YAML file(*.yaml)", fileMode=1)[0]
     with open(path, "r") as f:
         data_list = yaml.unsafe_load(f)
@@ -282,41 +282,41 @@ def import_curve_data():
     cmds.inViewMessage(amg=message, pos='midCenterBot', fade=True)
 
 
-def mirror_curve_shape_cmd():
+def mirror_cvShape_cmd():
     sel_list = cmds.ls(sl=1, o=1)
     for i, x in enumerate(sel_list):
         if cmds.objectType(x) == "nurbsCurve":
             sel_list[i] = cmds.listRelatives(x, p=1)[0]
-    mirror_curve_shape(source_list=sel_list,
-                       target_list=mirror_config.exchange(sel_list),
-                       setShape=1,
-                       setDrawInfo=0)
+    mirror_cvShape(source_list=sel_list,
+                   target_list=MIRROR_CONFIG.exchange(sel_list),
+                   setShape=1,
+                   setDrawInfo=0)
     msg = "Mirror curve shapes."
-    mirror_config._show_message(mirror_config)
-    mirror_config._show_message(msg)
+    showMessage(MIRROR_CONFIG)
+    showMessage(msg)
 
 
-def replace_curve_shape_cmd():
+def replace_cvShape_cmd():
     sel_list = cmds.ls(sl=1, o=1)
     if len(sel_list) < 2:
         raise RuntimeError("Please select at least two objects.")
     for i, x in enumerate(sel_list):
         if cmds.objectType(x) == "nurbsCurve":
             sel_list[i] = cmds.listRelatives(x, p=1)[0]
-    replace_curve_shape(sel_list[0], sel_list[1:], setShape=1, setDrawInfo=1)
+    replace_cvShape(sel_list[0], sel_list[1:], setShape=1, setDrawInfo=1)
     msg = "Replace curve shapes."
-    mirror_config._show_message(msg)
+    showMessage(msg)
 
 
-def select_curve_cv_cmd():
+def select_cvControlVertex_cmd():
     sel_list = cmds.ls(sl=1, o=1)
-    select_curve_cv(sel_list)
+    select_cvControlVertex(sel_list)
     msg = "Select curve CV."
-    mirror_config._show_message(mirror_config)
-    mirror_config._show_message(msg)
+    showMessage(MIRROR_CONFIG)
+    showMessage(msg)
 
 
-# export_curve_data()
-# import_curve_data()
-# replace_curve_shape(cmds.ls(sl=1)[0],cmds.ls(sl=1)[1:])
-# mirror_curve_shape_cmd()
+# export_cvData()
+# import_cvData()
+# replace_cvShape(cmds.ls(sl=1)[0],cmds.ls(sl=1)[1:])
+# mirror_cvShape_cmd()

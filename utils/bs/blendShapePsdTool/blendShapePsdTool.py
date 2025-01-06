@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class poseControllerDataItem(yaml.YAMLObject):
+class PoseControllerDataItem(yaml.YAMLObject):
     yaml_tag = 'ControlData'
     name: str
     value: dict
@@ -37,7 +37,7 @@ class PoseData(yaml.YAMLObject):
     poseRotation: list
     poseTranslation: list
 
-    def post_value(self):
+    def postValueChange(self):
         if self.poseFalloff < 0.001:
             self.poseFalloff = 0.001
         if self.poseRotationFalloff < 0.001:
@@ -61,7 +61,7 @@ class PoseInterpolatorData(yaml.YAMLObject):
     enableTranslation: bool
 
 
-def load_data_by_node(node_name):
+def load_dataByNode(node_name):
     controls_obj_list = []
     # get interpolator data
     regularization = cmds.getAttr(f"{node_name}.regularization")
@@ -108,7 +108,7 @@ def load_data_by_node(node_name):
                 item_value = cmds.getAttr(f"{item}.poseControllerDataItemValue")[0]
                 if len(item_value) == 3:
                     item_value = {"x": item_value[0], "y": item_value[1], "z": item_value[2]}
-                data = poseControllerDataItem(name=item_name,
+                data = PoseControllerDataItem(name=item_name,
                                               type=item_type,
                                               value=item_value)
                 item_data.append(data)
@@ -130,7 +130,7 @@ def load_data_by_node(node_name):
                           poseRotationFalloff=poseRotationFalloff,
                           poseTranslationFalloff=poseTranslationFalloff,
                           controllerData=ctl_data)
-        pose_i.post_value()
+        pose_i.postValueChange()
         pose_data.append(pose_i)
     return PoseInterpolatorData(name=node_name,
                                 driver=driver_data,
@@ -143,7 +143,7 @@ def load_data_by_node(node_name):
                                 enableTranslation=enableTranslation)
 
 
-def create_node_by_data(data: PoseInterpolatorData):
+def create_nodeByData(data: PoseInterpolatorData):
     controls_obj_list = []
 
     # set driver data
@@ -193,11 +193,11 @@ def create_node_by_data(data: PoseInterpolatorData):
         cmds.setAttr(f"{node_name}.pose[{i}].poseTranslationFalloff", pose.poseTranslationFalloff)
 
 
-def import_proxy_transform_data():
+def import_proxyTransformData():
     """
     create proxy transform by data files
     """
-    def create_proxy_transform(obj, parent, name):
+    def create_proxyTransform(obj, parent, name):
         pxy_parent = cmds.createNode("transform", name=f"{name}_pxyParentTransform")
         pxy_obj = cmds.createNode("transform", name=f"{name}_pxyTransform", parent=pxy_parent)
         cmds.delete(cmds.parentConstraint(obj, pxy_parent))
@@ -208,10 +208,10 @@ def import_proxy_transform_data():
         data = yaml.unsafe_load(f)
         for x in data:
             for i in x:
-                create_proxy_transform(x[i]["Joint"], x[i]["Parent"], i)
+                create_proxyTransform(x[i]["Joint"], x[i]["Parent"], i)
 
 
-def export_poseInterpolator_data(node=None):
+def export_poseInterpolatorData(node=None):
     """
     export poseInterpolator's data as file
     Args:
@@ -225,13 +225,13 @@ def export_poseInterpolator_data(node=None):
 
     data_list = []
     for i in node:
-        data_list.append(load_data_by_node(i))
+        data_list.append(load_dataByNode(i))
     path = cmds.fileDialog2(dialogStyle=2, caption="Export poseInterpolator data", fileFilter="YAML file(*.yaml)")[0]
     with open(path, "w") as f:
         yaml.dump(data_list, f, sort_keys=False, indent=4, width=80)
 
 
-def import_poseInterpolator_data():
+def import_poseInterpolatorData():
     """
     import poseInterpolator node from files.
     """
@@ -239,10 +239,10 @@ def import_poseInterpolator_data():
     with open(path, "r") as f:
         data_list = yaml.unsafe_load(f)
         for data in data_list:
-            create_node_by_data(data)
+            create_nodeByData(data)
 
 
-def add_bs_target(bs: str, name: str):
+def add_bsTarget(bs: str, name: str):
     """ add blendShape target
     Args:
         bs (str): blendShape name
@@ -263,7 +263,7 @@ def add_bs_target(bs: str, name: str):
     return f"{bs}.{name}"
 
 
-def create_bs_by_psd(bs: str, psd_node_list: list = None):
+def create_bsByPSD(bs: str, psd_node_list: list = None):
     """
     create blendShape target by poseInterpolator's pose output
     if psd_node_list is None, will be get poseInterpolator from selections list
@@ -295,7 +295,7 @@ def create_bs_by_psd(bs: str, psd_node_list: list = None):
             cmds.setDrivenKeyframe(f"{bs}.{name}", cd=attr, driverValue=0, v=0, inTangentType="linear", outTangentType="linear")
             cmds.setDrivenKeyframe(f"{bs}.{name}", cd=attr, driverValue=1, v=1, inTangentType="linear", outTangentType="linear")
             continue
-        bs_wAttr = add_bs_target(bs, name)
+        bs_wAttr = add_bsTarget(bs, name)
         cmds.setDrivenKeyframe(bs_wAttr, cd=attr, driverValue=0, v=0, inTangentType="linear", outTangentType="linear")
         cmds.setDrivenKeyframe(bs_wAttr, cd=attr, driverValue=1, v=1, inTangentType="linear", outTangentType="linear")
 
@@ -309,12 +309,12 @@ class FingerTargetData(yaml.YAMLObject):
     DriverMax: float = 0
 
 
-def create_finger_bs(bs):
+def create_fingerTarget(bs):
     path = cmds.fileDialog2(dialogStyle=2, caption="Load finger blendShape data", fileFilter="YAML file(*.yaml)", fileMode=1)[0]
     with open(path, "r") as f:
         data_list = yaml.unsafe_load(f)
         for x in data_list:
-            attr = add_bs_target(bs, x.TargetName)
+            attr = add_bsTarget(bs, x.TargetName)
             if x.DriverAttr:
                 cmds.setDrivenKeyframe(attr, cd=x.DriverAttr,
                                        driverValue=x.DriverMin, v=0,

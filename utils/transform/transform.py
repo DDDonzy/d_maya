@@ -1,7 +1,11 @@
 import maya.cmds as cmds
 import maya.api.OpenMaya as om
-from utils.generate_unique_name import generate_unique_name
-from utils.create_assets import create_assets, bind_attr
+from utils.generateUniqueName import generateUniqueName
+from utils.createAssets import createAssets, assetBindAttr
+from utils.showMessage import showMessage
+
+RAD_TO_DEG = 57.29577951308232     # 180.0 / pi
+DEG_TO_RAD = 0.017453292519943295  # pi / 180.0
 
 
 class MIRROR_MATRIX():
@@ -19,7 +23,8 @@ class MIRROR_MATRIX():
                     [0, 0, 0, 1]])
 
     def __init__(self, axis: str = "x"):
-        if axis not in ["x", "y", "z"]:
+        axis = axis.lower()
+        if axis not in "xyz":
             raise ValueError("Invalid axis. Choose from 'x', 'y', or 'z'.")
 
     def __new__(cls, axis: str = "x"):
@@ -39,7 +44,7 @@ class UNIT_CONVERT():
         return getattr(UNIT_CONVERT, unit)
 
 
-def mirror_transform(sour_obj: str,
+def mirror_transform(source_obj: str,
                      target_obj: str,
                      mirror_axis: str = "x",):
     """flip source object's world space matrix  as target object's world space matrix
@@ -49,13 +54,13 @@ def mirror_transform(sour_obj: str,
         target_obj (str): target transform object
         mirror_axis (str, optional): mirror axis. Defaults to "x".
     """
-    sour_world_matrix = get_world_matrix(sour_obj)
-    sour_parent_matrix = get_parent_matrix(sour_obj)
+    sour_world_matrix = get_worldMatrix(source_obj)
+    sour_parent_matrix = get_parentMatrix(source_obj)
     sour_world_matrix_flip = flip_matrix(sour_world_matrix, mirror_axis)
     sour_parent_matrix_flip = flip_matrix(sour_parent_matrix, mirror_axis)
-    target_parent_matrix = get_parent_matrix(target_obj)
-    flip_offset_matrix = get_offset_matrix(sour_parent_matrix_flip, target_parent_matrix)
-    set_world_matrix(target_obj, flip_offset_matrix * sour_world_matrix_flip)
+    target_parent_matrix = get_parentMatrix(target_obj)
+    flip_offset_matrix = get_offsetMatrix(sour_parent_matrix_flip, target_parent_matrix)
+    set_worldMatrix(target_obj, flip_offset_matrix * sour_world_matrix_flip)
 
 
 def flip_matrix(world_matrix: om.MMatrix,
@@ -73,8 +78,8 @@ def flip_matrix(world_matrix: om.MMatrix,
     return mirror_matrix
 
 
-def get_offset_matrix(child_world_matrix: om.MMatrix,
-                      parent_world_matrix: om.MMatrix) -> om.MMatrix:
+def get_offsetMatrix(child_world_matrix: om.MMatrix,
+                     parent_world_matrix: om.MMatrix) -> om.MMatrix:
     """
     get offset matrix
     get local matrix when child in parent space
@@ -92,7 +97,7 @@ def get_offset_matrix(child_world_matrix: om.MMatrix,
     return child_local_matrix
 
 
-def get_local_matrix(obj: str) -> om.MMatrix:
+def get_localMatrix(obj: str) -> om.MMatrix:
     """get object's local space matrix
 
     Args:
@@ -101,12 +106,12 @@ def get_local_matrix(obj: str) -> om.MMatrix:
     Returns:
         om.MMatrix: local matrix
     """
-    sel_list = om.MSelectionList()
-    sel_list.add(obj)
-    return om.MFnTransform(sel_list.getDagPath(0)).transformation().asMatrix()
+    mSel = om.MSelectionList()
+    mSel.add(obj)
+    return om.MFnTransform(mSel.getDagPath(0)).transformation().asMatrix()
 
 
-def get_world_matrix(obj: str) -> om.MMatrix:
+def get_worldMatrix(obj: str) -> om.MMatrix:
     """get object's world space matrix
 
     Args:
@@ -115,12 +120,12 @@ def get_world_matrix(obj: str) -> om.MMatrix:
     Returns:
         om.MMatrix: world matrix
     """
-    sel_list = om.MSelectionList()
-    sel_list.add(obj)
-    return sel_list.getDagPath(0).inclusiveMatrix()
+    mSel = om.MSelectionList()
+    mSel.add(obj)
+    return mSel.getDagPath(0).inclusiveMatrix()
 
 
-def get_parent_matrix(obj: str) -> om.MMatrix:
+def get_parentMatrix(obj: str) -> om.MMatrix:
     """get object's parent object's world space matrix
 
     Args:
@@ -129,19 +134,19 @@ def get_parent_matrix(obj: str) -> om.MMatrix:
     Returns:
         om.MMatrix: parent object's world space matrix
     """
-    sel_list = om.MSelectionList()
-    sel_list.add(obj)
-    return sel_list.getDagPath(0).exclusiveMatrix()
+    mSel = om.MSelectionList()
+    mSel.add(obj)
+    return mSel.getDagPath(0).exclusiveMatrix()
 
 
-def set_local_matrix(obj: str, matrix: om.MMatrix) -> None:
+def set_localMatrix(obj: str, matrix: om.MMatrix) -> None:
     """set maya object's local as input matrix
 
     Args:
         obj (str): maya transform name
         matrix (om.MMatrix): input local matrix
     """
-    if cmds.objectType(obj) == "joint":
+    if cmds.objExists(f"{obj}.jointOrient"):
         try:
             cmds.setAttr(f"{obj}.jointOrient", 0, 0, 0)
         except Exception as e:
@@ -149,17 +154,17 @@ def set_local_matrix(obj: str, matrix: om.MMatrix) -> None:
     set_trs(obj, matrix_to_trs(matrix))
 
 
-def set_world_matrix(obj: str, matrix: om.MMatrix) -> None:
+def set_worldMatrix(obj: str, matrix: om.MMatrix) -> None:
     """ convert world space matrix to local space matrix and as object's local space matrix
 
     Args:
         obj (str): maya transform name
         matrix (om.MMatrix): input world space matrix
     """
-    sel_list = om.MSelectionList()
-    sel_list.add(obj)
-    local_matrix = matrix * sel_list.getDagPath(0).exclusiveMatrixInverse()
-    if cmds.objectType(obj) == "joint":
+    mSel = om.MSelectionList()
+    mSel.add(obj)
+    local_matrix = matrix * mSel.getDagPath(0).exclusiveMatrixInverse()
+    if cmds.objExists(f"{obj}.jointOrient"):
         try:
             cmds.setAttr(f"{obj}.jointOrient", 0, 0, 0)
         except Exception as e:
@@ -175,14 +180,14 @@ def matrix_to_trs(matrix: om.MMatrix, rotateOrder: int = 0) -> list:
         rotateOrder (int, optional): rotate order. Defaults to 0.
 
     Returns:
-        list: [tx,ty.tz,rx,ry,rz,sx,sy,sz]
+        list: [tx,ty,tz,rx,ry,rz,sx,sy,sz]
     """
-    om_transformation = om.MTransformationMatrix(matrix)
-    translate = om_transformation.translation(1) * UNIT_CONVERT()
-    euler_radians = om_transformation.rotation()
+    mTransformation = om.MTransformationMatrix(matrix)
+    translate = mTransformation.translation(1) * UNIT_CONVERT()
+    euler_radians = mTransformation.rotation()
     euler_radians.reorderIt(rotateOrder)
-    euler_angle = [57.29577951308232*radians for radians in [euler_radians.x, euler_radians.y, euler_radians.z]]
-    scale = om_transformation.scale(1)
+    euler_angle = [RAD_TO_DEG * radians for radians in [euler_radians.x, euler_radians.y, euler_radians.z]]
+    scale = mTransformation.scale(1)
     outputList = [translate[0], translate[1], translate[2],
                   euler_angle[0], euler_angle[1], euler_angle[2],
                   scale[0], scale[1], scale[2], ]
@@ -199,14 +204,14 @@ def trs_to_matrix(trs: list, rotateOrder: int = 0) -> om.MMatrix:
     Returns:
         om.MMatrix: matrix
     """
-    om_transformation = om.MTransformationMatrix()
+    mTransformation = om.MTransformationMatrix()
     translate = om.MVector(trs[0], trs[1], trs[2]) / UNIT_CONVERT()
-    euler_radians = om.MEulerRotation(*[0.017453292520882225*angle for angle in trs[3:6]], rotateOrder)
+    euler_radians = om.MEulerRotation(*[DEG_TO_RAD * angle for angle in trs[3:6]], rotateOrder)
     scale = om.MVector(trs[6], trs[7], trs[8])
-    om_transformation.setTranslation(translate, 1)
-    om_transformation.setRotation(euler_radians)
-    om_transformation.setScale(scale, 1)
-    return om_transformation.asMatrix()
+    mTransformation.setTranslation(translate, 1)
+    mTransformation.setRotation(euler_radians)
+    mTransformation.setScale(scale, 1)
+    return mTransformation.asMatrix()
 
 
 def get_trs(obj: str) -> list:
@@ -239,7 +244,7 @@ def set_trs(obj: str, trs: list) -> None:
             om.MGlobal.displayWarning(str(e))
 
 
-def create_fbf_node(matrix: om.MMatrix = om.MMatrix(), **kwargs) -> str:
+def create_fbfByMatrix(matrix: om.MMatrix = om.MMatrix(), **kwargs) -> str:
     '''
     Create maya node "fourByFourMatrix". And set matrix data
 
@@ -256,7 +261,7 @@ def create_fbf_node(matrix: om.MMatrix = om.MMatrix(), **kwargs) -> str:
     return fbf_node
 
 
-def create_inverse_orient_node(name: str):
+def create_inverseOrient(name: str):
     node_euler_to_quat = cmds.createNode("eulerToQuat", name=f"{name}_eulerToQuat")
     node_invert_quat = cmds.createNode("quatInvert", name=f"{name}_invertQuat")
     node_prod_quat = cmds.createNode("quatProd", name=f"{name}_prodQuat")
@@ -271,13 +276,13 @@ def create_inverse_orient_node(name: str):
     cmds.connectAttr(f"{node_euler_to_quat}.inputRotateOrder",
                      f"{node_quat_to_euler}.inputRotateOrder")
     # assets box
-    _assets = create_assets(name, add_node=[node_euler_to_quat, node_invert_quat, node_prod_quat, node_quat_to_euler])
+    _assets = createAssets(name, add_node=[node_euler_to_quat, node_invert_quat, node_prod_quat, node_quat_to_euler])
     bind_attr_dict = {"inputOrientRotate": f"{node_euler_to_quat}.inputRotate",
                       "inputRotateOrder": f'{node_euler_to_quat}.inputRotateOrder',
                       "inputRotateQuat": f"{node_prod_quat}.input1Quat",
                       "outputRotate": f"{node_quat_to_euler}.outputRotate",
                       "outputQuat": f"{node_prod_quat}.outputQuat"}
-    bind_attr(_assets, bind_attr_dict)
+    assetBindAttr(_assets, bind_attr_dict)
     return _assets
 
 
@@ -303,7 +308,7 @@ def matrixConstraint(*args,
 
     _info_name = "matrixConstraintInfo"
 
-    def _create_matrix_constraint(source_obj: str,
+    def _create_matrixConstraint(source_obj: str,
                                   target_object: str,
                                   keep_offset: bool = True):
         """
@@ -314,7 +319,7 @@ def matrixConstraint(*args,
             target_object: Driven object
             keep_offset: Maintain offset transforms
         """
-        offset_matrix = get_offset_matrix(get_world_matrix(target_object), get_world_matrix(source_obj))
+        offset_matrix = get_offsetMatrix(get_worldMatrix(target_object), get_worldMatrix(source_obj))
         node_multMatrix = cmds.createNode("multMatrix", name=f"{target_object}_MM_matrixConstraint")
         node_decomposeMatrix = cmds.createNode("decomposeMatrix", name=f"{target_object}_DM_matrixConstraint")
         bind_attr_dict = {"offsetMatrix": f"{node_multMatrix}.matrixIn[0]"}
@@ -331,8 +336,8 @@ def matrixConstraint(*args,
         cmds.connectAttr(f"{node_decomposeMatrix}.outputScale", f"{target_object}.scale", f=1)  # out scale
         cmds.connectAttr(f"{node_decomposeMatrix}.outputShear", f"{target_object}.shear", f=1)  # out shear
         if cmds.objExists(f"{target_object}.jointOrient"):
-            inverse_orient_node = generate_unique_name(f"{target_object}_inverseJointOrient_matrixConstraint")
-            inverse_orient_node = create_inverse_orient_node(name=inverse_orient_node)
+            inverse_orient_node = generateUniqueName(f"{target_object}_inverseJointOrient_matrixConstraint")
+            inverse_orient_node = create_inverseOrient(name=inverse_orient_node)
             add_node_list.append(inverse_orient_node)
             cmds.connectAttr(f"{target_object}.jointOrient", f"{inverse_orient_node}.inputOrientRotate")  # in orient rotate
             cmds.connectAttr(f"{target_object}.rotateOrder", f"{inverse_orient_node}.inputRotateOrder")  # in rotate order
@@ -344,10 +349,10 @@ def matrixConstraint(*args,
             cmds.connectAttr(f"{node_decomposeMatrix}.outputQuat", f"{target_object}.rotateQuaternion", f=1)  # out quat
 
         # assets box
-        _assets = generate_unique_name(f"{target_object}_matrixConstraint")
-        _assets = create_assets(name=_assets, parent_assets="MatrixConstraint",
-                                add_node=add_node_list)
-        bind_attr(_assets, bind_attr_dict)
+        _assets = generateUniqueName(f"{target_object}_matrixConstraint")
+        _assets = createAssets(name=_assets, parent_assets="MatrixConstraint",
+                               add_node=add_node_list)
+        assetBindAttr(_assets, bind_attr_dict)
 
         # add info
         # target attr
@@ -370,7 +375,7 @@ def matrixConstraint(*args,
                          f"{target_object}.{_info_name}")
         return _assets
 
-    def _query_matrix_constraint(obj: str,
+    def _query_matrixConstraint(obj: str,
                                  source: bool,
                                  target: bool):
         """
@@ -427,10 +432,10 @@ def matrixConstraint(*args,
         q_target = kwargs.get("target", False)
 
     if query:
-        return _query_matrix_constraint(source_obj, q_source, q_target)
+        return _query_matrixConstraint(source_obj, q_source, q_target)
     else:
         for target in target_object:
-            _assets = _create_matrix_constraint(source_obj, target, maintainOffset)
+            _assets = _create_matrixConstraint(source_obj, target, maintainOffset)
         return _assets
 
 
@@ -481,7 +486,7 @@ def parentspaceConstraint(*args,
         add_node_list = [node_bw, node_getLocalMatrix, node_decMatrix, node_parentMult]
         # parent connect
         cmds.setAttr(f"{node_parentMult}.matrixIn[0]",
-                     get_local_matrix(target_obj),
+                     get_localMatrix(target_obj),
                      type="matrix")
         cmds.connectAttr(f"{target_obj}.parentMatrix[0]",
                          f"{node_parentMult}.matrixIn[1]")
@@ -501,7 +506,7 @@ def parentspaceConstraint(*args,
         cmds.connectAttr(f"{node_decMatrix}.outputShear", f"{target_obj}.shear")  # out shear
 
         if cmds.objExists(f"{target_obj}.jointOrient"):
-            inverse_orient_node = create_inverse_orient_node(name=f"{target_obj}_inverseJointOrient_matrixConstraint")
+            inverse_orient_node = create_inverseOrient(name=f"{target_obj}_inverseJointOrient_matrixConstraint")
             add_node_list.append(inverse_orient_node)
             cmds.connectAttr(f"{target_obj}.jointOrient", f"{inverse_orient_node}.inputOrientRotate")  # in orient rotate
             cmds.connectAttr(f"{target_obj}.rotateOrder", f"{inverse_orient_node}.inputRotateOrder")  # in rotate order
@@ -513,10 +518,10 @@ def parentspaceConstraint(*args,
             cmds.connectAttr(f"{node_decMatrix}.outputQuat", f"{target_obj}.rotateQuaternion")  # out quat
 
         # assets
-        _assets = generate_unique_name(f"{target_obj}_parentspace")
-        _assets = create_assets(name=_assets, parent_assets="ParentspaceAssets",
-                                add_node=add_node_list)
-        bind_attr(_assets, bind_attr_dict)
+        _assets = generateUniqueName(f"{target_obj}_parentspace")
+        _assets = createAssets(name=_assets, parent_assets="ParentspaceAssets",
+                               add_node=add_node_list)
+        assetBindAttr(_assets, bind_attr_dict)
         # add parentspace attr to obj
         if not cmds.objExists(f"{target_obj}.{parentspace_attrName}"):
             cmds.addAttr(target_obj, ln=parentspace_attrName, pxy=f"{_assets}.{parentspace_attrName}", k=1)
@@ -575,8 +580,8 @@ def parentspaceConstraint(*args,
         cmds.addAttr(f"{target_obj}.{parentspace_attrName}", e=1, en=enum_str)
 
         # control_obj constraint target_obj
-        offset_matrix = get_offset_matrix(get_world_matrix(target_obj),
-                                          get_world_matrix(control_obj))
+        offset_matrix = get_offsetMatrix(get_worldMatrix(target_obj),
+                                         get_worldMatrix(control_obj))
         node_multMatrix = cmds.createNode("multMatrix", name=f"{control_obj}_{target_obj}_multMatrix")
         cmds.setAttr(f"{node_multMatrix}.matrixIn[0]",
                      offset_matrix,
@@ -628,7 +633,7 @@ def parentspaceConstraint(*args,
         _add_parentspace(control_obj, target_obj, **kwargs)
 
 
-def offset_fk(control_list: list, offset_list: list):
+def create_fkOffset(control_list: list, offset_list: list):
     """
     Create an offset system for FK chains
     For example, the hierarchy at the top of each FK chain is constrained,
@@ -678,8 +683,8 @@ def offset_fk(control_list: list, offset_list: list):
         cmds.connectAttr(f"{node_decomposeMatrix}.outputScale", f"{next_offset}.scale", f=1)  # out scale
         cmds.connectAttr(f"{node_decomposeMatrix}.outputShear", f"{next_offset}.shear", f=1)  # out shear
         if cmds.objExists(f"{next_offset}.jointOrient"):
-            inverse_orient_node = generate_unique_name(f"{next_offset}_inverseJointOrient_matrixConstraint")
-            inverse_orient_node = create_inverse_orient_node(name=inverse_orient_node)
+            inverse_orient_node = generateUniqueName(f"{next_offset}_inverseJointOrient_matrixConstraint")
+            inverse_orient_node = create_inverseOrient(name=inverse_orient_node)
             _add_node_list.append(inverse_orient_node)
             cmds.connectAttr(f"{next_offset}.jointOrient", f"{inverse_orient_node}.inputOrientRotate")  # in orient rotate
             cmds.connectAttr(f"{next_offset}.rotateOrder", f"{inverse_orient_node}.inputRotateOrder")  # in rotate order
@@ -689,11 +694,11 @@ def offset_fk(control_list: list, offset_list: list):
         else:
             cmds.connectAttr(f"{node_decomposeMatrix}.outputRotate", f"{next_offset}.rotate", f=1)  # out rotate
             cmds.connectAttr(f"{node_decomposeMatrix}.outputQuat", f"{next_offset}.rotateQuaternion", f=1)  # out quat
-        _assets = generate_unique_name(f"{next_control}_offsetFK")
-        _assets = create_assets(_assets, parent_assets="OffsetFK", add_node=_add_node_list)
+        _assets = generateUniqueName(f"{next_control}_offsetFK")
+        _assets = createAssets(_assets, parent_assets="OffsetFK", add_node=_add_node_list)
 
 
-def reset_transform_value(obj, transform=True, userDefined=True):
+def reset_transformObjectValue(obj, transform=True, userDefined=True):
     def _set_trsv(obj, trs):
         attrs = ["tx", "ty", "tz", "rx", "ry", "rz", "sx", "sy", "sz", "v"]
         for i, attr in enumerate(attrs):
@@ -715,13 +720,10 @@ def reset_transform_value(obj, transform=True, userDefined=True):
                 om.MGlobal.displayInfo(str(e))
 
 
-def reset_transform_value_cmd(transform=True, userDefined=False):
-    def _show_message(msg):
-        message = f"<hl> {msg} </hl>"
-        cmds.inViewMessage(amg=message, pos='botRight', fade=True, fadeInTime=100, fadeStayTime=1000, fadeOutTime=100)
+def reset_transformObjectValue_cmd(transform=True, userDefined=False):
     for obj in cmds.ls(sl=1):
-        reset_transform_value(obj, transform, userDefined)
+        reset_transformObjectValue(obj, transform, userDefined)
     msg = "Reset transform value."
     if userDefined:
         msg = "Reset value (all)."
-    _show_message(msg)
+    showMessage(msg)

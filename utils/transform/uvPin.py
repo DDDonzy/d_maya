@@ -1,10 +1,10 @@
 from maya import cmds
 from maya.api import OpenMaya as om
-from utils.transform.transform import get_world_matrix, matrixConstraint
-from utils.generate_unique_name import generate_unique_name
+from utils.transform.transform import get_worldMatrix, matrixConstraint
+from utils.generateUniqueName import generateUniqueName
 
 
-def get_uv_by_closest_point(point, shape: str):
+def get_UVByClosestPoint(point, shape: str):
     p = om.MPoint(*point, 0)
     sel: om.MSelectionList = om.MGlobal.getSelectionListByName(shape)
     dag: om.MDagPath = sel.getDagPath(0)
@@ -13,14 +13,14 @@ def get_uv_by_closest_point(point, shape: str):
     return fn_mesh.getUVAtPoint(p, space=om.MSpace.kWorld, uvSet=set_name)[0:2]
 
 
-def get_current_uvSet_name(shape):
+def get_currentUVSetName(shape):
     sel: om.MSelectionList = om.MGlobal.getSelectionListByName(shape)
     dag: om.MDagPath = sel.getDagPath(0)
     fn_mesh = om.MFnMesh(dag)
     return fn_mesh.currentUVSetName()
 
 
-def createPlane(object_list, size=1, name="uvPinPlane"):
+def create_planeByObjectList(object_list, size=1, name="uvPinPlane"):
     if not object_list:
         raise ValueError("No object need to create plane, please input object list first.")
     num = len(object_list)
@@ -49,7 +49,7 @@ def createPlane(object_list, size=1, name="uvPinPlane"):
     # num
     for i in range(num):
         # pos_ary
-        mult_matrix = get_world_matrix(object_list[i])
+        mult_matrix = get_worldMatrix(object_list[i])
         for pos in base_vtx_pos_ary:
             pos_ary.append(om.MPoint(pos) * size * mult_matrix)
         # face_connect_ary
@@ -76,7 +76,7 @@ def create_uvPin(obj_list: list, new_transform=False, plane_size=0.3, name: str 
     if not obj_list:
         raise ValueError("No object need to create uvPin, please input object list first.")
     # create mesh
-    mesh = createPlane(obj_list, size=plane_size, name=f"{name}_mesh")
+    mesh = create_planeByObjectList(obj_list, size=plane_size, name=f"{name}_mesh")
 
     # create uvPin node
     node_uvPin = cmds.createNode("uvPin", name=name)
@@ -84,7 +84,7 @@ def create_uvPin(obj_list: list, new_transform=False, plane_size=0.3, name: str 
     cmds.setAttr(".normalAxis", 0)
     cmds.setAttr(".tangentAxis", 5)
     cmds.setAttr(f"{node_uvPin}.uvSetName",
-                 get_current_uvSet_name(mesh), type="string")
+                 get_currentUVSetName(mesh), type="string")
     cmds.connectAttr(orig_outMesh,
                      f"{node_uvPin}.originalGeometry")
     cmds.connectAttr(f"{mesh}.worldMesh[0]",
@@ -112,9 +112,9 @@ def create_follicle(obj_list: list, plane_size=0.3, name: str = "follicle"):
     if not obj_list:
         raise ValueError("No object need to create uvPin, please input object list first.")
     # create mesh
-    mesh = createPlane(obj_list, size=plane_size, name="uvPin")
+    mesh = create_planeByObjectList(obj_list, size=plane_size, name="uvPin")
     for i, obj in enumerate(obj_list):
-        follicle = generate_unique_name(name)
+        follicle = generateUniqueName(name)
         follicle = cmds.createNode("transform", name=follicle)
         follicle_shape = cmds.createNode("follicle", name=f"{follicle}Shape", parent=follicle)
         cmds.connectAttr(f"{mesh}.outMesh", f"{follicle_shape}.inputMesh")

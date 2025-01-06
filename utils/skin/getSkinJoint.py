@@ -1,8 +1,8 @@
 from maya import cmds
-from utils.get_history import get_history
+from utils.getHistory import get_history
 
 
-def get_skin_joint(obj_list=None):
+def get_skinJoint(obj_list=None):
     if type(obj_list) is str:
         obj_list = [obj_list]
     skin_joint_list = []
@@ -22,13 +22,13 @@ def get_skin_joint(obj_list=None):
     return skin_joint_list
 
 
-def get_skin_joint_cmd(createSet=False):
+def get_skinJoint_cmd(createSet=False):
     obj_list = cmds.ls(sl=1)
-    skin_joint_list = get_skin_joint(obj_list)
+    skin_joint_list = get_skinJoint(obj_list)
     if createSet and skin_joint_list:
         cmds.sets(skin_joint_list, n='skinJointSet')
     cmds.select(skin_joint_list)
     return skin_joint_list
 
 
-# get_skin_joint_cmd(True)
+# get_skinJoint_cmd(True)

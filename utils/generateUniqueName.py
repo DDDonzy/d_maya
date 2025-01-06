@@ -1,7 +1,7 @@
 from maya import cmds
 
 
-def generate_unique_name(base_name):
+def generateUniqueName(base_name):
     """
     Generate a unique name by adding numeric suffix if the base name already exists
 

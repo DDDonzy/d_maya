@@ -3,6 +3,11 @@ import sys
 from importlib import reload
 from maya import cmds, mel
 
+# path = r"E:/d_maya"
+# if path not in sys.path:
+#     sys.path.append(path)
+
+
 ENV_LIB = {
     "MAYA_NO_HOME": 1,
     "MAYA_NO_HOME_ICON": 1,
@@ -10,12 +15,7 @@ ENV_LIB = {
 }
 
 
-path = r"E:/d_maya"
-if path not in sys.path:
-    sys.path.append(path)
-
-
-def reload_modules_in_path(path):
+def reload_modulesInPath(path):
     reload_list = []
     for modules_name in sys.modules:
         try:
@@ -40,18 +40,20 @@ def get_mayaEnvFile():
 
 
 def modify_mayaEnvFile():
-    with open(get_mayaEnvFile(), 'w') as file:
+    env_file = get_mayaEnvFile()
+    with open(env_file, 'w') as file:
         pass
 
-    with open(get_mayaEnvFile(), 'r') as file:
+    with open(env_file, 'r') as file:
         content = file.read()
 
-    with open(get_mayaEnvFile(), 'a') as file:
+    with open(env_file, 'a') as file:
         for key, value in ENV_LIB.items():
             if key in content:
                 continue
             additional_text = f"\n{key} = {value};"
             file.write(additional_text)
+    print(f"Modify: {env_file}")
 
 
 def modify_mayaUserSetup():

@@ -1,8 +1,8 @@
 from maya import cmds
 
 
-def create_assets(name: str,
-                  **kwargs):
+def createAssets(name: str,
+                 **kwargs):
     """
     Create a container asset in Maya with optional parent and settings.
 
@@ -31,8 +31,8 @@ def create_assets(name: str,
     # Create parent assets if specified and not existing
     if parent_assets is not None:
         if not cmds.objExists(parent_assets):
-            rig_assets = create_assets(name="RigAssets", parent_assets=None, black_box=False, icon="character.svg")
-            parent_assets = create_assets(name=parent_assets, parent_assets=rig_assets, black_box=False, icon=icon)
+            rig_assets = createAssets(name="RigAssets", parent_assets=None, black_box=False, icon="character.svg")
+            parent_assets = createAssets(name=parent_assets, parent_assets=rig_assets, black_box=False, icon=icon)
 
     # Create the asset container
     assets = cmds.container(name=name, an=add_node)
@@ -50,7 +50,7 @@ def create_assets(name: str,
     return assets
 
 
-def bind_attr(name: str, bind_attr: dict):
+def assetBindAttr(name: str, bind_attr: dict):
     for k, v in bind_attr.items():
         cmds.container(name, e=1, publishName=k)
         cmds.container(name, e=1, bindAttr=[v, k])

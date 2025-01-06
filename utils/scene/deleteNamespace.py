@@ -4,9 +4,10 @@
 
 
 import maya.cmds as cmds
+from utils.showMessage import showMessage
 
 
-def clear_namespace():
+def clearNamespace():
     system_namespace_list = ['UI', 'shared']
     namespace_list = cmds.namespaceInfo(":", lon=True)
     namespace_list = list(set(namespace_list) ^ set(system_namespace_list))
@@ -15,5 +16,6 @@ def clear_namespace():
         cmds.namespace(rm=namespace_list[0], mnr=1)
         namespace_list = cmds.namespaceInfo(":", lon=True)
         namespace_list = list(set(namespace_list) ^ set(system_namespace_list))
+    showMessage("CLEAR_NAMESPACE")
 
-# clear_namespace()
+# clearNamespace()

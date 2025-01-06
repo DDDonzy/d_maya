@@ -1,7 +1,8 @@
 from maya import cmds as cmds
+from utils.showMessage import showMessage
 
 
-def remove_unknown_plugin():
+def removeUnknownPlugin():
     print("REMOVE_UNKNOWN_PLUGIN:")
     unknown_plugin = cmds.unknownPlugin(q=1, l=1)
     if not unknown_plugin:
@@ -12,6 +13,7 @@ def remove_unknown_plugin():
             print(f"    REMOVE: {x}")
         except Exception:
             print(f"  ERROR:{x}")
+    showMessage("REMOVE_UNKNOWN_PLUGIN_DONE")
 
 
-remove_unknown_plugin()
+# removeUnknownPlugin()
