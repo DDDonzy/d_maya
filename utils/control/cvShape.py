@@ -121,7 +121,7 @@ class CurveData(yaml.YAMLObject):
         elif deviation < 0:
             for i in range(abs(deviation)):
                 cmds.delete(target_shape_list[-i])
-        target_shape_list = get_cvShapes(transform_object=transform_obj)
+        target_shape_list = get_cvShapes(transform=transform_obj)
 
         if len(self.shapes) == len(target_shape_list):
             for i, x in enumerate(self.shapes):
@@ -130,27 +130,19 @@ class CurveData(yaml.YAMLObject):
                                             setDrawInfo)
 
 
-def get_cvShapes(transform_object):
-    """get nurbsCurve shapes
-    Args:
-        transform_object (str): transform name
+def getShapes(transform=None, type: str = None):
+    """Get shapes """
+    if not transform:
+        transform = cmds.ls(sl=1)
+    if not type:
+        return cmds.listRelatives(transform, ni=True, s=True)
+    else:
+        return cmds.listRelatives(transform, ni=True, s=True, type=type)
 
-    Returns:
-        list: return shape list
-    """
-    if not cmds.objExists(transform_object):
-        raise RuntimeError(transform_object + "is not exists")
-    shape_list = []
-    mSel = om.MSelectionList()
-    mSel.add(transform_object)
-    mDag = mSel.getDagPath(0)
-    num_shape = mDag.numberOfShapesDirectlyBelow()
-    for i in range(num_shape):
-        mDag = mSel.getDagPath(0)
-        mDag.extendToShape(i)
-        if mDag.node().apiTypeStr == "kNurbsCurve":
-            shape_list.append(mDag.partialPathName())
-    return shape_list
+
+def get_cvShapes(transform=None):
+    """get nurbsCurve shapes"""
+    return getShapes(transform, type="nurbsCurve")
 
 
 def get_setCvShapeCmd(shape_obj):

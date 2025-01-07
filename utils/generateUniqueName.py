@@ -1,7 +1,8 @@
+import re
 from maya import cmds
 
 
-def generateUniqueName(base_name):
+def generateUniqueName(name):
     """
     Generate a unique name by adding numeric suffix if the base name already exists
 
@@ -12,11 +13,14 @@ def generateUniqueName(base_name):
         str: A unique name that doesn't exist in the scene
 
     """
-    name = base_name
-    index = 1
 
     while cmds.objExists(name):
-        name = f"{base_name}{index}"
-        index += 1
-
+        match = re.search(r'(\d+)(?=[^0-9]*$)', string=name)
+        if match:
+            indexStr = match.group(0)
+            indexInt = int(indexStr) + 1
+            indexStr = f"{indexInt:0{len(indexStr)}}"
+            name = re.sub(r'(\d+)(?=[^0-9]*$)', indexStr, name)
+        else:
+            name = f"{name}{1}"
     return name
