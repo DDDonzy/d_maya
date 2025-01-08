@@ -1,7 +1,7 @@
 import maya.cmds as cmds
 import maya.api.OpenMaya as om
 from utils.generateUniqueName import generateUniqueName
-from utils.createAssets import createAssets, assetBindAttr
+from utils.createAssets import createAssets, assetBindAttr, get_bindAttrs
 from utils.showMessage import showMessage
 
 RAD_TO_DEG = 57.29577951308232     # 180.0 / pi
@@ -286,6 +286,40 @@ def create_inverseOrient(name: str):
     return _assets
 
 
+def create_decomposeMatrix(name: str, jointOrient: bool = True):
+    node_decom = cmds.createNode("decomposeMatrix", name=f"{name}_decomposeMatrix")
+    assets_nodeList = [node_decom]
+    bind_attr_dict = {"inputMatrix": f"{node_decom}.inputMatrix",
+                      "inputRotateOrder": f"{node_decom}.inputRotateOrder",
+                      "outputTranslate": f"{node_decom}.outputTranslate",
+                      "outputRotate": f"{node_decom}.outputRotate",
+                      "outputQuat": f"{node_decom}.outputQuat",
+                      "outputScale": f"{node_decom}.outputScale",
+                      "outputShear": f"{node_decom}.outputShear"}
+    # jointOrient
+    if jointOrient:
+        inverse_orient_node = create_inverseOrient(name=f"{name}_inverseJointOrient")
+        assets_nodeList.append(inverse_orient_node)
+        cmds.connectAttr(f"{node_decom}.inputRotateOrder", f"{inverse_orient_node}.inputRotateOrder")  # in rotate order
+        cmds.connectAttr(f"{node_decom}.outputQuat", f"{inverse_orient_node}.inputRotateQuat")  # in rotate
+        bind_attr_dict.update({"inputJointOrient": f"{inverse_orient_node}.inputOrientRotate",
+                               "outputRotate": f"{inverse_orient_node}.outputRotate",
+                               "outputQuat": f"{inverse_orient_node}.outputQuat"})
+
+    _assets = createAssets(f"{name}_decomMatrix", add_node=assets_nodeList)
+    assetBindAttr(_assets, bind_attr_dict)
+    if cmds.objExists(name):
+        if cmds.objExists(f"{name}.jointOrient"):
+            cmds.connectAttr(f"{name}.jointOrient", f"{_assets}.inputOrientRotate")  # in jointOrient
+        cmds.connectAttr(f"{name}.rotateOrder", f"{_assets}.inputRotateOrder")  # in rotateOrder
+        cmds.connectAttr(f"{_assets}.outputTranslate", f"{name}.translate")  # out translate
+        cmds.connectAttr(f"{_assets}.outputScale", f"{name}.scale")  # out scale
+        cmds.connectAttr(f"{_assets}.outputShear", f"{name}.shear")  # out shear
+        cmds.connectAttr(f"{_assets}.outputRotate", f"{name}.rotate")  # out scale
+        cmds.connectAttr(f"{_assets}.outputQuat", f"{name}.rotateQuaternion")  # out shear
+    return _assets
+
+
 def matrixConstraint(*args,
                      **kwargs) -> str:
     """
@@ -321,38 +355,29 @@ def matrixConstraint(*args,
         """
         offset_matrix = get_offsetMatrix(get_worldMatrix(target_object), get_worldMatrix(source_obj))
         node_multMatrix = cmds.createNode("multMatrix", name=f"{target_object}_MM_matrixConstraint")
-        node_decomposeMatrix = cmds.createNode("decomposeMatrix", name=f"{target_object}_DM_matrixConstraint")
-        bind_attr_dict = {"offsetMatrix": f"{node_multMatrix}.matrixIn[0]"}
-        add_node_list = [node_multMatrix, node_decomposeMatrix]
-        if keep_offset:
-            cmds.setAttr(f"{node_multMatrix}.matrixIn[0]", offset_matrix, type="matrix")
-        cmds.connectAttr(f"{source_obj}.worldMatrix[0]",
-                         f"{node_multMatrix}.matrixIn[1]")
-        cmds.connectAttr(f"{target_object}.parentInverseMatrix[0]",
-                         f"{node_multMatrix}.matrixIn[2]")
-        cmds.connectAttr(f"{target_object}.rotateOrder", f"{node_decomposeMatrix}.inputRotateOrder")  # in  rotate order
-        cmds.connectAttr(f"{node_multMatrix}.matrixSum", f"{node_decomposeMatrix}.inputMatrix")  # in matrix
-        cmds.connectAttr(f"{node_decomposeMatrix}.outputTranslate", f"{target_object}.translate", f=1)  # out translate
-        cmds.connectAttr(f"{node_decomposeMatrix}.outputScale", f"{target_object}.scale", f=1)  # out scale
-        cmds.connectAttr(f"{node_decomposeMatrix}.outputShear", f"{target_object}.shear", f=1)  # out shear
-        if cmds.objExists(f"{target_object}.jointOrient"):
-            inverse_orient_node = generateUniqueName(f"{target_object}_inverseJointOrient_matrixConstraint")
-            inverse_orient_node = create_inverseOrient(name=inverse_orient_node)
-            add_node_list.append(inverse_orient_node)
-            cmds.connectAttr(f"{target_object}.jointOrient", f"{inverse_orient_node}.inputOrientRotate")  # in orient rotate
-            cmds.connectAttr(f"{target_object}.rotateOrder", f"{inverse_orient_node}.inputRotateOrder")  # in rotate order
-            cmds.connectAttr(f"{node_decomposeMatrix}.outputQuat", f"{inverse_orient_node}.inputRotateQuat")  # in rotate
-            cmds.connectAttr(f"{inverse_orient_node}.outputRotate", f"{target_object}.rotate", f=1)  # out rotate
-            cmds.connectAttr(f"{inverse_orient_node}.outputQuat", f"{target_object}.rotateQuaternion", f=1)  # out quat
-        else:
-            cmds.connectAttr(f"{node_decomposeMatrix}.outputRotate", f"{target_object}.rotate", f=1)  # out rotate
-            cmds.connectAttr(f"{node_decomposeMatrix}.outputQuat", f"{target_object}.rotateQuaternion", f=1)  # out quat
+        node_decom = create_decomposeMatrix(name=target_object, jointOrient=True)
+        _add_nodeList = [node_multMatrix, node_decom]
+        cmds.connectAttr(f"{node_multMatrix}.matrixSum", f"{node_decom}.inputMatrix")
 
-        # assets box
+        _bindAttr = {"inputOffsetMatrix": f"{node_multMatrix}.matrixIn[0]",
+                     "inputControllerMatrix": f"{node_multMatrix}.matrixIn[1]",
+                     "inputTargetRotateOrder": f"{node_decom}.inputRotateOrder",
+                     "inputTargetJointOrient": f"{node_decom}.inputJointOrient",
+                     "inputTargetParentInverseMatrix": f"{node_multMatrix}.matrixIn[2]",
+                     "outputTranslate": f"{node_decom}.outputTranslate",
+                     "outputRotate": f"{node_decom}.outputRotate",
+                     "outputQuat": f"{node_decom}.outputQuat",
+                     "outputScale": f"{node_decom}.outputScale",
+                     "outputShear": f"{node_decom}.outputShear"}
+
         _assets = generateUniqueName(f"{target_object}_matrixConstraint")
-        _assets = createAssets(name=_assets, parent_assets="MatrixConstraint",
-                               add_node=add_node_list)
-        assetBindAttr(_assets, bind_attr_dict)
+        _assets = createAssets(name=_assets, parent_assets="MatrixConstraint", add_node=_add_nodeList)
+        assetBindAttr(_assets, _bindAttr)
+
+        if keep_offset:
+            cmds.setAttr(f"{_assets}.inputOffsetMatrix", offset_matrix, type="matrix")
+        cmds.connectAttr(f"{source_obj}.worldMatrix[0]", f"{_assets}.inputControllerMatrix")
+        cmds.connectAttr(f"{target_object}.parentInverseMatrix[0]", f"{_assets}.inputTargetParentInverseMatrix")
 
         # add info
         # target attr
@@ -373,6 +398,7 @@ def matrixConstraint(*args,
                          f"{_assets}.{_info_name}")
         cmds.connectAttr(f"{_assets}.{_info_name}",
                          f"{target_object}.{_info_name}")
+        # TODO 改写一下 信息链接。 建议写个函数用来处理一个通用的信息链接。
         return _assets
 
     def _query_matrixConstraint(obj: str,
@@ -479,6 +505,8 @@ def parentspaceConstraint(*args,
         # constraint logic
         # pro create node
         node_bw = cmds.createNode("blendMatrix", name=f"{target_obj}_spaceBW")
+        #
+        bode_chose = cmds.createNode("choice", name=f"{target_obj}_spaceChoice")
         node_getLocalMatrix = cmds.createNode("multMatrix", name=f"{target_obj}_getLocalMatrix")
         node_decMatrix = cmds.createNode("decomposeMatrix", name=f"{target_obj}_decomposeMatrix")
         node_parentMult = cmds.createNode("multMatrix", name=f"{target_obj}_parentMult")
@@ -494,9 +522,16 @@ def parentspaceConstraint(*args,
                          f"{node_parentMult}.matrixIn[1]")
         cmds.connectAttr(f"{node_parentMult}.matrixSum",
                          f"{node_bw}.inputMatrix")
+        #
+        cmds.connectAttr(f"{node_parentMult}.matrixSum",
+                         f"{bode_chose}.input[0]")
         # blend world matrix to local matrix
         cmds.connectAttr(f"{node_bw}.outputMatrix",
                          f"{node_getLocalMatrix}.matrixIn[0]")
+        #
+        cmds.connectAttr(f"{bode_chose}.output",
+                         f"{node_getLocalMatrix}.matrixIn[0]")
+
         cmds.connectAttr(f"{target_obj}.parentInverseMatrix[0]",
                          f"{node_getLocalMatrix}.matrixIn[1]")
         cmds.connectAttr(f"{node_getLocalMatrix}.matrixSum",
