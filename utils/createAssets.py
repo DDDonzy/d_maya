@@ -35,7 +35,9 @@ def createAssets(name: str,
             assetsType = createAssets(name=assetsType, assetsType=rig_assets, blackBox=False, icon=icon, public=True)
 
     # Create the asset container
-    assets = cmds.container(name=name, an=addNode, f=1)
+    assets = cmds.container(name=name)
+    for x in addNode:
+        cmds.container(name=name, e=1, f=1, an=x)
 
     # Set container attributes
     cmds.setAttr(f"{assets}.blackBox", blackBox)

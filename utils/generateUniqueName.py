@@ -13,7 +13,6 @@ def generateUniqueName(name):
         str: A unique name that doesn't exist in the scene
 
     """
-
     while cmds.objExists(name):
         match = re.search(r'(\d+)(?=[^0-9]*$)', string=name)
         if match:
