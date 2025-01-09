@@ -1,6 +1,6 @@
 from maya import cmds
 from maya.api import OpenMaya as om
-from utils.transform.transform import get_worldMatrix, matrixConstraint
+from utils.transform.transform import get_worldMatrix, matrixConstraint, create_decomposeMatrix
 from utils.generateUniqueName import generateUniqueName
 
 
@@ -72,7 +72,7 @@ def create_planeByObjectList(object_list, size=1, name="uvPinPlane"):
     return transform
 
 
-def create_uvPin(obj_list: list, new_transform=False, plane_size=0.3, name: str = "uvPin"):
+def create_uvPin(obj_list: list, plane_size=0.3, name: str = "uvPin"):
     if not obj_list:
         raise ValueError("No object need to create uvPin, please input object list first.")
     # create mesh
@@ -94,18 +94,9 @@ def create_uvPin(obj_list: list, new_transform=False, plane_size=0.3, name: str 
         # set uvPin.uv value
         cmds.setAttr(f"{node_uvPin}.coordinate[{i}].coordinateU", i + 0.5)
         cmds.setAttr(f"{node_uvPin}.coordinate[{i}].coordinateV", 0.5)
-        # create new transform
-        if new_transform is True:
-            loc = cmds.createNode("transform", name=f"{obj}_uvPinLoc")
-            cmds.connectAttr(f"{node_uvPin}.outputMatrix[{i}]",
-                             f"{loc}.offsetParentMatrix")
-            cmds.parentConstraint(loc, obj)
-        else:
-            cmds.connectAttr(f"{node_uvPin}.outputMatrix[{i}]",
-                             f"{obj}.offsetParentMatrix")
-            for i in "xyz":
-                cmds.setAttr(f"{obj}.t{i}", 0)
-                cmds.setAttr(f"{obj}.r{i}", 0)
+        node_decom = create_decomposeMatrix(obj, scale=False)
+        cmds.connectAttr(f"{node_uvPin}.outputMatrix[{i}]",
+                         f"{node_decom}.inputMatrix")
 
 
 def create_follicle(obj_list: list, plane_size=0.3, name: str = "follicle"):
@@ -125,5 +116,6 @@ def create_follicle(obj_list: list, plane_size=0.3, name: str = "follicle"):
         cmds.connectAttr(f"{follicle_shape}.outRotate", f"{follicle}.rotate")
         matrixConstraint(follicle, obj)
 
-# create_uvPin(cmds.ls(sl=1), plane_size=0.3, new_transform=False)
+
+# create_uvPin(cmds.ls(sl=1), plane_size=0.3)
 # create_follicle(cmds.ls(sl=1), plane_size=0.3)

@@ -261,62 +261,62 @@ def create_fbfByMatrix(matrix: om.MMatrix = om.MMatrix(), **kwargs) -> str:
     return fbf_node
 
 
-def create_inverseOrient(name: str):
-    node_euler_to_quat = cmds.createNode("eulerToQuat", name=f"{name}_eulerToQuat")
-    node_invert_quat = cmds.createNode("quatInvert", name=f"{name}_invertQuat")
-    node_prod_quat = cmds.createNode("quatProd", name=f"{name}_prodQuat")
-    node_quat_to_euler = cmds.createNode("quatToEuler", name=f"{name}_quatToEuler")
+def create_decomposeMatrix(name: str, translate=True, rotate=True, scale=True, shear=True, quat=True):
+    hasJointOrient = cmds.objExists(f"{name}.jointOrient")
 
-    cmds.connectAttr(f"{node_euler_to_quat}.outputQuat",
-                     f"{node_invert_quat}.inputQuat")
-    cmds.connectAttr(f"{node_invert_quat}.outputQuat",
-                     f"{node_prod_quat}.input2Quat")
-    cmds.connectAttr(f"{node_prod_quat}.outputQuat",
-                     f"{node_quat_to_euler}.inputQuat")
-    cmds.connectAttr(f"{node_euler_to_quat}.inputRotateOrder",
-                     f"{node_quat_to_euler}.inputRotateOrder")
-    # assets box
-    _assets = createAssets(name, add_node=[node_euler_to_quat, node_invert_quat, node_prod_quat, node_quat_to_euler])
-    bind_attr_dict = {"inputOrientRotate": f"{node_euler_to_quat}.inputRotate",
-                      "inputRotateOrder": f'{node_euler_to_quat}.inputRotateOrder',
-                      "inputRotateQuat": f"{node_prod_quat}.input1Quat",
-                      "outputRotate": f"{node_quat_to_euler}.outputRotate",
-                      "outputQuat": f"{node_prod_quat}.outputQuat"}
-    assetBindAttr(_assets, bind_attr_dict)
-    return _assets
-
-
-def create_decomposeMatrix(name: str, jointOrient: bool = True):
     node_decom = cmds.createNode("decomposeMatrix", name=f"{name}_decomposeMatrix")
-    assets_nodeList = [node_decom]
-    bind_attr_dict = {"inputMatrix": f"{node_decom}.inputMatrix",
-                      "inputRotateOrder": f"{node_decom}.inputRotateOrder",
-                      "outputTranslate": f"{node_decom}.outputTranslate",
-                      "outputRotate": f"{node_decom}.outputRotate",
-                      "outputQuat": f"{node_decom}.outputQuat",
-                      "outputScale": f"{node_decom}.outputScale",
-                      "outputShear": f"{node_decom}.outputShear"}
-    # jointOrient
-    if jointOrient:
-        inverse_orient_node = create_inverseOrient(name=f"{name}_inverseJointOrient")
-        assets_nodeList.append(inverse_orient_node)
-        cmds.connectAttr(f"{node_decom}.inputRotateOrder", f"{inverse_orient_node}.inputRotateOrder")  # in rotate order
-        cmds.connectAttr(f"{node_decom}.outputQuat", f"{inverse_orient_node}.inputRotateQuat")  # in rotate
-        bind_attr_dict.update({"inputJointOrient": f"{inverse_orient_node}.inputOrientRotate",
-                               "outputRotate": f"{inverse_orient_node}.outputRotate",
-                               "outputQuat": f"{inverse_orient_node}.outputQuat"})
+    node_mult = cmds.createNode("multMatrix", name=f"{name}_getLocalMatrix_multMatrix")
+    node_matrixInverse = cmds.createNode("inverseMatrix", name=f"{name}_inverseRelativesSpaceMatrix_multMatrix")
+    _assets_nodeList = [node_decom, node_mult, node_matrixInverse]
+    _bindAttr = {"inputMatrix": f"{node_mult}.matrixIn[0]",
+                 "inputRotateOrder": f"{node_decom}.inputRotateOrder",
+                 "inputRelativeSpaceMatrix": f"{node_matrixInverse}.inputMatrix",
+                 "outputTranslate": f"{node_decom}.outputTranslate",
+                 "outputRotate": f"{node_decom}.outputRotate",
+                 # "outputQuat": f"{node_decom}.outputQuat",
+                 "outputScale": f"{node_decom}.outputScale",
+                 "outputShear": f"{node_decom}.outputShear"}
+    # Internal connects
+    cmds.connectAttr(f"{node_matrixInverse}.outputMatrix", f"{node_mult}.matrixIn[1]")
+    cmds.connectAttr(f"{node_mult}.matrixSum", f"{node_decom}.inputMatrix")
+    if hasJointOrient:
+        node_euler_to_quat = cmds.createNode("eulerToQuat", name=f"{name}_eulerToQuat")
+        node_invert_quat = cmds.createNode("quatInvert", name=f"{name}_invertQuat")
+        node_prod_quat = cmds.createNode("quatProd", name=f"{name}_prodQuat")
+        node_quat_to_euler = cmds.createNode("quatToEuler", name=f"{name}_quatToEuler")
 
-    _assets = createAssets(f"{name}_decomMatrix", add_node=assets_nodeList)
-    assetBindAttr(_assets, bind_attr_dict)
+        cmds.connectAttr(f"{node_decom}.inputRotateOrder", f"{node_euler_to_quat}.inputRotateOrder")
+        cmds.connectAttr(f"{node_decom}.inputRotateOrder", f"{node_quat_to_euler}.inputRotateOrder")
+        cmds.connectAttr(f"{node_decom}.outputQuat", f"{node_prod_quat}.input1Quat")
+        cmds.connectAttr(f"{node_euler_to_quat}.outputQuat", f"{node_invert_quat}.inputQuat")
+        cmds.connectAttr(f"{node_invert_quat}.outputQuat", f"{node_prod_quat}.input2Quat")
+        cmds.connectAttr(f"{node_prod_quat}.outputQuat", f"{node_quat_to_euler}.inputQuat")
+        _assets_nodeList.extend([node_euler_to_quat,
+                                 node_invert_quat,
+                                 node_prod_quat,
+                                 node_quat_to_euler])
+        _bindAttr.update({"inputJointOrient": f"{node_euler_to_quat}.inputRotate",
+                          # "outputQuat": f"{node_prod_quat}.outputQuat"
+                          "outputRotate": f"{node_quat_to_euler}.outputRotate"})
+    # assets
+    _assets = createAssets(name=f"{name}_decomMatrix", assetsType="DecomposeMatrix", addNode=_assets_nodeList)
+    assetBindAttr(_assets, _bindAttr)
+
+    # External connects
     if cmds.objExists(name):
         if cmds.objExists(f"{name}.jointOrient"):
-            cmds.connectAttr(f"{name}.jointOrient", f"{_assets}.inputOrientRotate")  # in jointOrient
+            cmds.connectAttr(f"{name}.jointOrient", f"{_assets}.inputJointOrient")  # in jointOrient
+        cmds.connectAttr(f"{name}.parentMatrix[0]", f"{_assets}.inputRelativeSpaceMatrix")  # input relatives space matrix
         cmds.connectAttr(f"{name}.rotateOrder", f"{_assets}.inputRotateOrder")  # in rotateOrder
-        cmds.connectAttr(f"{_assets}.outputTranslate", f"{name}.translate")  # out translate
-        cmds.connectAttr(f"{_assets}.outputScale", f"{name}.scale")  # out scale
-        cmds.connectAttr(f"{_assets}.outputShear", f"{name}.shear")  # out shear
-        cmds.connectAttr(f"{_assets}.outputRotate", f"{name}.rotate")  # out scale
-        cmds.connectAttr(f"{_assets}.outputQuat", f"{name}.rotateQuaternion")  # out shear
+        if translate:
+            cmds.connectAttr(f"{_assets}.outputTranslate", f"{name}.translate")  # out translate
+        if scale:
+            cmds.connectAttr(f"{_assets}.outputScale", f"{name}.scale")  # out scale
+        if shear:
+            cmds.connectAttr(f"{_assets}.outputShear", f"{name}.shear")  # out shear
+        if rotate:
+            cmds.connectAttr(f"{_assets}.outputRotate", f"{name}.rotate")  # out rotate
+            # cmds.connectAttr(f"{_assets}.outputQuat", f"{name}.rotateQuaternion")  # out rotate
     return _assets
 
 
@@ -353,31 +353,32 @@ def matrixConstraint(*args,
             target_object: Driven object
             keep_offset: Maintain offset transforms
         """
+        hasJointOrient = cmds.objExists(f"{target_object}.jointOrient")
         offset_matrix = get_offsetMatrix(get_worldMatrix(target_object), get_worldMatrix(source_obj))
         node_multMatrix = cmds.createNode("multMatrix", name=f"{target_object}_MM_matrixConstraint")
-        node_decom = create_decomposeMatrix(name=target_object, jointOrient=True)
+        node_decom = create_decomposeMatrix(name=target_object)
         _add_nodeList = [node_multMatrix, node_decom]
-        cmds.connectAttr(f"{node_multMatrix}.matrixSum", f"{node_decom}.inputMatrix")
-
         _bindAttr = {"inputOffsetMatrix": f"{node_multMatrix}.matrixIn[0]",
                      "inputControllerMatrix": f"{node_multMatrix}.matrixIn[1]",
                      "inputTargetRotateOrder": f"{node_decom}.inputRotateOrder",
-                     "inputTargetJointOrient": f"{node_decom}.inputJointOrient",
-                     "inputTargetParentInverseMatrix": f"{node_multMatrix}.matrixIn[2]",
+                     "inputTargetRelativeSpaceMatrix": f"{node_decom}.inputRelativeSpaceMatrix",
                      "outputTranslate": f"{node_decom}.outputTranslate",
                      "outputRotate": f"{node_decom}.outputRotate",
-                     "outputQuat": f"{node_decom}.outputQuat",
+                     # "outputQuat": f"{node_decom}.outputQuat",
                      "outputScale": f"{node_decom}.outputScale",
                      "outputShear": f"{node_decom}.outputShear"}
-
+        if hasJointOrient:
+            _bindAttr.update({"inputTargetJointOrient": f"{node_decom}.inputJointOrient"})
         _assets = generateUniqueName(f"{target_object}_matrixConstraint")
-        _assets = createAssets(name=_assets, parent_assets="MatrixConstraint", add_node=_add_nodeList)
+        _assets = createAssets(name=_assets, assetsType="MatrixConstraint", addNode=_add_nodeList)
         assetBindAttr(_assets, _bindAttr)
-
+        # Internal connects
+        cmds.connectAttr(f"{node_multMatrix}.matrixSum", f"{node_decom}.inputMatrix")
+        # External connects
         if keep_offset:
             cmds.setAttr(f"{_assets}.inputOffsetMatrix", offset_matrix, type="matrix")
         cmds.connectAttr(f"{source_obj}.worldMatrix[0]", f"{_assets}.inputControllerMatrix")
-        cmds.connectAttr(f"{target_object}.parentInverseMatrix[0]", f"{_assets}.inputTargetParentInverseMatrix")
+        # cmds.connectAttr(f"{target_object}.parentMatrix[0]", f"{_assets}.inputTargetRelativeSpaceMatrix")
 
         # add info
         # target attr
@@ -398,7 +399,6 @@ def matrixConstraint(*args,
                          f"{_assets}.{_info_name}")
         cmds.connectAttr(f"{_assets}.{_info_name}",
                          f"{target_object}.{_info_name}")
-        # TODO 改写一下 信息链接。 建议写个函数用来处理一个通用的信息链接。
         return _assets
 
     def _query_matrixConstraint(obj: str,
@@ -556,8 +556,7 @@ def parentspaceConstraint(*args,
 
         # assets
         _assets = generateUniqueName(f"{target_obj}_parentspace")
-        _assets = createAssets(name=_assets, parent_assets="ParentspaceAssets",
-                               add_node=add_node_list)
+        _assets = createAssets(name=_assets, assetsType="ParentspaceAssets", addNode=add_node_list)
         assetBindAttr(_assets, bind_attr_dict)
         # add parentspace attr to obj
         if not cmds.objExists(f"{target_obj}.{parentspace_attrName}"):
@@ -697,42 +696,25 @@ def create_fkOffset(control_list: list, offset_list: list):
         next_control = control_list[i + 1]
 
         node_multMatrix = cmds.createNode("multMatrix", name=f"{next_control}_multMatrix_offsetFK")
-        node_decomposeMatrix = cmds.createNode("decomposeMatrix", name=f"{next_control}_decomposeMatrix_offsetFK")
-        _add_node_list = [node_multMatrix, node_decomposeMatrix]
+        node_decom = create_decomposeMatrix(name=next_offset)
+        _add_nodeList = [node_multMatrix, node_decom]
+
         # get offset matrix from 'offset_obj' with 'next offset_obj'
         cmds.connectAttr(f"{next_offset}.parentMatrix[0]",
                          f"{node_multMatrix}.matrixIn[0]")
         cmds.connectAttr(f"{offset}.parentInverseMatrix[0]",
                          f"{node_multMatrix}.matrixIn[1]")
-        # control constraint it
+        # controller constraint it
         cmds.connectAttr(f"{control}.worldMatrix[0]",
                          f"{node_multMatrix}.matrixIn[2]")
         # cal local matrix
         cmds.connectAttr(f"{next_offset}.parentInverseMatrix[0]",
                          f"{node_multMatrix}.matrixIn[3]")
-        # output
+        # matrix to trs
         cmds.connectAttr(f"{node_multMatrix}.matrixSum",
-                         f"{node_decomposeMatrix}.inputMatrix")
-        cmds.connectAttr(f"{next_offset}.rotateOrder",
-                         f"{node_decomposeMatrix}.inputRotateOrder")
-
-        cmds.connectAttr(f"{node_decomposeMatrix}.outputTranslate", f"{next_offset}.translate", f=1)  # out translate
-        cmds.connectAttr(f"{node_decomposeMatrix}.outputScale", f"{next_offset}.scale", f=1)  # out scale
-        cmds.connectAttr(f"{node_decomposeMatrix}.outputShear", f"{next_offset}.shear", f=1)  # out shear
-        if cmds.objExists(f"{next_offset}.jointOrient"):
-            inverse_orient_node = generateUniqueName(f"{next_offset}_inverseJointOrient_matrixConstraint")
-            inverse_orient_node = create_inverseOrient(name=inverse_orient_node)
-            _add_node_list.append(inverse_orient_node)
-            cmds.connectAttr(f"{next_offset}.jointOrient", f"{inverse_orient_node}.inputOrientRotate")  # in orient rotate
-            cmds.connectAttr(f"{next_offset}.rotateOrder", f"{inverse_orient_node}.inputRotateOrder")  # in rotate order
-            cmds.connectAttr(f"{node_decomposeMatrix}.outputQuat", f"{inverse_orient_node}.inputRotateQuat")  # in rotate
-            cmds.connectAttr(f"{inverse_orient_node}.outputRotate", f"{next_offset}.rotate", f=1)  # out rotate
-            cmds.connectAttr(f"{inverse_orient_node}.outputQuat", f"{next_offset}.rotateQuaternion", f=1)  # out quat
-        else:
-            cmds.connectAttr(f"{node_decomposeMatrix}.outputRotate", f"{next_offset}.rotate", f=1)  # out rotate
-            cmds.connectAttr(f"{node_decomposeMatrix}.outputQuat", f"{next_offset}.rotateQuaternion", f=1)  # out quat
+                         f"{node_decom}.inputMatrix")
         _assets = generateUniqueName(f"{next_control}_offsetFK")
-        _assets = createAssets(_assets, parent_assets="OffsetFK", add_node=_add_node_list)
+        _assets = createAssets(name=_assets, assetsType="OffsetFK", addNode=_add_nodeList)
 
 
 def reset_transformObjectValue(obj, transform=True, userDefined=True):

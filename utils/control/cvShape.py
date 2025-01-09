@@ -10,9 +10,23 @@ from utils.mirrorEnv import MIRROR_CONFIG
 
 @dataclass
 class CurveShapeData(yaml.YAMLObject):
+    """ Save nurbsCurveShapeData 
+
+    Data:
+        shapeName (str): shape's name
+        lineWidth (float): shapes's attr
+        overrideEnabled (bool): shapes's attr
+        overrideRGBColors (bool): shapes's attr
+        hideOnPlayback (bool): shapes's attr
+        overrideColor (int): shapes's attr
+        overrideDisplayType (int): shapes's attr
+        overrideColorRGB (list[float]): shapes's attr
+        shapeSetAttrCmd (str): set shape's nurbsCurve data cmd scripts
+    """
+
     yaml_tag = 'CurveShapeData'
     shapeName: str = "shapeName"
-    lineWidth: int = 0
+    lineWidth: float = 0
     overrideEnabled: bool = False
     overrideRGBColors: bool = False
     hideOnPlayback: bool = False
@@ -34,12 +48,14 @@ class CurveShapeData(yaml.YAMLObject):
         return attr_list
 
     def check_shape(self, shape):
+        """Check shape is exists"""
         if not cmds.objExists(shape):
             raise RuntimeError(f"Can not find '{shape}'")
         if cmds.objectType(shape) != "nurbsCurve":
             raise RuntimeError(f"'{shape}' is not nurbsCurve")
 
     def get_shapeData(self, shape_object=None):
+        """ Get shape data"""
         self.check_shape(shape_object)
 
         self.shapeName = shape_object
@@ -53,6 +69,7 @@ class CurveShapeData(yaml.YAMLObject):
     def set_shapeData(self, shape_object=None,
                       setShape: bool = True,
                       setDrawInfo: bool = True):
+        """Set shape data"""
         self.check_shape(shape_object)
 
         if setDrawInfo:
@@ -76,13 +93,20 @@ class CurveShapeData(yaml.YAMLObject):
 
 @ dataclass
 class CurveData(yaml.YAMLObject):
+    """ Save Curve Data
+    Args:
+        args[0] (str): Curve's transform name
+    Data:
+        transformName (str):  Curve's transform name
+        curveShapeDataList (list[CurveShapeData]):  List of shape's CurveShapeData
+    """
     yaml_tag = 'CurveData'
     transformName: str = "transformName"
-    shapes: list = field(default_factory=list)
+    curveShapeDataList: list = field(default_factory=list)
 
     def __post_init__(self):
         if self.transformName:
-            self.shapes = []
+            self.curveShapeDataList = []
             self.get_data(self.transformName)
         else:
             raise RuntimeError("please input transform name")
@@ -95,9 +119,9 @@ class CurveData(yaml.YAMLObject):
 
         self.transformName = transform_obj
         shape_list = get_cvShapes(self.transformName)
-        self.shapes.clear()
+        self.curveShapeDataList.clear()
         for shape in shape_list:
-            self.shapes.append(CurveShapeData(shape))
+            self.curveShapeDataList.append(CurveShapeData(shape))
 
     def set_data(self, transform_obj: str = None,
                  setShape: bool = True,
@@ -109,7 +133,7 @@ class CurveData(yaml.YAMLObject):
 
         target_shape_list = get_cvShapes(transform_obj)
 
-        deviation = len(self.shapes) - len(target_shape_list)
+        deviation = len(self.curveShapeDataList) - len(target_shape_list)
         if deviation > 0:
             for i in range(deviation):
                 if not target_shape_list:
@@ -123,11 +147,11 @@ class CurveData(yaml.YAMLObject):
                 cmds.delete(target_shape_list[-i])
         target_shape_list = get_cvShapes(transform=transform_obj)
 
-        if len(self.shapes) == len(target_shape_list):
-            for i, x in enumerate(self.shapes):
-                self.shapes[i].set_to_shape(target_shape_list[i],
-                                            setShape,
-                                            setDrawInfo)
+        if len(self.curveShapeDataList) == len(target_shape_list):
+            for i, x in enumerate(self.curveShapeDataList):
+                self.curveShapeDataList[i].set_to_shape(target_shape_list[i],
+                                                        setShape,
+                                                        setDrawInfo)
 
 
 def getShapes(transform=None, type: str = None):
@@ -136,8 +160,7 @@ def getShapes(transform=None, type: str = None):
         transform = cmds.ls(sl=1)
     if not type:
         return cmds.listRelatives(transform, ni=True, s=True)
-    else:
-        return cmds.listRelatives(transform, ni=True, s=True, type=type)
+    return cmds.listRelatives(transform, ni=True, s=True, type=type)
 
 
 def get_cvShapes(transform=None):
