@@ -325,7 +325,6 @@ def create_decomposeMatrix(name: str, translate=True, rotate=True, scale=True, s
         if cmds.objExists(f"{name}.jointOrient"):
             cmds.connectAttr(f"{name}.jointOrient", f"{_assets}.inputJointOrient")  # in jointOrient
         cmds.connectAttr(f"{name}.parentMatrix[0]", f"{_assets}.inputRelativeSpaceMatrix")  # input relatives space matrix
-        print("DSafdsafdsa")
         cmds.connectAttr(f"{name}.rotateOrder", f"{_assets}.inputRotateOrder")  # in rotateOrder
         if translate:
             cmds.connectAttr(f"{_assets}.outputTranslate", f"{name}.translate")  # out translate
@@ -340,11 +339,19 @@ def create_decomposeMatrix(name: str, translate=True, rotate=True, scale=True, s
 
 
 def matrixConstraint(*args,
+                     translate: bool = True,
+                     rotate: bool = True,
+                     scale: bool = True,
+                     shear: bool = True,
                      **kwargs) -> str:
     """
     Create a matrix-based constraint node
 
     Args:
+            translate (bool): Enable translation constraint
+            rotate (bool): Enable rotation constraint
+            scale (bool): Enable scale constraint
+            shear (bool): Enable shear constraint
         *arg: Variable length arguments.
             No args: Use current selection, first as source, rest as targets.
             Single arg: Specify source object.
@@ -375,7 +382,7 @@ def matrixConstraint(*args,
         hasJointOrient = cmds.objExists(f"{target_object}.jointOrient")
         offset_matrix = get_offsetMatrix(get_worldMatrix(target_object), get_worldMatrix(source_obj))
         node_multMatrix = cmds.createNode("multMatrix", name=f"{target_object}_MM_matrixConstraint")
-        node_decom = create_decomposeMatrix(name=target_object)
+        node_decom = create_decomposeMatrix(name=target_object, translate=translate, rotate=rotate, scale=scale, shear=shear)
         _add_nodeList = [node_multMatrix, node_decom]
         _bindAttr = {"inputOffsetMatrix": f"{node_multMatrix}.matrixIn[0]",
                      "inputControllerMatrix": f"{node_multMatrix}.matrixIn[1]",
@@ -400,75 +407,42 @@ def matrixConstraint(*args,
         # cmds.connectAttr(f"{target_object}.parentMatrix[0]", f"{_assets}.inputTargetRelativeSpaceMatrix")
 
         # add info
-        # target attr
         if cmds.objExists(f"{target_object}.{_info_name}"):
-            sour_connect_attr = cmds.listConnections(f"{target_object}.{_info_name}", s=1, d=0, p=1)
-            if sour_connect_attr:
-                for attr in sour_connect_attr:
-                    cmds.disconnectAttr(attr, f"{target_object}.{_info_name}")
-        else:
-            cmds.addAttr(target_object, ln=_info_name, at="message")
-        # source attr
-        if not cmds.objExists(f"{source_obj}.{_info_name}"):
-            cmds.addAttr(source_obj, ln=_info_name, at="message")
+            cmds.deleteAttr(f"{target_object}.{_info_name}")
+
         # matrix constraint attr
         cmds.addAttr(_assets, ln=_info_name, at="message")
-        # connect
-        cmds.connectAttr(f"{source_obj}.{_info_name}",
-                         f"{_assets}.{_info_name}")
-        cmds.connectAttr(f"{_assets}.{_info_name}",
-                         f"{target_object}.{_info_name}")
+        cmds.addAttr(target_object, ln=_info_name, at="message", pxy=f"{_assets}.{_info_name}")
         return _assets
 
-    def _query_matrixConstraint(obj: str,
-                                source: bool,
-                                target: bool):
+    def _query_matrixConstraint(obj: str):
         """
         Query constraint relationships
 
         Args:
-            obj: Object to query
-            source: Query source object
-            target: Query target objects
-
+            object: object to query
         Returns:
             dict: Constraint relationship dictionary
         """
         dict_info = {}
+        _assets = None
+        target_obj = None
         if not cmds.objExists(f"{obj}.{_info_name}"):
             return dict_info
-        if source:
-            _assets = cmds.listConnections(f"{obj}.{_info_name}", s=1, d=0)
-            if _assets:
-                _assets = _assets[0]
-                source_obj = cmds.listConnections(f"{_assets}.{_info_name}", s=1, d=0)
-                if source_obj:
-                    source_obj = source_obj[0]
-                    dict_info.update({source_obj: [obj]})
-        if target:
-            _assets_list = cmds.listConnections(f"{obj}.{_info_name}", s=0, d=1)
+        if cmds.objectType(obj) == "container":
+            _assets = obj
+            target_obj_list = cmds.listConnections(f"{_assets}.{_info_name}", s=0, d=1)
+            if target_obj_list:
+                target_obj = target_obj_list[0]
+        else:
+            target_obj = obj
+            _assets_list = cmds.listConnections(f"{target_obj}.{_info_name}", s=1, d=0)
             if _assets_list:
-                target_obj_list = []
-                for _assets in _assets_list:
-                    target_obj = cmds.listConnections(f"{_assets}.{_info_name}", s=0, d=1)
-                    if target_obj:
-                        target_obj_list.extend(target_obj)
-                dict_info.update({obj: target_obj_list})
+                _assets = _assets_list[0]
+        controller_obj = cmds.listConnections(f"{_assets}.inputControllerMatrix", s=1, d=0)[0]
+        dict_info.update({controller_obj: target_obj})
         return dict_info
 
-    if len(args) == 0:
-        sel = cmds.ls(sl=1)
-        if len(sel) < 2:
-            om.MGlobal.displayError("Please select at least two objects.")
-            return
-        source_obj = cmds.ls(sl=1)[0]
-        target_object = cmds.ls(sl=1)[1:]
-    elif len(args) == 1:
-        source_obj = args[0]
-    else:
-        source_obj = args[0]
-        target_object = []
-        target_object.extend(args[1:])
     maintainOffset = kwargs.get("mo", True) and kwargs.get("maintainOffset", True)
     query = kwargs.get("q", False) or kwargs.get("query", False)
     q_source = kwargs.get("s", True)
@@ -478,12 +452,24 @@ def matrixConstraint(*args,
     if not q_target:
         q_target = kwargs.get("target", False)
 
+    # do functions
     if query:
-        return _query_matrixConstraint(source_obj, q_source, q_target)
-    else:
+        if args:
+            obj = args[0]
+        else:
+            obj = cmds.ls(sl=1)
+            obj = obj[0]
+        return _query_matrixConstraint(obj)
+    if not query:
+        if not args:
+            args = cmds.ls(sl=1)
+        source_obj = args[0]
+        target_object = args[1:]
+        _assets_list = []
         for target in target_object:
             _assets = _create_matrixConstraint(source_obj, target, maintainOffset)
-        return _assets
+            _assets_list.append(_assets)
+        return _assets_list
 
 
 def parentspaceConstraint(*args,
@@ -508,7 +494,7 @@ def parentspaceConstraint(*args,
             If empty: Uses selected objects (last = target)
             If provided: Last arg = target, others = controls
         **kwargs: Optional arguments
-            nice_name (str): Custom name for space switch enum
+            niceName (str): Custom name for space switch enum
     """
 
     parentspace_attrName = "parentSpace"
@@ -567,53 +553,53 @@ def parentspaceConstraint(*args,
         if cmds.objExists(f"{target_obj}.{parentspace_attrName}"):
             cmds.deleteAttr(f"{target_obj}.{parentspace_attrName}")
         cmds.addAttr(target_obj, ln=parentspace_attrName, k=1, pxy=f"{_assets}.{parentspace_attrName}")
+
         # add message info to obj
         cmds.addAttr(_assets, ln=_info_name, at="message")
-        if not cmds.objExists(f"{target_obj}.{_info_name}"):
-            cmds.addAttr(target_obj, ln=_info_name, at="message")
-        cmds.connectAttr(f"{_assets}.{_info_name}", f"{target_obj}.{_info_name}")
+        if cmds.objExists(f"{target_obj}.{_info_name}"):
+            cmds.deleteAttr(f"{target_obj}.{_info_name}")
+        cmds.addAttr(target_obj, ln=_info_name, at="message", pxy=f"{_assets}.{_info_name}")
 
         return _assets
 
-    def _add_parentspace(control_obj: str,
-                         target_obj: str,
-                         nice_name: str = None):
+    def _add_parentspace(controllerObj: str,
+                         targetObj: str,
+                         niceName: str = None):
         """
         Add a new parent space option to the target object
 
         Args:
             control_obj (str): Control object to add as parent space
             target_obj (str): Target object to be constrained
-            nice_name (str, optional): Custom name for space enum
+            niceName (str, optional): Custom name for space enum
         """
 
         # get parentspace assets
-        if not cmds.objExists(f"{target_obj}.{_info_name}"):
-            _assets = _pre_parentspace(target_obj)
-        else:
-            _assets = cmds.listConnections(f"{target_obj}.{_info_name}", s=1, d=0)[0]
-            if not _assets:
-                raise RuntimeError("ERROR,function stop!")
+        if not cmds.objExists(f"{targetObj}.{_info_name}"):
+            _assets = _pre_parentspace(targetObj)
+
+        _assets = cmds.listConnections(f"{targetObj}.{_info_name}", s=1, d=0)[0]
+        if not _assets:
+            raise RuntimeError("Can not find parentspace constraint node!")
 
         # nice name enum
-        if not nice_name:
-            nice_name = control_obj
-        enum_str = cmds.addAttr(f"{target_obj}.{parentspace_attrName}", q=1, en=1)
+        if not niceName:
+            niceName = controllerObj
+        enum_str = cmds.addAttr(f"{targetObj}.{parentspace_attrName}", q=1, en=1)
         nice_name_list = enum_str.split(":")
-        nice_name_list.append(nice_name)
+        nice_name_list.append(niceName)
         enum_str = ":".join(nice_name_list)
         parent_indices = len(nice_name_list)-1
 
         # update parentspace enum
-        cmds.addAttr(f"{target_obj}.{parentspace_attrName}", e=1, en=enum_str)
+        cmds.addAttr(f"{targetObj}.{parentspace_attrName}", e=1, en=enum_str)
         cmds.addAttr(f"{_assets}.{parentspace_attrName}", e=1, en=enum_str)
 
-        # control_obj constraint target_obj
-        offset_matrix = get_offsetMatrix(get_worldMatrix(target_obj), get_worldMatrix(control_obj))
-        # set offset matrix
+        # offset matrix to chose
+        offset_matrix = get_offsetMatrix(get_worldMatrix(targetObj), get_worldMatrix(controllerObj))
         cmds.setAttr(f"{_assets}.offsetMatrix[{parent_indices}]", offset_matrix, type="matrix")
-        # connect controller matrix
-        cmds.connectAttr(f"{control_obj}.worldMatrix[0]", f"{_assets}.controllerMatrix[{parent_indices}]")
+        # controller matrix to chose
+        cmds.connectAttr(f"{controllerObj}.worldMatrix[0]", f"{_assets}.controllerMatrix[{parent_indices}]")
         # update chose input data
         controller_chose = cmds.listConnections(f"{_assets}.controllerMatrix[0]", p=0, d=1, s=0)[0]
         offset_chose = cmds.listConnections(f"{_assets}.offsetMatrix[0]", p=0, d=1, s=0)[0]

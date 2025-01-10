@@ -2,6 +2,7 @@ from maya import cmds
 from maya.api import OpenMaya as om
 from utils.transform.transform import get_worldMatrix, matrixConstraint, create_decomposeMatrix
 from utils.generateUniqueName import generateUniqueName
+from utils.createAssets import createAssets
 
 
 def get_UVByClosestPoint(point, shape: str):
@@ -69,14 +70,16 @@ def create_planeByObjectList(object_list, size=1, name="uvPinPlane"):
 
     fnMesh.setUVs(u, v)
     fnMesh.assignUVs(uvCounts, uvIds)
-    return transform
+    return transform, fnDep.name()
 
 
-def create_uvPin(obj_list: list, plane_size=0.3, name: str = "uvPin"):
+def create_uvPin(obj_list: list = [], plane_size=0.3, name: str = "uvPin"):
     if not obj_list:
-        raise ValueError("No object need to create uvPin, please input object list first.")
+        obj_list = cmds.ls(sl=1)
+        if not obj_list:
+            raise ValueError("No object need to create uvPin, please input object list. or select some object.")
     # create mesh
-    mesh = create_planeByObjectList(obj_list, size=plane_size, name=f"{name}_mesh")
+    mesh, shape = create_planeByObjectList(obj_list, size=plane_size, name=f"{name}_mesh")
 
     # create uvPin node
     node_uvPin = cmds.createNode("uvPin", name=name)
@@ -89,24 +92,31 @@ def create_uvPin(obj_list: list, plane_size=0.3, name: str = "uvPin"):
                      f"{node_uvPin}.originalGeometry")
     cmds.connectAttr(f"{mesh}.worldMesh[0]",
                      f"{node_uvPin}.deformedGeometry")
-
+    _add_nodeList = [node_uvPin]
     for i, obj in enumerate(obj_list):
         # set uvPin.uv value
         cmds.setAttr(f"{node_uvPin}.coordinate[{i}].coordinateU", i + 0.5)
         cmds.setAttr(f"{node_uvPin}.coordinate[{i}].coordinateV", 0.5)
-        node_decom = create_decomposeMatrix(obj, scale=False)
-        cmds.connectAttr(f"{node_uvPin}.outputMatrix[{i}]",
-                         f"{node_decom}.inputMatrix")
+        node_decom = create_decomposeMatrix(obj, scale=False, shear=False)
+        cmds.connectAttr(f"{node_uvPin}.outputMatrix[{i}]", f"{node_decom}.inputMatrix")
+        _add_nodeList.append(node_decom)
+    _assets_uvPin = createAssets(name=f"{name}_uvPinNodes", assetsType="UVPinConstraint", addNode=_add_nodeList)
+    _assets = createAssets(name=f"{name}_uvPinConstraint", assetsType="UVPinConstraint", addNode=[mesh, shape, orig_outMesh, _assets_uvPin], blackBox=0)
+    return _assets
 
 
-def create_follicle(obj_list: list, plane_size=0.3, name: str = "follicle"):
+def create_follicle(obj_list: list = [], plane_size=0.3, name: str = "follicle"):
     if not obj_list:
-        raise ValueError("No object need to create uvPin, please input object list first.")
+        obj_list = cmds.ls(sl=1)
+        if not obj_list:
+            raise ValueError("No object need to create uvPin, please input object list. or select some object.")
     # create mesh
-    mesh = create_planeByObjectList(obj_list, size=plane_size, name="uvPin")
+    mesh, shape = create_planeByObjectList(obj_list, size=plane_size, name=generateUniqueName(f"{name}_mesh"))
+    _add_nodeList = []
     for i, obj in enumerate(obj_list):
-        follicle = generateUniqueName(name)
+        follicle = generateUniqueName(f"{obj}_follicle")
         follicle = cmds.createNode("transform", name=follicle)
+        cmds.setAttr(f"{follicle}.v", 0)
         follicle_shape = cmds.createNode("follicle", name=f"{follicle}Shape", parent=follicle)
         cmds.connectAttr(f"{mesh}.outMesh", f"{follicle_shape}.inputMesh")
         cmds.connectAttr(f"{mesh}.worldMatrix[0]", f"{follicle_shape}.inputWorldMatrix")
@@ -114,7 +124,11 @@ def create_follicle(obj_list: list, plane_size=0.3, name: str = "follicle"):
         cmds.setAttr(f"{follicle_shape}.parameterV", 0.5)
         cmds.connectAttr(f"{follicle_shape}.outTranslate", f"{follicle}.translate")
         cmds.connectAttr(f"{follicle_shape}.outRotate", f"{follicle}.rotate")
-        matrixConstraint(follicle, obj)
+        matrixCon = matrixConstraint(follicle, obj, scale=False, shear=False)
+        _add_nodeList.extend([follicle, follicle_shape, matrixCon])
+    _assets_follicle = createAssets(name=f"{name}_follicleNodes", assetsType="FollicleConstraint", addNode=_add_nodeList)
+    _assets = createAssets(name=f"{name}_follicleConstraint", assetsType="FollicleConstraint", addNode=[mesh, shape, _assets_follicle], blackBox=0)
+    return _assets
 
 
 # create_uvPin(cmds.ls(sl=1), plane_size=0.3)

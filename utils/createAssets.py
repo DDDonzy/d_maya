@@ -23,6 +23,7 @@ def createAssets(name: str,
     """
     # Retrieve optional parameters
     icon = kwargs.get("icon", None)
+    type = kwargs.get("type", "container")
 
     # Check if the asset already exists
     if cmds.objExists(name) and public:
@@ -31,11 +32,11 @@ def createAssets(name: str,
     # Create parent assets if specified and not existing
     if assetsType is not None:
         if not cmds.objExists(assetsType):
-            rig_assets = createAssets(name="RigAssets", assetsType=None, blackBox=False, icon="character.svg", public=True)
+            rig_assets = createAssets(name="RigAssets", assetsType=None, blackBox=False, icon="character.svg", public=True, type="dagContainer")
             assetsType = createAssets(name=assetsType, assetsType=rig_assets, blackBox=False, icon=icon, public=True)
 
     # Create the asset container
-    assets = cmds.container(name=name)
+    assets = cmds.container(name=name, type=type)
     for x in addNode:
         cmds.container(name=name, e=1, f=1, an=x)
 
@@ -48,7 +49,7 @@ def createAssets(name: str,
     # Add the container to the parent container if specified
     if assetsType:
         if cmds.objExists(assetsType):
-            cmds.container(assetsType, e=1, addNode=assets, f=1)
+            cmds.container(assetsType, e=1, addNode=assets, f=1, it=1, ish=1)
 
     return assets
 
