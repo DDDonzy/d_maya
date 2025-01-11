@@ -97,6 +97,24 @@ def get_offsetMatrix(child_world_matrix: om.MMatrix,
     return child_local_matrix
 
 
+def get_relativesMatrix(matrix: om.MMatrix,
+                        referenceMatrix: om.MMatrix) -> om.MMatrix:
+    """
+    Calculate the relative matrix
+
+    This function calculates the relative matrix of a given matrix with respect to a reference matrix.
+
+    Args:
+        matrix (om.MMatrix): The input matrix
+        referenceMatrix (om.MMatrix): The reference matrix
+
+    Returns:
+        om.MMatrix: The relative matrix
+    """
+    relativesMatrix = matrix * referenceMatrix.inverse()
+    return relativesMatrix
+
+
 def get_localMatrix(obj: str) -> om.MMatrix:
     """get object's local space matrix
 
@@ -336,6 +354,18 @@ def create_decomposeMatrix(name: str, translate=True, rotate=True, scale=True, s
             cmds.connectAttr(f"{_assets}.outputRotate", f"{name}.rotate")  # out rotate
             # cmds.connectAttr(f"{_assets}.outputQuat", f"{name}.rotateQuaternion")  # out rotate
     return _assets
+
+
+def create_relativesMatrix(name: str = ""):
+    node_multMatrix = cmds.createNode("multMatrix", name=f"{name}_getRelativesMatrix_multMatrix")
+    node_inverseMatrix = cmds.createNode("inverseMatrix", name=f"{name}_getRelativesMatrix_inverseMatrix")
+    cmds.connectAttr(f"{node_inverseMatrix}.outputMatrix", f"{node_multMatrix}.matrixIn[1]")
+    _assets_nodeList = [node_multMatrix, node_inverseMatrix]
+    _bindAttr = {"inputMatrix": f"{node_multMatrix}.matrixIn[0]",
+                 "inputRelativeMatrix": f"{node_inverseMatrix}.inputMatrix",
+                 "outputMatrix": f"{node_multMatrix}.matrixSum"}
+    _assets = createAssets(f"{name}_getRelativesMatrix", addNode=_assets_nodeList)
+    assetBindAttr(_assets, _bindAttr)
 
 
 def matrixConstraint(*args,
@@ -622,7 +652,7 @@ def parentspaceConstraint(*args,
         _add_parentspace(control_obj, target_obj, **kwargs)
 
 
-def create_fkOffset(control_list: list, offset_list: list):
+def create_OffsetFK(control_list: list, offset_list: list):
     """
     Create an offset system for FK chains
     For example, the hierarchy at the top of each FK chain is constrained,
@@ -660,9 +690,6 @@ def create_fkOffset(control_list: list, offset_list: list):
         # controller constraint it
         cmds.connectAttr(f"{control}.worldMatrix[0]",
                          f"{node_multMatrix}.matrixIn[2]")
-        # cal local matrix
-        cmds.connectAttr(f"{next_offset}.parentInverseMatrix[0]",
-                         f"{node_multMatrix}.matrixIn[3]")
         # matrix to trs
         cmds.connectAttr(f"{node_multMatrix}.matrixSum",
                          f"{node_decom}.inputMatrix")
