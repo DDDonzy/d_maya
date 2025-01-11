@@ -1,8 +1,8 @@
 from maya import cmds
 from maya.api import OpenMaya as om
-from utils.transform.transform import get_worldMatrix, matrixConstraint, create_decomposeMatrix
-from utils.generateUniqueName import generateUniqueName
-from utils.createAssets import createAssets
+from py2.utils.transform.transform import get_worldMatrix, matrixConstraint, create_decomposeMatrix
+from py2.utils.generateUniqueName import generateUniqueName
+from py2.utils.createAssets import createAssets
 
 
 def get_UVByClosestPoint(point, shape):
