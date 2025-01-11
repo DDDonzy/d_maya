@@ -271,10 +271,11 @@ def matrixConstraint(*args,  **kwargs):
     q_target = kwargs.get("t", True)
     if not q_target:
         q_target = kwargs.get("target", False)
-    translate=kwargs.get("translate")
-    rotate=kwargs.get("rotate")
-    scale=kwargs.get("scale")
-    shear=kwargs.get("shear")
+        
+    translate = kwargs.get("translate", True)
+    rotate = kwargs.get("rotate", True)
+    scale = kwargs.get("scale", True)
+    shear = kwargs.get("shear", True)
 
     # Do functions
     if query:
@@ -395,12 +396,11 @@ def parentspaceConstraint(*args, **kwargs):
         cmds.connectAttr("{}.offsetMatrix[{}]".format(_assets, parent_indices), "{}.input[{}]".format(offset_chose, parent_indices))
 
     # Main function logic
-    
-    translate=kwargs.get("translate")
-    rotate=kwargs.get("rotate")
-    scale=kwargs.get("scale")
-    shear=kwargs.get("shear")
-    
+    translate = kwargs.get("translate", True)
+    rotate = kwargs.get("rotate", True)
+    scale = kwargs.get("scale", True)
+    shear = kwargs.get("shear", True)
+
     if len(args) == 0:
         sel = cmds.ls(sl=1)
         if len(sel) < 2:
