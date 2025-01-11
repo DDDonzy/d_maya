@@ -23,3 +23,19 @@ def generateUniqueName(name):
         else:
             name = f"{name}{1}"
     return name
+
+
+def adjustName(name, baseName='', num=1):
+    if not name:
+        return name
+    name = re.sub(r'[^a-zA-Z0-9_#@]', '_', string=name)
+    name = re.sub(r"\@", f"{baseName}", name)
+    name = re.sub(r"\#", f"{num}", name)
+    name = re.sub(r'_{2,}', '_', name)
+    if name[0] == "_":
+        name = name[1:]
+    if name[0].isdigit():
+        name = "_" + name
+    if name[-1] == "_":
+        name = name[0:-1]
+    return name

@@ -84,3 +84,4 @@ def mirror_selected(add=False):
 
 global MIRROR_CONFIG
 MIRROR_CONFIG = MIRROR_BASE()
+

@@ -22,7 +22,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "from utils.transform.transform import reset_transform_value_cmd\nreset_transform_value_cmd(True,False)" 
+            -command "from utils.transform.transform import reset_transformObjectValue_cmd\nreset_transformObjectValue_cmd(True,False)" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -43,7 +43,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "from utils.transform.transform import reset_transform_value_cmd\nreset_transform_value_cmd(True,True)" 
+            -command "from utils.transform.transform import reset_transformObjectValue_cmd\nreset_transformObjectValue_cmd(True,True)" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -84,7 +84,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "import utils.control.curve_shape\nutils.control.curve_shape.mirror_curve_shape_cmd()" 
+            -command "from utils.control.cvShape import mirror_cvShape_cmd\nmirror_cvShape_cmd()" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -105,7 +105,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "import utils.control.curve_shape\nutils.control.curve_shape.replace_curve_shape_cmd()" 
+            -command "from utils.control.cvShape import replace_cvShape_cmd\nreplace_cvShape_cmd()" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -126,7 +126,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "import utils.control.curve_shape\nutils.control.curve_shape.select_curve_cv_cmd()" 
+            -command "from utils.control.cvShape import select_cvControlVertex_cmd\nselect_cvControlVertex_cmd()" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -143,32 +143,11 @@
             menuEditorMenuItem2;
 
         menuItem
-            -label "Rainbow" 
+            -label "Export Curve Shape" 
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "from Rainbow.rainbow_UI import *\nrainbow_win()" 
-            -optionBox 0
-            -enable 1
-            -visible 1
-            -data 0
-            -radialPosition "N" 
-            -allowOptionBoxes 1
-            -postMenuCommandOnce 0
-            -enableCommandRepeat 1
-            -echoCommand 0
-            -italicized 0
-            -boldFont 1
-            -sourceType "python" 
-            -longDivider 1
-            menuEditorMenuItem4;
-
-        menuItem
-            -label "Export Curve Data" 
-            -divider 0
-            -subMenu 0
-            -tearOff 0
-            -command "from utils.control.curve_shape import export_curve_data\nexport_curve_data()" 
+            -command "from utils.control.cvShape import import_cvData,export_cvData\nexport_cvData()"
             -optionBox 0
             -enable 1
             -visible 1
@@ -179,17 +158,17 @@
             -enableCommandRepeat 1
             -echoCommand 0
             -italicized 0
-            -boldFont 1
+            -boldFont 0
             -sourceType "python" 
             -longDivider 1
-            menuEditorMenuItem5;
+            menuEditorMenuItem4;
 
         menuItem
-            -label "Import Curve Data" 
+            -label "Import Curve Shapes" 
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "from utils.control.curve_shape import import_curve_data\nimport_curve_data()" 
+            -command "from utils.control.cvShape import import_cvData,export_cvData\nimport_cvData()"
             -optionBox 0
             -enable 1
             -visible 1
@@ -200,10 +179,10 @@
             -enableCommandRepeat 1
             -echoCommand 0
             -italicized 0
-            -boldFont 1
+            -boldFont 0
             -sourceType "python" 
             -longDivider 1
-            menuEditorMenuItem6;
+            menuEditorMenuItem5;
 
     setParent -m ..;
 
@@ -212,7 +191,7 @@
         -divider 0
         -subMenu 0
         -tearOff 0
-        -command "from utils.mirror_env import mirror_config\nmirror_config.switch_mode()" 
+        -command "from utils.mirrorEnv import MIRROR_CONFIG\nMIRROR_CONFIG.switch_mode()" 
         -optionBox 0
         -enable 1
         -visible 1
@@ -251,7 +230,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "import utils.mirror_env\nutils.mirror_env.mirror_selected(False)" 
+            -command "from utils.mirrorEnv import mirror_selected\nmirror_selected()" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -272,7 +251,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "import utils.mirror_env\nutils.mirror_env.mirror_selected(True)" 
+            -command "from utils.mirrorEnv import mirror_selected\nmirror_selected(True)" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -332,7 +311,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "from utils.skin.get_skinJoint import get_skin_joint_cmd\nget_skin_joint_cmd(True)" 
+            -command "from utils.skin.getSkinJoint import get_skinJoint_cmd\nget_skinJoint_cmd()" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -366,7 +345,7 @@
             -echoCommand 0
             -italicized 0
             -boldFont 1
-            -sourceType "python" 
+            -sourceType "mel" 
             -longDivider 1
             menuEditorMenuItem4;
 
@@ -388,7 +367,7 @@
             -echoCommand 0
             -italicized 0
             -boldFont 1
-            -sourceType "python" 
+            -sourceType "mel" 
             -longDivider 1
             menuEditorMenuItem5;
 
@@ -415,29 +394,11 @@
             menuEditorMenuItem7;
 
         menuItem
-            -divider 0
-            -subMenu 0
-            -tearOff 0
-            -command "SmoothBindSkinOptions" 
-            -optionBox 1
-            -enable 1
-            -visible 0
-            -data 0
-            -allowOptionBoxes 1
-            -postMenuCommandOnce 0
-            -enableCommandRepeat 0
-            -echoCommand 0
-            -italicized 0
-            -boldFont 0
-            -sourceType "mel" 
-            -longDivider 1
-            menuEditorMenuItem1;
-
-        menuItem
             -label "Copy Skin One To N" 
             -divider 0
             -subMenu 0
             -tearOff 0
+            -command "from utils.skin.copyWeightsOneToN import copyWeightsOneToN_cmd\ncopyWeightsOneToN_cmd()" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -446,10 +407,10 @@
             -allowOptionBoxes 1
             -postMenuCommandOnce 0
             -enableCommandRepeat 1
+            -echoCommand 0
             -italicized 0
             -boldFont 1
             -sourceType "python" 
-            -command "from utils.skin.copyWeightsOneToN import copyWeightsOneToN_cmd\ncopyWeightsOneToN_cmd()" 
             -longDivider 1
             menuEditorMenuItem9;
 
@@ -470,7 +431,7 @@
             -echoCommand 0
             -italicized 0
             -boldFont 1
-            -sourceType "python" 
+            -sourceType "mel" 
             -longDivider 1
             menuEditorMenuItem8;
 
@@ -491,11 +452,32 @@
             -echoCommand 0
             -italicized 0
             -boldFont 1
-            -sourceType "python" 
+            -sourceType "mel" 
             -longDivider 1
             menuEditorMenuItem6;
 
     setParent -m ..;
+
+    menuItem
+        -label "Rename" 
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "from utils.rename import showUI as renameShowUI\nrenameShowUI()" 
+        -optionBox 0
+        -enable 1
+        -visible 1
+        -data 0
+        -radialPosition "NW" 
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 1
+        -sourceType "python" 
+        -longDivider 1
+        menuEditorMenuItem1;
 
 setParent -m ..;
 

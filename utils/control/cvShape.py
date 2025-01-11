@@ -149,9 +149,9 @@ class CurveData(yaml.YAMLObject):
 
         if len(self.curveShapeDataList) == len(target_shape_list):
             for i, x in enumerate(self.curveShapeDataList):
-                self.curveShapeDataList[i].set_to_shape(target_shape_list[i],
-                                                        setShape,
-                                                        setDrawInfo)
+                self.curveShapeDataList[i].set_shapeData(target_shape_list[i],
+                                                         setShape,
+                                                         setDrawInfo)
 
 
 def getShapes(transform=None, type: str = None):
@@ -277,7 +277,10 @@ def export_cvData(cv_list=None):
     for obj in cv_list:
         data_list.append(CurveData(obj))
 
-    path = cmds.fileDialog2(dialogStyle=2, caption="Export nurbsCurve data", fileFilter="YAML file(*.yaml)")[0]
+    path = cmds.fileDialog2(dialogStyle=2, caption="Export nurbsCurve data", fileFilter="YAML file(*.yaml)")
+    if not path:
+        return 
+    path = path[0]
     with open(path, "w") as f:
         yaml.dump(data_list, f, sort_keys=False, indent=4, width=80)
     message = '<hl> Export successful </hl>'
@@ -286,6 +289,9 @@ def export_cvData(cv_list=None):
 
 def import_cvData():
     path = cmds.fileDialog2(dialogStyle=2, caption="Import nurbsCurve data", fileFilter="YAML file(*.yaml)", fileMode=1)[0]
+    if not path:
+        return 
+    path = path[0]
     with open(path, "r") as f:
         data_list = yaml.unsafe_load(f)
         for data in data_list:

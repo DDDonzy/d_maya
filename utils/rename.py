@@ -1,28 +1,23 @@
 import re
-import maya.OpenMayaUI as omui
 from maya import cmds
 from maya.api import OpenMaya as om
-from shiboken2 import wrapInstance
 from PySide2.QtCore import Qt, QSize, QStringListModel
-from PySide2.QtWidgets import QLineEdit, QWidget, QCompleter
+from PySide2.QtWidgets import QLineEdit, QCompleter
 from PySide2.QtGui import QCursor
-from utils.generateUniqueName import generateUniqueName
+
+from utils.ui.getMayaMainWindow import getMayaMainWindow
+from utils.generateUniqueName import generateUniqueName, adjustName
 
 
-def get_maya_main_window():
-    main_window_ptr = omui.MQtUtil.mainWindow()
-    return wrapInstance(int(main_window_ptr), QWidget)
-
-
-class InputDialog(QLineEdit):
+class RenameUI(QLineEdit):
     _suffix = ["", "_CTL", "_GRP", "_SDK", "_OFFSET"]
 
     def __init__(self):
         # user data
-        self.updated_suffix = InputDialog._suffix
+        self.updated_suffix = RenameUI._suffix
         self.modelNeedUpdate = True
         # ui
-        super().__init__(get_maya_main_window())
+        super().__init__(getMayaMainWindow())
         self.setFixedSize(QSize(300, 30))
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.Popup)
         self.move(QCursor().pos())
@@ -33,7 +28,7 @@ class InputDialog(QLineEdit):
 
         # textCompleter
         self.model = QStringListModel(self.updated_suffix)
-        self.model.setStringList(InputDialog._suffix)
+        self.model.setStringList(RenameUI._suffix)
         self.textCompleter = QCompleter(self)
         self.textCompleter.setCaseSensitivity(Qt.CaseInsensitive)
         self.textCompleter.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
@@ -46,49 +41,54 @@ class InputDialog(QLineEdit):
         self.textCompleter.highlighted.connect(self.change)
         self.returnPressed.connect(self.run)
 
+        # event
+        self.installEventFilter(self)
+
     def change(self, text):
         self.modelNeedUpdate = False
 
     def textChange(self, text):
-        text = self.adjust_variable_name(text)
+        text = self._adjustText(text)
         if self.modelNeedUpdate:
-            self.updated_suffix = [self.adjust_variable_name(f"{text}{x}") for x in InputDialog._suffix]
+            self.updated_suffix = [self._adjustText(f"{text}{x}") for x in RenameUI._suffix]
             self.model.setStringList(self.updated_suffix)
         self.modelNeedUpdate = True
+        self.setText(text)
 
-    def keyPressEvent(self, event):
-        if event.key() == Qt.Key_Escape:
-            self.deleteLater()
-        else:
-            super().keyPressEvent(event)
+    def _adjustText(self, text):
+        if not text:
+            return text
+        text = re.sub(r'[^a-zA-Z0-9_#@]', '_', string=text)
+        text = re.sub(r'_{2,}', '_', text)
+        if text[0].isdigit():
+            text = "_" + text
+        return text
 
     def run(self):
         text = self.text()
-        print(text)
         cmds.undoInfo(openChunk=True)
         mSel = om.MGlobal.getActiveSelectionList()
         mIterSel = om.MItSelectionList(mSel)
         for x in mIterSel:
             baseName = x.getDagPath().partialPathName()
-            name = re.sub(r"\@", baseName, text)
-            name = re.sub(r"\#", "1_", name)
-            name = self.adjust_variable_name(name)
-            if text[-1] == "_":
-                text = text[0:-1]
+            name = adjustName(name=text, baseName=baseName, num=1)
             name = generateUniqueName(name)
             cmds.rename(baseName, name)
         cmds.undoInfo(closeChunk=True)
         self.deleteLater()
 
-    def adjust_variable_name(self, name):
-        if not name:
-            return name
-        name = re.sub(r'[^a-zA-Z0-9_#@]', '_', string=name)
-        name = re.sub(r'_{2,}', '_', name)
-        if name[0].isdigit():
-            name = "_" + name
-        return name
+    def eventFilter(self, obj, event):
+        if event.type() == event.MouseButtonPress:
+            inQLineEdit = self.rect().contains(event.pos())
+            if not inQLineEdit:
+                self.deleteLater()
+                return True
+        elif event.type() == event.KeyPress and event.key() == Qt.Key_Escape:
+            self.deleteLater()
+            return True
+        return False
 
 
-window = InputDialog()
-window.show()
+def showUI():
+    rename_ui = RenameUI()
+    rename_ui.show()

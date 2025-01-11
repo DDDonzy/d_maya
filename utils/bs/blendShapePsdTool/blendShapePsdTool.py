@@ -203,7 +203,10 @@ def import_proxyTransformData():
         cmds.delete(cmds.parentConstraint(obj, pxy_parent))
         cmds.parentConstraint(parent, pxy_parent, mo=1)
         cmds.orientConstraint(obj, pxy_obj)
-    path = cmds.fileDialog2(dialogStyle=2, caption="Load proxy transform data", fileFilter="YAML file(*.yaml)", fileMode=1)[0]
+    path = cmds.fileDialog2(dialogStyle=2, caption="Load proxy transform data", fileFilter="YAML file(*.yaml)", fileMode=1)
+    if not path:
+        return 
+    path = path[0]
     with open(path, "r") as f:
         data = yaml.unsafe_load(f)
         for x in data:
@@ -226,7 +229,10 @@ def export_poseInterpolatorData(node=None):
     data_list = []
     for i in node:
         data_list.append(load_dataByNode(i))
-    path = cmds.fileDialog2(dialogStyle=2, caption="Export poseInterpolator data", fileFilter="YAML file(*.yaml)")[0]
+    path = cmds.fileDialog2(dialogStyle=2, caption="Export poseInterpolator data", fileFilter="YAML file(*.yaml)")
+    if not path:
+        return 
+    path = path[0]
     with open(path, "w") as f:
         yaml.dump(data_list, f, sort_keys=False, indent=4, width=80)
 
@@ -235,7 +241,10 @@ def import_poseInterpolatorData():
     """
     import poseInterpolator node from files.
     """
-    path = cmds.fileDialog2(dialogStyle=2, caption="Load poseInterpolator data", fileFilter="YAML file(*.yaml)", fileMode=1)[0]
+    path = cmds.fileDialog2(dialogStyle=2, caption="Load poseInterpolator data", fileFilter="YAML file(*.yaml)", fileMode=1)
+    if not path:
+        return 
+    path = path[0]
     with open(path, "r") as f:
         data_list = yaml.unsafe_load(f)
         for data in data_list:
@@ -310,7 +319,10 @@ class FingerTargetData(yaml.YAMLObject):
 
 
 def create_fingerTarget(bs):
-    path = cmds.fileDialog2(dialogStyle=2, caption="Load finger blendShape data", fileFilter="YAML file(*.yaml)", fileMode=1)[0]
+    path = cmds.fileDialog2(dialogStyle=2, caption="Load finger blendShape data", fileFilter="YAML file(*.yaml)", fileMode=1)
+    if not path:
+        return 
+    path = path[0]
     with open(path, "r") as f:
         data_list = yaml.unsafe_load(f)
         for x in data_list:
