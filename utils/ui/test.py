@@ -70,12 +70,12 @@ class InputDialog(QLineEdit):
         mIterSel = om.MItSelectionList(mSel)
         for x in mIterSel:
             baseName = x.getDagPath().partialPathName()
-            text = re.sub(r"\@", baseName, text)
-            text = re.sub(r"\#", "1_", text)
-            text = self.adjust_variable_name(text)
+            name = re.sub(r"\@", baseName, text)
+            name = re.sub(r"\#", "1_", name)
+            name = self.adjust_variable_name(name)
             if text[-1] == "_":
                 text = text[0:-1]
-            name = generateUniqueName(text)
+            name = generateUniqueName(name)
             cmds.rename(baseName, name)
         cmds.undoInfo(closeChunk=True)
         self.deleteLater()
@@ -83,7 +83,7 @@ class InputDialog(QLineEdit):
     def adjust_variable_name(self, name):
         if not name:
             return name
-        name = re.sub(r'[^a-zA-Z0-9_#@]', '_', name)
+        name = re.sub(r'[^a-zA-Z0-9_#@]', '_', string=name)
         name = re.sub(r'_{2,}', '_', name)
         if name[0].isdigit():
             name = "_" + name
