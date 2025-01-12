@@ -82,6 +82,4 @@ def mirror_selected(add=False):
     showMessage("Mirror Selected Done")
 
 
-global MIRROR_CONFIG
 MIRROR_CONFIG = MIRROR_BASE()
-
