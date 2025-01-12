@@ -152,7 +152,7 @@
             -enable 1
             -visible 1
             -data 0
-            -radialPosition "NW" 
+            -radialPosition "NE" 
             -allowOptionBoxes 1
             -postMenuCommandOnce 0
             -enableCommandRepeat 1
@@ -173,7 +173,7 @@
             -enable 1
             -visible 1
             -data 0
-            -radialPosition "NE" 
+            -radialPosition "NW" 
             -allowOptionBoxes 1
             -postMenuCommandOnce 0
             -enableCommandRepeat 1
@@ -184,28 +184,28 @@
             -longDivider 1
             menuEditorMenuItem5;
 
-    setParent -m ..;
+        menuItem
+            -label "Rainbow" 
+            -divider 0
+            -subMenu 0
+            -tearOff 0
+            -command "from Rainbow.rainbow_UI import *\nrainbow_win()" 
+            -optionBox 0
+            -enable 1
+            -visible 1
+            -data 0
+            -radialPosition "N" 
+            -allowOptionBoxes 1
+            -postMenuCommandOnce 0
+            -enableCommandRepeat 1
+            -echoCommand 0
+            -italicized 0
+            -boldFont 1
+            -sourceType "python" 
+            -longDivider 1
+            menuEditorMenuItem6;
 
-    menuItem
-        -label "MIRROR_CONFIG" 
-        -divider 0
-        -subMenu 0
-        -tearOff 0
-        -command "from utils.mirrorEnv import MIRROR_CONFIG\nMIRROR_CONFIG.switch_mode()" 
-        -optionBox 0
-        -enable 1
-        -visible 1
-        -data 0
-        -radialPosition "NE" 
-        -allowOptionBoxes 1
-        -postMenuCommandOnce 0
-        -enableCommandRepeat 1
-        -echoCommand 0
-        -italicized 0
-        -boldFont 1
-        -sourceType "python" 
-        -longDivider 1
-        menuEditorMenuItem4;
+    setParent -m ..;
 
     menuItem
         -label "Select" 
@@ -216,7 +216,7 @@
         -enable 1
         -visible 1
         -data 0
-        -radialPosition "S" 
+        -radialPosition "SE" 
         -allowOptionBoxes 1
         -enableCommandRepeat 1
         -italicized 0
@@ -337,7 +337,7 @@
             -enable 1
             -visible 1
             -data 0
-            -radialPosition "W" 
+            -radialPosition "NW" 
             -allowOptionBoxes 1
             -postMenuCommandOnce 0
             -enableCommandRepeat 1
@@ -350,6 +350,26 @@
             menuEditorMenuItem4;
 
         menuItem
+            -label "menuEditorMenuItem3" 
+            -divider 0
+            -subMenu 0
+            -tearOff 0
+            -command "AddInfluenceOptions" 
+            -optionBox 1
+            -enable 1
+            -visible 0
+            -data 0
+            -allowOptionBoxes 1
+            -postMenuCommandOnce 0
+            -enableCommandRepeat 0
+            -echoCommand 0
+            -italicized 0
+            -boldFont 1
+            -sourceType "mel" 
+            -longDivider 1
+            menuEditorMenuItem3;
+
+        menuItem
             -label "Remove Influence" 
             -divider 0
             -subMenu 0
@@ -359,7 +379,7 @@
             -enable 1
             -visible 1
             -data 0
-            -radialPosition "NW" 
+            -radialPosition "W" 
             -allowOptionBoxes 1
             -postMenuCommandOnce 0
             -enableCommandRepeat 1
@@ -394,6 +414,26 @@
             menuEditorMenuItem7;
 
         menuItem
+            -label "menuEditorMenuItem1" 
+            -divider 0
+            -subMenu 0
+            -tearOff 0
+            -command "SmoothBindSkinOptions" 
+            -optionBox 1
+            -enable 1
+            -visible 0
+            -data 0
+            -allowOptionBoxes 1
+            -postMenuCommandOnce 0
+            -enableCommandRepeat 0
+            -echoCommand 0
+            -italicized 0
+            -boldFont 1
+            -sourceType "mel" 
+            -longDivider 1
+            menuEditorMenuItem1;
+
+        menuItem
             -label "Copy Skin One To N" 
             -divider 0
             -subMenu 0
@@ -424,6 +464,7 @@
             -enable 1
             -visible 1
             -data 0
+            -radialPosition "S" 
             -allowOptionBoxes 1
             -postMenuCommandOnce 0
             -enableCommandRepeat 1
@@ -445,6 +486,7 @@
             -enable 1
             -visible 1
             -data 0
+            -radialPosition "NE" 
             -allowOptionBoxes 1
             -postMenuCommandOnce 0
             -enableCommandRepeat 1
@@ -455,6 +497,27 @@
             -sourceType "mel" 
             -longDivider 1
             menuEditorMenuItem6;
+
+        menuItem
+            -label "Remove Unused Influences" 
+            -divider 0
+            -subMenu 0
+            -tearOff 0
+            -command "RemoveUnusedInfluences" 
+            -optionBox 0
+            -enable 1
+            -visible 1
+            -data 0
+            -radialPosition "SW" 
+            -allowOptionBoxes 1
+            -postMenuCommandOnce 0
+            -enableCommandRepeat 1
+            -echoCommand 0
+            -italicized 0
+            -boldFont 1
+            -sourceType "mel" 
+            -longDivider 1
+            menuEditorMenuItem10;
 
     setParent -m ..;
 
@@ -478,6 +541,214 @@
         -sourceType "python" 
         -longDivider 1
         menuEditorMenuItem1;
+
+    menuItem
+        -label "Set" 
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "CreateSet" 
+        -optionBox 0
+        -enable 1
+        -visible 1
+        -data 0
+        -radialPosition "SW" 
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 1
+        -sourceType "mel" 
+        -longDivider 1
+        menuEditorMenuItem10;
+
+    menuItem
+        -label "Constraint" 
+        -divider 0
+        -subMenu 1
+        -tearOff 0
+        -optionBox 0
+        -enable 1
+        -visible 1
+        -data 0
+        -radialPosition "NE" 
+        -allowOptionBoxes 1
+        -enableCommandRepeat 1
+        -italicized 0
+        -boldFont 1
+        -sourceType "mel" 
+        -longDivider 1
+        menuEditorMenuItem12;
+
+        menuItem
+            -label "Matrix Constraint" 
+            -divider 0
+            -subMenu 0
+            -tearOff 0
+            -optionBox 0
+            -enable 1
+            -visible 1
+            -data 0
+            -radialPosition "NE" 
+            -allowOptionBoxes 1
+            -postMenuCommandOnce 0
+            -enableCommandRepeat 1
+            -italicized 0
+            -boldFont 1
+            -sourceType "python" 
+            -command "from utils.transform.transform import matrixConstraint \nmatrixConstraint()"
+            -longDivider 1
+            menuEditorMenuItem1;
+
+        menuItem
+            -label "Parent Constraint" 
+            -divider 0
+            -subMenu 0
+            -tearOff 0
+            -command "ParentConstraint" 
+            -optionBox 0
+            -enable 1
+            -visible 1
+            -data 0
+            -radialPosition "N" 
+            -allowOptionBoxes 1
+            -postMenuCommandOnce 0
+            -enableCommandRepeat 1
+            -image "parentConstraint.png" 
+            -echoCommand 0
+            -italicized 0
+            -boldFont 1
+            -sourceType "mel" 
+            -longDivider 1
+            menuEditorMenuItem2;
+
+        menuItem
+            -label "menuEditorMenuItem3" 
+            -divider 0
+            -subMenu 0
+            -tearOff 0
+            -command "ParentConstraintOptions" 
+            -optionBox 1
+            -enable 1
+            -visible 0
+            -data 0
+            -allowOptionBoxes 1
+            -postMenuCommandOnce 0
+            -enableCommandRepeat 0
+            -echoCommand 0
+            -italicized 0
+            -boldFont 1
+            -sourceType "mel" 
+            -longDivider 1
+            menuEditorMenuItem3;
+
+        menuItem
+            -label "Scale Constraint" 
+            -divider 0
+            -subMenu 0
+            -tearOff 0
+            -command "ScaleConstraint" 
+            -optionBox 0
+            -enable 1
+            -visible 1
+            -data 0
+            -radialPosition "SE" 
+            -allowOptionBoxes 1
+            -postMenuCommandOnce 0
+            -enableCommandRepeat 1
+            -image "scaleConstraint.png" 
+            -echoCommand 0
+            -italicized 0
+            -boldFont 1
+            -sourceType "mel" 
+            -longDivider 1
+            menuEditorMenuItem5;
+
+        menuItem
+            -label "menuEditorMenuItem6" 
+            -divider 0
+            -subMenu 0
+            -tearOff 0
+            -command "ScaleConstraintOptions" 
+            -optionBox 1
+            -enable 1
+            -visible 0
+            -data 0
+            -allowOptionBoxes 1
+            -postMenuCommandOnce 0
+            -enableCommandRepeat 0
+            -echoCommand 0
+            -italicized 0
+            -boldFont 1
+            -sourceType "mel" 
+            -longDivider 1
+            menuEditorMenuItem6;
+
+        menuItem
+            -label "Orient Constraint" 
+            -divider 0
+            -subMenu 0
+            -tearOff 0
+            -command "OrientConstraint" 
+            -optionBox 0
+            -enable 1
+            -visible 1
+            -data 0
+            -radialPosition "E" 
+            -allowOptionBoxes 1
+            -postMenuCommandOnce 0
+            -enableCommandRepeat 1
+            -image "orientConstraint.png" 
+            -echoCommand 0
+            -italicized 0
+            -boldFont 1
+            -sourceType "mel" 
+            -longDivider 1
+            menuEditorMenuItem8;
+
+        menuItem
+            -label "menuEditorMenuItem9" 
+            -divider 0
+            -subMenu 0
+            -tearOff 0
+            -command "OrientConstraintOptions" 
+            -optionBox 1
+            -enable 1
+            -visible 0
+            -data 0
+            -allowOptionBoxes 1
+            -postMenuCommandOnce 0
+            -enableCommandRepeat 0
+            -echoCommand 0
+            -italicized 0
+            -boldFont 1
+            -sourceType "mel" 
+            -longDivider 1
+            menuEditorMenuItem9;
+
+        menuItem
+            -label "UV Pin Constraint" 
+            -divider 0
+            -subMenu 0
+            -tearOff 0
+            -optionBox 0
+            -enable 1
+            -visible 1
+            -data 0
+            -radialPosition "W" 
+            -allowOptionBoxes 1
+            -postMenuCommandOnce 0
+            -enableCommandRepeat 1
+            -echoCommand 0
+            -italicized 0
+            -boldFont 1
+            -sourceType "python" 
+            -command "from utils.transform.uvPin import create_uvPin \ncreate_uvPin()"
+            -longDivider 1
+            menuEditorMenuItem4;
+
+    setParent -m ..;
 
     menuItem
         -label "Delete BindPose" 
@@ -537,6 +808,45 @@
         -sourceType "python" 
         -longDivider 1
         menuEditorMenuItem5;
+
+    menuItem
+        -label "separator" 
+        -divider 1
+        -dividerLabel "separator" 
+        -subMenu 0
+        -tearOff 0
+        -optionBox 0
+        -enable 1
+        -visible 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -italicized 0
+        -boldFont 1
+        -sourceType "mel" 
+        -longDivider 1
+        menuEditorMenuItem11;
+
+    menuItem
+        -label "MIRROR_CONFIG" 
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "from utils.mirrorEnv import MIRROR_CONFIG\nMIRROR_CONFIG.switch_mode()" 
+        -optionBox 0
+        -enable 1
+        -visible 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 1
+        -sourceType "python" 
+        -longDivider 1
+        menuEditorMenuItem4;
 
 setParent -m ..;
 
