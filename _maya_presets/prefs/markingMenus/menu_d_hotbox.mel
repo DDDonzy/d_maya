@@ -48,7 +48,7 @@
             -enable 1
             -visible 1
             -data 0
-            -radialPosition "S" 
+            -radialPosition "SE" 
             -allowOptionBoxes 1
             -postMenuCommandOnce 0
             -enableCommandRepeat 1
@@ -58,6 +58,126 @@
             -sourceType "python" 
             -longDivider 1
             menuEditorMenuItem1;
+
+        menuItem
+            -label "Lock Attributes" 
+            -divider 0
+            -subMenu 0
+            -tearOff 0
+            -optionBox 0
+            -enable 1
+            -visible 1
+            -data 0
+            -radialPosition "W" 
+            -allowOptionBoxes 1
+            -postMenuCommandOnce 0
+            -enableCommandRepeat 1
+            -italicized 0
+            -boldFont 1
+            -sourceType "python" 
+            -command "import utils.other.attr as attr\nattr.lockAttr()"
+            -longDivider 1
+            menuEditorMenuItem3;
+
+        menuItem
+            -label "Lock Visibility" 
+            -divider 0
+            -subMenu 0
+            -tearOff 0
+            -optionBox 0
+            -enable 1
+            -visible 1
+            -data 0
+            -radialPosition "SW" 
+            -allowOptionBoxes 1
+            -postMenuCommandOnce 0
+            -enableCommandRepeat 1
+            -italicized 0
+            -boldFont 1
+            -sourceType "python" 
+            -command "import utils.other.attr as attr\nattr.lockAttr(attr=attr.VIS_ATTR)"
+            -longDivider 1
+            menuEditorMenuItem4;
+
+        menuItem
+            -label "Lock Translate" 
+            -divider 0
+            -subMenu 0
+            -tearOff 0
+            -optionBox 0
+            -enable 1
+            -visible 1
+            -data 0
+            -radialPosition "NW" 
+            -allowOptionBoxes 1
+            -postMenuCommandOnce 0
+            -enableCommandRepeat 1
+            -italicized 0
+            -boldFont 1
+            -sourceType "python" 
+            -command "import utils.other.attr as attr\nattr.lockAttr(attr=attr.TRANSLATE_ATTR)"
+            -longDivider 1
+            menuEditorMenuItem6;
+
+        menuItem
+            -label "Lock Rotate" 
+            -divider 0
+            -subMenu 0
+            -tearOff 0
+            -optionBox 0
+            -enable 1
+            -visible 1
+            -data 0
+            -radialPosition "N" 
+            -allowOptionBoxes 1
+            -postMenuCommandOnce 0
+            -enableCommandRepeat 1
+            -italicized 0
+            -boldFont 1
+            -sourceType "python" 
+            -command "import utils.other.attr as attr\nattr.lockAttr(attr=attr.ROTATE_ATTR)"
+            -longDivider 1
+            menuEditorMenuItem7;
+
+        menuItem
+            -label "Lock Scale" 
+            -divider 0
+            -subMenu 0
+            -tearOff 0
+            -optionBox 0
+            -enable 1
+            -visible 1
+            -data 0
+            -radialPosition "NE" 
+            -allowOptionBoxes 1
+            -postMenuCommandOnce 0
+            -enableCommandRepeat 1
+            -italicized 0
+            -boldFont 1
+            -sourceType "python" 
+            -command "import utils.other.attr as attr\nattr.lockAttr(attr=attr.SCALE_ATTR)"
+            -longDivider 1
+            menuEditorMenuItem8;
+
+        menuItem
+            -label "Show Locked" 
+            -divider 0
+            -subMenu 0
+            -tearOff 0
+            -optionBox 0
+            -enable 1
+            -visible 1
+            -data 0
+            -radialPosition "S" 
+            -allowOptionBoxes 1
+            -postMenuCommandOnce 0
+            -enableCommandRepeat 1
+            -italicized 0
+            -boldFont 1
+            -sourceType "python" 
+            -command "import utils.other.attr as attr\nattr.showLockAttr()"
+            -longDivider 1
+            menuEditorMenuItem5;
 
     setParent -m ..;
 
@@ -586,6 +706,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
+            -command "from utils.transform.transform import matrixConstraint \nmatrixConstraint()" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -594,10 +715,10 @@
             -allowOptionBoxes 1
             -postMenuCommandOnce 0
             -enableCommandRepeat 1
+            -echoCommand 0
             -italicized 0
             -boldFont 1
             -sourceType "python" 
-            -command "from utils.transform.transform import matrixConstraint \nmatrixConstraint()"
             -longDivider 1
             menuEditorMenuItem1;
 
@@ -732,6 +853,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
+            -command "from utils.transform.uvPin import create_uvPin \ncreate_uvPin()" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -744,7 +866,6 @@
             -italicized 0
             -boldFont 1
             -sourceType "python" 
-            -command "from utils.transform.uvPin import create_uvPin \ncreate_uvPin()"
             -longDivider 1
             menuEditorMenuItem4;
 
