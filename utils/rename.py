@@ -65,16 +65,7 @@ class RenameUI(QLineEdit):
         return text
 
     def run(self):
-        text = self.text()
-        cmds.undoInfo(openChunk=True)
-        mSel = om.MGlobal.getActiveSelectionList()
-        mIterSel = om.MItSelectionList(mSel)
-        for x in mIterSel:
-            baseName = x.getDagPath().partialPathName()
-            name = adjustName(name=text, baseName=baseName, num=1)
-            name = generateUniqueName(name)
-            cmds.rename(baseName, name)
-        cmds.undoInfo(closeChunk=True)
+        rename(self.text())
         self.deleteLater()
 
     def eventFilter(self, obj, event):
@@ -87,6 +78,29 @@ class RenameUI(QLineEdit):
             self.deleteLater()
             return True
         return False
+
+
+def rename(text: str, obj: list = None):
+    if not obj:
+        obj = cmds.ls(sl=1)
+    mSel = om.MSelectionList()
+    [mSel.add(x) for x in obj]
+
+    oldName = []
+    mIterSel = om.MItSelectionList(mSel)
+    for x in mIterSel:
+        baseName = x.getDagPath().partialPathName()
+        oldName.append(baseName)
+
+    cmds.undoInfo(openChunk=True)
+    mIterSel = om.MItSelectionList(mSel)
+    for x in mIterSel:
+        baseName = x.getDagPath().partialPathName()
+        if baseName in oldName:
+            name = adjustName(name=text, baseName=baseName, num=1)
+            name = generateUniqueName(name)
+            cmds.rename(baseName, name)
+    cmds.undoInfo(closeChunk=True)
 
 
 def showUI():

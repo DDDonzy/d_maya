@@ -3,9 +3,9 @@ import sys
 from importlib import reload
 from maya import cmds, mel
 
-# path = r"E:/d_maya"
-# if path not in sys.path:
-#     sys.path.append(path)
+path = r"E:/d_maya"
+if path not in sys.path:
+    sys.path.append(path)
 
 
 ENV_LIB = {
@@ -87,4 +87,4 @@ def onMayaDroppedPythonFile(*args, **kwargs):
     modify_mayaEnvFile()
     modify_mayaUserSetup()
     show_message("Setup Done")
-    # reload_modules_in_path(path)
+    reload_modulesInPath(path)

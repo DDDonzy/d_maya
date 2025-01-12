@@ -147,7 +147,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "from utils.control.cvShape import import_cvData,export_cvData\nexport_cvData()"
+            -command "from utils.control.cvShape import import_cvData,export_cvData\nexport_cvData()" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -158,7 +158,7 @@
             -enableCommandRepeat 1
             -echoCommand 0
             -italicized 0
-            -boldFont 0
+            -boldFont 1
             -sourceType "python" 
             -longDivider 1
             menuEditorMenuItem4;
@@ -168,7 +168,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "from utils.control.cvShape import import_cvData,export_cvData\nimport_cvData()"
+            -command "from utils.control.cvShape import import_cvData,export_cvData\nimport_cvData()" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -179,7 +179,7 @@
             -enableCommandRepeat 1
             -echoCommand 0
             -italicized 0
-            -boldFont 0
+            -boldFont 1
             -sourceType "python" 
             -longDivider 1
             menuEditorMenuItem5;
@@ -478,6 +478,65 @@
         -sourceType "python" 
         -longDivider 1
         menuEditorMenuItem1;
+
+    menuItem
+        -label "Delete BindPose" 
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "from utils.scene.deleteBindPose import deleteBindPose \ndeleteBindPose()" 
+        -optionBox 0
+        -enable 1
+        -visible 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 1
+        -sourceType "python" 
+        -longDivider 1
+        menuEditorMenuItem6;
+
+    menuItem
+        -label "separator" 
+        -divider 1
+        -dividerLabel "separator" 
+        -subMenu 0
+        -tearOff 0
+        -optionBox 0
+        -enable 1
+        -visible 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -italicized 0
+        -boldFont 1
+        -sourceType "mel" 
+        -longDivider 1
+        menuEditorMenuItem8;
+
+    menuItem
+        -label "Delete Namespace" 
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "from utils.scene.removeNamespace import removeNamespace\nremoveNamespace()" 
+        -optionBox 0
+        -enable 1
+        -visible 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 1
+        -sourceType "python" 
+        -longDivider 1
+        menuEditorMenuItem5;
 
 setParent -m ..;
 
