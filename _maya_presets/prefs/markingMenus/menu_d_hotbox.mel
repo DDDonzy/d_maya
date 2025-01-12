@@ -64,6 +64,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
+            -command "import utils.other.attr as attr\nattr.lockAttr()" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -72,10 +73,10 @@
             -allowOptionBoxes 1
             -postMenuCommandOnce 0
             -enableCommandRepeat 1
+            -echoCommand 0
             -italicized 0
             -boldFont 1
             -sourceType "python" 
-            -command "import utils.other.attr as attr\nattr.lockAttr()"
             -longDivider 1
             menuEditorMenuItem3;
 
@@ -84,6 +85,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
+            -command "import utils.other.attr as attr\nattr.lockAttr(attr=attr.VIS_ATTR)" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -92,10 +94,10 @@
             -allowOptionBoxes 1
             -postMenuCommandOnce 0
             -enableCommandRepeat 1
+            -echoCommand 0
             -italicized 0
             -boldFont 1
             -sourceType "python" 
-            -command "import utils.other.attr as attr\nattr.lockAttr(attr=attr.VIS_ATTR)"
             -longDivider 1
             menuEditorMenuItem4;
 
@@ -104,6 +106,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
+            -command "import utils.other.attr as attr\nattr.lockAttr(attr=attr.TRANSLATE_ATTR)" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -112,10 +115,10 @@
             -allowOptionBoxes 1
             -postMenuCommandOnce 0
             -enableCommandRepeat 1
+            -echoCommand 0
             -italicized 0
             -boldFont 1
             -sourceType "python" 
-            -command "import utils.other.attr as attr\nattr.lockAttr(attr=attr.TRANSLATE_ATTR)"
             -longDivider 1
             menuEditorMenuItem6;
 
@@ -124,6 +127,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
+            -command "import utils.other.attr as attr\nattr.lockAttr(attr=attr.ROTATE_ATTR)" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -132,10 +136,10 @@
             -allowOptionBoxes 1
             -postMenuCommandOnce 0
             -enableCommandRepeat 1
+            -echoCommand 0
             -italicized 0
             -boldFont 1
             -sourceType "python" 
-            -command "import utils.other.attr as attr\nattr.lockAttr(attr=attr.ROTATE_ATTR)"
             -longDivider 1
             menuEditorMenuItem7;
 
@@ -144,6 +148,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
+            -command "import utils.other.attr as attr\nattr.lockAttr(attr=attr.SCALE_ATTR)" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -152,10 +157,10 @@
             -allowOptionBoxes 1
             -postMenuCommandOnce 0
             -enableCommandRepeat 1
+            -echoCommand 0
             -italicized 0
             -boldFont 1
             -sourceType "python" 
-            -command "import utils.other.attr as attr\nattr.lockAttr(attr=attr.SCALE_ATTR)"
             -longDivider 1
             menuEditorMenuItem8;
 
@@ -164,6 +169,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
+            -command "import utils.other.attr as attr\nattr.showLockAttr()" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -172,10 +178,10 @@
             -allowOptionBoxes 1
             -postMenuCommandOnce 0
             -enableCommandRepeat 1
+            -echoCommand 0
             -italicized 0
             -boldFont 1
             -sourceType "python" 
-            -command "import utils.other.attr as attr\nattr.showLockAttr()"
             -longDivider 1
             menuEditorMenuItem5;
 
@@ -872,11 +878,11 @@
     setParent -m ..;
 
     menuItem
-        -label "Delete BindPose" 
+        -label "MIRROR_CONFIG" 
         -divider 0
         -subMenu 0
         -tearOff 0
-        -command "from utils.scene.deleteBindPose import deleteBindPose \ndeleteBindPose()" 
+        -command "from utils.mirrorEnv import MIRROR_CONFIG\nMIRROR_CONFIG.switch_mode()" 
         -optionBox 0
         -enable 1
         -visible 1
@@ -889,7 +895,7 @@
         -boldFont 1
         -sourceType "python" 
         -longDivider 1
-        menuEditorMenuItem6;
+        menuEditorMenuItem4;
 
     menuItem
         -label "separator" 
@@ -909,6 +915,26 @@
         -sourceType "mel" 
         -longDivider 1
         menuEditorMenuItem8;
+
+    menuItem
+        -label "Delete Bind Pose" 
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "from utils.scene.deleteBindPose import deleteBindPose \ndeleteBindPose()" 
+        -optionBox 0
+        -enable 1
+        -visible 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 1
+        -sourceType "python" 
+        -longDivider 1
+        menuEditorMenuItem6;
 
     menuItem
         -label "Delete Namespace" 
@@ -931,6 +957,26 @@
         menuEditorMenuItem5;
 
     menuItem
+        -label "Delete Unknown Plugin" 
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -optionBox 0
+        -enable 1
+        -visible 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 0
+        -sourceType "python" 
+        -command "from utils.scene.removeUnknownPlugin import removeUnknownPlugin\nremoveUnknownPlugin()" 
+        -longDivider 1
+        menuEditorMenuItem15;
+
+    menuItem
         -label "separator" 
         -divider 1
         -dividerLabel "separator" 
@@ -947,14 +993,14 @@
         -boldFont 1
         -sourceType "mel" 
         -longDivider 1
-        menuEditorMenuItem11;
+        menuEditorMenuItem13;
 
     menuItem
-        -label "MIRROR_CONFIG" 
+        -label "Display Affected" 
         -divider 0
         -subMenu 0
         -tearOff 0
-        -command "from utils.mirrorEnv import MIRROR_CONFIG\nMIRROR_CONFIG.switch_mode()" 
+        -command "import maya.cmds \nmaya.cmds.displayPref(displayAffected = not maya.cmds.displayPref(q=1,displayAffected=1))" 
         -optionBox 0
         -enable 1
         -visible 1
@@ -967,7 +1013,7 @@
         -boldFont 1
         -sourceType "python" 
         -longDivider 1
-        menuEditorMenuItem4;
+        menuEditorMenuItem14;
 
 setParent -m ..;
 
