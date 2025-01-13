@@ -1,7 +1,7 @@
 import maya.cmds as cmds
 import maya.api.OpenMaya as om
 from utils.generateUniqueName import generateUniqueName
-from utils.createAssets import createAssets, assetBindAttr, get_bindAttrs
+from utils.createAssets import createAssets, assetBindAttr, get_bindAttrs, create_asset
 from utils.showMessage import showMessage
 
 RAD_TO_DEG = 57.29577951308232     # 180.0 / pi
@@ -279,7 +279,8 @@ def create_fbfByMatrix(matrix: om.MMatrix = om.MMatrix(), **kwargs) -> str:
     return fbf_node
 
 
-def create_decomposeMatrix(name: str, translate=True, rotate=True, scale=True, shear=True):
+@create_asset(parentAsset="DecomposeMatrix", assetType="container")
+def create_decomposeMatrix(name: str = None, translate=True, rotate=True, scale=True, shear=True,):
     """ create decomposeMatrix for input object
 
     Args:
@@ -303,15 +304,15 @@ def create_decomposeMatrix(name: str, translate=True, rotate=True, scale=True, s
     node_decom = cmds.createNode("decomposeMatrix", name=f"{name}_decomposeMatrix")
     node_mult = cmds.createNode("multMatrix", name=f"{name}_getLocalMatrix_multMatrix")
     node_matrixInverse = cmds.createNode("inverseMatrix", name=f"{name}_inverseRelativesSpaceMatrix_multMatrix")
-    _assets_nodeList = [node_decom, node_mult, node_matrixInverse]
+
     _bindAttr = {"inputMatrix": f"{node_mult}.matrixIn[0]",
                  "inputRotateOrder": f"{node_decom}.inputRotateOrder",
                  "inputRelativeSpaceMatrix": f"{node_matrixInverse}.inputMatrix",
                  "outputTranslate": f"{node_decom}.outputTranslate",
                  "outputRotate": f"{node_decom}.outputRotate",
-                 # "outputQuat": f"{node_decom}.outputQuat",
                  "outputScale": f"{node_decom}.outputScale",
                  "outputShear": f"{node_decom}.outputShear"}
+
     # Internal connects
     cmds.connectAttr(f"{node_matrixInverse}.outputMatrix", f"{node_mult}.matrixIn[1]")
     cmds.connectAttr(f"{node_mult}.matrixSum", f"{node_decom}.inputMatrix")
@@ -327,33 +328,25 @@ def create_decomposeMatrix(name: str, translate=True, rotate=True, scale=True, s
         cmds.connectAttr(f"{node_euler_to_quat}.outputQuat", f"{node_invert_quat}.inputQuat")
         cmds.connectAttr(f"{node_invert_quat}.outputQuat", f"{node_prod_quat}.input2Quat")
         cmds.connectAttr(f"{node_prod_quat}.outputQuat", f"{node_quat_to_euler}.inputQuat")
-        _assets_nodeList.extend([node_euler_to_quat,
-                                 node_invert_quat,
-                                 node_prod_quat,
-                                 node_quat_to_euler])
         _bindAttr.update({"inputJointOrient": f"{node_euler_to_quat}.inputRotate",
-                          # "outputQuat": f"{node_prod_quat}.outputQuat"
                           "outputRotate": f"{node_quat_to_euler}.outputRotate"})
-    # assets
-    _assets = createAssets(name=f"{name}_decomMatrix", assetsType="DecomposeMatrix", addNode=_assets_nodeList)
-    assetBindAttr(_assets, _bindAttr)
 
     # External connects
     if cmds.objExists(name):
         if cmds.objExists(f"{name}.jointOrient"):
-            cmds.connectAttr(f"{name}.jointOrient", f"{_assets}.inputJointOrient")  # in jointOrient
-        cmds.connectAttr(f"{name}.parentMatrix[0]", f"{_assets}.inputRelativeSpaceMatrix")  # input relatives space matrix
-        cmds.connectAttr(f"{name}.rotateOrder", f"{_assets}.inputRotateOrder")  # in rotateOrder
+            cmds.connectAttr(f"{name}.jointOrient", _bindAttr["inputJointOrient"])  # in jointOrient
+        cmds.connectAttr(f"{name}.parentMatrix[0]", _bindAttr["inputRelativeSpaceMatrix"])  # input relatives space matrix
+        cmds.connectAttr(f"{name}.rotateOrder", _bindAttr["inputRotateOrder"])  # in rotateOrder
         if translate:
-            cmds.connectAttr(f"{_assets}.outputTranslate", f"{name}.translate")  # out translate
+            cmds.connectAttr(_bindAttr["outputTranslate"], f"{name}.translate")  # out translate
         if scale:
-            cmds.connectAttr(f"{_assets}.outputScale", f"{name}.scale")  # out scale
+            cmds.connectAttr(_bindAttr["outputScale"], f"{name}.scale")  # out scale
         if shear:
-            cmds.connectAttr(f"{_assets}.outputShear", f"{name}.shear")  # out shear
+            cmds.connectAttr(_bindAttr["outputShear"], f"{name}.shear")  # out shear
         if rotate:
-            cmds.connectAttr(f"{_assets}.outputRotate", f"{name}.rotate")  # out rotate
+            cmds.connectAttr(_bindAttr["outputRotate"], f"{name}.rotate")  # out rotate
             # cmds.connectAttr(f"{_assets}.outputQuat", f"{name}.rotateQuaternion")  # out rotate
-    return _assets
+    return name, _bindAttr
 
 
 def create_relativesMatrix(name: str = ""):
