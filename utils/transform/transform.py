@@ -1,8 +1,9 @@
 import maya.cmds as cmds
 import maya.api.OpenMaya as om
 from utils.generateUniqueName import generateUniqueName
-from utils.createAssets import createAssets, assetBindAttr, get_bindAttrs, create_asset
+# from utils.createAssets import assetBindAttr
 from utils.showMessage import showMessage
+from callback import create_asset, getName
 
 RAD_TO_DEG = 57.29577951308232     # 180.0 / pi
 DEG_TO_RAD = 0.017453292519943295  # pi / 180.0
@@ -280,7 +281,7 @@ def create_fbfByMatrix(matrix: om.MMatrix = om.MMatrix(), **kwargs) -> str:
 
 
 @create_asset(parentAsset="DecomposeMatrix", assetType="container")
-def create_decomposeMatrix(name: str = None, translate=True, rotate=True, scale=True, shear=True,):
+def create_decomposeMatrix(*args, **kwargs):
     """ create decomposeMatrix for input object
 
     Args:
@@ -299,6 +300,13 @@ def create_decomposeMatrix(name: str = None, translate=True, rotate=True, scale=
         outputScale: -
         outputShear: -
     """
+
+    name = getName(*args, **kwargs)
+    translate = kwargs.get("translate") or kwargs.get("t") or True
+    rotate = kwargs.get("rotate") or kwargs.get("r") or True
+    scale = kwargs.get("scale") or kwargs.get("s") or True
+    shear = kwargs.get("shear") or kwargs.get("sh") or True
+
     hasJointOrient = cmds.objExists(f"{name}.jointOrient")
 
     node_decom = cmds.createNode("decomposeMatrix", name=f"{name}_decomposeMatrix")
@@ -346,7 +354,7 @@ def create_decomposeMatrix(name: str = None, translate=True, rotate=True, scale=
         if rotate:
             cmds.connectAttr(_bindAttr["outputRotate"], f"{name}.rotate")  # out rotate
             # cmds.connectAttr(f"{_assets}.outputQuat", f"{name}.rotateQuaternion")  # out rotate
-    return name, _bindAttr
+    
 
 
 def create_relativesMatrix(name: str = ""):
