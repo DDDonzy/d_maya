@@ -26,6 +26,14 @@ def generateUniqueName(name):
 
 
 def adjustName(name, baseName='', num=1):
+    """
+    Rationalized name
+    Args:
+        base_name (str): The base name to start with
+
+    Returns:
+        str: A unique name that doesn't exist in the scene
+    """
     if not name:
         return name
     name = re.sub(r'[^a-zA-Z0-9_#@]', '_', string=name)
