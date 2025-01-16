@@ -1,7 +1,7 @@
 from maya.api import OpenMaya as om
 from maya import cmds
 from utils.test import AssetCallBack
-
+RIG_ASSET_NAME = "RigAsset"
 
 def CreateNode(*args, **kwargs):
     kwargs.update({"skipSelect": True})
@@ -20,8 +20,7 @@ def createContainer(name: str,
     cmds.setAttr(f"{container}.blackBox", blackBox) if blackBox else None
     cmds.setAttr(f"{container}.iconName", icon) if icon else None
     cmds.setAttr(f"{container}.viewMode", 0)
-    if publishAttrData:
-        AssetCallBack.publishAssetAttr(name=container, publishAttrData=publishAttrData)
+    return container
 
 
 def publishAssetAttr(name: str = None, publishAttrData: dict = None):
@@ -31,7 +30,7 @@ def publishAssetAttr(name: str = None, publishAttrData: dict = None):
 
 
 class CreatorBase():
-    creatorType: str = "RigAsset"   # example: matrixConstraint, IkFkSystem, spileSystem
+    creatorType: str = "base"   # example: matrixConstraint, IkFkSystem, spileSystem,parentSpace,as name prefix
     isDagAsset: bool = True
     blackBox: bool = False
     icon: str = None
@@ -40,9 +39,13 @@ class CreatorBase():
     def __init__(self, name='noName'):
         self._pre_init()
 
+
+        
+
         self.name: str = name
         self.__assetType: str = ("container", "dagContainer")[self.isDagAsset]
         self._post_init()
+        
 
         self.__create()
 
@@ -53,9 +56,37 @@ class CreatorBase():
         pass
 
     def __create(self):
+        # run create funcation logic  example create assets
+        # stop callback
+        AssetCallBack.currentInstance.stop()
+
+        # if not creatorType'asset, create and parent it to RigAsset. else return this creatorType assets'name.
+        if not cmds.objExists(self.creatorType):
+            self.creatorType = createContainer(name=RIG_ASSET_NAME, icon = "character.svg")
+        else:
+            self.creatorType = self.creatorType
+
+        # if not RigAsset creat it. else return this RigAsset's name.
+        if not cmds.objExists("RigAsset"):
+            rigAsset = createContainer(name=RIG_ASSET_NAME)
+        else:
+            rigAsset = RIG_ASSET_NAME
+
+        #  add to rigAsset
+        cmds.container(rigAsset,e=1,an=self.creatorType)
+
+        # restore callback
+        AssetCallBack.currentInstance.start()
+
+        # start new callback and do create function
         self._pre_create()
         with AssetCallBack(self.name) as selfCallback:
             self.create()
+
+        # create this asset
+        createContainer(name=f"{self.name}_{self.creatorType}1")
+        
+
         self._post_create()
 
     def _pre_create(self):
