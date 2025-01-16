@@ -1,5 +1,6 @@
 from maya.api import OpenMaya as om
 from maya import cmds
+from utils.test import AssetCallBack
 
 
 def CreateNode(*args, **kwargs):
@@ -29,84 +30,21 @@ def publishAssetAttr(name: str = None, publishAttrData: dict = None):
             cmds.container(name, e=1, publishAndBind=[v, k])
 
 
-
-class AssetCallBack:
-    callBack_instance = []
-
-    def __init__(self):
-        self.addNode: list[str] = []
-        self.addCallBackID: int = 0
-        self.removeCallBackID: int = 0
-        self.__enter__()
-        
-    def __del__(self):
-        self.removeNodeCallBack()
-        
-    def __repr__(self):
-        return str(self.addNode)
-
-    def __enter__(self):
-        self.addCallBack()
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.removeNodeCallBack()
-
-    def addCallBack(self):
-        self.base_callBack_instance: list[AssetCallBack] = AssetCallBack.callBack_instance.copy()
-        for baseCallback in AssetCallBack.callBack_instance:
-            om.MMessage.removeCallback(baseCallback.addCallBackID)
-            om.MMessage.removeCallback(baseCallback.removeCallBackID)
-
-        self.addCallBackID = om.MDGMessage.addNodeAddedCallback(AssetCallBack.addNodeFunction, "dependNode", self)
-        self.removeCallBackID = om.MDGMessage.addNodeRemovedCallback(AssetCallBack.removeNodeFunction, "dependNode", self)
-        AssetCallBack.callBack_instance.append(self)
-
-    def removeNodeCallBack(self):
-        om.MMessage.removeCallback(self.addCallBackID)
-        om.MMessage.removeCallback(self.removeCallBackID)
-        AssetCallBack.callBack_instance.remove(self)
-
-        for baseCallback in self.base_callBack_instance:
-            baseCallback.addCallBackID = om.MDGMessage.addNodeAddedCallback(AssetCallBack.addNodeFunction, "dependNode", baseCallback)
-            baseCallback.removeCallBackID = om.MDGMessage.addNodeRemovedCallback(AssetCallBack.removeNodeFunction, "dependNode", baseCallback)
-            self.addCallBackID = baseCallback.addCallBackID
-            self.removeCallBackID = baseCallback.removeCallBackID
-            AssetCallBack.callBack_instance.append(baseCallback)
-
-    @staticmethod
-    def addNodeFunction(mObj, thisClass):
-        node = om.MFnDependencyNode(mObj)
-        node_name = node.name()
-        thisClass.addNode.append(node_name)
-        print(node_name)
-
-    @staticmethod
-    def removeNodeFunction(mObj, thisClass):
-        node = om.MFnDependencyNode(mObj)
-        node_name = node.name()
-        thisClass.addNode.remove(node_name)
-        print(node_name)
-
-
-
 class CreatorBase():
-    creatorType: str = "RigAsset"
+    creatorType: str = "RigAsset"   # example: matrixConstraint, IkFkSystem, spileSystem
     isDagAsset: bool = True
     blackBox: bool = False
     icon: str = None
     publishAttrData: dict = {}
-    
-    __CALLBACK_INSTANCE = []
 
     def __init__(self, name='noName'):
         self._pre_init()
 
         self.name: str = name
         self.__assetType: str = ("container", "dagContainer")[self.isDagAsset]
-
-        self.__build()
         self._post_init()
+
+        self.__create()
 
     def _pre_init(self):
         pass
@@ -114,14 +52,17 @@ class CreatorBase():
     def _post_init(self):
         pass
 
-    def __build(self):
-
-        with AssetCallBack(name=self.name,
-                           assetType=self.__assetType,
-                           blackBox=self.blackBox,
-                           icon=self.icon,
-                           publishAttrData=self.publishAttrData) as self.asset:
+    def __create(self):
+        self._pre_create()
+        with AssetCallBack(self.name) as selfCallback:
             self.create()
+        self._post_create()
+
+    def _pre_create(self):
+        pass
+
+    def _post_create(self):
+        pass
 
     def create(self):
         raise NotImplementedError("Subclass must implement this method")
