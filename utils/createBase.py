@@ -57,34 +57,39 @@ class CreatorBase():
 
     def __create(self):
         # run create funcation logic  example create assets
+        
+        # start new callback and do create function
+        self._pre_create()
+        with AssetCallBack(self.name) as thisCallback:
+            self.create()
+
+        # create this asset
+        thisAsset = createContainer(name=f"{self.name}_{self.creatorType}1",
+                                    addNode=thisCallback.addNode,
+                                    assetType=self.__assetType,
+                                    blackBox=self.blackBox,
+                                    icon=self.icon)
+
         # stop callback
         AssetCallBack.currentInstance.stop()
-
+        
         # if not creatorType'asset, create and parent it to RigAsset. else return this creatorType assets'name.
         if not cmds.objExists(self.creatorType):
-            self.creatorType = createContainer(name=RIG_ASSET_NAME, icon = "character.svg")
+            thisTypeAsset = createContainer(name=self.creatorType, addNode=[thisAsset])
         else:
-            self.creatorType = self.creatorType
+            thisTypeAsset = self.creatorType
+            cmds.container(thisTypeAsset, e=1 ,an=[thisAsset])
 
         # if not RigAsset creat it. else return this RigAsset's name.
-        if not cmds.objExists("RigAsset"):
-            rigAsset = createContainer(name=RIG_ASSET_NAME)
+        if not cmds.objExists(RIG_ASSET_NAME):
+            rigAsset = createContainer(name=RIG_ASSET_NAME, addNode=[thisTypeAsset], icon = "character.svg")
         else:
             rigAsset = RIG_ASSET_NAME
-
-        #  add to rigAsset
-        cmds.container(rigAsset,e=1,an=self.creatorType)
+            cmds.container(rigAsset, e=1, an=[thisTypeAsset])
 
         # restore callback
         AssetCallBack.currentInstance.start()
 
-        # start new callback and do create function
-        self._pre_create()
-        with AssetCallBack(self.name) as selfCallback:
-            self.create()
-
-        # create this asset
-        createContainer(name=f"{self.name}_{self.creatorType}1")
         
 
         self._post_create()
