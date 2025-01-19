@@ -1,9 +1,8 @@
 import maya.cmds as cmds
 import maya.api.OpenMaya as om
 from utils.generateUniqueName import generateUniqueName
-# from utils.createAssets import assetBindAttr
 from utils.showMessage import showMessage
-from utils.create import createAsset, getNameFromFunctionParameter
+from utils.createBase import CreatorBase, CreateNode
 
 RAD_TO_DEG = 57.29577951308232     # 180.0 / pi
 DEG_TO_RAD = 0.017453292519943295  # pi / 180.0
@@ -273,174 +272,226 @@ def create_fbfByMatrix(matrix: om.MMatrix = om.MMatrix(), **kwargs) -> str:
                     "in10", "in11", "in12", "in13",
                     "in20", "in21", "in22", "in23",
                     "in30", "in31", "in32", "in33"]
-    fbf_node = cmds.createNode("fourByFourMatrix", **kwargs)
+    fbf_node = CreateNode("fourByFourMatrix", **kwargs)
     for iter_idx, num in enumerate(matrix):
         attr_name = matrix_attrs[iter_idx]
         cmds.setAttr(f"{fbf_node}.{attr_name}", num)
     return fbf_node
 
 
-@createAsset(parentAsset="decomposeMatrix", assetType="container")
-def create_decomposeMatrix(*args, **kwargs):
-    """ create decomposeMatrix for input object
+class decomMatrix(CreatorBase):
+    isDagAsset: bool = False
 
-    Args:
-        name (str): _description_
-        translate (bool, optional): _description_. Defaults to True.
-        rotate (bool, optional): _description_. Defaults to True.
-        scale (bool, optional): _description_. Defaults to True.
-        shear (bool, optional): _description_. Defaults to True.
+    def _post_init(self, *args, **kwargs):
+        self.translate = kwargs.get("translate") or kwargs.get("t") or True
+        self.rotate = kwargs.get("rotate") or kwargs.get("r") or True
+        self.scale = kwargs.get("scale") or kwargs.get("s") or True
+        self.shear = kwargs.get("shear") or kwargs.get("sh") or True
 
-    PublishAttr:
-        inputMatrix: -
-        inputRotateOrder: -
-        inputRelativeSpaceMatrix: -
-        outputTranslate: -
-        outputRotate: -
-        outputScale: -
-        outputShear: -
-    """
+    def create(self):
+        self.hasJointOrient = cmds.objExists(f"{self.name}.jointOrient")
 
-    name = kwargs.get("name")
-    translate = kwargs.get("translate") or kwargs.get("t") or True
-    rotate = kwargs.get("rotate") or kwargs.get("r") or True
-    scale = kwargs.get("scale") or kwargs.get("s") or True
-    shear = kwargs.get("shear") or kwargs.get("sh") or True
+        node_decom = CreateNode("decomposeMatrix", name=self.createName("decomposeMatrix"))
+        node_mult = CreateNode("multMatrix", name=self.createName("getLocalMultMatrix"))
+        node_matrixInverse = CreateNode("inverseMatrix", name=self.createName("inverseRelativesMatrix"))
 
-    hasJointOrient = cmds.objExists(f"{name}.jointOrient")
-
-    node_decom = cmds.createNode("decomposeMatrix", name=f"{name}_decomposeMatrix")
-    node_mult = cmds.createNode("multMatrix", name=f"{name}_getLocal_multMatrix")
-    node_matrixInverse = cmds.createNode("inverseMatrix", name=f"{name}_relativesInverse_multMatrix")
-
-    _bindAttr = {"inputMatrix": f"{node_mult}.matrixIn[0]",
-                 "inputRotateOrder": f"{node_decom}.inputRotateOrder",
-                 "inputRelativeSpaceMatrix": f"{node_matrixInverse}.inputMatrix",
-                 "outputTranslate": f"{node_decom}.outputTranslate",
-                 "outputRotate": f"{node_decom}.outputRotate",
-                 "outputScale": f"{node_decom}.outputScale",
-                 "outputShear": f"{node_decom}.outputShear"}
-
-    # Internal connects
-    cmds.connectAttr(f"{node_matrixInverse}.outputMatrix", f"{node_mult}.matrixIn[1]")
-    cmds.connectAttr(f"{node_mult}.matrixSum", f"{node_decom}.inputMatrix")
-    if hasJointOrient:
-        node_euler_to_quat = cmds.createNode("eulerToQuat", name=f"{name}_eulerToQuat")
-        node_invert_quat = cmds.createNode("quatInvert", name=f"{name}_invertQuat")
-        node_prod_quat = cmds.createNode("quatProd", name=f"{name}_prodQuat")
-        node_quat_to_euler = cmds.createNode("quatToEuler", name=f"{name}_quatToEuler")
-
-        cmds.connectAttr(f"{node_decom}.inputRotateOrder", f"{node_euler_to_quat}.inputRotateOrder")
-        cmds.connectAttr(f"{node_decom}.inputRotateOrder", f"{node_quat_to_euler}.inputRotateOrder")
-        cmds.connectAttr(f"{node_decom}.outputQuat", f"{node_prod_quat}.input1Quat")
-        cmds.connectAttr(f"{node_euler_to_quat}.outputQuat", f"{node_invert_quat}.inputQuat")
-        cmds.connectAttr(f"{node_invert_quat}.outputQuat", f"{node_prod_quat}.input2Quat")
-        cmds.connectAttr(f"{node_prod_quat}.outputQuat", f"{node_quat_to_euler}.inputQuat")
-        _bindAttr.update({"inputJointOrient": f"{node_euler_to_quat}.inputRotate",
-                          "outputRotate": f"{node_quat_to_euler}.outputRotate"})
-
-    # External connects
-    if cmds.objExists(name):
-        if cmds.objExists(f"{name}.jointOrient"):
-            cmds.connectAttr(f"{name}.jointOrient", _bindAttr["inputJointOrient"])  # in jointOrient
-        cmds.connectAttr(f"{name}.parentMatrix[0]", _bindAttr["inputRelativeSpaceMatrix"])  # input relatives space matrix
-        cmds.connectAttr(f"{name}.rotateOrder", _bindAttr["inputRotateOrder"])  # in rotateOrder
-        if translate:
-            cmds.connectAttr(_bindAttr["outputTranslate"], f"{name}.translate")  # out translate
-        if scale:
-            cmds.connectAttr(_bindAttr["outputScale"], f"{name}.scale")  # out scale
-        if shear:
-            cmds.connectAttr(_bindAttr["outputShear"], f"{name}.shear")  # out shear
-        if rotate:
-            cmds.connectAttr(_bindAttr["outputRotate"], f"{name}.rotate")  # out rotate
-            # cmds.connectAttr(f"{_assets}.outputQuat", f"{name}.rotateQuaternion")  # out rotate
-    return _bindAttr
-
-
-@createAsset(parentAsset="relativesMatrix", assetType="container")
-def create_relativesMatrix(*args, **kwargs):
-    name = kwargs.get("name")
-    node_multMatrix = cmds.createNode("multMatrix", name=f"{name}_multMatrix")
-    node_inverseMatrix = cmds.createNode("inverseMatrix", name=f"{name}_inverseMatrix")
-    cmds.connectAttr(f"{node_inverseMatrix}.outputMatrix", f"{node_multMatrix}.matrixIn[1]")
-    _bindAttr = {"inputMatrix": f"{node_multMatrix}.matrixIn[0]",
-                 "inputRelativeMatrix": f"{node_inverseMatrix}.inputMatrix",
-                 "outputMatrix": f"{node_multMatrix}.matrixSum"}
-    return _bindAttr
-
-
-def matrixConstraint(*args,
-                     translate: bool = True,
-                     rotate: bool = True,
-                     scale: bool = True,
-                     shear: bool = True,
-                     **kwargs) -> str:
-    """
-    Create a matrix-based constraint node
-
-    Args:
-            translate (bool): Enable translation constraint
-            rotate (bool): Enable rotation constraint
-            scale (bool): Enable scale constraint
-            shear (bool): Enable shear constraint
-        *arg: Variable length arguments.
-            No args: Use current selection, first as source, rest as targets.
-            Single arg: Specify source object.
-            Multiple args: First as source, rest as targets.
-        **kwargs: Keyword arguments.
-            mo/maintainOffset (bool): Keep offset transforms, default True.
-            q/query (bool): Query mode, default False.
-            s/source (bool): Query source object, default True.
-            t/target (bool): Query target objects, default False.
-
-    Returns:
-        str: Name of constraint node or query result dictionary
-    """
-
-    @createAsset(parentAsset="matrixConstraint", assetType="container")
-    def _create_matrixConstraint(source_obj: str = None,
-                                 target_object: str = None,
-                                 keep_offset: bool = True,
-                                 *args,
-                                 **kwargs):
-        """
-        Create matrix constraint between source and target
-
-        Args:
-            source_obj: Driver object
-            target_object: Driven object
-            keep_offset: Maintain offset transforms
-        """
-        print(source_obj)
-        print(target_object)
-        print(cmds.ls(sl=1))
-        source_obj = cmds.ls(sl=1)[0]
-        target_object = cmds.ls(sl=1)[1]
-        hasJointOrient = cmds.objExists(f"{target_object}.jointOrient")
-        offset_matrix = get_offsetMatrix(get_worldMatrix(target_object), get_worldMatrix(source_obj))
-        node_multMatrix = cmds.createNode("multMatrix", name=f"{target_object}_MM_matrixConstraint")
-        node_decom = create_decomposeMatrix(name=target_object, translate=translate, rotate=rotate, scale=scale, shear=shear)
-        _bindAttr = {"inputOffsetMatrix": f"{node_multMatrix}.matrixIn[0]",
-                     "inputControllerMatrix": f"{node_multMatrix}.matrixIn[1]",
-                     "inputRotateOrder": f"{node_decom}.inputRotateOrder",
-                     "inputRelativeSpaceMatrix": f"{node_decom}.inputRelativeSpaceMatrix",
-                     "outputTranslate": f"{node_decom}.outputTranslate",
-                     "outputRotate": f"{node_decom}.outputRotate",
-                     # "outputQuat": f"{node_decom}.outputQuat",
-                     "outputScale": f"{node_decom}.outputScale",
-                     "outputShear": f"{node_decom}.outputShear"}
-        if hasJointOrient:
-            _bindAttr.update({"inputTargetJointOrient": f"{node_decom}.inputJointOrient"})
+        self.publishAttr(data={"inputMatrix": f"{node_mult}.matrixIn[0]",
+                               "inputRotateOrder": f"{node_decom}.inputRotateOrder",
+                               "inputRelativeSpaceMatrix": f"{node_matrixInverse}.inputMatrix",
+                               "outputTranslate": f"{node_decom}.outputTranslate",
+                               "outputRotate": f"{node_decom}.outputRotate",
+                               "outputScale": f"{node_decom}.outputScale",
+                               "outputShear": f"{node_decom}.outputShear"})
 
         # Internal connects
-        cmds.connectAttr(f"{node_multMatrix}.matrixSum", f"{node_decom}.inputMatrix")
+        cmds.connectAttr(f"{node_matrixInverse}.outputMatrix", f"{node_mult}.matrixIn[1]")
+        cmds.connectAttr(f"{node_mult}.matrixSum", f"{node_decom}.inputMatrix")
+        if self.hasJointOrient:
+            node_euler_to_quat = CreateNode("eulerToQuat", name=self.createName("eulerToQuat"))
+            node_invert_quat = CreateNode("quatInvert", name=self.createName("invertQuat"))
+            node_prod_quat = CreateNode("quatProd", name=self.createName("prodQuat"))
+            node_quat_to_euler = CreateNode("quatToEuler", name=self.createName("quatToEuler"))
+
+            cmds.connectAttr(f"{node_decom}.inputRotateOrder", f"{node_euler_to_quat}.inputRotateOrder")
+            cmds.connectAttr(f"{node_decom}.inputRotateOrder", f"{node_quat_to_euler}.inputRotateOrder")
+            cmds.connectAttr(f"{node_decom}.outputQuat", f"{node_prod_quat}.input1Quat")
+            cmds.connectAttr(f"{node_euler_to_quat}.outputQuat", f"{node_invert_quat}.inputQuat")
+            cmds.connectAttr(f"{node_invert_quat}.outputQuat", f"{node_prod_quat}.input2Quat")
+            cmds.connectAttr(f"{node_prod_quat}.outputQuat", f"{node_quat_to_euler}.inputQuat")
+
+            self.publishAttr(data={"inputJointOrient": f"{node_euler_to_quat}.inputRotate",
+                                   "outputRotate": f"{node_quat_to_euler}.outputRotate"})
+
         # External connects
-        if keep_offset:
+        if cmds.objExists(self.name):
+            if self.hasJointOrient:
+                cmds.connectAttr(f"{self.name}.jointOrient", self.inputJointOrient)  # in jointOrient
+            cmds.connectAttr(f"{self.name}.parentMatrix[0]", self.inputRelativeSpaceMatrix)  # input relatives space matrix
+            cmds.connectAttr(f"{self.name}.rotateOrder", self.inputRotateOrder)  # in rotateOrder
+            if self.translate:
+                cmds.connectAttr(self.outputTranslate, f"{self.name}.translate")  # out translate
+            if self.scale:
+                cmds.connectAttr(self.outputScale, f"{self.name}.scale")  # out scale
+            if self.shear:
+                cmds.connectAttr(self.outputShear, f"{self.name}.shear")  # out shear
+            if self.rotate:
+                cmds.connectAttr(self.outputRotate, f"{self.name}.rotate")  # out rotate
+                # cmds.connectAttr(f"{_assets}.outputQuat", f"{name}.rotateQuaternion")  # out rotate
+
+
+class relativesMatrix(CreatorBase):
+    isDagAsset: bool = False
+
+    def create(self):
+        node_multMatrix = CreateNode("multMatrix", name=self.createName("multMatrix"))
+        node_inverseMatrix = CreateNode("inverseMatrix", name=self.createName("inverseMatrix"))
+        cmds.connectAttr(f"{node_inverseMatrix}.outputMatrix", f"{node_multMatrix}.matrixIn[1]")
+        self.publishAttr(data={"inputMatrix": f"{node_multMatrix}.matrixIn[0]",
+                               "inputRelativeMatrix": f"{node_inverseMatrix}.inputMatrix",
+                               "outputMatrix": f"{node_multMatrix}.matrixSum"})
+
+
+class matrixConstraint(CreatorBase):
+    isDagAsset: bool = False
+
+    def _post_init(self, *args, **kwargs):
+        self.keepOffset = kwargs.get("maintainOffset") or kwargs.get("mo") or True
+        self.translate = kwargs.get("translate") or kwargs.get("t") or True
+        self.rotate = kwargs.get("rotate") or kwargs.get("r") or True
+        self.scale = kwargs.get("scale") or kwargs.get("s") or True
+        self.shear = kwargs.get("shear") or kwargs.get("sh") or True
+
+        if len(args) == 2:
+            self.controller, self.target = args
+        else:
+            sel = cmds.ls(sl=1)
+            if len(sel) == 2:
+                self.controller, self.target = sel
+            else:
+                raise RuntimeError("Please input or select two objects.")
+        self.name = self.target
+
+    def create(self):
+        self.hasJointOrient = cmds.objExists(f"{self.target}.jointOrient")
+
+        offset_matrix = get_offsetMatrix(child_world_matrix=get_worldMatrix(obj=self.target),
+                                         parent_world_matrix=get_worldMatrix(obj=self.controller))
+
+        node_multMatrix = CreateNode("multMatrix", name=self.createName("multMatrix"))
+
+        node_decom = decomMatrix(name=self.name,
+                                 translate=self.translate,
+                                 rotate=self.rotate,
+                                 scale=self.scale,
+                                 shear=self.shear)
+
+        self.publishAttr(data={"inputOffsetMatrix": f"{node_multMatrix}.matrixIn[0]",
+                               "inputControllerMatrix": f"{node_multMatrix}.matrixIn[1]",
+                               "inputRotateOrder": node_decom.inputRotateOrder,
+                               "inputRelativeSpaceMatrix": node_decom.inputRelativeSpaceMatrix,
+                               "outputTranslate": node_decom.outputTranslate,
+                               "outputRotate": node_decom.outputRotate,
+                               "outputScale": node_decom.outputScale,
+                               "outputShear": node_decom.outputShear})
+        if self.hasJointOrient:
+            self.publishAttr(data={"inputTargetJointOrient": node_decom.inputJointOrient})
+
+        # Internal connects
+        cmds.connectAttr(f"{node_multMatrix}.matrixSum", node_decom.inputMatrix)
+        # External connects
+        if self.keepOffset:
             cmds.setAttr(f"{node_multMatrix}.matrixIn[0]", offset_matrix, type="matrix")
-        cmds.connectAttr(f"{source_obj}.worldMatrix[0]", f"{node_multMatrix}.matrixIn[1]")
-        # cmds.connectAttr(f"{target_object}.parentMatrix[0]", f"{_assets}.inputTargetRelativeSpaceMatrix")
-        return _bindAttr
-    _create_matrixConstraint()
+        cmds.connectAttr(f"{self.controller}.worldMatrix[0]", f"{node_multMatrix}.matrixIn[1]")
+
+
+class parentSpaceConstraint(CreatorBase):
+    isDagAsset: bool = False
+
+    def _post_init(self, *args, **kwargs):
+        self.parentspace = "parentSpace"
+
+        self.translate = kwargs.get("translate") or kwargs.get("t") or True
+        self.rotate = kwargs.get("rotate") or kwargs.get("r") or True
+        self.scale = kwargs.get("scale") or kwargs.get("s") or True
+        self.shear = kwargs.get("shear") or kwargs.get("sh") or True
+
+        # get controller and target
+        if len(args) < 2:
+            sel = cmds.ls(sl=1)
+            if len(sel) < 2:
+                raise RuntimeError("Please select at least 2 objects.")
+            self.target = sel.pop()
+            self.controller = sel
+        else:
+            self.target = args.pop()
+            self.controller = args
+        # get nice name
+        self.niceName = kwargs.get("niceName") or kwargs.get("nn") or []
+        if not isinstance(self.niceName, list):
+            self.niceName = [self.niceName]
+        if len(self.niceName) != len(self.controller):
+            self.niceName = self.controller
+
+    def create(self):
+        self.createParentSpaceLogic()
+        for i, controller in enumerate(self.controller):
+            self.addParentSpaceController(controller=controller,
+                                          niceName=self.niceName[i])
+
+    def edit(self):
+        self.addParentSpaceController()
+
+    def createParentSpaceLogic(self):
+        localMatrix = get_localMatrix(self.target)
+        # connect to chose
+        node_choseControllerMatrix = CreateNode("choice", name=self.createName("choice"))
+        node_choseOffsetMatrix = CreateNode("choice", name=self.createName(keyword="offsetChoice"))
+        # add matrix
+        cmds.addAttr(node_choseControllerMatrix, ln="controllerMatrix", at="matrix", m=1)
+        cmds.addAttr(node_choseOffsetMatrix, ln="offsetMatrix", at="matrix", m=1)
+        cmds.connectAttr(f"{node_choseControllerMatrix}.controllerMatrix[0]", f"{node_choseControllerMatrix}.input[0]")
+        cmds.connectAttr(f"{node_choseOffsetMatrix}.offsetMatrix[0]", f"{node_choseOffsetMatrix}.input[0]")
+
+        # cal world matrix
+        node_calWorldMatrix = CreateNode("multMatrix", name=self.createName("parentMultMatrix"))
+        cmds.connectAttr(f"{node_choseOffsetMatrix}.output", f"{node_calWorldMatrix}.matrixIn[0]")
+        cmds.connectAttr(f"{node_choseControllerMatrix}.output", f"{node_calWorldMatrix}.matrixIn[1]")
+        # chose to decomposeMatrix
+        node_decom = decomMatrix(name=self.name,
+                                 translate=self.translate,
+                                 rotate=self.rotate,
+                                 scale=self.scale,
+                                 shear=self.shear)
+        cmds.connectAttr(f"{node_calWorldMatrix}.matrixSum", node_decom.inputMatrix)
+        # add parentspace switch attr
+        cmds.addAttr(node_choseControllerMatrix, ln=self.parentspace, at="enum", en="Parent", k=1)
+
+        self.publishAttr(data={"inputRotateOrder": node_decom.inputRotateOrder,
+                               "inputRelativeSpaceMatrix": node_decom.inputRelativeSpaceMatrix,
+                               "outputTranslate": node_decom.outputTranslate,
+                               "outputRotate": node_decom.outputRotate,
+                               "outputScale": node_decom.outputScale,
+                               "outputShear": node_decom.outputShear,
+                               "parentspace": f"{node_choseControllerMatrix}.{self.parentspace}",
+                               "controllerMatrix": f"{node_choseControllerMatrix}.controllerMatrix",
+                               "offsetMatrix": f"{node_choseOffsetMatrix}.offsetMatrix"})
+
+        cmds.connectAttr(self.parentspace, f"{node_choseControllerMatrix}.selector")
+        cmds.connectAttr(self.parentspace, f"{node_choseOffsetMatrix}.selector")
+
+        # parent matrix * base local matrix
+        cmds.connectAttr(f"{self.target}.parentMatrix[0]", f"{self.controllerMatrix}[0]")
+        cmds.setAttr(f"{self.offsetMatrix}[0]", localMatrix, type="matrix")
+
+        # add parentspace attr to obj
+        if cmds.objExists(f"{self.target}.{self.parentspace}"):
+            cmds.deleteAttr(f"{self.target}.{self.parentspace}")
+        cmds.addAttr(self.target, ln=self.parentspace, k=1, pxy=self.parentspace)
+
+    def addParentSpaceController(self,
+                                 controller: str,
+                                 niceName: str):
+        pass
 
 
 def parentspaceConstraint(*args,
@@ -449,44 +500,18 @@ def parentspaceConstraint(*args,
                           scale: bool = True,
                           shear: bool = True,
                           ** kwargs):
-    """
-    Create parent space constraint networks for target object with multiple control objects.
-
-    Usage:
-        1. Select multiple controls + one target (last selected)
-        2. Or provide objects as arguments (last arg = target)
-
-    Args:
-            translate (bool): Enable translation constraint
-            rotate (bool): Enable rotation constraint
-            scale (bool): Enable scale constraint
-            shear (bool): Enable shear constraint
-        *arg: Variable length argument list
-            If empty: Uses selected objects (last = target)
-            If provided: Last arg = target, others = controls
-        **kwargs: Optional arguments
-            niceName (str): Custom name for space switch enum
-    """
 
     parentspace_attrName = "parentSpace"
     _info_name = "parentspaceConstraint"
 
     def _pre_parentspace(target_obj):
-        """
-        Setup initial constraint network and container structure
 
-        Args:
-            target_obj (str): Target object to setup constraint for
-
-        Returns:
-            str: Created parentspace assets container name
-        """
         localMatrix = get_localMatrix(target_obj)
         # connect to chose
-        node_choseControllerMatrix = cmds.createNode("choice", name=f"{target_obj}_controller_choice")
-        node_choseOffsetMatrix = cmds.createNode("choice", name=f"{target_obj}_offset_choice")
+        node_choseControllerMatrix = CreateNode("choice", name=f"{target_obj}_controller_choice")
+        node_choseOffsetMatrix = CreateNode("choice", name=f"{target_obj}_offset_choice")
         # cal world matrix
-        node_calWorldMatrix = cmds.createNode("multMatrix", name=f"{target_obj}_parentSpace_multMatrix")
+        node_calWorldMatrix = CreateNode("multMatrix", name=f"{target_obj}_parentSpace_multMatrix")
         cmds.connectAttr(f"{node_choseOffsetMatrix}.output", f"{node_calWorldMatrix}.matrixIn[0]")
         cmds.connectAttr(f"{node_choseControllerMatrix}.output", f"{node_calWorldMatrix}.matrixIn[1]")
         # chose to decomposeMatrix
@@ -593,49 +618,49 @@ def parentspaceConstraint(*args,
         _add_parentspace(control_obj, target_obj, **kwargs)
 
 
-def create_OffsetFK(control_list: list, offset_list: list):
-    """
-    Create an offset system for FK chains
-    For example, the hierarchy at the top of each FK chain is constrained,
-    causing us to lose control over the levels below the FK chain.
-    This function can achieve this by preserving control over the levels below the FK chain,
-    even when they are constrained.
+# def create_OffsetFK(control_list: list, offset_list: list):
+#     """
+#     Create an offset system for FK chains
+#     For example, the hierarchy at the top of each FK chain is constrained,
+#     causing us to lose control over the levels below the FK chain.
+#     This function can achieve this by preserving control over the levels below the FK chain,
+#     even when they are constrained.
 
-    Args:
-        control_list (list): Control the list of objects, paying attention to the order, from top to bottom.
-        offset_list (list): Control's offset transform objects, paying attention to the order, from top to bottom.
-    Example:
-        hierarchy ------GRP------Offset------CTL
+#     Args:
+#         control_list (list): Control the list of objects, paying attention to the order, from top to bottom.
+#         offset_list (list): Control's offset transform objects, paying attention to the order, from top to bottom.
+#     Example:
+#         hierarchy ------GRP------Offset------CTL
 
-        control_list = ['Test_CTL', 'Test1_CTL', 'Test2_CTL', 'Test3_CTL']
+#         control_list = ['Test_CTL', 'Test1_CTL', 'Test2_CTL', 'Test3_CTL']
 
-        offset_list = ['Test_Offset', 'Test1_Offset', 'Test2_Offset', 'Test3_Offset']
+#         offset_list = ['Test_Offset', 'Test1_Offset', 'Test2_Offset', 'Test3_Offset']
 
-        offset_fk(control_list, offset_list)
+#         offset_fk(control_list, offset_list)
 
-    """
-    for i, control in enumerate(control_list[:-1]):
-        offset = offset_list[i]
-        next_offset = offset_list[i + 1]
-        next_control = control_list[i + 1]
+#     """
+#     for i, control in enumerate(control_list[:-1]):
+#         offset = offset_list[i]
+#         next_offset = offset_list[i + 1]
+#         next_control = control_list[i + 1]
 
-        node_multMatrix = cmds.createNode("multMatrix", name=f"{next_control}_multMatrix_offsetFK")
-        node_decom = create_decomposeMatrix(name=next_offset)
-        _add_nodeList = [node_multMatrix, node_decom]
+#         node_multMatrix = CreateNode("multMatrix", name=f"{next_control}_multMatrix_offsetFK")
+#         node_decom = create_decomposeMatrix(name=next_offset)
+#         _add_nodeList = [node_multMatrix, node_decom]
 
-        # get offset matrix from 'offset_obj' with 'next offset_obj'
-        cmds.connectAttr(f"{next_offset}.parentMatrix[0]",
-                         f"{node_multMatrix}.matrixIn[0]")
-        cmds.connectAttr(f"{offset}.parentInverseMatrix[0]",
-                         f"{node_multMatrix}.matrixIn[1]")
-        # controller constraint it
-        cmds.connectAttr(f"{control}.worldMatrix[0]",
-                         f"{node_multMatrix}.matrixIn[2]")
-        # matrix to trs
-        cmds.connectAttr(f"{node_multMatrix}.matrixSum",
-                         f"{node_decom}.inputMatrix")
-        _assets = generateUniqueName(f"{next_control}_offsetFK")
-        _assets = createAssets(name=_assets, assetsType="OffsetFK", addNode=_add_nodeList)
+#         # get offset matrix from 'offset_obj' with 'next offset_obj'
+#         cmds.connectAttr(f"{next_offset}.parentMatrix[0]",
+#                          f"{node_multMatrix}.matrixIn[0]")
+#         cmds.connectAttr(f"{offset}.parentInverseMatrix[0]",
+#                          f"{node_multMatrix}.matrixIn[1]")
+#         # controller constraint it
+#         cmds.connectAttr(f"{control}.worldMatrix[0]",
+#                          f"{node_multMatrix}.matrixIn[2]")
+#         # matrix to trs
+#         cmds.connectAttr(f"{node_multMatrix}.matrixSum",
+#                          f"{node_decom}.inputMatrix")
+#         _assets = generateUniqueName(f"{next_control}_offsetFK")
+#         _assets = createAssets(name=_assets, assetsType="OffsetFK", addNode=_add_nodeList)
 
 
 def reset_transformObjectValue(obj, transform=True, userDefined=True):
