@@ -283,10 +283,11 @@ class decomMatrix(CreatorBase):
     isDagAsset: bool = False
 
     def _post_init(self, *args, **kwargs):
-        self.translate = kwargs.get("translate") or kwargs.get("t") or True
-        self.rotate = kwargs.get("rotate") or kwargs.get("r") or True
-        self.scale = kwargs.get("scale") or kwargs.get("s") or True
-        self.shear = kwargs.get("shear") or kwargs.get("sh") or True
+        self.translate = kwargs.get("translate", True) and kwargs.get("t", True)
+        self.rotate = kwargs.get("rotate", True) and kwargs.get("r", True)
+        self.scale = kwargs.get("scale", True) and kwargs.get("s", True)
+        self.shear = kwargs.get("shear", True) and kwargs.get("sh", True)
+        self.isForce = kwargs.get("force", True) and kwargs.get("f", True)
 
     def create(self):
         self.hasJointOrient = cmds.objExists(f"{self.name}.jointOrient")
@@ -329,13 +330,13 @@ class decomMatrix(CreatorBase):
             cmds.connectAttr(f"{self.name}.parentMatrix[0]", self.inputRelativeSpaceMatrix)  # input relatives space matrix
             cmds.connectAttr(f"{self.name}.rotateOrder", self.inputRotateOrder)  # in rotateOrder
             if self.translate:
-                cmds.connectAttr(self.outputTranslate, f"{self.name}.translate")  # out translate
+                cmds.connectAttr(self.outputTranslate, f"{self.name}.translate", f=self.isForce)  # out translate
             if self.scale:
-                cmds.connectAttr(self.outputScale, f"{self.name}.scale")  # out scale
+                cmds.connectAttr(self.outputScale, f"{self.name}.scale", f=self.isForce)  # out scale
             if self.shear:
-                cmds.connectAttr(self.outputShear, f"{self.name}.shear")  # out shear
+                cmds.connectAttr(self.outputShear, f"{self.name}.shear", f=self.isForce)  # out shear
             if self.rotate:
-                cmds.connectAttr(self.outputRotate, f"{self.name}.rotate")  # out rotate
+                cmds.connectAttr(self.outputRotate, f"{self.name}.rotate", f=self.isForce)  # out rotate
                 # cmds.connectAttr(f"{_assets}.outputQuat", f"{name}.rotateQuaternion")  # out rotate
 
 
@@ -355,12 +356,11 @@ class matrixConstraint(CreatorBase):
     isDagAsset: bool = False
 
     def _post_init(self, *args, **kwargs):
-        self.keepOffset = kwargs.get("maintainOffset") or kwargs.get("mo") or True
-        self.translate = kwargs.get("translate") or kwargs.get("t") or True
-        self.rotate = kwargs.get("rotate") or kwargs.get("r") or True
-        self.scale = kwargs.get("scale") or kwargs.get("s") or True
-        self.shear = kwargs.get("shear") or kwargs.get("sh") or True
-
+        self.keepOffset = kwargs.get("maintainOffset", True) and kwargs.get("mo", True)
+        self.translate = kwargs.get("translate", True) and kwargs.get("t", True)
+        self.rotate = kwargs.get("rotate", True) and kwargs.get("r", True)
+        self.scale = kwargs.get("scale", True) and kwargs.get("s", True)
+        self.shear = kwargs.get("shear", True) and kwargs.get("sh", True)
         if len(args) == 2:
             self.controller, self.target = args
         else:
@@ -406,14 +406,14 @@ class matrixConstraint(CreatorBase):
 
 class parentSpaceConstraint(CreatorBase):
     isDagAsset: bool = False
+    attrName = "parentSpace"
 
     def _post_init(self, *args, **kwargs):
-        self.parentspace = "parentSpace"
 
-        self.translate = kwargs.get("translate") or kwargs.get("t") or True
-        self.rotate = kwargs.get("rotate") or kwargs.get("r") or True
-        self.scale = kwargs.get("scale") or kwargs.get("s") or True
-        self.shear = kwargs.get("shear") or kwargs.get("sh") or True
+        self.translate = kwargs.get("translate", True) and kwargs.get("t", True)
+        self.rotate = kwargs.get("rotate", True) and kwargs.get("r", True)
+        self.scale = kwargs.get("scale", True) and kwargs.get("s", True)
+        self.shear = kwargs.get("shear", True) and kwargs.get("sh", True)
 
         # get controller and target
         if len(args) < 2:
@@ -432,14 +432,19 @@ class parentSpaceConstraint(CreatorBase):
         if len(self.niceName) != len(self.controller):
             self.niceName = self.controller
 
+        # create \ edit \ query
+        self.isForce = kwargs.get("force") or kwargs.get("f") or False
+        if cmds.objExists(f"{self.target}.{self.attrName}"):
+            if self.isForce:
+                cmds.deleteAttr(f"{self.target}.{self.attrName}")
+            else:
+                self.isEdit = True
+
     def create(self):
         self.createParentSpaceLogic()
         for i, controller in enumerate(self.controller):
             self.addParentSpaceController(controller=controller,
                                           niceName=self.niceName[i])
-
-    def edit(self):
-        self.addParentSpaceController()
 
     def createParentSpaceLogic(self):
         localMatrix = get_localMatrix(self.target)
@@ -464,7 +469,7 @@ class parentSpaceConstraint(CreatorBase):
                                  shear=self.shear)
         cmds.connectAttr(f"{node_calWorldMatrix}.matrixSum", node_decom.inputMatrix)
         # add parentspace switch attr
-        cmds.addAttr(node_choseControllerMatrix, ln=self.parentspace, at="enum", en="Parent", k=1)
+        cmds.addAttr(node_choseControllerMatrix, ln=self.attrName, at="enum", en="Parent", k=1)
 
         self.publishAttr(data={"inputRotateOrder": node_decom.inputRotateOrder,
                                "inputRelativeSpaceMatrix": node_decom.inputRelativeSpaceMatrix,
@@ -472,195 +477,85 @@ class parentSpaceConstraint(CreatorBase):
                                "outputRotate": node_decom.outputRotate,
                                "outputScale": node_decom.outputScale,
                                "outputShear": node_decom.outputShear,
-                               "parentspace": f"{node_choseControllerMatrix}.{self.parentspace}",
+                               "parentspace": f"{node_choseControllerMatrix}.{self.attrName}",
                                "controllerMatrix": f"{node_choseControllerMatrix}.controllerMatrix",
                                "offsetMatrix": f"{node_choseOffsetMatrix}.offsetMatrix"})
 
         cmds.connectAttr(self.parentspace, f"{node_choseControllerMatrix}.selector")
-        cmds.connectAttr(self.parentspace, f"{node_choseOffsetMatrix}.selector")
+        cmds.connectAttr(f"{node_choseControllerMatrix}.selector", f"{node_choseOffsetMatrix}.selector")
 
         # parent matrix * base local matrix
         cmds.connectAttr(f"{self.target}.parentMatrix[0]", f"{self.controllerMatrix}[0]")
         cmds.setAttr(f"{self.offsetMatrix}[0]", localMatrix, type="matrix")
 
         # add parentspace attr to obj
-        if cmds.objExists(f"{self.target}.{self.parentspace}"):
-            cmds.deleteAttr(f"{self.target}.{self.parentspace}")
-        cmds.addAttr(self.target, ln=self.parentspace, k=1, pxy=self.parentspace)
+        if cmds.objExists(f"{self.target}.{self.attrName}"):
+            cmds.deleteAttr(f"{self.target}.{self.attrName}")
+        cmds.addAttr(self.target, ln=self.attrName, k=1, pxy=self.parentspace)
+        # add info
+        cmds.addAttr(self.target, ln="parentSpaceChoice", at="message")
+        cmds.addAttr(node_choseControllerMatrix, ln="parentSpaceTarget", at="message")
+        cmds.connectAttr(f"{node_choseControllerMatrix}.parentSpaceTarget", f"{self.target}.parentSpaceChoice")
 
     def addParentSpaceController(self,
                                  controller: str,
                                  niceName: str):
-        pass
 
-
-def parentspaceConstraint(*args,
-                          translate: bool = True,
-                          rotate: bool = True,
-                          scale: bool = True,
-                          shear: bool = True,
-                          ** kwargs):
-
-    parentspace_attrName = "parentSpace"
-    _info_name = "parentspaceConstraint"
-
-    def _pre_parentspace(target_obj):
-
-        localMatrix = get_localMatrix(target_obj)
-        # connect to chose
-        node_choseControllerMatrix = CreateNode("choice", name=f"{target_obj}_controller_choice")
-        node_choseOffsetMatrix = CreateNode("choice", name=f"{target_obj}_offset_choice")
-        # cal world matrix
-        node_calWorldMatrix = CreateNode("multMatrix", name=f"{target_obj}_parentSpace_multMatrix")
-        cmds.connectAttr(f"{node_choseOffsetMatrix}.output", f"{node_calWorldMatrix}.matrixIn[0]")
-        cmds.connectAttr(f"{node_choseControllerMatrix}.output", f"{node_calWorldMatrix}.matrixIn[1]")
-        # chose to decomposeMatrix
-        node_decom = create_decomposeMatrix(f"{target_obj}", translate=translate, rotate=rotate, scale=scale, shear=shear)
-        cmds.connectAttr(f"{node_calWorldMatrix}.matrixSum", f"{node_decom}.inputMatrix")
-
-        _add_nodeList = [node_decom, node_choseOffsetMatrix, node_choseControllerMatrix, node_calWorldMatrix]
-        _bindAttr = {"inputRotateOrder": f"{node_decom}.inputRotateOrder",
-                     "inputRelativeSpaceMatrix": f"{node_decom}.inputRelativeSpaceMatrix",
-                     "outputTranslate": f"{node_decom}.outputTranslate",
-                     "outputRotate": f"{node_decom}.outputRotate",
-                     "outputScale": f"{node_decom}.outputScale",
-                     "outputShear": f"{node_decom}.outputShear", }
-
-        # assets
-        _assets = createAssets(name=generateUniqueName(f"{target_obj}_parentspace"),
-                               assetsType="ParentspaceAssets",
-                               addNode=_add_nodeList)
-        assetBindAttr(_assets, _bindAttr)
-
-        # add parentspace switch attr
-        cmds.addAttr(_assets, ln=parentspace_attrName, at="enum", en="Parent", k=1)
-        cmds.connectAttr(f"{_assets}.{parentspace_attrName}", f"{node_choseControllerMatrix}.selector")
-        cmds.connectAttr(f"{_assets}.{parentspace_attrName}", f"{node_choseOffsetMatrix}.selector")
-        # add matrix
-        cmds.addAttr(_assets, ln="controllerMatrix", at="matrix", m=1)
-        cmds.addAttr(_assets, ln="offsetMatrix", at="matrix", m=1)
-        cmds.connectAttr(f"{_assets}.controllerMatrix[0]", f"{node_choseControllerMatrix}.input[0]")
-        cmds.connectAttr(f"{_assets}.offsetMatrix[0]", f"{node_choseOffsetMatrix}.input[0]")
-        # parent matrix * base local matrix
-        cmds.setAttr(f"{_assets}.offsetMatrix[0]", localMatrix, type="matrix")
-        cmds.connectAttr(f"{target_obj}.parentMatrix[0]", f"{_assets}.controllerMatrix[0]")
-
-        # add parentspace attr to obj
-        if cmds.objExists(f"{target_obj}.{parentspace_attrName}"):
-            cmds.deleteAttr(f"{target_obj}.{parentspace_attrName}")
-        cmds.addAttr(target_obj, ln=parentspace_attrName, k=1, pxy=f"{_assets}.{parentspace_attrName}")
-
-        # add message info to obj
-        cmds.addAttr(_assets, ln=_info_name, at="message")
-        if cmds.objExists(f"{target_obj}.{_info_name}"):
-            cmds.deleteAttr(f"{target_obj}.{_info_name}")
-        cmds.addAttr(target_obj, ln=_info_name, at="message", pxy=f"{_assets}.{_info_name}")
-
-        return _assets
-
-    def _add_parentspace(controllerObj: str,
-                         targetObj: str,
-                         niceName: str = None):
-        """
-        Add a new parent space option to the target object
-
-        Args:
-            control_obj (str): Control object to add as parent space
-            target_obj (str): Target object to be constrained
-            niceName (str, optional): Custom name for space enum
-        """
-
-        # get parentspace assets
-        if not cmds.objExists(f"{targetObj}.{_info_name}"):
-            _assets = _pre_parentspace(targetObj)
-
-        _assets = cmds.listConnections(f"{targetObj}.{_info_name}", s=1, d=0)[0]
-        if not _assets:
-            raise RuntimeError("Can not find parentspace constraint node!")
-
-        # nice name enum
-        if not niceName:
-            niceName = controllerObj
-        enum_str = cmds.addAttr(f"{targetObj}.{parentspace_attrName}", q=1, en=1)
+        # get index
+        enum_str = cmds.addAttr(f"{self.target}.{self.attrName}", q=1, en=1)
         nice_name_list = enum_str.split(":")
         nice_name_list.append(niceName)
         enum_str = ":".join(nice_name_list)
         parent_indices = len(nice_name_list)-1
 
         # update parentspace enum
-        cmds.addAttr(f"{targetObj}.{parentspace_attrName}", e=1, en=enum_str)
-        cmds.addAttr(f"{_assets}.{parentspace_attrName}", e=1, en=enum_str)
+        cmds.addAttr(f"{self.target}.{self.attrName}", e=1, en=enum_str)
+        cmds.addAttr(self.parentspace, e=1, en=enum_str)
 
         # offset matrix to chose
-        offset_matrix = get_offsetMatrix(get_worldMatrix(targetObj), get_worldMatrix(controllerObj))
-        cmds.setAttr(f"{_assets}.offsetMatrix[{parent_indices}]", offset_matrix, type="matrix")
+        offset_matrix = get_offsetMatrix(get_worldMatrix(self.target),
+                                         get_worldMatrix(controller))
+        cmds.setAttr(f"{self.offsetMatrix}[{parent_indices}]", offset_matrix, type="matrix")
         # controller matrix to chose
-        cmds.connectAttr(f"{controllerObj}.worldMatrix[0]", f"{_assets}.controllerMatrix[{parent_indices}]")
+        cmds.connectAttr(f"{controller}.worldMatrix[0]", f"{self.controllerMatrix}[{parent_indices}]")
+
         # update chose input data
-        controller_chose = cmds.listConnections(f"{_assets}.controllerMatrix[0]", p=0, d=1, s=0)[0]
-        offset_chose = cmds.listConnections(f"{_assets}.offsetMatrix[0]", p=0, d=1, s=0)[0]
-        cmds.connectAttr(f"{_assets}.controllerMatrix[{parent_indices}]", f"{controller_chose}.input[{parent_indices}]")
-        cmds.connectAttr(f"{_assets}.offsetMatrix[{parent_indices}]", f"{offset_chose}.input[{parent_indices}]")
-
-    if len(args) == 0:
-        sel = cmds.ls(sl=1)
-        if len(sel) < 2:
-            om.MGlobal.displayError("Please select at least two objects.")
-            return
-        control_obj_list = cmds.ls(sl=1)[:-1]
-        target_obj = cmds.ls(sl=1)[-1]
-    else:
-        control_obj_list = []
-        control_obj_list.extend(args[:-1])
-        target_obj = args[-1]
-
-    for control_obj in control_obj_list:
-        _add_parentspace(control_obj, target_obj, **kwargs)
+        controller_chose = cmds.listConnections(f"{self.controllerMatrix}[0]", p=0, d=1, s=0)[0]
+        offset_chose = cmds.listConnections(f"{self.offsetMatrix}[0]", p=0, d=1, s=0)[0]
+        cmds.connectAttr(f"{self.controllerMatrix}[{parent_indices}]", f"{controller_chose}.input[{parent_indices}]")
+        cmds.connectAttr(f"{self.offsetMatrix}[{parent_indices}]", f"{offset_chose}.input[{parent_indices}]")
 
 
-# def create_OffsetFK(control_list: list, offset_list: list):
-#     """
-#     Create an offset system for FK chains
-#     For example, the hierarchy at the top of each FK chain is constrained,
-#     causing us to lose control over the levels below the FK chain.
-#     This function can achieve this by preserving control over the levels below the FK chain,
-#     even when they are constrained.
+class offsetFK(CreatorBase):
+    def _post_init(self, *args, **kwargs):
+        self.controllerList = kwargs.get("controllerList") or kwargs.get("cl") or []
+        self.offsetList = kwargs.get("offsetList") or kwargs.get("ol") or []
+        if not self.controllerList:
+            self.controllerList = args[0] if args else []
+        if not self.offsetList:
+            self.offsetList = args[1] if args else []
+        if not self.controllerList or not self.offsetList:
+            raise RuntimeError("Input error!")
 
-#     Args:
-#         control_list (list): Control the list of objects, paying attention to the order, from top to bottom.
-#         offset_list (list): Control's offset transform objects, paying attention to the order, from top to bottom.
-#     Example:
-#         hierarchy ------GRP------Offset------CTL
+    def create(self):
+        for i, control in enumerate(self.controllerList[:-1]):
+            offset = self.offsetList[i]
+            next_offset = self.offsetList[i + 1]
+            next_control = self.controllerList[i + 1]
 
-#         control_list = ['Test_CTL', 'Test1_CTL', 'Test2_CTL', 'Test3_CTL']
-
-#         offset_list = ['Test_Offset', 'Test1_Offset', 'Test2_Offset', 'Test3_Offset']
-
-#         offset_fk(control_list, offset_list)
-
-#     """
-#     for i, control in enumerate(control_list[:-1]):
-#         offset = offset_list[i]
-#         next_offset = offset_list[i + 1]
-#         next_control = control_list[i + 1]
-
-#         node_multMatrix = CreateNode("multMatrix", name=f"{next_control}_multMatrix_offsetFK")
-#         node_decom = create_decomposeMatrix(name=next_offset)
-#         _add_nodeList = [node_multMatrix, node_decom]
-
-#         # get offset matrix from 'offset_obj' with 'next offset_obj'
-#         cmds.connectAttr(f"{next_offset}.parentMatrix[0]",
-#                          f"{node_multMatrix}.matrixIn[0]")
-#         cmds.connectAttr(f"{offset}.parentInverseMatrix[0]",
-#                          f"{node_multMatrix}.matrixIn[1]")
-#         # controller constraint it
-#         cmds.connectAttr(f"{control}.worldMatrix[0]",
-#                          f"{node_multMatrix}.matrixIn[2]")
-#         # matrix to trs
-#         cmds.connectAttr(f"{node_multMatrix}.matrixSum",
-#                          f"{node_decom}.inputMatrix")
-#         _assets = generateUniqueName(f"{next_control}_offsetFK")
-#         _assets = createAssets(name=_assets, assetsType="OffsetFK", addNode=_add_nodeList)
+            node_multMatrix = CreateNode("multMatrix", name=f"{next_control}_multMatrix_{self.thisType}1")
+            node_decom = decomMatrix(name=next_offset)
+            # get offset matrix from 'offset_obj' with 'next offset_obj'
+            cmds.connectAttr(f"{next_offset}.parentMatrix[0]",
+                             f"{node_multMatrix}.matrixIn[0]")
+            cmds.connectAttr(f"{offset}.parentInverseMatrix[0]",
+                             f"{node_multMatrix}.matrixIn[1]")
+            # controller constraint it
+            cmds.connectAttr(f"{control}.worldMatrix[0]",
+                             f"{node_multMatrix}.matrixIn[2]")
+            # matrix to trs
+            cmds.connectAttr(f"{node_multMatrix}.matrixSum",
+                             f"{node_decom}.inputMatrix")
 
 
 def reset_transformObjectValue(obj, transform=True, userDefined=True):

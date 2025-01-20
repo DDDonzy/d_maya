@@ -15,6 +15,9 @@ class AssetCallback:
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.delete()
+        for mObj in self.addNodeMObj:
+            fnDep = om.MFnDependencyNode(mObj)
+            self.addNode.append(fnDep.name())
 
     def __init__(self, name):
 
@@ -27,6 +30,7 @@ class AssetCallback:
 
         self.name = name
         self.status = False
+        self.addNodeMObj: list[str] = []
         self.addNode: list[str] = []
         self.start()
 
@@ -58,17 +62,13 @@ class AssetCallback:
 
     @staticmethod
     def addNodeFunction(mObj, thisClass):
-        node = om.MFnDependencyNode(mObj)
         if mObj.apiTypeStr != "kHyperLayout":
-            node_name = node.name()
-            thisClass.addNode.append(node_name)
+            thisClass.addNodeMObj.append(mObj)
 
     @staticmethod
     def removeNodeFunction(mObj, thisClass):
-        node = om.MFnDependencyNode(mObj)
-        node_name = node.name()
-        if node_name in thisClass.addNode:
-            thisClass.addNode.remove(node_name)
+        if mObj in thisClass.addNodeMObj:
+            thisClass.addNodeMObj.remove(mObj)
 
 
 # with AssetCallBack("A:") as call:

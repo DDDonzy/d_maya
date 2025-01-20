@@ -38,13 +38,14 @@ def createContainer(name: str,
 
 
 class CreatorBase():
-    isBuildAsset: bool = False
+    isBuildAsset: bool = True
     isDagAsset: bool = True
     isBlackBox: bool = True
     isPublishAssetAttr: bool = True
     icon: str = None
 
     def __init__(self, *args, **kwargs):
+        self.thisAsset = None
 
         self._pre_init(*args, **kwargs)
 
