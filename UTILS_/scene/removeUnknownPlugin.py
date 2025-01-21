@@ -1,5 +1,5 @@
 from maya import cmds as cmds
-from UTILS.ui.showMessage import showMessage
+from UTILS_.ui.showMessage import showMessage
 
 
 def removeUnknownPlugin():
