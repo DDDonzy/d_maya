@@ -1,6 +1,6 @@
 from maya.api import OpenMaya as om
 from maya import cmds
-from UTILS.assetCallback import AssetCallback
+from UTILS.create.assetCallback import AssetCallback
 RIG_ASSET_NAME = "RigAsset"
 
 

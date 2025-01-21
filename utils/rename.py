@@ -6,7 +6,7 @@ from PySide2.QtWidgets import QLineEdit, QCompleter
 from PySide2.QtGui import QCursor
 
 from UTILS.ui.getMayaMainWindow import getMayaMainWindow
-from UTILS.generateUniqueName import generateUniqueName, adjustName
+from UTILS.create.generateUniqueName import generateUniqueName, adjustName
 
 
 class RenameUI(QLineEdit):

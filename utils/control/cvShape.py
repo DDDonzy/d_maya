@@ -1,8 +1,7 @@
 import yaml
 from dataclasses import dataclass, field
 
-from maya import mel
-from maya import cmds
+from maya import mel, cmds
 from maya.api import OpenMaya as om
 from UTILS.ui.showMessage import showMessage
 from UTILS.mirrorEnv import MIRROR_CONFIG
@@ -279,7 +278,7 @@ def export_cvData(cv_list=None):
 
     path = cmds.fileDialog2(dialogStyle=2, caption="Export nurbsCurve data", fileFilter="YAML file(*.yaml)")
     if not path:
-        return 
+        return
     path = path[0]
     with open(path, "w") as f:
         yaml.dump(data_list, f, sort_keys=False, indent=4, width=80)
@@ -290,7 +289,7 @@ def export_cvData(cv_list=None):
 def import_cvData():
     path = cmds.fileDialog2(dialogStyle=2, caption="Import nurbsCurve data", fileFilter="YAML file(*.yaml)", fileMode=1)[0]
     if not path:
-        return 
+        return
     path = path[0]
     with open(path, "r") as f:
         data_list = yaml.unsafe_load(f)
