@@ -1,5 +1,5 @@
 import maya.cmds as cmds
-from UTILS_.ui.showMessage import showMessage
+from UTILS.ui.showMessage import showMessage
 
 
 class MIRROR_BASE:

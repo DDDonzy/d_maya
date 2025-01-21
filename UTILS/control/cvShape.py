@@ -3,8 +3,8 @@ from dataclasses import dataclass, field
 
 from maya import mel, cmds
 from maya.api import OpenMaya as om
-from UTILS_.ui.showMessage import showMessage
-from UTILS_.mirrorEnv import MIRROR_CONFIG
+from UTILS.ui.showMessage import showMessage
+from UTILS.mirrorEnv import MIRROR_CONFIG
 
 
 @dataclass

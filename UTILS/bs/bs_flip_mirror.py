@@ -3,7 +3,7 @@ import maya.cmds as cmds
 import maya.mel as mel
 import maya.api.OpenMaya as om
 import numpy as np
-import UTILS_.bs.dslReverseShape as dsl
+import UTILS.bs.dslReverseShape as dsl
 
 
 import os
