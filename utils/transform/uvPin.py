@@ -1,8 +1,8 @@
 from maya import cmds
 from maya.api import OpenMaya as om
-from utils.createBase import CreatorBase
-from utils.transform.transform import get_worldMatrix, matrixConstraint, decomMatrix
-from utils.generateUniqueName import generateUniqueName
+from UTILS.createBase import CreatorBase
+from UTILS.transform.transform import get_worldMatrix, matrixConstraint, decomMatrix
+from UTILS.generateUniqueName import generateUniqueName
 
 
 class uvPin(CreatorBase):

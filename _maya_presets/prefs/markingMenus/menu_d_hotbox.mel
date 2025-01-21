@@ -22,7 +22,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "from utils.transform.transform import reset_transformObjectValue_cmd\nreset_transformObjectValue_cmd(True,False)" 
+            -command "from UTILS.transform.transform import reset_transformObjectValue_cmd\nreset_transformObjectValue_cmd(True,False)" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -43,7 +43,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "from utils.transform.transform import reset_transformObjectValue_cmd\nreset_transformObjectValue_cmd(True,True)" 
+            -command "from UTILS.transform.transform import reset_transformObjectValue_cmd\nreset_transformObjectValue_cmd(True,True)" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -64,7 +64,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "import utils.other.attr as attr\nattr.lockAttr()" 
+            -command "import UTILS.other.attr as attr\nattr.lockAttr()" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -85,7 +85,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "import utils.other.attr as attr\nattr.lockAttr(attr=attr.VIS_ATTR)" 
+            -command "import UTILS.other.attr as attr\nattr.lockAttr(attr=attr.VIS_ATTR)" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -106,7 +106,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "import utils.other.attr as attr\nattr.lockAttr(attr=attr.TRANSLATE_ATTR)" 
+            -command "import UTILS.other.attr as attr\nattr.lockAttr(attr=attr.TRANSLATE_ATTR)" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -127,7 +127,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "import utils.other.attr as attr\nattr.lockAttr(attr=attr.ROTATE_ATTR)" 
+            -command "import UTILS.other.attr as attr\nattr.lockAttr(attr=attr.ROTATE_ATTR)" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -148,7 +148,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "import utils.other.attr as attr\nattr.lockAttr(attr=attr.SCALE_ATTR)" 
+            -command "import UTILS.other.attr as attr\nattr.lockAttr(attr=attr.SCALE_ATTR)" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -169,7 +169,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "import utils.other.attr as attr\nattr.showLockAttr()" 
+            -command "import UTILS.other.attr as attr\nattr.showLockAttr()" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -210,7 +210,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "from utils.control.cvShape import mirror_cvShape_cmd\nmirror_cvShape_cmd()" 
+            -command "from UTILS.control.cvShape import mirror_cvShape_cmd\nmirror_cvShape_cmd()" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -231,7 +231,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "from utils.control.cvShape import replace_cvShape_cmd\nreplace_cvShape_cmd()" 
+            -command "from UTILS.control.cvShape import replace_cvShape_cmd\nreplace_cvShape_cmd()" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -252,7 +252,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "from utils.control.cvShape import select_cvControlVertex_cmd\nselect_cvControlVertex_cmd()" 
+            -command "from UTILS.control.cvShape import select_cvControlVertex_cmd\nselect_cvControlVertex_cmd()" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -273,7 +273,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "from utils.control.cvShape import import_cvData,export_cvData\nexport_cvData()" 
+            -command "from UTILS.control.cvShape import import_cvData,export_cvData\nexport_cvData()" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -294,7 +294,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "from utils.control.cvShape import import_cvData,export_cvData\nimport_cvData()" 
+            -command "from UTILS.control.cvShape import import_cvData,export_cvData\nimport_cvData()" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -356,7 +356,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "from utils.mirrorEnv import mirror_selected\nmirror_selected()" 
+            -command "from UTILS.mirrorEnv import mirror_selected\nmirror_selected()" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -377,7 +377,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "from utils.mirrorEnv import mirror_selected\nmirror_selected(True)" 
+            -command "from UTILS.mirrorEnv import mirror_selected\nmirror_selected(True)" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -437,7 +437,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "from utils.skin.getSkinJoint import get_skinJoint_cmd\nget_skinJoint_cmd()" 
+            -command "from UTILS.skin.getSkinJoint import get_skinJoint_cmd\nget_skinJoint_cmd()" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -564,7 +564,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "from utils.skin.copyWeightsOneToN import copyWeightsOneToN_cmd\ncopyWeightsOneToN_cmd()" 
+            -command "from UTILS.skin.copyWeightsOneToN import copyWeightsOneToN_cmd\ncopyWeightsOneToN_cmd()" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -652,7 +652,7 @@
         -divider 0
         -subMenu 0
         -tearOff 0
-        -command "from utils.rename import showUI as renameShowUI\nrenameShowUI()" 
+        -command "from UTILS.rename import showUI as renameShowUI\nrenameShowUI()" 
         -optionBox 0
         -enable 1
         -visible 1
@@ -712,7 +712,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "from utils.transform.transform import matrixConstraint \nmatrixConstraint()" 
+            -command "from UTILS.transform.transform import matrixConstraint \nmatrixConstraint()" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -859,7 +859,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "from utils.transform.uvPin import create_uvPin \ncreate_uvPin()" 
+            -command "from UTILS.transform.uvPin import create_uvPin \ncreate_uvPin()" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -882,7 +882,7 @@
         -divider 0
         -subMenu 0
         -tearOff 0
-        -command "from utils.mirrorEnv import MIRROR_CONFIG\nMIRROR_CONFIG.switch_mode()" 
+        -command "from UTILS.mirrorEnv import MIRROR_CONFIG\nMIRROR_CONFIG.switch_mode()" 
         -optionBox 0
         -enable 1
         -visible 1
@@ -921,7 +921,7 @@
         -divider 0
         -subMenu 0
         -tearOff 0
-        -command "from utils.scene.deleteBindPose import deleteBindPose \ndeleteBindPose()" 
+        -command "from UTILS.scene.deleteBindPose import deleteBindPose \ndeleteBindPose()" 
         -optionBox 0
         -enable 1
         -visible 1
@@ -941,7 +941,7 @@
         -divider 0
         -subMenu 0
         -tearOff 0
-        -command "from utils.scene.removeNamespace import removeNamespace\nremoveNamespace()" 
+        -command "from UTILS.scene.removeNamespace import removeNamespace\nremoveNamespace()" 
         -optionBox 0
         -enable 1
         -visible 1
@@ -972,7 +972,7 @@
         -italicized 0
         -boldFont 0
         -sourceType "python" 
-        -command "from utils.scene.removeUnknownPlugin import removeUnknownPlugin\nremoveUnknownPlugin()" 
+        -command "from UTILS.scene.removeUnknownPlugin import removeUnknownPlugin\nremoveUnknownPlugin()" 
         -longDivider 1
         menuEditorMenuItem15;
 

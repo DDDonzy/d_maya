@@ -1,8 +1,8 @@
 import maya.cmds as cmds
 import maya.api.OpenMaya as om
-from utils.generateUniqueName import generateUniqueName
-from utils.showMessage import showMessage
-from utils.createBase import CreatorBase, CreateNode
+from UTILS.generateUniqueName import generateUniqueName
+from UTILS.showMessage import showMessage
+from UTILS.createBase import CreatorBase, CreateNode
 
 RAD_TO_DEG = 57.29577951308232     # 180.0 / pi
 DEG_TO_RAD = 0.017453292519943295  # pi / 180.0

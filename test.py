@@ -3,7 +3,7 @@ maya.standalone.initialize()
 
 
 from maya import cmds
-from utils.transform import transform as t
+from UTILS.transform import transform as t
 import cProfile
 
 print("MAYA RUN!")

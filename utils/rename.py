@@ -5,8 +5,8 @@ from PySide2.QtCore import Qt, QSize, QStringListModel
 from PySide2.QtWidgets import QLineEdit, QCompleter
 from PySide2.QtGui import QCursor
 
-from utils.ui.getMayaMainWindow import getMayaMainWindow
-from utils.generateUniqueName import generateUniqueName, adjustName
+from UTILS.ui.getMayaMainWindow import getMayaMainWindow
+from UTILS.generateUniqueName import generateUniqueName, adjustName
 
 
 class RenameUI(QLineEdit):

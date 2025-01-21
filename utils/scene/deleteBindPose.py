@@ -1,5 +1,5 @@
 from maya import cmds
-from utils.showMessage import showMessage
+from UTILS.showMessage import showMessage
 
 def deleteBindPose():
     cmds.delete(cmds.ls(type="dagPose"))
