@@ -22,7 +22,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "from UTILS.transform.transform import reset_transformObjectValue_cmd\nreset_transformObjectValue_cmd(True,False)" 
+            -command "from UTILS.transform import reset_transformObjectValue_cmd\nreset_transformObjectValue_cmd(True,False)" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -43,7 +43,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "from UTILS.transform.transform import reset_transformObjectValue_cmd\nreset_transformObjectValue_cmd(True,True)" 
+            -command "from UTILS.transform import reset_transformObjectValue_cmd\nreset_transformObjectValue_cmd(True,True)" 
             -optionBox 0
             -enable 1
             -visible 1
@@ -712,7 +712,7 @@
             -divider 0
             -subMenu 0
             -tearOff 0
-            -command "from UTILS.transform.transform import matrixConstraint \nmatrixConstraint()" 
+            -command "from UTILS.transform import matrixConstraint \nmatrixConstraint()" 
             -optionBox 0
             -enable 1
             -visible 1
