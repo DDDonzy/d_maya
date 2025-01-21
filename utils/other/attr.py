@@ -1,5 +1,5 @@
 from maya import cmds
-from UTILS.showMessage import showMessage
+from UTILS.ui.showMessage import showMessage
 
 CHANNELBOX_NAME = "mainChannelBox"
 

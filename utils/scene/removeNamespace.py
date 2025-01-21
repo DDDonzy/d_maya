@@ -4,7 +4,7 @@
 
 
 import maya.cmds as cmds
-from UTILS.showMessage import showMessage
+from UTILS.ui.showMessage import showMessage
 
 
 def removeNamespace():

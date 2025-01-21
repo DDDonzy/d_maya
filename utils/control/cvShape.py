@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from maya import mel
 from maya import cmds
 from maya.api import OpenMaya as om
-from UTILS.showMessage import showMessage
+from UTILS.ui.showMessage import showMessage
 from UTILS.mirrorEnv import MIRROR_CONFIG
 
 
