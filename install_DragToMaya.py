@@ -85,7 +85,6 @@ def show_message(msg):
 
 
 def onMayaDroppedPythonFile(*args, **kwargs):
-    print()
     modify_mayaEnvFile()
     modify_mayaUserSetup()
     install_hotkey()
