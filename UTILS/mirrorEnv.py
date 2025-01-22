@@ -58,9 +58,13 @@ class MIRROR_BASE:
             for i in range(len(name_upper_split)):
                 if name_upper_split[i] == l_upper:
                     name_upper_split[i] = r_upper
+                    if l_upper == "left".upper():
+                        org_cases.insert(4, org_cases[3])
                     continue
                 elif name_upper_split[i] == r_upper:
                     name_upper_split[i] = l_upper
+                    if r_upper == "right".upper():
+                        del org_cases[4]
                     continue
             exchanged_name = list("_".join(name_upper_split))
 

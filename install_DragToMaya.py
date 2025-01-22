@@ -4,7 +4,8 @@ from importlib import reload
 from maya import cmds, mel
 from _hotkey.d_hotkey import install_hotkey
 
-path = r"E:\\d_maya"
+# path = r"E:\\d_maya"
+path = os.path.dirname(__file__)
 if path not in sys.path:
     sys.path.append(path)
 
@@ -42,11 +43,11 @@ def get_mayaEnvFile():
 
 def modify_mayaEnvFile():
     env_file = get_mayaEnvFile()
-    with open(env_file, 'w') as file:
-        pass
-
-    with open(env_file, 'r') as file:
-        content = file.read()
+    try:
+        with open(env_file, 'r') as file:
+            content = file.read()
+    except:
+        content = ""
 
     with open(env_file, 'a') as file:
         for key, value in ENV_LIB.items():
@@ -58,21 +59,20 @@ def modify_mayaEnvFile():
 
 
 def modify_mayaUserSetup():
-    THIS_Path = os.path.dirname(__file__)
+    this_path = os.path.dirname(__file__)
     user_setup_file = "usersetup.py"
     userSetup_path = mel.eval('getenv "MAYA_APP_DIR"')
     maya_version = cmds.about(v=1)
     userSetup_path = os.path.join(userSetup_path, maya_version, "scripts", user_setup_file)
     userSetup_path = os.path.normpath(userSetup_path)
-
-    with open(userSetup_path, 'w') as file:
-        pass
-
-    with open(userSetup_path, 'r') as file:
-        content = file.read()
+    try:
+        with open(userSetup_path, 'r') as file:
+            content = file.read()
+    except:
+        content = ""
 
     with open(userSetup_path, 'a') as file:
-        additional_text = f"\nimport sys\nif r'{THIS_Path}' not in sys.path:\n    sys.path.append(r'{THIS_Path}')"
+        additional_text = f"\nimport sys\nif r'{this_path}' not in sys.path:\n    sys.path.append(r'{this_path}')"
         if additional_text in content:
             return
         file.write(additional_text)
@@ -85,8 +85,9 @@ def show_message(msg):
 
 
 def onMayaDroppedPythonFile(*args, **kwargs):
+    print()
     modify_mayaEnvFile()
     modify_mayaUserSetup()
-    show_message("Setup Done")
-    reloadALL(path)
     install_hotkey()
+    reloadALL(path)
+    show_message("Setup Done")

@@ -215,7 +215,7 @@
             -enable 1
             -visible 1
             -data 0
-            -radialPosition "S" 
+            -radialPosition "W" 
             -allowOptionBoxes 1
             -postMenuCommandOnce 0
             -enableCommandRepeat 1
@@ -257,7 +257,7 @@
             -enable 1
             -visible 1
             -data 0
-            -radialPosition "W" 
+            -radialPosition "S" 
             -allowOptionBoxes 1
             -postMenuCommandOnce 0
             -enableCommandRepeat 1

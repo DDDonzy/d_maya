@@ -287,7 +287,7 @@ def export_cvData(cv_list=None):
 
 
 def import_cvData():
-    path = cmds.fileDialog2(dialogStyle=2, caption="Import nurbsCurve data", fileFilter="YAML file(*.yaml)", fileMode=1)[0]
+    path = cmds.fileDialog2(dialogStyle=2, caption="Import nurbsCurve data", fileFilter="YAML file(*.yaml)", fileMode=1)
     if not path:
         return
     path = path[0]
