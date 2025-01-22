@@ -38,6 +38,7 @@ def createContainer(name: str,
 
 
 class CreatorBase():
+    """Create rig asset base class"""
     isBuildAsset: bool = True
     isDagAsset: bool = True
     isBlackBox: bool = True
@@ -45,30 +46,40 @@ class CreatorBase():
     icon: str = None
 
     def __init__(self, *args, **kwargs):
-        self.thisAsset = None
+        """
+        Initialize the base creator class.
 
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+                name (str): The name of the asset. If not provided, it will be derived from the function parameters or selection list.
+                query (bool): Alias for q. Default is False.
+                edit (bool): Alias for e. Default is False.
+        """
         self._pre_init(*args, **kwargs)
+        # init parameter
+        self.thisAsset = None
+        
 
         self.name: str = getNameFromFunctionParameter(*args, **kwargs)
+        self.isQuery = kwargs.get("q") or kwargs.get("query") or False
+        self.isEdit = kwargs.get("e") or kwargs.get("edit") or False
+        
         self.thisType = self.__class__.__name__
         self.__publishAttrData: dict = {}
 
         if not self.name:
             raise RuntimeError("Please input name or select objects")
-
-        self.isQuery = kwargs.get("q") or kwargs.get("query") or False
-        self.isEdit = kwargs.get("e") or kwargs.get("edit") or False
-
-        self._post_init(*args, **kwargs)
-
+        
+        # do
         if self.isQuery:
             self.query()
-
         elif self.isEdit:
             self.edit()
-
         else:
             self.__create()
+
+        self._post_init(*args, **kwargs)
 
     def _pre_init(self, *args, **kwargs):
         pass

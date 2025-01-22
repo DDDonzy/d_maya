@@ -32,6 +32,10 @@ class MIRROR_MATRIX():
 
 
 class UNIT_CONVERT():
+    """
+    unit convert class
+    get current unit then return the conversion factor for the specified unit
+    """
     mm = 10.0
     cm = 1.0
     m = 0.01
@@ -54,47 +58,47 @@ def mirror_transform(source_obj: str,
         target_obj (str): target transform object
         mirror_axis (str, optional): mirror axis. Defaults to "x".
     """
-    sour_world_matrix = get_worldMatrix(source_obj)
+    sour_worldMatrix = get_worldMatrix(source_obj)
     sour_parent_matrix = get_parentMatrix(source_obj)
-    sour_world_matrix_flip = flip_matrix(sour_world_matrix, mirror_axis)
+    sour_worldMatrix_flip = flip_matrix(sour_worldMatrix, mirror_axis)
     sour_parent_matrix_flip = flip_matrix(sour_parent_matrix, mirror_axis)
     target_parent_matrix = get_parentMatrix(target_obj)
-    flip_offset_matrix = get_offsetMatrix(sour_parent_matrix_flip, target_parent_matrix)
-    set_worldMatrix(target_obj, flip_offset_matrix * sour_world_matrix_flip)
+    flip_offsetMatrix = get_offsetMatrix(sour_parent_matrix_flip, target_parent_matrix)
+    set_worldMatrix(target_obj, flip_offsetMatrix * sour_worldMatrix_flip)
 
 
-def flip_matrix(world_matrix: om.MMatrix,
+def flip_matrix(worldMatrix: om.MMatrix,
                 mirror_axis: str = "x") -> om.MMatrix:
     """flip matrix by mirror matrix
 
     Args:
-        world_matrix (om.MMatrix): input world matrix
+        worldMatrix (om.MMatrix): input world matrix
         mirror_axis (str, optional): mirror axis x y or z. Defaults to "x".
 
     Returns:
         om.MMatrix: flip matrix
     """
-    mirror_matrix = world_matrix * MIRROR_MATRIX(mirror_axis)
+    mirror_matrix = worldMatrix * MIRROR_MATRIX(mirror_axis)
     return mirror_matrix
 
 
-def get_offsetMatrix(child_world_matrix: om.MMatrix,
-                     parent_world_matrix: om.MMatrix) -> om.MMatrix:
+def get_offsetMatrix(child_worldMatrix: om.MMatrix,
+                     parent_worldMatrix: om.MMatrix) -> om.MMatrix:
     """
     get offset matrix
     get local matrix when child in parent space
 
     Args:
-        child_world_matrix (om.MMatrix): child world matrix
-        parent_world_matrix (om.MMatrix): parent world matrix
+        child_worldMatrix (om.MMatrix): child world matrix
+        parent_worldMatrix (om.MMatrix): parent world matrix
 
     Returns:
         om.MMatrix: local matrix when child in parent space
     """
-    # child_world_matrix = child_local_matrix * parent_world_matrix
-    # child_world_matrix * parent_world_matrix.inverse = child_local_matrix
-    child_local_matrix = child_world_matrix * parent_world_matrix.inverse()
-    return child_local_matrix
+    # child_worldMatrix = child_localMatrix * parent_worldMatrix
+    # child_worldMatrix * parent_worldMatrix.inverse = child_localMatrix
+    child_localMatrix = child_worldMatrix * parent_worldMatrix.inverse()
+    return child_localMatrix
 
 
 def get_relativesMatrix(matrix: om.MMatrix,
@@ -181,13 +185,13 @@ def set_worldMatrix(obj: str, matrix: om.MMatrix) -> None:
     """
     mSel = om.MSelectionList()
     mSel.add(obj)
-    local_matrix = matrix * mSel.getDagPath(0).exclusiveMatrixInverse()
+    localMatrix = matrix * mSel.getDagPath(0).exclusiveMatrixInverse()
     if cmds.objExists(f"{obj}.jointOrient"):
         try:
             cmds.setAttr(f"{obj}.jointOrient", 0, 0, 0)
         except Exception as e:
             om.MGlobal.displayWarning(str(e))
-    set_trs(obj, matrix_to_trs(local_matrix))
+    set_trs(obj, matrix_to_trs(localMatrix))
 
 
 def matrix_to_trs(matrix: om.MMatrix, rotateOrder: int = 0) -> list:
@@ -280,14 +284,31 @@ def create_fbfByMatrix(matrix: om.MMatrix = om.MMatrix(), **kwargs) -> str:
 
 
 class decomMatrix(CreatorBase):
+    """Create decompose a transformation matrix."""
     isDagAsset: bool = False
 
-    def _post_init(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
+        """
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+                name (str): is not name input, will be get name by args[-1] or  selections[-1]
+                query (bool):  Default is False.
+                edit (bool):  Default is False.
+                translate (bool): Default is True.
+                rotate (bool): Default is True.
+                scale (bool): Default is True.
+                shear (bool): Default is True.
+                force (bool): Default is True.
+        """
+
         self.translate = kwargs.get("translate", True) and kwargs.get("t", True)
         self.rotate = kwargs.get("rotate", True) and kwargs.get("r", True)
         self.scale = kwargs.get("scale", True) and kwargs.get("s", True)
         self.shear = kwargs.get("shear", True) and kwargs.get("sh", True)
         self.isForce = kwargs.get("force", True) and kwargs.get("f", True)
+
+        super().__init__(*args, **kwargs)
 
     def create(self):
         self.hasJointOrient = cmds.objExists(f"{self.name}.jointOrient")
@@ -341,6 +362,7 @@ class decomMatrix(CreatorBase):
 
 
 class relativesMatrix(CreatorBase):
+    """Create relatives matrix node"""
     isDagAsset: bool = False
 
     def create(self):
@@ -353,9 +375,23 @@ class relativesMatrix(CreatorBase):
 
 
 class matrixConstraint(CreatorBase):
+    """Create matrix constraint node"""
     isDagAsset: bool = False
 
-    def _post_init(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
+        """
+        Args:
+            *args: Variable length argument list.
+                controller: args[0], If not args, will be get it from selection list[0]
+                target: args[1], If not args, will be get it from selection list[1]
+            **kwargs: Arbitrary keyword arguments.
+                query (bool): Default is False.
+                edit (bool): Default is False.
+                translate (bool): Default is True.
+                rotate (bool): Default is True.
+                scale (bool): Default is True.
+                shear (bool): Default is True.
+        """
         self.keepOffset = kwargs.get("maintainOffset", True) and kwargs.get("mo", True)
         self.translate = kwargs.get("translate", True) and kwargs.get("t", True)
         self.rotate = kwargs.get("rotate", True) and kwargs.get("r", True)
@@ -371,11 +407,13 @@ class matrixConstraint(CreatorBase):
                 raise RuntimeError("Please input or select two objects.")
         self.name = self.target
 
+        super().__init__(*args, **kwargs)
+
     def create(self):
         self.hasJointOrient = cmds.objExists(f"{self.target}.jointOrient")
 
-        offset_matrix = get_offsetMatrix(child_world_matrix=get_worldMatrix(obj=self.target),
-                                         parent_world_matrix=get_worldMatrix(obj=self.controller))
+        offsetMatrix = get_offsetMatrix(child_worldMatrix=get_worldMatrix(obj=self.target),
+                                         parent_worldMatrix=get_worldMatrix(obj=self.controller))
 
         node_multMatrix = CreateNode("multMatrix", name=self.createName("multMatrix"))
 
@@ -400,16 +438,28 @@ class matrixConstraint(CreatorBase):
         cmds.connectAttr(f"{node_multMatrix}.matrixSum", node_decom.inputMatrix)
         # External connects
         if self.keepOffset:
-            cmds.setAttr(f"{node_multMatrix}.matrixIn[0]", offset_matrix, type="matrix")
+            cmds.setAttr(f"{node_multMatrix}.matrixIn[0]", offsetMatrix, type="matrix")
         cmds.connectAttr(f"{self.controller}.worldMatrix[0]", f"{node_multMatrix}.matrixIn[1]")
 
 
 class parentSpaceConstraint(CreatorBase):
+    """Create parentspace constraint"""
+
     isDagAsset: bool = False
     attrName = "parentSpace"
 
-    def _post_init(self, *args, **kwargs):
-
+    def __init__(self, *args, **kwargs):
+        """
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+                translate (bool): Default is True.
+                rotate (bool): Default is True.
+                scale (bool): Default is True.
+                shear (bool): Default is True.
+                niceName (str or list): A nice name for the controller(s). Default is an empty list.
+                force (bool): Default is False.
+        """
         self.translate = kwargs.get("translate", True) and kwargs.get("t", True)
         self.rotate = kwargs.get("rotate", True) and kwargs.get("r", True)
         self.scale = kwargs.get("scale", True) and kwargs.get("s", True)
@@ -439,6 +489,8 @@ class parentSpaceConstraint(CreatorBase):
                 cmds.deleteAttr(f"{self.target}.{self.attrName}")
             else:
                 self.isEdit = True
+
+        super().__init__(*args, **kwargs)
 
     def create(self):
         self.createParentSpaceLogic()
@@ -513,9 +565,9 @@ class parentSpaceConstraint(CreatorBase):
         cmds.addAttr(self.parentspace, e=1, en=enum_str)
 
         # offset matrix to chose
-        offset_matrix = get_offsetMatrix(get_worldMatrix(self.target),
+        offsetMatrix = get_offsetMatrix(get_worldMatrix(self.target),
                                          get_worldMatrix(controller))
-        cmds.setAttr(f"{self.offsetMatrix}[{parent_indices}]", offset_matrix, type="matrix")
+        cmds.setAttr(f"{self.offsetMatrix}[{parent_indices}]", offsetMatrix, type="matrix")
         # controller matrix to chose
         cmds.connectAttr(f"{controller}.worldMatrix[0]", f"{self.controllerMatrix}[{parent_indices}]")
 
@@ -527,15 +579,30 @@ class parentSpaceConstraint(CreatorBase):
 
 
 class offsetFK(CreatorBase):
-    def _post_init(self, *args, **kwargs):
+    """Create offset fk system"""
+
+    def __init__(self, *args, **kwargs):
+        """
+            Args:
+            *args: Variable length argument list.
+                args[0] (list): List of controllers if not provided in kwargs.
+                args[1] (list): List of offsets if not provided in kwargs.
+            **kwargs: Arbitrary keyword arguments.
+                controllerList (list): List of controllers. Default is an empty list.
+                offsetList (list): List of offsets. Default is an empty list.
+        """
+        # get parameter
         self.controllerList = kwargs.get("controllerList") or kwargs.get("cl") or []
         self.offsetList = kwargs.get("offsetList") or kwargs.get("ol") or []
+        #
         if not self.controllerList:
             self.controllerList = args[0] if args else []
         if not self.offsetList:
             self.offsetList = args[1] if args else []
         if not self.controllerList or not self.offsetList:
             raise RuntimeError("Input error!")
+
+        super().__init__(*args, **kwargs)
 
     def create(self):
         for i, control in enumerate(self.controllerList[:-1]):
@@ -559,14 +626,30 @@ class offsetFK(CreatorBase):
 
 
 class uvPin(CreatorBase):
-    def _post_init(self, *args, **kwargs):
+    """Create uvPin constraint"""
+    isBlackBox = False
+
+    def __init__(self, *args, **kwargs):
+        """
+            Args:
+            *args: Variable length argument list.
+                args[0] (list): List of target objects if not provided in kwargs.
+            **kwargs: Arbitrary keyword arguments.
+                targetList (list): List of target objects. Default is the current selection.
+                size (float): Size of the UV pin. Default is 0.1.
+                name (str): Name of the UV pin. Default is 'uvPin'.
+        """
+
         self.targetList = kwargs.get("targetList") or kwargs.get("tl") or args[0] if args else cmds.ls(sl=1)
-        if not isinstance(self.targetList, list):
-            self.targetList = [self.targetList]
         self.size = kwargs.get("size") or kwargs.get("s") or 0.1
         self.name = kwargs.get("name") or kwargs.get("n") or 'uvPin'
+
+        if not isinstance(self.targetList, list):
+            self.targetList = [self.targetList]
         if not self.targetList:
             raise ValueError("No object need to create uvPin, please input object list. or select some object.")
+
+        super().__init__(*args, **kwargs)
 
     @staticmethod
     def get_UVByClosestPoint(point, shape: str):
@@ -663,6 +746,8 @@ class uvPin(CreatorBase):
 
 
 class follicle(uvPin):
+    """Create follicle constraint """
+
     def create(self):
         mesh, shape = follicle.create_planeByObjectList(targetList=self.targetList,
                                                         size=self.size,

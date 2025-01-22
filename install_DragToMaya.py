@@ -18,6 +18,7 @@ ENV_LIB = {
 
 
 def reloadALL(path=path):
+    """Reload all modules in the specified path."""
     reload_list = []
     for modules_name in sys.modules:
         try:
@@ -33,6 +34,7 @@ def reloadALL(path=path):
 
 
 def get_mayaEnvFile():
+    """Get .env file path"""
     maya_env_file = "Maya.env"
     env_path = mel.eval('getenv "MAYA_APP_DIR"')
     maya_version = cmds.about(v=1)
@@ -42,6 +44,7 @@ def get_mayaEnvFile():
 
 
 def modify_mayaEnvFile():
+    """Add path to maya usersetup.py """
     env_file = get_mayaEnvFile()
     try:
         with open(env_file, 'r') as file:
@@ -59,6 +62,7 @@ def modify_mayaEnvFile():
 
 
 def modify_mayaUserSetup():
+    """Add some env set"""
     this_path = os.path.dirname(__file__)
     user_setup_file = "usersetup.py"
     userSetup_path = mel.eval('getenv "MAYA_APP_DIR"')
@@ -85,6 +89,7 @@ def show_message(msg):
 
 
 def onMayaDroppedPythonFile(*args, **kwargs):
+    """Dropped to maya functions"""
     modify_mayaEnvFile()
     modify_mayaUserSetup()
     install_hotkey()

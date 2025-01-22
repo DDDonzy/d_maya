@@ -4,5 +4,8 @@
         "yaml": true,
         "loguru":true,
         ".vscode":true
-    }
+    },
+    "cSpell.words": [
+        "usersetup"
+    ]
 }
