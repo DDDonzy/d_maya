@@ -27,7 +27,7 @@
             -enable 1
             -visible 1
             -data 0
-            -radialPosition "E" 
+            -radialPosition "SE" 
             -allowOptionBoxes 1
             -postMenuCommandOnce 0
             -enableCommandRepeat 1
@@ -48,7 +48,7 @@
             -enable 1
             -visible 1
             -data 0
-            -radialPosition "SE" 
+            -radialPosition "E" 
             -allowOptionBoxes 1
             -postMenuCommandOnce 0
             -enableCommandRepeat 1

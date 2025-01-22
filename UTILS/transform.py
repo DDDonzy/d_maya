@@ -706,7 +706,7 @@ def reset_transformObjectValue(obj, transform=True, userDefined=True):
 def reset_transformObjectValue_cmd(transform=True, userDefined=False):
     for obj in cmds.ls(sl=1):
         reset_transformObjectValue(obj, transform, userDefined)
-    msg = "Reset transform value."
+    msg = "Reset value."
     if userDefined:
         msg = "Reset value (all)."
     showMessage(msg)
