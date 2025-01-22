@@ -1,0 +1,97 @@
+//Maya Preference 2022 (Release 1)
+//
+//
+
+//
+// The runtime commands referenced by the hotkeys
+//
+runTimeCommand
+	-label ""
+	-annotation ""
+	-longAnnotation ""
+	-category "Custom Scripts"
+	-image ""
+	-tags ""
+	-keywords ""
+	-plugin ""
+	-helpUrl ""
+	-hotkeyCtx ""
+	-commandLanguage "python"
+	-command ("from _hotkey.d_hotkey import d_hotbox_press,d_hotbox_release\nd_hotbox_release()")
+	hotbox_release;
+
+runTimeCommand
+	-label ""
+	-annotation ""
+	-longAnnotation ""
+	-category "Custom Scripts"
+	-image ""
+	-tags ""
+	-keywords ""
+	-plugin ""
+	-helpUrl ""
+	-hotkeyCtx ""
+	-commandLanguage "python"
+	-command ("from _hotkey.d_hotkey import d_hotbox_press,d_hotbox_release\nd_hotbox_press()")
+	hotbox_press;
+
+//
+// The name commands referenced by the hotkeys
+//
+nameCommand
+	-annotation "CopyVertexWeightsNameCommand"
+	-sourceType "mel"
+	-command ("CopyVertexWeights")
+	CopyVertexWeightsNameCommand;
+
+nameCommand
+	-annotation "PasteVertexWeightsNameCommand"
+	-sourceType "mel"
+	-command ("PasteVertexWeights")
+	PasteVertexWeightsNameCommand;
+
+nameCommand
+	-annotation "hotbox_pressNameCommand"
+	-sourceType "mel"
+	-command ("hotbox_press")
+	hotbox_pressNameCommand;
+
+nameCommand
+	-annotation "hotbox_releaseNameCommand"
+	-sourceType "mel"
+	-command ("hotbox_release")
+	hotbox_releaseNameCommand;
+
+//
+// The user hotkeys
+//
+//
+// The hotkey set
+//
+hotkeySet -source "Maya_Default" -current Maya_Default_Duplicate;
+//
+// The hotkey contexts and hotkeys
+//
+hotkey -keyShortcut "c" -sht -releaseName ("");
+hotkey -keyShortcut "c" -sht -name ("CopyVertexWeightsNameCommand");
+hotkey -keyShortcut "`" -releaseName ("hotbox_releaseNameCommand");
+hotkey -keyShortcut "`" -name ("hotbox_pressNameCommand");
+hotkey -keyShortcut "v" -sht -releaseName ("");
+hotkey -keyShortcut "v" -sht -name ("PasteVertexWeightsNameCommand");
+hotkeyCtx -type "Editor" -addClient "shapePanel";
+hotkeyCtx -type "Editor" -addClient "hyperGraphPanel";
+hotkeyCtx -type "Editor" -addClient "polyTexturePlacementPanel";
+hotkeyCtx -type "Editor" -addClient "posePanel";
+hotkeyCtx -type "Editor" -addClient "outlinerPanel";
+hotkeyCtx -type "Editor" -addClient "nodeEditorPanel";
+hotkeyCtx -type "Editor" -addClient "graphEditor";
+hotkeyCtx -type "Editor" -addClient "hyperShadePanel";
+hotkeyCtx -type "Editor" -addClient "profilerPanel";
+hotkeyCtx -type "Editor" -addClient "timeEditorPanel";
+hotkeyCtx -type "Tool" -addClient "SymmetrizeUVBrush";
+hotkeyCtx -type "Tool" -addClient "sculptMeshCache";
+hotkeyCtx -type "Tool" -addClient "polyCutUV";
+hotkeyCtx -type "Tool" -addClient "texCutContext";
+hotkeyCtx -type "Tool" -addClient "xgmIGBrush";
+hotkeyCtx -type "Tool" -addClient "Unfold3DBrush";
+hotkeyCtx -type "Tool" -addClient "texSculptCacheContext";

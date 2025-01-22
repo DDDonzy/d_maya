@@ -2,6 +2,7 @@ import os
 import sys
 from importlib import reload
 from maya import cmds, mel
+from _hotkey.d_hotkey import install_hotkey
 
 path = r"E:\\d_maya"
 if path not in sys.path:
@@ -88,3 +89,4 @@ def onMayaDroppedPythonFile(*args, **kwargs):
     modify_mayaUserSetup()
     show_message("Setup Done")
     reloadALL(path)
+    install_hotkey()
