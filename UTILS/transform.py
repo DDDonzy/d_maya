@@ -40,11 +40,15 @@ class UNIT_CONVERT():
     cm = 1.0
     m = 0.01
 
-    def __init__(self, unit: str = cmds.currentUnit(q=1)):
+    def __init__(self, unit: str = None):
+        if unit is None:
+            unit = cmds.currentUnit(q=1)
         if unit not in ["mm", "cm", "m"]:
             raise ValueError("Invalid axis. Choose from 'mm', 'cm', or 'm'.")
 
-    def __new__(cls, unit: str = cmds.currentUnit(q=1)):
+    def __new__(cls, unit: str = None):
+        if unit is None:
+            unit = cmds.currentUnit(q=1)
         return getattr(UNIT_CONVERT, unit)
 
 

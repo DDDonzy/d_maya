@@ -83,23 +83,21 @@ class RenameUI(QLineEdit):
 def rename(text: str, obj: list = None):
     if not obj:
         obj = cmds.ls(sl=1)
+        selShape = cmds.ls(sl=1, s=1)
+        for shape in selShape:
+            obj.remove(shape)
     mSel = om.MSelectionList()
     [mSel.add(x) for x in obj]
-
-    oldName = []
-    mIterSel = om.MItSelectionList(mSel)
-    for x in mIterSel:
-        baseName = x.getDagPath().partialPathName()
-        oldName.append(baseName)
 
     cmds.undoInfo(openChunk=True)
     mIterSel = om.MItSelectionList(mSel)
     for x in mIterSel:
         baseName = x.getDagPath().partialPathName()
-        if baseName in oldName:
-            name = adjustName(name=text, baseName=baseName, num=1)
-            name = generateUniqueName(name)
-            cmds.rename(baseName, name)
+        if "|" in baseName:
+            baseName = baseName.split("|")[-1]
+        name = adjustName(name=text, baseName=baseName, num=1)
+        name = generateUniqueName(name)
+        cmds.rename(x.getDagPath().fullPathName(), name)
     cmds.undoInfo(closeChunk=True)
 
 

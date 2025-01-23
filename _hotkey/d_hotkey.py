@@ -54,3 +54,8 @@ def install_hotkey():
 
 def onMayaDroppedPythonFile(*args, **kwargs):
     install_hotkey()
+
+
+
+# TODO transform -> remove some lock attr 
+# TODO transform -> add local rotation axes and show joint Orient
