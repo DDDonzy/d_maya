@@ -2,12 +2,13 @@ import os
 import sys
 from importlib import reload
 from maya import cmds, mel
-from _hotkey.d_hotkey import install_hotkey
 
 # path = r"E:\\d_maya"
 path = os.path.dirname(__file__)
 if path not in sys.path:
     sys.path.append(path)
+    
+from _hotkey.d_hotkey import install_hotkey
 
 
 ENV_LIB = {

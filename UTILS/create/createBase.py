@@ -22,27 +22,36 @@ def createContainer(name: str,
                     addNode: list = [],
                     blackBox: bool = False,
                     icon: str = None,
-                    publishAssetAttr: bool = False,
-                    publishAttrData: dict = None):
+                    isPublishAssetAttr: bool = False,
+                    publishAttrData: dict = None,
+                    isPublishNode: bool = False,
+                    publishNodeList: list = []):
 
     container = cmds.createNode(assetType, name=name, ss=1)
     cmds.container(container, e=1, an=addNode, f=1)
     cmds.setAttr(f"{container}.blackBox", blackBox) if blackBox else None
     cmds.setAttr(f"{container}.iconName", icon, type="string") if icon else None
     cmds.setAttr(f"{container}.viewMode", 0)
-    if publishAttrData and publishAssetAttr:
+    if publishAttrData and isPublishAssetAttr:
         if publishAttrData and isinstance(publishAttrData, dict):
             for k, v in publishAttrData.items():
                 cmds.container(name, e=1, publishAndBind=[v, k])
+    if publishNodeList and isPublishNode:
+        if publishNodeList and isinstance(publishNodeList, list):
+            for x in publishNodeList:
+                cmds.containerPublish(name, publishNode=[x, ""])
+                cmds.containerPublish(name, bindNode=[x, x])
+
     return container
 
 
-class CreatorBase():
+class CreateBase():
     """Create rig asset base class"""
     isBuildAsset: bool = True
     isDagAsset: bool = True
     isBlackBox: bool = True
     isPublishAssetAttr: bool = True
+    isPublishAssetNode: bool = True
     icon: str = None
 
     def __init__(self, *args, **kwargs):
@@ -59,18 +68,18 @@ class CreatorBase():
         self._pre_init(*args, **kwargs)
         # init parameter
         self.thisAsset = None
-        
 
         self.name: str = getNameFromFunctionParameter(*args, **kwargs)
         self.isQuery = kwargs.get("q") or kwargs.get("query") or False
         self.isEdit = kwargs.get("e") or kwargs.get("edit") or False
-        
+
         self.thisType = self.__class__.__name__
         self.__publishAttrData: dict = {}
+        self.__publishNodeData: list = []
 
         if not self.name:
             raise RuntimeError("Please input name or select objects")
-        
+
         # do
         if self.isQuery:
             self.query()
@@ -101,8 +110,10 @@ class CreatorBase():
                                              assetType=("container", "dagContainer")[self.isDagAsset],
                                              blackBox=self.isBlackBox,
                                              icon=self.icon,
-                                             publishAssetAttr=self.isPublishAssetAttr,
-                                             publishAttrData=self.__publishAttrData)
+                                             isPublishAssetAttr=self.isPublishAssetAttr,
+                                             publishAttrData=self.__publishAttrData,
+                                             isPublishNode=self.isPublishAssetNode,
+                                             publishNodeList=self.__publishNodeData)
             # use with AssetCallback to excluding rigAsset and typeAssets
             with AssetCallback("STOP"):
                 # if not creatorType'asset, create and parent it to RigAsset. else return this creatorType assets'name.
@@ -141,6 +152,11 @@ class CreatorBase():
     def publishAttr(self, data):
         self.__publishAttrData.update(data)
         self.__dict__.update(self.__publishAttrData)
+
+    def publishNode(self, nodeList):
+        if not isinstance(nodeList, list):
+            nodeList = [nodeList]
+        self.__publishNodeData.extend(nodeList)
 
     def createName(self, keyword):
         return "_".join([self.name, keyword, self.thisType]) + "1"

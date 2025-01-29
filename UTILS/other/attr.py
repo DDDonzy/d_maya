@@ -17,7 +17,7 @@ def _getSelectionFliteShapes():
 
 
 def isAverageTrue(bool_list):
-    average = sum(bool_list) / len(bool_list)
+    average = sum(bool_list) / (len(bool_list) or 1)
     return average >= 0.5
 
 
@@ -73,3 +73,42 @@ def showLockAttr(obj: list = [], userDefine=True):
         for x in lockedAttrList:
             cmds.setAttr(x, k=hide)
         showMessage(f"SHOW HIDE ATTR: {hide}".upper())
+
+
+def showJointOrient(objList: list = []):
+    if isinstance(objList, str):
+        objList = [objList]
+    if not objList:
+        objList = cmds.ls(sl=1)
+    if not objList:
+        objList = cmds.ls(type="joint")
+
+    jointList = []
+    for obj in objList:
+        if cmds.objectType(obj) == "joint":
+            jointList.append(obj)
+
+    boolList = []
+    for obj in jointList:
+        for a in "XYZ":
+            boolList.append(cmds.getAttr(f"{obj}.jointOrient{a}", k=1))
+    boolValue = not isAverageTrue(bool_list=boolList)
+    for obj in jointList:
+        for a in "XYZ":
+            cmds.setAttr(f"{obj}.jointOrient{a}", k=boolValue)
+    showMessage("SHOW JOINT ORIENT")
+
+
+def showLocalAxes(objList: list = []):
+    if isinstance(objList, str):
+        objList = [objList]
+    if not objList:
+        objList = cmds.ls(sl=1)
+
+    boolList = []
+    for obj in objList:
+        boolList.append(cmds.getAttr(f"{obj}.displayLocalAxis"))
+    boolValue = not isAverageTrue(bool_list=boolList)
+    for obj in objList:
+        cmds.setAttr(f"{obj}.displayLocalAxis", boolValue)
+    showMessage("SHOW LOCAL AXES")
