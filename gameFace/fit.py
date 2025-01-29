@@ -6,13 +6,12 @@ from UTILS.ui.showMessage import showMessage
 from UTILS.transform import flip_transform
 from UTILS.mirrorEnv import MIRROR_CONFIG
 
+from ._config import *
 from .hierarchyIter import hierarchyIter
+
 
 from maya import cmds
 from maya.api import OpenMaya as om
-
-
-FIT_ROOT = "FaceJointFit"
 
 
 @dataclass
@@ -129,10 +128,10 @@ def mirrorDuplicateTransform(obj):
         flip_transform(source, mirror_obj)
 
 
-def get_allFacialJoint():
+def get_allFitJoint():
     joint_list = []
     for x, _ in hierarchyIter(FIT_ROOT):
-        isEnd = ("End" in x)
+        isEnd = (END_LABEL in x)
         isRootGroup = (FIT_ROOT == x)
         notJoint = ("joint" != cmds.objectType(x))
         if isEnd or isRootGroup or notJoint:
@@ -147,7 +146,7 @@ def mirrorDuplicateTransform_cmd():
         for x in sel:
             mirrorDuplicateTransform(x)
     else:
-        all_joint = get_allFacialJoint()
+        all_joint = get_allFitJoint()
         for x in all_joint:
             if MIRROR_CONFIG.exchange(x)[0] != x:
                 x_parent = (cmds.listRelatives(x, p=1) or ['None'])[0]

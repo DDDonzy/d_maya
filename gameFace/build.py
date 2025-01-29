@@ -1,15 +1,14 @@
 from .createControls import buildControl, JOINT_ROOT
 from .hierarchyIter import hierarchyIter
-from .fit import get_allFacialJoint
+from .fit import get_allFitJoint
+from ._config import *
 
 from maya import cmds
 from maya.api import OpenMaya as om
 
-UN_SKIN_LABEL = ["class", "end", "part"]
-
 
 def build():
-    all_joint = get_allFacialJoint()
+    all_joint = get_allFitJoint()
     for x in all_joint:
         buildControl(x)
 

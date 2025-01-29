@@ -3,20 +3,11 @@ from UTILS.create.createBase import CreateNode
 from UTILS.transform import get_worldMatrix, set_worldMatrix, get_localMatrix, set_localMatrix, matrixConstraint, alignTransform
 from UTILS.create.generateUniqueName import generateUniqueName
 
-from .fit import get_allFacialJoint, JointData
+from .fit import get_allFitJoint, JointData
+from ._config import *
+
 
 from maya import cmds, mel
-
-CONTROL_LABEL_LIST = ["controls", "ctrl", "ctl"]
-
-CTL_LABEL = "CTL"
-SDK_LABEL = "SDK"
-GRP_LABEL = "GRP"
-LOC_LABEL = "LOC"
-JOINT_LABEL = "SK"
-
-CONTROL_ROOT = "Controls_GRP"
-JOINT_ROOT = "SkinJoint_GRP"
 
 
 def addDefaultShape(obj):
