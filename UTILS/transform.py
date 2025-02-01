@@ -1,8 +1,12 @@
 import maya.cmds as cmds
 import maya.api.OpenMaya as om
+import maya.api.OpenMayaAnim as oma
+
 from UTILS.ui.showMessage import showMessage
 from UTILS.create.createBase import CreateBase, CreateNode
 from UTILS.create.generateUniqueName import generateUniqueName
+
+import numpy as np
 
 RAD_TO_DEG = 57.29577951308232     # 180.0 / pi
 DEG_TO_RAD = 0.017453292519943295  # pi / 180.0
@@ -756,6 +760,24 @@ class uvPin(CreateBase):
             cmds.setAttr(f"{node_uvPin}.coordinate[{i}].coordinateV", 0.5)
             node_decom = decomMatrix(name=obj, scale=False, shear=False)
             cmds.connectAttr(f"{node_uvPin}.outputMatrix[{i}]", node_decom.inputMatrix)
+
+    @staticmethod
+    def normalizedWeights(uvPinMesh: str, skinCluster: str):
+        mSel = om.MSelectionList()
+        mSel.add(uvPinMesh)
+        mSel.add(skinCluster)
+        uvPinMesh_mDag = mSel.getDagPath(0)
+        skin_mObj = mSel.getDependNode(1)
+        fnSkin = oma.MFnSkinCluster(skin_mObj)
+        singleIdComp = om.MFnSingleIndexedComponent()
+        vertexComp = singleIdComp.create(om.MFn.kMeshVertComponent)
+        weight, infCount = fnSkin.getWeights(uvPinMesh_mDag, vertexComp)
+        weightAry = np.array(weight)
+        weightAry = weightAry.reshape(int(len(weightAry)/infCount), infCount)
+        for i in range(0, len(weightAry) - 4, 4 + 1):
+            weightAry[i + 1:i + 1 + 4] = weightAry[i]
+        weightAry = weightAry.reshape(1, len(weight))[0]
+        fnSkin.setWeights(uvPinMesh_mDag, vertexComp, om.MIntArray(list(range(infCount))), om.MDoubleArray(weightAry))
 
 
 class follicle(uvPin):

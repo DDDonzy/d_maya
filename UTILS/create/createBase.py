@@ -1,7 +1,8 @@
 from maya.api import OpenMaya as om
 from maya import cmds
-from UTILS.create.assetCallback import AssetCallback
+# from UTILS.create.assetCallback import AssetCallback
 RIG_ASSET_NAME = "RigAsset"
+IS_BUILD_ASSETS = True
 
 
 def getNameFromFunctionParameter(*args, **kwargs):
@@ -17,42 +18,104 @@ def CreateNode(*args, **kwargs):
     return cmds.createNode(*args, **kwargs)
 
 
-def createContainer(name: str,
-                    assetType: str = 'dagContainer',
-                    addNode: list = [],
-                    blackBox: bool = False,
-                    icon: str = None,
-                    isPublishAssetAttr: bool = False,
-                    publishAttrData: dict = None,
-                    isPublishNode: bool = False,
-                    publishNodeList: list = []):
+class AssetCallback:
+    asset_stack = []
 
-    container = cmds.createNode(assetType, name=name, ss=1)
-    cmds.container(container, e=1, an=addNode, f=1)
-    cmds.setAttr(f"{container}.blackBox", blackBox) if blackBox else None
-    cmds.setAttr(f"{container}.iconName", icon, type="string") if icon else None
-    cmds.setAttr(f"{container}.viewMode", 0)
-    if publishAttrData and isPublishAssetAttr:
-        if publishAttrData and isinstance(publishAttrData, dict):
-            for k, v in publishAttrData.items():
-                cmds.container(name, e=1, publishAndBind=[v, k])
-    if publishNodeList and isPublishNode:
-        if publishNodeList and isinstance(publishNodeList, list):
-            for x in publishNodeList:
-                cmds.containerPublish(name, publishNode=[x, ""])
-                cmds.containerPublish(name, bindNode=[x, x])
+    def __enter__(self):
+        self.lastContainer = AssetCallback.asset_stack[-1] if AssetCallback.asset_stack else None
+        self.currentContainer = AssetCallback.createContainer(name=self.name,
+                                                              isDagAsset=self.isDagAsset,
+                                                              isBlackBox=self.blackBox,
+                                                              icon=self.icon,
+                                                              force=self.force)
+        self.name = self.currentContainer
+        cmds.container(self.currentContainer, e=1, c=True)
+        AssetCallback.asset_stack.append(self)
 
-    return container
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        if self.lastContainer:
+            cmds.container(self.lastContainer, e=1, c=True)
+        else:
+            cmds.container(self.currentContainer, e=1, c=False)
+            if self.parent:
+                cmds.container(self.parent, e=1, an=[self])
+
+        if self.isDagAsset:
+            nodeList = cmds.container(self.currentContainer, q=1, nodeList=1) or []
+            for x in nodeList:
+                if cmds.objectType(x, isAType="dagNode"):
+                    if (cmds.listRelatives(x, p=1) or ["world"])[0] not in nodeList:
+                        cmds.parent(x, self.currentContainer)
+
+        AssetCallback.asset_stack.pop()
+
+    def __init__(self,
+                 name: str,
+                 parent: str = None,
+                 isDagAsset: bool = True,
+                 isBlackBox: bool = False,
+                 icon: str = None,
+                 force: bool = True):
+        self.parent = parent
+        self.currentContainer = None
+        self.lastContainer = None
+        self.name = name
+        self.force = force
+        self.icon = icon
+        self.blackBox = isBlackBox
+        self.isDagAsset = isDagAsset
+
+    def __repr__(self):
+        return str(self.currentContainer)
+
+    def __str__(self):
+        return str(self.currentContainer)
+
+    @staticmethod
+    def createContainer(name: str,
+                        isDagAsset: bool = True,
+                        isBlackBox: bool = False,
+                        icon: str = None,
+                        force: bool = True):
+        if not force and cmds.objExists(name):
+            return name
+        assetType = ("container", "dagContainer")[isDagAsset]
+        container = CreateNode(assetType, name=name)
+        cmds.container(container, e=1, addNode=[])
+        cmds.setAttr(f"{container}.blackBox", isBlackBox) if isBlackBox else None
+        cmds.setAttr(f"{container}.iconName", icon, type="string") if icon else None
+        cmds.setAttr(f"{container}.viewMode", 0)
+        return container
+
+    @staticmethod
+    def publishAssetData(name: str,
+                         isPublishAssetAttr: bool = False,
+                         publishAttrData: dict = None,
+                         isPublishNode: bool = False,
+                         publishNodeList: list = []):
+
+        if publishAttrData and isPublishAssetAttr:
+            if publishAttrData and isinstance(publishAttrData, dict):
+                for k, v in publishAttrData.items():
+                    cmds.container(name, e=1, publishAndBind=[v, k])
+        if publishNodeList and isPublishNode:
+            if publishNodeList and isinstance(publishNodeList, list):
+                for x in publishNodeList:
+                    cmds.containerPublish(name, publishNode=[x, ""])
+                    cmds.containerPublish(name, bindNode=[x, x])
 
 
 class CreateBase():
     """Create rig asset base class"""
-    isBuildAsset: bool = True
+    isBuildAsset: bool = IS_BUILD_ASSETS
     isDagAsset: bool = True
     isBlackBox: bool = True
     isPublishAssetAttr: bool = True
     isPublishAssetNode: bool = True
     icon: str = None
+    thisAssetName: str = None
 
     def __init__(self, *args, **kwargs):
         """
@@ -65,15 +128,16 @@ class CreateBase():
                 query (bool): Alias for q. Default is False.
                 edit (bool): Alias for e. Default is False.
         """
-        self._pre_init(*args, **kwargs)
         # init parameter
-        self.thisAsset = None
+        self.thisType = self.__class__.__name__
 
         self.name: str = getNameFromFunctionParameter(*args, **kwargs)
+        if not self.thisAssetName:
+            self.thisAssetName = f"{self.name}_{self.thisType}1"
+
         self.isQuery = kwargs.get("q") or kwargs.get("query") or False
         self.isEdit = kwargs.get("e") or kwargs.get("edit") or False
 
-        self.thisType = self.__class__.__name__
         self.__publishAttrData: dict = {}
         self.__publishNodeData: list = []
 
@@ -88,47 +152,24 @@ class CreateBase():
         else:
             self.__create()
 
-        self._post_init(*args, **kwargs)
-
-    def _pre_init(self, *args, **kwargs):
-        pass
-
-    def _post_init(self, *args, **kwargs):
-        pass
-
     def __create(self):
-        # run create function logic, example create assets
         self._pre_create()
 
         if self.isBuildAsset:
-            # start new callback and do create function
-            with AssetCallback(self.name) as thisCallback:
+            with AssetCallback(name=RIG_ASSET_NAME, force=False, icon="character.svg"):
+                pass
+            with AssetCallback(name=self.thisAssetName,
+                               force=True,
+                               icon=self.icon,
+                               parent=RIG_ASSET_NAME,
+                               isBlackBox=self.isBlackBox,
+                               isDagAsset=self.isDagAsset) as self.thisAssetName:
                 self.create()
-            # create this asset
-            self.thisAsset = createContainer(name=f"{self.name}_{self.thisType}1",
-                                             addNode=thisCallback.addNode,
-                                             assetType=("container", "dagContainer")[self.isDagAsset],
-                                             blackBox=self.isBlackBox,
-                                             icon=self.icon,
-                                             isPublishAssetAttr=self.isPublishAssetAttr,
-                                             publishAttrData=self.__publishAttrData,
-                                             isPublishNode=self.isPublishAssetNode,
-                                             publishNodeList=self.__publishNodeData)
-            # use with AssetCallback to excluding rigAsset and typeAssets
-            with AssetCallback("STOP"):
-                # if not creatorType'asset, create and parent it to RigAsset. else return this creatorType assets'name.
-                if not cmds.objExists(self.thisType):
-                    thisTypeAsset = createContainer(name=self.thisType, addNode=[self.thisAsset])
-                else:
-                    thisTypeAsset = self.thisType
-                    cmds.container(thisTypeAsset, e=1, an=[self.thisAsset])
-                # if not RigAsset create it. else return this RigAsset's name.
-                if not cmds.objExists(RIG_ASSET_NAME):
-                    rigAsset = createContainer(name=RIG_ASSET_NAME, addNode=[thisTypeAsset], icon="character.svg")
-                else:
-                    rigAsset = RIG_ASSET_NAME
-                    cmds.container(rigAsset, e=1, an=[thisTypeAsset])
-
+                AssetCallback.publishAssetData(name=self.thisAssetName,
+                                               isPublishAssetAttr=self.isPublishAssetAttr,
+                                               isPublishNode=self.isPublishAssetNode,
+                                               publishAttrData=self.__publishAttrData,
+                                               publishNodeList=self.__publishNodeData)
         else:
             self.create()
 
@@ -162,13 +203,13 @@ class CreateBase():
         return "_".join([self.name, keyword, self.thisType]) + "1"
 
     def __repr__(self):
-        if self.thisAsset:
-            return f"{self.__class__.__name__}(name: {self.thisAsset})"
+        if self.thisAssetName:
+            return f"{self.__class__.__name__}(name: {self.thisAssetName})"
         else:
             return f"{self.__class__.__name__}(name: {self.name})"
 
     def __str__(self):
-        if self.thisAsset:
-            return self.thisAsset
+        if self.thisAssetName:
+            return self.thisAssetName
         else:
             return self.name

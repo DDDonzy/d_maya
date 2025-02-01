@@ -16,7 +16,7 @@ from maya.api import OpenMaya as om
 
 @dataclass
 class JointData(yaml.YAMLObject):
-    yaml_tag = 'JOINT_DATA'
+    yaml_tag = 'JointData'
     name: str
     parent: str = ""
     worldMatrix: list = field(default_factory=list)
@@ -75,7 +75,7 @@ class JointData(yaml.YAMLObject):
                 pass
 
 
-def exportJointData(path=None):
+def exportFit(path=None):
     if not path:
         path = (cmds.fileDialog2(dialogStyle=2, caption="Export joint", fileFilter="YAML file(*.yaml)") or [None])[0]
     if not path:
@@ -95,7 +95,7 @@ def exportJointData(path=None):
     showMessage(" Export successful ")
 
 
-def importJoint(path=None):
+def importFit(path=None):
     if not path:
         path = (cmds.fileDialog2(dialogStyle=2, caption="Import joint", fileFilter="YAML file(*.yaml)", fileMode=1) or [None])[0]
     if not path:
@@ -114,20 +114,6 @@ def importJoint(path=None):
     cmds.select(FIT_ROOT)
 
 
-def mirrorDuplicateTransform(obj):
-    mirror_rootName = cmds.duplicate(obj, rc=1, rr=1)[0]
-    source_hierarchyIter = hierarchyIter(root_node=obj, skipShape=True)
-    mirror_hierarchyIter = hierarchyIter(root_node=mirror_rootName, skipShape=True)
-
-    for mirror_obj, mirror_dag in mirror_hierarchyIter:
-        source, source_dag = source_hierarchyIter.__next__()
-        mirror_obj = MIRROR_CONFIG.exchange(source)[0]
-        if cmds.objExists(mirror_obj):
-            cmds.delete(mirror_obj)
-        om.MFnDagNode(mirror_dag).setName(mirror_obj)
-        flip_transform(source, mirror_obj)
-
-
 def get_allFitJoint():
     joint_list = []
     for x, _ in hierarchyIter(FIT_ROOT):
@@ -140,15 +126,100 @@ def get_allFitJoint():
     return joint_list
 
 
-def mirrorDuplicateTransform_cmd():
-    sel = cmds.ls(sl=1)
-    if sel:
-        for x in sel:
+def mirrorDuplicateTransform(obj):
+    mirror_rootName = cmds.duplicate(obj, rc=1, rr=1)[0]
+    source_hierarchyIter = hierarchyIter(root_node=obj, skipShape=True)
+    mirror_hierarchyIter = hierarchyIter(root_node=mirror_rootName, skipShape=True)
+
+    for mirror_obj, mirror_dag in mirror_hierarchyIter:
+        source, source_dag = source_hierarchyIter.__next__()
+        mirror_obj = MIRROR_CONFIG.exchange(source)[0]
+        if cmds.objExists(mirror_obj):
+            cmds.delete(mirror_obj)
+        cmds.rename(mirror_dag.partialPathName(), mirror_obj)
+        flip_transform(source, mirror_obj)
+
+
+def mirrorDuplicateTransform_cmd(all=False):
+    jointList = cmds.ls(sl=1)
+
+    if jointList and all:
+        for x in jointList:
             mirrorDuplicateTransform(x)
-    else:
-        all_joint = get_allFitJoint()
-        for x in all_joint:
+            return
+
+    all_joint = get_allFitJoint()
+    for x in all_joint:
+        if MIRROR_CONFIG.l in x:
             if MIRROR_CONFIG.exchange(x)[0] != x:
                 x_parent = (cmds.listRelatives(x, p=1) or ['None'])[0]
                 if MIRROR_CONFIG.exchange(x_parent)[0] == x_parent:
                     mirrorDuplicateTransform(x)
+
+
+def autoCalClassPosition():
+    for x, dag in hierarchyIter(FIT_ROOT):
+        if "Class" in x:
+            children = cmds.listRelatives(x, c=1) or []
+            children_joint = []
+            position = []
+            for c in children:
+                if cmds.objectType(c, isAType="transform"):
+                    children_joint.append(c)
+                    position.append(cmds.xform(c, q=1, t=1, ws=1))
+            count = len(position)
+            mean = [0, 0, 0]
+            for i in range(3):
+                s = 0
+                for c in position:
+                    s += c[i]
+                mean[i] = s/count
+            class_position = cmds.xform(x, q=1, t=1, ws=1)
+            offset = om.MVector(mean) - om.MVector(class_position)
+            cmds.move(*offset, f"{x}.scalePivot", f"{x}.rotatePivot", r=1)
+
+
+def isAverageTrue(bool_list):
+    average = sum(bool_list) / (len(bool_list) or 1)
+    return average >= 0.5
+
+
+def hideClass():
+    boolList = []
+    for x, dag in hierarchyIter(FIT_ROOT):
+        if "Class" in x:
+            if cmds.objExists(f"{x}.drawStyle"):
+                boolList.append(cmds.getAttr(f"{x}.drawStyle"))
+
+    for x, dag in hierarchyIter(FIT_ROOT):
+        if "Class" in x:
+            if cmds.objExists(f"{x}.drawStyle"):
+                cmds.setAttr(f"{x}.drawStyle", 2 if not isAverageTrue(boolList) else 0)
+
+
+def hidePart():
+    boolList = []
+    for x, dag in hierarchyIter(FIT_ROOT):
+        if "Part" in x:
+            if cmds.objExists(f"{x}.drawStyle"):
+                boolList.append(cmds.getAttr(f"{x}.drawStyle"))
+
+    for x, dag in hierarchyIter(FIT_ROOT):
+        if "Part" in x:
+            if cmds.objExists(f"{x}.drawStyle"):
+                cmds.setAttr(f"{x}.drawStyle", 2 if not isAverageTrue(boolList) else 0)
+
+
+def addPartJoint(force=False):
+    for part, ref in PART_JOINT.items():
+        if cmds.objExists(part):
+            if force:
+                cmds.delete(part)
+            continue
+
+        cmds.createNode("joint", name=part, ss=1)
+        ref_data = JointData(ref)
+        part_data = ref_data
+        part_data.name = part
+        part_data.radius *= 2
+        part_data.setData()

@@ -286,11 +286,12 @@ def export_cvData(cv_list=None):
     cmds.inViewMessage(amg=message, pos='midCenterBot', fade=True)
 
 
-def import_cvData():
-    path = cmds.fileDialog2(dialogStyle=2, caption="Import nurbsCurve data", fileFilter="YAML file(*.yaml)", fileMode=1)
+def import_cvData(path=None):
     if not path:
-        return
-    path = path[0]
+        path = cmds.fileDialog2(dialogStyle=2, caption="Import nurbsCurve data", fileFilter="YAML file(*.yaml)", fileMode=1)
+        if not path:
+            return
+        path = path[0]
     with open(path, "r") as f:
         data_list = yaml.unsafe_load(f)
         for data in data_list:

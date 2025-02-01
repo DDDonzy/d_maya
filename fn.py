@@ -105,16 +105,6 @@ def getGrowVtxGroup(mesh, step=1):
 
 
 def calCenterPosition(vtxGroup, mesh):
-    vtxGroup = np.array(vtxGroup)
-    mDag = om.MSelectionList().add(mesh).getDagPath(0)
-    fnMesh = om.MFnMesh(mDag)
-    position = fnMesh.getPoints()
-    position = np.array(position)
-    for v_list in vtxGroup:
-        print(position[v_list])
-
-
-def calCenterPosition(vtxGroup, mesh):
     mDag = om.MSelectionList().add(mesh).getDagPath(0)
     fnMesh = om.MFnMesh(mDag)
     position = fnMesh.getPoints(om.MSpace.kWorld)
@@ -128,28 +118,29 @@ def calCenterPosition(vtxGroup, mesh):
 
 
 class chainFit(CreateBase):
-    isBlackBox = True
+    isBlackBox = False
 
     def __init__(self, *args, **kwargs):
-        muteMessage(True)
+
         self.step = kwargs.get("step") or kwargs.get("stp") or 1
         selVtx = getSelectedVertexIndex()
+        if not selVtx:
+            raise RuntimeError("Please select vertex.")
+
         selection_list = om.MGlobal.getActiveSelectionList()
         self.mesh, component = selection_list.getComponent(0)
         self.name = f"{self.mesh}"
         kwargs.update({"name": self.name})
 
-        if not selVtx:
-            raise RuntimeError("Please select vertex.")
-
         super().__init__(*args, **kwargs)
-        muteMessage(False)
 
     def create(self):
         cvTransform, cvShape = self.buildCurve()
 
     def _post_create(self):
-        lockAttr(self.thisAsset)
+        muteMessage(True)
+        lockAttr(self.thisAssetName.name)
+        muteMessage(False)
 
     def buildCurve(self):
         cvPosition = calCenterPosition(getGrowVtxGroup(self.mesh, step=self.step), self.mesh)
@@ -189,7 +180,6 @@ class chainFit(CreateBase):
     def buildJoints(num: int = 3):
         for x in range(3):
             v = x
-            
 
 
 chainFit()
