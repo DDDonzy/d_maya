@@ -6,8 +6,9 @@ from UTILS.ui.showMessage import showMessage
 from UTILS.transform import flip_transform
 from UTILS.mirrorEnv import MIRROR_CONFIG
 
-from ._config import *
+from .config import *
 from .hierarchyIter import hierarchyIter
+from .choseFile import choseFile
 
 
 from maya import cmds
@@ -16,6 +17,7 @@ from maya.api import OpenMaya as om
 
 @dataclass
 class JointData(yaml.YAMLObject):
+    """Joints data"""
     yaml_tag = 'JointData'
     name: str
     parent: str = ""
@@ -33,6 +35,7 @@ class JointData(yaml.YAMLObject):
         self.getData(name=self.name)
 
     def getData(self, name):
+        """Get joint data"""
         self.parent = (cmds.listRelatives(self.name, p=1) or ["kWorld"])[0]
         self.worldMatrix = list(get_worldMatrix(self.name))
         try:
@@ -51,6 +54,7 @@ class JointData(yaml.YAMLObject):
                 pass
 
     def setData(self):
+        """Set joint data by this class data"""
         if self.parent == "kWorld":
             pass
         else:
@@ -76,9 +80,9 @@ class JointData(yaml.YAMLObject):
 
 
 def exportFit(path=None):
-    if not path:
-        path = (cmds.fileDialog2(dialogStyle=2, caption="Export joint", fileFilter="YAML file(*.yaml)") or [None])[0]
-    if not path:
+    """Export joints data as yaml fils"""
+    path = choseFile(path=path, dialogStyle=2, caption="Export joint", fileFilter="YAML file(*.yaml)", startingDirectory=DEFAULT_FIT_DIR)
+    if path is None:
         return
 
     if not cmds.objExists(FIT_ROOT):
@@ -96,11 +100,10 @@ def exportFit(path=None):
 
 
 def importFit(path=None):
-    if not path:
-        path = (cmds.fileDialog2(dialogStyle=2, caption="Import joint", fileFilter="YAML file(*.yaml)", fileMode=1) or [None])[0]
-    if not path:
+    """Import joints data from yaml files"""
+    path = choseFile(path=path, dialogStyle=2, caption="Import joint", fileFilter="YAML file(*.yaml)", fileMode=1, startingDirectory=DEFAULT_FIT_DIR)
+    if path is None:
         return
-
     with open(path, "r") as f:
         data_list = yaml.unsafe_load(f)
 
@@ -114,19 +117,8 @@ def importFit(path=None):
     cmds.select(FIT_ROOT)
 
 
-def get_allFitJoint():
-    joint_list = []
-    for x, _ in hierarchyIter(FIT_ROOT):
-        isEnd = (END_LABEL in x)
-        isRootGroup = (FIT_ROOT == x)
-        notJoint = ("joint" != cmds.objectType(x))
-        if isEnd or isRootGroup or notJoint:
-            continue
-        joint_list.append(x)
-    return joint_list
-
-
 def mirrorDuplicateTransform(obj):
+    """Mirror and duplicate transform or joint"""
     mirror_rootName = cmds.duplicate(obj, rc=1, rr=1)[0]
     source_hierarchyIter = hierarchyIter(root_node=obj, skipShape=True)
     mirror_hierarchyIter = hierarchyIter(root_node=mirror_rootName, skipShape=True)
@@ -141,6 +133,7 @@ def mirrorDuplicateTransform(obj):
 
 
 def mirrorDuplicateTransform_cmd(all=False):
+    """Command of mirror and duplicate transform or joint"""
     jointList = cmds.ls(sl=1)
 
     if jointList and all:
@@ -158,6 +151,7 @@ def mirrorDuplicateTransform_cmd(all=False):
 
 
 def autoCalClassPosition():
+    """Auto cal class joints position"""
     for x, dag in hierarchyIter(FIT_ROOT):
         if "Class" in x:
             children = cmds.listRelatives(x, c=1) or []
@@ -185,6 +179,7 @@ def isAverageTrue(bool_list):
 
 
 def hideClass():
+    """ Hide class joints """
     boolList = []
     for x, dag in hierarchyIter(FIT_ROOT):
         if "Class" in x:
@@ -198,6 +193,7 @@ def hideClass():
 
 
 def hidePart():
+    """Hide part joints"""
     boolList = []
     for x, dag in hierarchyIter(FIT_ROOT):
         if "Part" in x:
@@ -211,6 +207,7 @@ def hidePart():
 
 
 def addPartJoint(force=False):
+    """Add part joints in fit"""
     for part, ref in PART_JOINT.items():
         if cmds.objExists(part):
             if force:
@@ -223,3 +220,29 @@ def addPartJoint(force=False):
         part_data.name = part
         part_data.radius *= 2
         part_data.setData()
+
+
+def get_allFitJoint():
+    """Get all fit joints"""
+    joint_list = []
+    for x, _ in hierarchyIter(FIT_ROOT):
+        isEnd = (END_LABEL in x)
+        isRootGroup = (FIT_ROOT == x)
+        notJoint = not cmds.objectType(x, isa="joint")
+        if isEnd or isRootGroup or notJoint:
+            continue
+        joint_list.append(x)
+    return joint_list
+
+
+def get_fitJointByLabel(label):
+    joint_list = []
+    for x, _ in hierarchyIter(FIT_ROOT):
+        isEnd = (END_LABEL in x)
+        isRootGroup = (FIT_ROOT == x)
+        notLabel = not (label in x)
+        notJoint = not (cmds.objectType(x, isa="joint"))
+        if isEnd or isRootGroup or notJoint or notLabel:
+            continue
+        joint_list.append(x)
+    return joint_list

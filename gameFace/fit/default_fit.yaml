@@ -1,0 +1,2700 @@
+- !<JointData>
+    name: M_HeadUpper
+    parent: FaceFit
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 142.88620858272904
+    - -0.6676857524050732
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 1.0
+    drawStyle: 3
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_BrowClass
+    parent: M_HeadUpper
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 3.9822213649749756
+    - 145.58926391601562
+    - 4.48307122121832
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_BrowSec1
+    parent: L_BrowClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 2.130849599838257
+    - 145.07411193847656
+    - 5.33709716796875
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_BrowSec2
+    parent: L_BrowClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 3.1103501319885254
+    - 145.4040069580078
+    - 5.3070831298828125
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_BrowSec3
+    parent: L_BrowClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 3.9822213649749756
+    - 145.58926391601562
+    - 5.070220947265625
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_BrowSec4
+    parent: L_BrowClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 4.931291103363037
+    - 145.76885986328125
+    - 4.483917236328125
+    - 1.0
+    preferredAngle:
+    - 0.5
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_BrowSec5
+    parent: L_BrowClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 5.650105953216553
+    - 145.8892059326172
+    - 3.846893310546875
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_BrowPart1
+    parent: L_BrowClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 2.130849599838257
+    - 145.07411193847656
+    - 5.33709716796875
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.4
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_BrowPart2
+    parent: L_BrowClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 3.9822213649749756
+    - 145.58926391601562
+    - 5.070220947265625
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.4
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_BrowPart3
+    parent: L_BrowClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 5.650105953216553
+    - 145.8892059326172
+    - 3.846893310546875
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.4
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_EyeClass
+    parent: M_HeadUpper
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 3.511911153793335
+    - 143.06280517578125
+    - 2.2901285125131166
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_LidInnerSec
+    parent: L_EyeClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 1.9951072931289673
+    - 142.85687255859375
+    - 4.1965484619140625
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_LidUpperSec1
+    parent: L_EyeClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 2.821280002593994
+    - 143.47311401367188
+    - 4.2975311279296875
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_LidUpperSec2
+    parent: L_EyeClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 3.878119945526123
+    - 143.7268829345703
+    - 4.2765045166015625
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_LidUpperSec3
+    parent: L_EyeClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 4.763272285461426
+    - 143.67445373535156
+    - 3.8699493408203125
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_LidOuterSec
+    parent: L_EyeClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 5.273369312286377
+    - 143.43328857421875
+    - 3.4195404052734375
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_LidLowerSec1
+    parent: L_EyeClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 2.754598379135132
+    - 142.02996826171875
+    - 4.0194549560546875
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_LidLowerSec2
+    parent: L_EyeClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 3.7285001277923584
+    - 142.05935668945312
+    - 3.764251708984375
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_LidLowerSec3
+    parent: L_EyeClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 4.668236255645752
+    - 142.30810546875
+    - 3.5083770751953125
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_Eye
+    parent: L_EyeClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 3.511911153793335
+    - 143.06280517578125
+    - 3.675384521484375
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_LidInnerPart
+    parent: L_EyeClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 1.9951072931289673
+    - 142.85687255859375
+    - 4.1965484619140625
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.4
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_LidOuterPart
+    parent: L_EyeClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 5.273369312286377
+    - 143.43328857421875
+    - 3.4195404052734375
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.4
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_LidUpperPart
+    parent: L_EyeClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 3.878119945526123
+    - 143.7268829345703
+    - 4.2765045166015625
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.4
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_LidLowerPart
+    parent: L_EyeClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 3.7285001277923584
+    - 142.05935668945312
+    - 3.764251708984375
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.4
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_BrowClass
+    parent: M_HeadUpper
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -3.9822213649749756
+    - 145.58926391601562
+    - 4.48307122121832
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_BrowSec1
+    parent: R_BrowClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -2.130849599838257
+    - 145.07411193847656
+    - 5.337097167968749
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_BrowSec2
+    parent: R_BrowClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -3.1103501319885254
+    - 145.4040069580078
+    - 5.307083129882812
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_BrowSec3
+    parent: R_BrowClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -3.9822213649749756
+    - 145.58926391601562
+    - 5.070220947265625
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_BrowSec4
+    parent: R_BrowClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -4.931291103363037
+    - 145.76885986328125
+    - 4.483917236328125
+    - 1.0
+    preferredAngle:
+    - 0.5
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_BrowSec5
+    parent: R_BrowClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -5.650105953216553
+    - 145.8892059326172
+    - 3.846893310546875
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_BrowPart1
+    parent: R_BrowClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -2.130849599838257
+    - 145.07411193847656
+    - 5.337097167968749
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.4
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_BrowPart2
+    parent: R_BrowClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -3.9822213649749756
+    - 145.58926391601562
+    - 5.070220947265625
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.4
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_BrowPart3
+    parent: R_BrowClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -5.650105953216553
+    - 145.8892059326172
+    - 3.846893310546875
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.4
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_EyeClass
+    parent: M_HeadUpper
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -3.511911153793335
+    - 143.06280517578125
+    - 2.2901285125131166
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_LidInnerSec
+    parent: R_EyeClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -1.9951072931289675
+    - 142.85687255859375
+    - 4.1965484619140625
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_LidUpperSec1
+    parent: R_EyeClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -2.821280002593994
+    - 143.47311401367188
+    - 4.2975311279296875
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_LidUpperSec2
+    parent: R_EyeClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -3.878119945526123
+    - 143.7268829345703
+    - 4.2765045166015625
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_LidUpperSec3
+    parent: R_EyeClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -4.763272285461426
+    - 143.67445373535156
+    - 3.8699493408203125
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_LidOuterSec
+    parent: R_EyeClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -5.273369312286378
+    - 143.43328857421875
+    - 3.4195404052734375
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_LidLowerSec1
+    parent: R_EyeClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -2.754598379135132
+    - 142.02996826171875
+    - 4.0194549560546875
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_LidLowerSec2
+    parent: R_EyeClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -3.7285001277923584
+    - 142.05935668945312
+    - 3.764251708984375
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_LidLowerSec3
+    parent: R_EyeClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -4.668236255645753
+    - 142.30810546875
+    - 3.5083770751953125
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_Eye
+    parent: R_EyeClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -3.511911153793335
+    - 143.06280517578125
+    - 3.675384521484375
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_LidInnerPart
+    parent: R_EyeClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -1.9951072931289675
+    - 142.85687255859375
+    - 4.1965484619140625
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.4
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_LidOuterPart
+    parent: R_EyeClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -5.273369312286378
+    - 143.43328857421875
+    - 3.4195404052734375
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.4
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_LidUpperPart
+    parent: R_EyeClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -3.878119945526123
+    - 143.7268829345703
+    - 4.2765045166015625
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.4
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_LidLowerPart
+    parent: R_EyeClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -3.7285001277923584
+    - 142.05935668945312
+    - 3.764251708984375
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.4
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_EyeLineSec1
+    parent: M_HeadUpper
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 2.031469762984636
+    - 143.91144889709415
+    - 4.7141876220703125
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_EyeLineSec2
+    parent: M_HeadUpper
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 2.9309178066989183
+    - 144.21824569631607
+    - 4.7167816162109375
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_EyeLineSec3
+    parent: M_HeadUpper
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 4.082785785857561
+    - 144.32238953653302
+    - 4.3403167724609375
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_EyeLineSec1
+    parent: M_HeadUpper
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -2.031469762984636
+    - 143.91144889709415
+    - 4.7141876220703125
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_EyeLineSec2
+    parent: M_HeadUpper
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -2.9309178066989183
+    - 144.21824569631607
+    - 4.7167816162109375
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_EyeLineSec3
+    parent: M_HeadUpper
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -4.082785785857561
+    - 144.32238953653302
+    - 4.3403167724609375
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: M_HeadLower
+    parent: FaceFit
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 141.688367316082
+    - -0.6676857524050732
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 1.0
+    drawStyle: 3
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: M_LipClass
+    parent: M_HeadLower
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.00022069693659432232
+    - 138.5657805541577
+    - 2.664777287238021
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: M_LipUpperSec
+    parent: M_LipClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.00022146462288219482
+    - 138.43576049804688
+    - 4.9002532958984375
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: M_LipLowerSec
+    parent: M_LipClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.00022069693659432232
+    - 138.3150177001953
+    - 4.8491058349609375
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: M_LipUpperPart
+    parent: M_LipClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.00022146462288219482
+    - 138.43576049804688
+    - 4.9002532958984375
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.4
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: M_LipLowerPart
+    parent: M_LipClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.00022069693659432232
+    - 138.3150177001953
+    - 4.8491058349609375
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.4
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_LipUpperSec1
+    parent: M_LipClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.2953217625617981
+    - 138.4390411376953
+    - 4.8507843017578125
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_LipUpperSec2
+    parent: M_LipClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.5568128228187561
+    - 138.4093475341797
+    - 4.7329864501953125
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_LipLowerSec1
+    parent: M_LipClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.2693595886230469
+    - 138.3189239501953
+    - 4.786163330078125
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_LipLowerSec2
+    parent: M_LipClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.5360834002494812
+    - 138.31236267089844
+    - 4.68145751953125
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_LipCornerSec
+    parent: M_LipClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.8511499762535095
+    - 138.33615112304688
+    - 4.5721282958984375
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_LipUpperSec1
+    parent: M_LipClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -0.2953217625617981
+    - 138.4390411376953
+    - 4.8507843017578125
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_LipUpperSec2
+    parent: M_LipClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -0.5568128228187561
+    - 138.4093475341797
+    - 4.7329864501953125
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_LipLowerSec1
+    parent: M_LipClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -0.2693595886230469
+    - 138.3189239501953
+    - 4.786163330078125
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_LipLowerSec2
+    parent: M_LipClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -0.5360834002494812
+    - 138.31236267089844
+    - 4.68145751953125
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_LipCornerSec
+    parent: M_LipClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -0.8511499762535095
+    - 138.33615112304688
+    - 4.5721282958984375
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_LipCornerPart
+    parent: M_LipClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.8511499762535095
+    - 138.33615112304688
+    - 4.5721282958984375
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.4
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_LipCornerPart
+    parent: M_LipClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -0.8511499762535095
+    - 138.33615112304688
+    - 4.5721282958984375
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.4
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_CheekUpperClass
+    parent: M_HeadLower
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 3.79800320646605
+    - 140.9441223144531
+    - 4.0321502685546875
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_CheekUpperSec1
+    parent: L_CheekUpperClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 2.5083723068237305
+    - 141.15338134765625
+    - 4.392730712890625
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_CheekUpperSec2
+    parent: L_CheekUpperClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 4.933109760284424
+    - 140.970458984375
+    - 3.1998748779296875
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_CheekUpperPart1
+    parent: L_CheekUpperClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 2.904168228298231
+    - 141.109620531666
+    - 4.392730712890625
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.4
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_CheekUpperPart2
+    parent: L_CheekUpperClass
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 4.637217578528336
+    - 140.97045898437491
+    - 3.5716728848006656
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.4
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: M_Jaw
+    parent: M_HeadLower
+    worldMatrix:
+    - -6.661338147750938e-16
+    - -0.6823182503600098
+    - 0.7310552682428701
+    - 0.0
+    - 1.0547118733938985e-15
+    - 0.7310552682428701
+    - 0.6823182503600099
+    - 0.0
+    - -1.0
+    - 1.2767564783189298e-15
+    - 2.220446049250313e-16
+    - 0.0
+    - 0.0
+    - 140.2436843808229
+    - -0.6496066680313384
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: M_JawEnd
+    parent: M_Jaw
+    worldMatrix:
+    - 1.0
+    - -1.4634323882665826e-15
+    - 5.932198398157681e-17
+    - 0.0
+    - 1.447612535450929e-15
+    - 1.0000000000000002
+    - -2.775557561562892e-16
+    - 0.0
+    - 1.0623920516969317e-17
+    - 5.551115123125811e-17
+    - 1.0
+    - 0.0
+    - 1.4125217041115154e-15
+    - 135.90316307849133
+    - 4.000951870181094
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 2
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: M_Tongue
+    parent: M_Jaw
+    worldMatrix:
+    - 1.0
+    - -1.4634323882665826e-15
+    - 5.932198398157681e-17
+    - 0.0
+    - 1.447612535450929e-15
+    - 1.0000000000000002
+    - -2.775557561562892e-16
+    - 0.0
+    - 1.0623920516969317e-17
+    - 5.551115123125811e-17
+    - 1.0
+    - 0.0
+    - 0.0002241384499940305
+    - 138.56421582383
+    - 1.5823794578762398
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: M_TeethLower
+    parent: M_Jaw
+    worldMatrix:
+    - 1.0
+    - -1.731271737321911e-15
+    - 2.6493602972102146e-16
+    - 0.0
+    - 1.6696571403759602e-15
+    - 1.0
+    - -2.220446049250314e-16
+    - 0.0
+    - -2.1142068440806182e-16
+    - 2.2204460492503185e-16
+    - 0.9999999999999998
+    - 0.0
+    - 1.2641496006166714e-28
+    - 138.18658524615307
+    - 3.1445940388974023
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: M_JawUpper
+    parent: M_HeadLower
+    worldMatrix:
+    - -2.2204460492503127e-15
+    - -0.10072869917330389
+    - 0.9949139305301007
+    - 0.0
+    - -3.469446951953615e-17
+    - 0.9949139305301007
+    - 0.1007286991733039
+    - 0.0
+    - -1.0
+    - 1.8735013540549522e-16
+    - -2.220446049250313e-15
+    - 0.0
+    - 0.0
+    - 140.4070025516203
+    - -0.6496066680313384
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: M_JawUpperEnd
+    parent: M_JawUpper
+    worldMatrix:
+    - 1.0
+    - -1.6567071406457656e-16
+    - 2.5574105212618996e-15
+    - 0.0
+    - 1.7117318935471533e-15
+    - 0.7960661001432195
+    - -0.6052096861442041
+    - 0.0
+    - -1.8689860568182786e-15
+    - 0.6052096861442038
+    - 0.7960661001432195
+    - 0.0
+    - -8.475130224668995e-15
+    - 139.76622375919143
+    - 5.679470866057504
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 2
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: M_TeethUpper
+    parent: M_JawUpper
+    worldMatrix:
+    - 1.0000000000000002
+    - -3.9982964542470693e-16
+    - 4.319141120320493e-15
+    - 0.0
+    - 4.250670238209934e-16
+    - 0.9999999999999999
+    - -4.1633363423442846e-17
+    - 0.0
+    - -4.3220711819606714e-15
+    - -2.775557561562852e-17
+    - 1.0000000000000004
+    - 0.0
+    - 0.0
+    - 138.77658526885514
+    - 3.1445940388974023
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: L_CheekSec
+    parent: M_HeadLower
+    worldMatrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 3.7201919555664062
+    - 138.6569366455078
+    - 3.37109375
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_CheekUpperClass
+    parent: M_HeadLower
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -3.79800320646605
+    - 140.9441223144531
+    - 4.0321502685546875
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_CheekUpperSec1
+    parent: R_CheekUpperClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -2.5083723068237305
+    - 141.15338134765625
+    - 4.392730712890624
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_CheekUpperSec2
+    parent: R_CheekUpperClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -4.933109760284424
+    - 140.970458984375
+    - 3.199874877929687
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_CheekUpperPart1
+    parent: R_CheekUpperClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -2.904168228298231
+    - 141.109620531666
+    - 4.392730712890624
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.4
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_CheekUpperPart2
+    parent: R_CheekUpperClass
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -4.637217578528336
+    - 140.97045898437491
+    - 3.571672884800665
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.4
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true
+- !<JointData>
+    name: R_CheekSec
+    parent: M_HeadLower
+    worldMatrix:
+    - -1.0
+    - 0.0
+    - -1.2246467991473532e-16
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.2246467991473532e-16
+    - 0.0
+    - -1.0
+    - 0.0
+    - -3.7201919555664062
+    - 138.6569366455078
+    - 3.37109375
+    - 1.0
+    preferredAngle:
+    - 0.0
+    - 0.0
+    - 0.0
+    rotateOrder: 0
+    radius: 0.2
+    drawStyle: 0
+    segmentScaleCompensate: true
+    inheritsTransform: true
+    visibility: true

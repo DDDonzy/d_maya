@@ -46,7 +46,7 @@ class AssetCallback:
             nodeList = cmds.container(self.currentContainer, q=1, nodeList=1) or []
             for x in nodeList:
                 if cmds.objectType(x, isAType="dagNode"):
-                    if (cmds.listRelatives(x, p=1) or ["world"])[0] not in nodeList:
+                    if (cmds.listRelatives(x, p=1) or ["world"])[0] not in nodeList+[self.currentContainer]:
                         cmds.parent(x, self.currentContainer)
 
         AssetCallback.asset_stack.pop()

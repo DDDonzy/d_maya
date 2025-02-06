@@ -56,7 +56,8 @@ def getSelectedVertexIndex():
             fn_component = om.MFnSingleIndexedComponent(component)
             indices = fn_component.getElements()
             vertex_indices.extend(indices)
-    return vertex_indices
+
+    return vertex_indices, mDag
 
 
 def selectVertexByIndex(mesh, indexList):
@@ -179,7 +180,4 @@ class chainFit(CreateBase):
 
     def buildJoints(num: int = 3):
         for x in range(3):
-            v = x
-
-
-chainFit()
+            pass

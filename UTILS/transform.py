@@ -7,6 +7,7 @@ from UTILS.create.createBase import CreateBase, CreateNode
 from UTILS.create.generateUniqueName import generateUniqueName
 
 import numpy as np
+import json
 
 RAD_TO_DEG = 57.29577951308232     # 180.0 / pi
 DEG_TO_RAD = 0.017453292519943295  # pi / 180.0
@@ -316,6 +317,7 @@ class decomMatrix(CreateBase):
                 rotate (bool): Default is True.
                 scale (bool): Default is True.
                 shear (bool): Default is True.
+                relativesMatrix (bool): Default is True.
                 force (bool): Default is True.
         """
 
@@ -324,6 +326,7 @@ class decomMatrix(CreateBase):
         self.scale = kwargs.get("scale", True) and kwargs.get("s", True)
         self.shear = kwargs.get("shear", True) and kwargs.get("sh", True)
         self.isForce = kwargs.get("force", True) and kwargs.get("f", True)
+        self.relativesMatrix = kwargs.get("relativesMatrix", True) and kwargs.get("rm", True)
 
         super().__init__(*args, **kwargs)
 
@@ -333,6 +336,14 @@ class decomMatrix(CreateBase):
         node_decom = CreateNode("decomposeMatrix", name=self.createName("decomposeMatrix"))
         node_mult = CreateNode("multMatrix", name=self.createName("getLocalMultMatrix"))
         node_matrixInverse = CreateNode("inverseMatrix", name=self.createName("inverseRelativesMatrix"))
+
+        self.inputMatrix = None
+        self.inputRotateOrder = None
+        self.inputRelativeSpaceMatrix = None
+        self.outputTranslate = None
+        self.outputRotate = None
+        self.outputScale = None
+        self.outputShear = None
 
         self.publishAttr(data={"inputMatrix": f"{node_mult}.matrixIn[0]",
                                "inputRotateOrder": f"{node_decom}.inputRotateOrder",
@@ -358,6 +369,8 @@ class decomMatrix(CreateBase):
             cmds.connectAttr(f"{node_invert_quat}.outputQuat", f"{node_prod_quat}.input2Quat")
             cmds.connectAttr(f"{node_prod_quat}.outputQuat", f"{node_quat_to_euler}.inputQuat")
 
+            self.inputJointOrient = None
+            self.outputRotate = None
             self.publishAttr(data={"inputJointOrient": f"{node_euler_to_quat}.inputRotate",
                                    "outputRotate": f"{node_quat_to_euler}.outputRotate"})
 
@@ -365,7 +378,8 @@ class decomMatrix(CreateBase):
         if cmds.objExists(self.name):
             if self.hasJointOrient:
                 cmds.connectAttr(f"{self.name}.jointOrient", self.inputJointOrient)  # in jointOrient
-            cmds.connectAttr(f"{self.name}.parentMatrix[0]", self.inputRelativeSpaceMatrix)  # input relatives space matrix
+            if self.relativesMatrix:
+                cmds.connectAttr(f"{self.name}.parentMatrix[0]", self.inputRelativeSpaceMatrix)  # input relatives space matrix
             cmds.connectAttr(f"{self.name}.rotateOrder", self.inputRotateOrder)  # in rotateOrder
             if self.translate:
                 cmds.connectAttr(self.outputTranslate, f"{self.name}.translate", f=self.isForce)  # out translate
@@ -386,6 +400,10 @@ class relativesMatrix(CreateBase):
         node_multMatrix = CreateNode("multMatrix", name=self.createName("multMatrix"))
         node_inverseMatrix = CreateNode("inverseMatrix", name=self.createName("inverseMatrix"))
         cmds.connectAttr(f"{node_inverseMatrix}.outputMatrix", f"{node_multMatrix}.matrixIn[1]")
+
+        self.inputMatrix = None
+        self.inputRelativeMatrix = None
+        self.outputMatrix = None
         self.publishAttr(data={"inputMatrix": f"{node_multMatrix}.matrixIn[0]",
                                "inputRelativeMatrix": f"{node_inverseMatrix}.inputMatrix",
                                "outputMatrix": f"{node_multMatrix}.matrixSum"})
@@ -639,7 +657,7 @@ class offsetFK(CreateBase):
                              f"{node_multMatrix}.matrixIn[2]")
             # matrix to trs
             cmds.connectAttr(f"{node_multMatrix}.matrixSum",
-                             f"{node_decom}.inputMatrix")
+                             node_decom.inputMatrix)
 
 
 class uvPin(CreateBase):
@@ -740,8 +758,7 @@ class uvPin(CreateBase):
         # create mesh
         mesh, shape = uvPin.create_planeByObjectList(targetList=self.targetList,
                                                      size=self.size,
-                                                     name=f"{self.name}_mesh")
-
+                                                     name=f"{self.name}_uvPinMesh")
         # create uvPin node
         node_uvPin = cmds.createNode("uvPin", name=f"{self.name}_uvPin")
         orig_outMesh = cmds.deformableShape(mesh, cog=1)[0]
@@ -754,12 +771,24 @@ class uvPin(CreateBase):
                          f"{node_uvPin}.originalGeometry")
         cmds.connectAttr(f"{mesh}.worldMesh[0]",
                          f"{node_uvPin}.deformedGeometry")
+        info = {}
         for i, obj in enumerate(self.targetList):
             # set uvPin.uv value
             cmds.setAttr(f"{node_uvPin}.coordinate[{i}].coordinateU", i + 0.5)
             cmds.setAttr(f"{node_uvPin}.coordinate[{i}].coordinateV", 0.5)
             node_decom = decomMatrix(name=obj, scale=False, shear=False)
             cmds.connectAttr(f"{node_uvPin}.outputMatrix[{i}]", node_decom.inputMatrix)
+            info.update({i: obj})
+        try:
+            cmds.addAttr(mesh, ln="notes", dt="string")
+        except:
+            pass
+        infoStr = json.dumps(info, indent=4)
+        cmds.setAttr(f"{mesh}.notes", infoStr, type="string")
+
+        self.mesh = mesh
+        self.meshShape = shape
+        self.uvPinNode = node_uvPin
 
     @staticmethod
     def normalizedWeights(uvPinMesh: str, skinCluster: str):
@@ -787,6 +816,7 @@ class follicle(uvPin):
         mesh, shape = follicle.create_planeByObjectList(targetList=self.targetList,
                                                         size=self.size,
                                                         name=f"{self.name}_mesh")
+        self.uvPinNode = []
         for i, obj in enumerate(self.targetList):
             node_follicle = generateUniqueName(f"{obj}_follicle")
             node_follicle = cmds.createNode("transform", name=node_follicle)
@@ -799,6 +829,10 @@ class follicle(uvPin):
             cmds.connectAttr(f"{follicle_shape}.outTranslate", f"{node_follicle}.translate")
             cmds.connectAttr(f"{follicle_shape}.outRotate", f"{node_follicle}.rotate")
             matrixConstraint(node_follicle, obj, scale=False, shear=False)
+            self.uvPinNode.append(follicle_shape)
+
+        self.mesh = mesh
+        self.meshShape = shape
 
 
 def reset_transformObjectValue(obj, transform=True, userDefined=True):
