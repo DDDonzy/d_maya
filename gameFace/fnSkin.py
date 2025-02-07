@@ -1,3 +1,4 @@
+import numpy as np
 import yaml
 
 from .getHistory import get_history
@@ -34,33 +35,51 @@ class D_FnSkin(oma.MFnSkinCluster):
 
         super().__init__(mObj)
 
-    def auto_getWeights(self, indexList=None):
-        infList = self.influenceObjects()
-        infCount = len(infList)
-        if not isinstance(indexList, list):
-            indexList = om.MIntArray(range(infCount))
-        else:
-            indexList = om.MIntArray(indexList)
+    def auto_getWeights(self, influenceIndex=None):
+        inf_list = self.influenceObjects()
+        inf_dict = {}
 
-        weightData = list(self.getWeights(self.shape, self.component, indexList))
+        if influenceIndex:
+            if not isinstance(inf_list, list):
+                influenceIndex = [influenceIndex]
+            print(influenceIndex)
+            influenceIndex = om.MIntArray(influenceIndex)
+        else:
+            influenceIndex = om.MIntArray(range(len(inf_list)))
+
+        for i, x in enumerate(influenceIndex):
+            inf_dict.update({i: inf_list[x].partialPathName()})
+
+        weightData = list(self.getWeights(self.shape, self.component, influenceIndex))
         blendWeightData = list(self.getBlendWeights(self.shape, self.component))
-        infDict = {}
-        for x in indexList:
-            name = infList[x].partialPathName()
-            infDict.update({x: name})
+
         weightDict = {"meshShape": self.shape.partialPathName(),
-                      "influence": infDict,
+                      "influence": inf_dict,
                       "weights": weightData,
                       "blendWeight": blendWeightData}
         return weightDict
 
     def auto_setWeights(self, weightDict):
-        indexList = om.MIntArray(list(weightDict["influence"].keys()))
-        self.setWeights(self.shape, self.component, indexList, om.MDoubleArray(weightDict["weights"]), True)
+        inf_list = self.influenceObjects()
+        inf_name = [x.partialPathName() for x in inf_list]
+
+        index_list = om.MIntArray()
+        error_inf = []
+
+        for data_name in weightDict["influence"].values():
+            if data_name not in inf_name:
+                error_inf.append(data_name)
+            if data_name in inf_name:
+                index_list.append(inf_name.index(data_name))
+
+        if error_inf:
+            raise RuntimeError(f"'{error_inf}' not in skinCluster.")
+
+        self.setWeights(self.shape, self.component, index_list, om.MDoubleArray(weightDict["weights"]), False)
         self.setBlendWeights(self.shape, self.component, om.MDoubleArray(weightDict["blendWeight"]))
 
 
-def exportWeights(obj=None, path=None, indexList=None):
+def exportWeights(obj=None, path=None, influenceIndex=None):
     if not obj:
         obj = cmds.ls(sl=1)[0]
 
@@ -69,7 +88,7 @@ def exportWeights(obj=None, path=None, indexList=None):
         return
 
     fnSkin = D_FnSkin(obj)
-    weights = fnSkin.auto_getWeights(indexList)
+    weights = fnSkin.auto_getWeights(influenceIndex)
 
     with open(path, "w") as f:
         yaml.dump(weights, f, sort_keys=False, indent=4, width=80)

@@ -747,6 +747,9 @@ class uvPin(CreateBase):
 
         fnMesh = om.MFnMesh()
         mObj = fnMesh.create(pos_ary, face_count_ary, face_connect_ary, parent=mObject)
+        print(pos_ary)
+        print(face_count_ary)
+        print(face_connect_ary)
         fnDep = om.MFnDependencyNode(mObj)
         fnDep.setName(f"{transform}Shape")
 

@@ -1,14 +1,6 @@
+# brow up/dw
 - !<DriverData>
-    name: R_BrowUp
-    driverAttr: Brrow_ctrl3.ty
-    min: 0
-    max: 1
-- !<DriverData>
-    name: R_BrowDw
-    driverAttr: Brrow_ctrl3.ty
-    min: 0
-    max: -1
-
+    name: __Brow__
 - !<DriverData>
     name: L_BrowUp
     driverAttr: Brrow_ctrl2.ty
@@ -19,7 +11,6 @@
     driverAttr: Brrow_ctrl2.ty
     min: 0
     max: -1
-
 - !<DriverData>
     name: BrowConfuse
     driverAttr: Brrow_ctrl1.ty
@@ -30,28 +21,41 @@
     driverAttr: Brrow_ctrl1.ty
     min: 0
     max: -1
-
 - !<DriverData>
     name: BrowShy
     driverAttr: Brrow_ctrl4.tx
     min: 0
     max: 1
-
 - !<DriverData>
     name: BrowAngry
     driverAttr: Brrow_ctrl5.tx
     min: 0
     max: 1
-
 - !<DriverData>
     name: BrowSmile
     driverAttr: Brrow_ctrl6.tx
     min: 0
     max: 1
-
+- !<DriverData>
+    name: R_BrowUp
+    driverAttr: Brrow_ctrl3.ty
+    min: 0
+    max: 1
+- !<DriverData>
+    name: R_BrowDw
+    driverAttr: Brrow_ctrl3.ty
+    min: 0
+    max: -1
+- !<DriverData>
+    name: __Eye__
 - !<DriverData>
     name: L_EyeBlink
     driverAttr: EyeControl_Blink_ctrl2.ty
+    min: 0
+    max: -1
+- !<DriverData>
+    name: L_EyeSmile
+    driverAttr: EyeControl_Smile_ctrl1.ty
     min: 0
     max: -1
 - !<DriverData>
@@ -59,18 +63,13 @@
     driverAttr: EyeControl_Blink_ctrl1.ty
     min: 0
     max: -1
-
-- !<DriverData>
-    name: L_EyeSmile
-    driverAttr: EyeControl_Smile_ctrl1.ty
-    min: 0
-    max: -1
 - !<DriverData>
     name: R_EyeSmile
     driverAttr: EyeControl_Smile_ctrl2.ty
     min: 0
     max: -1
-
+- !<DriverData>
+    name: __EyeBall__
 - !<DriverData>
     name: L_EyeBallUp
     driverAttr: EyeControl_ctrl2.ty
@@ -91,7 +90,6 @@
     driverAttr: EyeControl_ctrl2.tx
     min: 0
     max: 1
-
 - !<DriverData>
     name: R_EyeBallUp
     driverAttr: EyeControl_ctrl1.ty
@@ -112,7 +110,46 @@
     driverAttr: EyeControl_ctrl1.tx
     min: 0
     max: 1
+# cheek puff
+- !<DriverData>
+    name: __Cheek__
+- !<DriverData>
+    name: L_CheekPuff
+    driverAttr: Cheek_ctrl2.tx
+    min: 0
+    max: 1
+- !<DriverData>
+    name: R_CheekPuff
+    driverAttr: Cheek_ctrl20.tx
+    min: 0
+    max: 1
+# jaw
+- !<DriverData>
+    name: __Jaw__
+- !<DriverData>
+    name: Jaw_Up
+    driverAttr: JawPlane_ctrl.ty
+    min: 0
+    max: 1
+- !<DriverData>
+    name: Jaw_Dw
+    driverAttr: JawPlane_ctrl.ty
+    min: 0
+    max: -1
+- !<DriverData>
+    name: Jaw_Right
+    driverAttr: JawPlane_ctrl.tx
+    min: 0
+    max: -1
+- !<DriverData>
+    name: Jaw_Left
+    driverAttr: JawPlane_ctrl.tx
+    min: 0
+    max: 1
 
+# lip corner up/dw
+- !<DriverData>
+    name: __Lip__
 - !<DriverData>
     name: L_LipCornerUp
     driverAttr: Mouth_Down_L_ctrl1.ty
@@ -133,27 +170,7 @@
     driverAttr: Mouth_Down_L_ctrl1.tx
     min: 0
     max: -1
-
-- !<DriverData>
-    name: R_LipCornerUp
-    driverAttr: Mouth_Down_L_ctrl2.ty
-    min: 0
-    max: 1
-- !<DriverData>
-    name: R_LipCornerDw
-    driverAttr: Mouth_Down_L_ctrl2.ty
-    min: 0
-    max: -1
-- !<DriverData>
-    name: R_LipCornerOut
-    driverAttr: Mouth_Down_L_ctrl2.tx
-    min: 0
-    max: 1
-- !<DriverData>
-    name: R_LipCornerIn
-    driverAttr: Mouth_Down_L_ctrl2.tx
-    min: 0
-    max: -1
+# lip up/dw
 - !<DriverData>
     name: M_LipUpperUp
     driverAttr: Mouth_LowerUp_ctrl1.ty
@@ -165,12 +182,70 @@
     min: 0
     max: -1
 - !<DriverData>
-    name: L_CheekPuff
-    driverAttr: Cheek_ctrl2.tx
+    name: R_LipCornerUp
+    driverAttr: Mouth_R_ctrl1.ty
     min: 0
     max: 1
 - !<DriverData>
-    name: R_CheekPuff
-    driverAttr: Cheek_ctrl20.tx
+    name: R_LipCornerDw
+    driverAttr: Mouth_R_ctrl1.ty
+    min: 0
+    max: -1
+- !<DriverData>
+    name: R_LipCornerOut
+    driverAttr: Mouth_R_ctrl1.tx
+    min: 0
+    max: 1
+- !<DriverData>
+    name: R_LipCornerIn
+    driverAttr: Mouth_R_ctrl1.tx
+    min: 0
+    max: -1
+# mouth pose
+- !<DriverData>
+    name: __Mouth__
+- !<DriverData>
+    name: MouthPose_A
+    driverAttr: MouthControl_ctrl1.tx
+    min: 0
+    max: 1
+- !<DriverData>
+    name: MouthPose_I
+    driverAttr: MouthControl_ctrl2.tx
+    min: 0
+    max: 1
+- !<DriverData>
+    name: MouthPose_O
+    driverAttr: MouthControl_ctrl3.tx
+    min: 0
+    max: 1
+- !<DriverData>
+    name: MouthPose_E
+    driverAttr: MouthControl_ctrl4.tx
+    min: 0
+    max: 1
+- !<DriverData>
+    name: MouthPose_U
+    driverAttr: MouthControl_ctrl5.tx
+    min: 0
+    max: 1
+- !<DriverData>
+    name: MouthPose_N
+    driverAttr: MouthControl_ctrl6.tx
+    min: 0
+    max: 1
+- !<DriverData>
+    name: MouthPose_Smile
+    driverAttr: MouthControl_ctrl7.tx
+    min: 0
+    max: 1
+- !<DriverData>
+    name: MouthPose_Angry
+    driverAttr: MouthControl_ctrl8.tx
+    min: 0
+    max: 1
+- !<DriverData>
+    name: MouthPose_Proud
+    driverAttr: MouthControl_ctrl9.tx
     min: 0
     max: 1

@@ -269,6 +269,7 @@ def add_bsTarget(bs: str, name: str):
             num += 1
             name = f"{base_name}{num}"
     cmds.aliasAttr(name, f"{bs}.w[{i}]")
+    cmds.getAttr(f'{bs}.inputTarget[0].inputTargetGroup[{i}].inputTargetItem[6000]',typ=1)
     return f"{bs}.{name}"
 
 
