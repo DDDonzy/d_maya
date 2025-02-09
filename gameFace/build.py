@@ -1,21 +1,17 @@
 
 from UTILS.create.createBase import CreateBase, CreateNode
 from UTILS.control import cvShape
-import UTILS.transform as t
+from UTILS import transform as t
+from UTILS.skin import fnSkin as sk
 
-from .createControls import buildControl, get_allControls, ControlData, get_controlsByLabel
-from .hierarchyIter import hierarchyIter
-from .fit import get_allFitJoint, mirrorDuplicateTransform_cmd, addPartJoint
-from .config import *
-from . import fnSkin as sk
-from .calWeights import calWeights
+from gameFace.createControls import buildControl, get_allControls, ControlData, get_controlsByLabel
+from gameFace.fit import get_allFitJoint, mirrorDuplicateTransform_cmd
+from gameFace.hierarchyIter import *
+from gameFace.data.config import *
+
 
 from maya import cmds
 from maya.api import OpenMaya as om
-from maya.api import OpenMayaAnim as oma
-
-import numpy as np
-import json
 
 
 if cmds.about(api=1) >= 2020_0000:
@@ -33,7 +29,6 @@ class build(CreateBase):
         Pre create.
         mirror joints.
         """
-        # addPartJoint()  # may be delete this functions.
 
         if MIRROR_BUILD:
             mirrorDuplicateTransform_cmd()
@@ -46,7 +41,7 @@ class build(CreateBase):
         cvShape.import_cvData(DEFAULT_SHAPES_FILE)
         # create uvPin
         build.buildUvPin()
-
+        # class controls constraint
         build.buildClassConstraint()
 
     def _post_create(self):
@@ -59,15 +54,6 @@ class build(CreateBase):
         all_joint = get_allFitJoint()
         for x in all_joint:
             buildControl(x)
-
-        # for x in get_allControls():
-        #     if (cmds.listRelatives(x.grp, p=1) or [None])[0] != CONTROL_ROOT:
-        #         cmds.parent(x.grp, CONTROL_ROOT)
-        # for x, _ in hierarchyIter(SKIN_JOINT_ROOT):
-        #     if x == SKIN_JOINT_ROOT:
-        #         continue
-        #     if (cmds.listRelatives(x, p=1) or [None])[0] != SKIN_JOINT_ROOT:
-        #         cmds.parent(x, SKIN_JOINT_ROOT)
 
         build.removeUnSkinJoints()
 

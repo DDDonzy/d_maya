@@ -5,6 +5,7 @@ from maya import mel, cmds
 from maya.api import OpenMaya as om
 from UTILS.ui.showMessage import showMessage
 from UTILS.mirrorEnv import MIRROR_CONFIG
+from UTILS.other.choseFile import choseFile
 
 
 @dataclass
@@ -90,7 +91,7 @@ class CurveShapeData(yaml.YAMLObject):
             cmds.select(sel_temp)
 
 
-@ dataclass
+@dataclass
 class CurveData(yaml.YAMLObject):
     """ Save Curve Data
     Args:
@@ -261,7 +262,7 @@ def select_cvControlVertex(curve_list: list):
     cmds.select(sel_list)
 
 
-def export_cvData(cv_list=None):
+def export_cvData(cv_list=None, path=None, **kwargs):
     if cv_list:
         if type(cv_list) is str:
             cv_list = [cv_list]
@@ -275,23 +276,20 @@ def export_cvData(cv_list=None):
     data_list = []
     for obj in cv_list:
         data_list.append(CurveData(obj))
-
-    path = cmds.fileDialog2(dialogStyle=2, caption="Export nurbsCurve data", fileFilter="YAML file(*.yaml)")
+        
+    path = choseFile(path, dialogStyle=2, caption="Export nurbsCurve data", fileFilter="YAML file(*.yaml)", **kwargs)
     if not path:
         return
-    path = path[0]
     with open(path, "w") as f:
         yaml.dump(data_list, f, sort_keys=False, indent=4, width=80)
     message = '<hl> Export successful </hl>'
     cmds.inViewMessage(amg=message, pos='midCenterBot', fade=True)
 
 
-def import_cvData(path=None):
+def import_cvData(path=None, **kwargs):
+    path = choseFile(path, dialogStyle=2, caption="Import nurbsCurve data", fileFilter="YAML file(*.yaml)", fileMode=1, **kwargs)
     if not path:
-        path = cmds.fileDialog2(dialogStyle=2, caption="Import nurbsCurve data", fileFilter="YAML file(*.yaml)", fileMode=1)
-        if not path:
-            return
-        path = path[0]
+        return
     with open(path, "r") as f:
         data_list = yaml.unsafe_load(f)
         for data in data_list:

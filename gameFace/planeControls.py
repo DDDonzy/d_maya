@@ -1,8 +1,8 @@
 import yaml
 from dataclasses import dataclass
 
-from gameFace.choseFile import choseFile
-from gameFace.config import *
+from UTILS.other.choseFile import choseFile
+from gameFace.data.config import *
 
 from UTILS.ui.showMessage import showMessage
 from UTILS.bs.blendShapePsdTool.blendShapePsdTool import *

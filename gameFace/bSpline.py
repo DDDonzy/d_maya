@@ -1,13 +1,5 @@
 from maya.api import OpenMaya as om
-from dataclasses import dataclass
-import numpy as np
-import time
-from maya import cmds
 
-
-
-# import maya.standalone
-# maya.standalone.initialize()
 
 class CurveData(om.MFnNurbsCurve):
 
@@ -66,4 +58,3 @@ class CurveData(om.MFnNurbsCurve):
                                                                                                    t,
                                                                                                    d-1)
             return term1 + term2
-

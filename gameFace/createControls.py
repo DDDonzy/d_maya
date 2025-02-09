@@ -2,9 +2,9 @@ from dataclasses import dataclass
 from UTILS.create.createBase import CreateNode
 from UTILS.transform import matrixConstraint, alignTransform
 
-from .fit import JointData
-from .config import *
-from .hierarchyIter import *
+from gameFace.fit import JointData
+from gameFace.data.config import *
+from gameFace.hierarchyIter import *
 
 
 from maya import cmds, mel
@@ -35,10 +35,6 @@ class ControlData():
     @property
     def grp(self):
         return self.getObject(GRP_LABEL)
-
-    @property
-    def invert(self):
-        return self.getObject(INVERT_LABEL)
 
     @property
     def sdk(self):

@@ -1,14 +1,13 @@
 import yaml
 from dataclasses import dataclass, field
 
-from UTILS.transform import get_worldMatrix, set_worldMatrix
+from UTILS.transform import get_worldMatrix, set_worldMatrix, flip_transform
 from UTILS.ui.showMessage import showMessage
-from UTILS.transform import flip_transform
 from UTILS.mirrorEnv import MIRROR_CONFIG
 
-from .config import *
-from .hierarchyIter import hierarchyIter
-from .choseFile import choseFile
+from gameFace.data.config import *
+from gameFace.hierarchyIter import *
+from UTILS.other.choseFile import *
 
 
 from maya import cmds
@@ -115,6 +114,7 @@ def importFit(path=None):
         cmds.createNode("joint", name=bone.name, ss=1)
         bone.setData()
     cmds.select(FIT_ROOT)
+    showMessage(" Import successful ")
 
 
 def mirrorDuplicateTransform(obj):
@@ -148,6 +148,7 @@ def mirrorDuplicateTransform_cmd(all=False):
                 x_parent = (cmds.listRelatives(x, p=1) or ['None'])[0]
                 if MIRROR_CONFIG.exchange(x_parent)[0] == x_parent:
                     mirrorDuplicateTransform(x)
+    showMessage("Mirror All")
 
 
 def autoCalClassPosition():
@@ -190,6 +191,7 @@ def hideClass():
         if "Class" in x:
             if cmds.objExists(f"{x}.drawStyle"):
                 cmds.setAttr(f"{x}.drawStyle", 2 if not isAverageTrue(boolList) else 0)
+    showMessage("Hide Class Controls")
 
 
 def hidePart():
@@ -204,6 +206,7 @@ def hidePart():
         if "Part" in x:
             if cmds.objExists(f"{x}.drawStyle"):
                 cmds.setAttr(f"{x}.drawStyle", 2 if not isAverageTrue(boolList) else 0)
+    showMessage("Hide Part Controls")
 
 
 def addPartJoint(force=False):

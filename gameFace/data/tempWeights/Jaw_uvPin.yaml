@@ -1,6 +1,10 @@
-meshShape: Jaw_uvPinMeshShape
-influence:
-    0: M_HeadLower_SK
+!<WeightsData>
+mesh: Jaw_uvPinMeshShape
+component: []
+influenceIndex:
+- 0
+influenceName:
+- M_HeadLower_SK
 weights:
 - 1.0
 - 1.0
@@ -12,7 +16,7 @@ weights:
 - 1.0
 - 1.0
 - 1.0
-blendWeight:
+blendWeights:
 - 0.0
 - 0.0
 - 0.0

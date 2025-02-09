@@ -16,6 +16,10 @@ cc.get_controlsByLabel("Sec")
 fit.get_fitJointByLabel("Class")
 
 
-import gameFace.fnSkin as sk
+import UTILS.skin.fnSkin as sk
 sk.exportWeights()
 sk.importWeights()
+
+
+from gameFace.ui.ui_main import showUI
+showUI()
