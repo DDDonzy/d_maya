@@ -8,7 +8,6 @@ class MIRROR_BASE:
 
     def __init__(self):
         self._current_index: int = 0
-        showMessage(self.current_pair)
 
     @property
     def current_pair(self):

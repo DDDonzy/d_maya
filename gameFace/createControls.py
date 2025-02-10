@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from UTILS.create.createBase import CreateNode
 from UTILS.transform import matrixConstraint, alignTransform
 
@@ -6,6 +5,7 @@ from gameFace.fit import JointData
 from gameFace.data.config import *
 from gameFace.hierarchyIter import *
 
+from dataclasses import dataclass
 
 from maya import cmds, mel
 

@@ -1,25 +1,27 @@
+import UTILS.skin.fnSkin as sk
+
+from gameFace.ui import ui_main as ui
+from gameFace import createControls as cc
+from gameFace import fit
+from gameFace import build
+
 from maya import cmds
 
-from gameFace import fit
-from gameFace import build as b
+
 fit.importFit()
 fit.exportFit()
 fit.hideClass()
 fit.autoCalClassPosition()
 fit.mirrorDuplicateTransform_cmd()
+fit.get_fitJointByLabel()
+
+cc.get_controlsByLabel()
+
+build.build("Face")
 
 
-b.build("Face")
-
-from gameFace import createControls as cc
-cc.get_controlsByLabel("Sec")
-fit.get_fitJointByLabel("Class")
-
-
-import UTILS.skin.fnSkin as sk
 sk.exportWeights()
 sk.importWeights()
 
 
-from gameFace.ui.ui_main import showUI
-showUI()
+ui.showUI()

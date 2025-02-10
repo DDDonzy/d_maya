@@ -1,23 +1,23 @@
-from functools import partial
-from gameFace.planeControls import importSDK, exportSDK, PlaneControls
+from UTILS.other.mPartial import partial
 
-from gameFace.ui.ui_loader import build_ui
 from gameFace.data.config import *
-from maya import cmds
+from gameFace.ui.ui_loader import build_ui
+from gameFace.controlPanel import controlPanel
 
 import os
-
 import yaml
+
+from maya import cmds
+
+from PySide2.QtGui import QFont, QBrush, QColor
+from PySide2.QtCore import Qt
+
 
 uiFile = f"{os.path.dirname(__file__) }\\designer\\sdk.ui"
 
 global data
 global ui
 
-def deleteSDK_UI():
-    global ui
-    ui.deleteLater()
-    print('delete sdk UI')
 
 def showSDK_UI():
     global ui
@@ -34,47 +34,96 @@ def showSDK_UI():
 
 
 def setup_ui_logic():
-    ui.bt_importSDK.clicked.connect(partial(importSDK))
-    ui.bt_exportSDK.clicked.connect(partial(exportSDK))
-    ui.bt_set.clicked.connect(partial(PlaneControls, "set"))
-    ui.bt_mirror.clicked.connect(partial(print, "mir"))
-    ui.bt_flip.clicked.connect(partial(print, "flip"))
-    ui.bt_mirrorFlip.clicked.connect(partial(print, "MF"))
+    # command connect
+    ui.bt_importPose.clicked.connect(partial(import_pose_command))
+    ui.bt_exportPose.clicked.connect(partial(export_pose_command))
+    ui.bt_set.clicked.connect(partial(set_pose_command))
+    ui.bt_mirror.clicked.connect(partial(mirror_pose_command))
+    ui.bt_flip.clicked.connect(partial(flip_pose_command))
+    ui.bt_mirrorFlip.clicked.connect(partial(mirror_flip_all_command))
 
     # listWidget
     update_listWidget()
-    ui.listWidget.currentItemChanged.connect(listViveClickCommand)
+    ui.listWidget.currentItemChanged.connect(listWidget_change_command)
+    # text filter
+    ui.text_filter.textChanged.connect(filter_items_command)
 
 
-def listViveClickCommand(currentIndex, lastIndex):
+def listWidget_change_command(currentIndex, lastIndex):
     i = ui.listWidget.row(currentIndex)
     last_i = ui.listWidget.row(lastIndex)
-    
+
     if last_i >= 0:
-        if not data[last_i].driverAttr:
-            return
-        if cmds.objExists(data[last_i].driverAttr):
-            cmds.setAttr(data[last_i].driverAttr, data[last_i].min)
-            print(f"setAttr '{data[last_i].driverAttr}', {data[last_i].min}")
-            
+        if data[last_i].driverAttr:
+            if cmds.objExists(data[last_i].driverAttr):
+                cmds.setAttr(data[last_i].driverAttr, data[last_i].min)
+                print(f"setAttr {data[last_i].driverAttr} {data[last_i].min}")
 
-    if not data[i].driverAttr:
-        return
-    if not cmds.objExists(data[i].driverAttr):
-        return
-    cmds.setAttr(data[i].driverAttr, data[i].max)
-    print(f"setAttr '{data[i].driverAttr}', {data[i].max}")
-
-
+    if data[i].driverAttr:
+        if cmds.objExists(data[i].driverAttr):
+            cmds.setAttr(data[i].driverAttr, data[i].max)
+            print(f"setAttr {data[i].driverAttr} {data[i].max}")
+    # TODO Update Pose
 
 
 def update_listWidget():
     global data
+
+    ui.listWidget_items = []
     ui.listWidget.clear()
     try:
         data = yaml.unsafe_load(cmds.getAttr(f"{BRIDGE}.notes"))
     except:
         return
-    for i in data:
-        ui.listWidget.addItem(i.name)
+
+    font = QFont()
+    font.setBold(True)
+    font.setPointSize(10)
+    for i, x in enumerate(data):
+        ui.listWidget.addItem(x.name)
+        item = ui.listWidget.item(i)
+
+        if "__" in x.name and x.driverAttr is None:
+            item.setText(x.name.replace("__", ""))
+            item.setFont(font)
+            color = QColor(255, 255, 255)
+            color.setAlpha(50)
+            item.setBackground(QBrush(color))
+            item.setTextAlignment(Qt.AlignCenter)
+        else:
+            ui.listWidget_items.append(item)
+
     return data
+
+
+def filter_items_command():
+    filter_text = ui.text_filter.text().lower()
+    for item in ui.listWidget_items:
+        if filter_text in item.text().lower():
+            item.setHidden(False)
+        else:
+            item.setHidden(True)
+
+
+def set_pose_command():
+    print("Set Pose")
+
+
+def mirror_pose_command():
+    print("mirror Pose")
+
+
+def flip_pose_command():
+    print("flip Pose")
+
+
+def mirror_flip_all_command():
+    print("Mirror Flip All Pose")
+
+
+def import_pose_command():
+    print("import pose")
+
+
+def export_pose_command():
+    print("export pose")

@@ -1,13 +1,13 @@
-import yaml
-from dataclasses import dataclass
-
+from UTILS.getHistory import get_history
 from UTILS.other.choseFile import choseFile
+from UTILS.ui.showMessage import showMessage
+from UTILS.create.createBase import CreateBase
+from UTILS.bs.blendShapePsdTool.blendShapePsdTool import *
+
 from gameFace.data.config import *
 
-from UTILS.ui.showMessage import showMessage
-from UTILS.bs.blendShapePsdTool.blendShapePsdTool import *
-from UTILS.create.createBase import CreateBase
-from UTILS.getHistory import get_history
+import yaml
+from dataclasses import dataclass
 
 from maya import cmds
 
@@ -49,7 +49,7 @@ def importSDK(path=None):
     return data
 
 
-class PlaneControls(CreateBase):
+class controlPanel(CreateBase):
     isDagAsset = False
     isBlackBox = False
 

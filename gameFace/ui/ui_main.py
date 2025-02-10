@@ -1,13 +1,15 @@
-from functools import partial
-import os
+from UTILS.other.mPartial import partial
+from UTILS.control.cvShape import export_cvData, import_cvData
 
-from gameFace.ui.ui_loader import build_ui
-from gameFace.ui.ui_sdk import showSDK_UI
-from gameFace.fit import importFit, exportFit, mirrorDuplicateTransform_cmd, hideClass, hidePart
 from gameFace.build import build
 from gameFace.data.config import *
-from UTILS.control.cvShape import export_cvData, import_cvData
+from gameFace.ui.ui_sdk import showSDK_UI
+from gameFace.ui.ui_loader import build_ui
+from gameFace.fit import importFit, exportFit, mirrorDuplicateTransform_cmd, hideClass, hidePart
+
 from maya import cmds
+
+import os
 
 
 uiFile = f"{os.path.dirname(__file__) }\\designer\\main.ui"

@@ -1,19 +1,20 @@
 
-from UTILS.create.createBase import CreateBase, CreateNode
 from UTILS.control import cvShape
 from UTILS import transform as t
 from UTILS.skin import fnSkin as sk
 from UTILS.ui.showMessage import muteMessage, showMessage
+from UTILS.create.createBase import CreateBase, CreateNode
 
-from gameFace.createControls import buildControl, get_allControls, ControlData, get_controlsByLabel
-from gameFace.fit import get_allFitJoint, mirrorDuplicateTransform_cmd
-from gameFace.hierarchyIter import *
+
 from gameFace.data.config import *
-from gameFace.planeControls import PlaneControls, importSDK
+from gameFace.hierarchyIter import *
+from gameFace.controlPanel import controlPanel, importSDK
+from gameFace.fit import get_allFitJoint, mirrorDuplicateTransform_cmd
+from gameFace.createControls import buildControl, get_allControls, ControlData, get_controlsByLabel
 
-
-from maya import cmds
+from maya import cmds, mel
 from maya.api import OpenMaya as om
+
 import yaml
 
 
@@ -33,7 +34,7 @@ class build(CreateBase):
         mirror joints.
         """
         muteMessage(True)
-        
+
         if MIRROR_BUILD:
             mirrorDuplicateTransform_cmd()
 
@@ -46,8 +47,8 @@ class build(CreateBase):
         build.buildUvPin()
         # class controls constraint
         build.buildClassConstraint()
-        # planeControls
-        build.buildPlaneControlsAndSDK()
+        # Controls panel
+        build.buildControlsPanelAndSDK()
 
     def _post_create(self):
         cmds.setAttr(f"{FIT_ROOT}.v", 0)
@@ -152,8 +153,17 @@ class build(CreateBase):
                     cmds.connectAttr(f"{mult}.matrixSum", decom.inputMatrix)
 
     @staticmethod
-    def buildPlaneControlsAndSDK():
+    def buildControlsPanelAndSDK():
+        with open(CONTROLS_PANEL_FILE, "r") as f:
+            mel.eval(f.read())
+        # set control panel position
+        cmds.refresh()
+        boundingBox = cmds.exactWorldBoundingBox(CONTROL_ROOT)
+        pos = (om.MVector(boundingBox[3]-boundingBox[0], boundingBox[1], boundingBox[5]))
+        cmds.setAttr(f"{CONTROLS_PANEL_ROOT}.t", *pos)
+        cmds.parent(CONTROLS_PANEL_ROOT, CONTROL_ROOT)
+        # import pose data
         data = importSDK(DEFAULT_SDK_FILE)
         meshStr = cmds.getAttr(f"{FACE_ROOT}.notes")
         mesh = yaml.unsafe_load(meshStr)["uvPin"]
-        sdk = PlaneControls(data=data, mesh=mesh)
+        sdk = controlPanel(data=data, mesh=mesh)
