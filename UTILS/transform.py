@@ -7,7 +7,7 @@ from UTILS.create.createBase import CreateBase, CreateNode
 from UTILS.create.generateUniqueName import generateUniqueName
 
 import numpy as np
-import json
+import yaml
 
 RAD_TO_DEG = 57.29577951308232     # 180.0 / pi
 DEG_TO_RAD = 0.017453292519943295  # pi / 180.0
@@ -783,7 +783,7 @@ class uvPin(CreateBase):
             cmds.addAttr(mesh, ln="notes", dt="string")
         except:
             pass
-        infoStr = json.dumps(info, indent=4)
+        infoStr = yaml.dump(info, indent=4)
         cmds.setAttr(f"{mesh}.notes", infoStr, type="string")
 
         self.mesh = mesh

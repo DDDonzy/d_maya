@@ -282,8 +282,7 @@ def export_cvData(cv_list=None, path=None, **kwargs):
         return
     with open(path, "w") as f:
         yaml.dump(data_list, f, sort_keys=False, indent=4, width=80)
-    message = '<hl> Export successful </hl>'
-    cmds.inViewMessage(amg=message, pos='midCenterBot', fade=True)
+    showMessage("Export shapes successful")
 
 
 def import_cvData(path=None, **kwargs):
@@ -297,8 +296,7 @@ def import_cvData(path=None, **kwargs):
                 data.set_data()
             else:
                 cmds.warning(f"Can not find '{data.transformName}'")
-    message = '<hl> Import successful </hl>'
-    cmds.inViewMessage(amg=message, pos='midCenterBot', fade=True)
+    showMessage("Import shapes successful")
 
 
 def mirror_cvShape_cmd():

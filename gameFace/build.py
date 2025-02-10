@@ -3,15 +3,18 @@ from UTILS.create.createBase import CreateBase, CreateNode
 from UTILS.control import cvShape
 from UTILS import transform as t
 from UTILS.skin import fnSkin as sk
+from UTILS.ui.showMessage import muteMessage, showMessage
 
 from gameFace.createControls import buildControl, get_allControls, ControlData, get_controlsByLabel
 from gameFace.fit import get_allFitJoint, mirrorDuplicateTransform_cmd
 from gameFace.hierarchyIter import *
 from gameFace.data.config import *
+from gameFace.planeControls import PlaneControls, importSDK
 
 
 from maya import cmds
 from maya.api import OpenMaya as om
+import yaml
 
 
 if cmds.about(api=1) >= 2020_0000:
@@ -21,7 +24,7 @@ else:
 
 
 class build(CreateBase):
-    thisAssetName = "FaceSystem"
+    thisAssetName = FACE_ROOT
     isBlackBox = False
 
     def _pre_create(self):
@@ -29,7 +32,8 @@ class build(CreateBase):
         Pre create.
         mirror joints.
         """
-
+        muteMessage(True)
+        
         if MIRROR_BUILD:
             mirrorDuplicateTransform_cmd()
 
@@ -37,15 +41,18 @@ class build(CreateBase):
         """Build face logic."""
         # build face controls
         build.buildControls()
-
         cvShape.import_cvData(DEFAULT_SHAPES_FILE)
         # create uvPin
         build.buildUvPin()
         # class controls constraint
         build.buildClassConstraint()
+        # planeControls
+        build.buildPlaneControlsAndSDK()
 
     def _post_create(self):
         cmds.setAttr(f"{FIT_ROOT}.v", 0)
+        muteMessage(False)
+        showMessage("Build !")
 
     ############################
 
@@ -85,34 +92,41 @@ class build(CreateBase):
 
         head_list = [ControlData("M_HeadUpper"), ControlData("M_HeadLower")]
         head_grp = [ctl.grp for ctl in head_list]
-        head_pin = uvPin(head_grp, name='Head')
-        t.matrixConstraint(CONTROL_ROOT, head_pin.mesh)
-        cmds.setAttr(f"{head_pin.thisAssetName}.inheritsTransform", False)
 
         jaw_list = [ControlData("M_Jaw"), ControlData("M_JawUpper")]
         jaw_grp = [ctl.grp for ctl in jaw_list]
-        jaw_pin = uvPin(jaw_grp, name='Jaw')
-        # cmds.skinCluster(ControlData("M_HeadLower").sk, jaw_pin.mesh, tsb=1, rui=0)
-        cmds.setAttr(f"{jaw_pin.thisAssetName}.inheritsTransform", False)
 
         sec_list = get_controlsByLabel(SEC_LABEL)
         sec_grp = [ctl.grp for ctl in sec_list]
         sec_grp.sort()
-        sec_pin = uvPin(sec_grp, name="Sec")
-        inf = [x.sk for x in get_controlsByLabel(PART_LABEL)]
-        # cmds.skinCluster(inf, sec_pin.mesh, tsb=1, rui=0)
-        cmds.setAttr(f"{sec_pin.thisAssetName}.inheritsTransform", False)
 
         part_grp = list(set(all_grp) - set(head_grp+jaw_grp+sec_grp))
         part_grp.sort()
+
+        head_pin = uvPin(head_grp, name='Head')
+        t.matrixConstraint(CONTROL_ROOT, head_pin.mesh)
+        cmds.setAttr(f"{head_pin.thisAssetName}.inheritsTransform", False)
+
+        jaw_pin = uvPin(jaw_grp, name='Jaw')
+        cmds.setAttr(f"{jaw_pin.thisAssetName}.inheritsTransform", False)
+
+        sec_pin = uvPin(sec_grp, name="Sec")
+        cmds.setAttr(f"{sec_pin.thisAssetName}.inheritsTransform", False)
+
         part_pin = uvPin(part_grp, name="part")
-        inf = [x.sk for x in (head_list+jaw_list)]
-        # cmds.skinCluster(inf, part_pin.mesh, tsb=1, rui=0)
         cmds.setAttr(f"{part_pin.thisAssetName}.inheritsTransform", False)
 
         sk.importWeights(sec_pin.mesh, SEC_WEIGHT_FILE)
         sk.importWeights(part_pin.mesh, PART_WEIGHT_FILE)
         sk.importWeights(jaw_pin.mesh, JAW_WEIGHT_FILE)
+
+        try:
+            cmds.addAttr(FACE_ROOT, ln="notes", dt="string")
+        except:
+            pass
+        info = {"uvPin": [head_pin.mesh, jaw_pin.mesh, part_pin.mesh, sec_pin.mesh]}
+        infoStr = yaml.dump(info, indent=4)
+        cmds.setAttr(f"{FACE_ROOT}.notes", infoStr, type="string")
 
     @staticmethod
     def buildClassConstraint():
@@ -136,3 +150,10 @@ class build(CreateBase):
                     cmds.connectAttr(f"{x.loc}.worldMatrix[0]", f"{mult}.matrixIn[1]")
                     decom = t.decomMatrix(ctl.sdk, name=ctl.sdk, scale=False)
                     cmds.connectAttr(f"{mult}.matrixSum", decom.inputMatrix)
+
+    @staticmethod
+    def buildPlaneControlsAndSDK():
+        data = importSDK(DEFAULT_SDK_FILE)
+        meshStr = cmds.getAttr(f"{FACE_ROOT}.notes")
+        mesh = yaml.unsafe_load(meshStr)["uvPin"]
+        sdk = PlaneControls(data=data, mesh=mesh)

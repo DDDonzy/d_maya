@@ -2,7 +2,7 @@
 import numpy as np
 from maya.api import OpenMaya as om
 
-from gameFace.bSpline import CurveData
+from UTILS.bSpline import CurveData
 from UTILS.skin.fnSkin import D_FnSkin, weightsData
 from maya import cmds
 
@@ -119,7 +119,7 @@ def calWeightsBase(inf_position: om.MPointArray,
                    degree: int = 2):
     inf_count = len(inf_position)
 
-    if isinstance(smooth, float):
+    if not isinstance(smooth, list):
         smooth = [smooth] * inf_count
     smooth = [remap_value(clamp(x, 0, 1), 0, 1, 0, 0.5) for x in smooth]
     degree = clamp(degree, 1, 5)

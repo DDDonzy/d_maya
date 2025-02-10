@@ -27,3 +27,5 @@ def build_ui(path):
         return build_ui_2019(path)
 
 
+
+from PySide2.QtWidgets import QListWidget

@@ -95,7 +95,7 @@ def exportFit(path=None):
 
     with open(path, "w") as f:
         yaml.dump(export_list, f, sort_keys=False, indent=4, width=80)
-    showMessage(" Export successful ")
+    showMessage(" Export fit successful ")
 
 
 def importFit(path=None):
@@ -114,7 +114,7 @@ def importFit(path=None):
         cmds.createNode("joint", name=bone.name, ss=1)
         bone.setData()
     cmds.select(FIT_ROOT)
-    showMessage(" Import successful ")
+    showMessage(" Import fit successful ")
 
 
 def mirrorDuplicateTransform(obj):

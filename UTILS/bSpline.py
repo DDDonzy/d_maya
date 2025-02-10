@@ -1,11 +1,8 @@
-import time
-import numpy as np
-from dataclasses import dataclass
 from maya.api import OpenMaya as om
 
 
 class CurveData(om.MFnNurbsCurve):
-
+    
     def __init__(self, controlPoints, degree):
         super().__init__()
         self.data = om.MFnNurbsCurveData().create()
@@ -32,7 +29,7 @@ class CurveData(om.MFnNurbsCurve):
     def parameter(self, length=0):
         return self.findParamFromLength(length)
 
-    def getWeights(self, t):
+    def get_tWeights(self, t):
         return [self.basisFunction(i, t, self.degree) for i in range(len(self.cvPositions()))]
 
     def generateKnots(self, controlPoints, degree):
@@ -61,10 +58,3 @@ class CurveData(om.MFnNurbsCurve):
                                                                                                    t,
                                                                                                    d-1)
             return term1 + term2
-
-
-s = time.time()
-controlPoints = [[0, 0, 0], [0, 0, 1], [0, 0, 2], [0, 0, 3], [0, 0, 4]]
-cv = CurveData(controlPoints, 3)
-print(cv)
-print(cv.getWeights(.1))

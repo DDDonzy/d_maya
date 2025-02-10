@@ -1,4 +1,5 @@
 from functools import partial
+import os
 
 from gameFace.ui.ui_loader import build_ui
 from gameFace.ui.ui_sdk import showSDK_UI
@@ -9,20 +10,26 @@ from UTILS.control.cvShape import export_cvData, import_cvData
 from maya import cmds
 
 
-def showUI():
-    path = r"E:\d_maya\gameFace\ui\designer\main.ui"
-    ui = build_ui(path)
-    setup_ui_logic(ui)
+uiFile = f"{os.path.dirname(__file__) }\\designer\\main.ui"
+
+global ui
+
+
+def show_UI():
+    global ui
 
     if cmds.workspaceControl('FacialMain_UI', q=1, ex=1):
         cmds.deleteUI('FacialMain_UI')
+
+    ui = build_ui(uiFile)
+    setup_ui_logic()
 
     dock_windows = cmds.workspaceControl('FacialMain_UI', retain=True, label='Facial')
     dock_layout = cmds.paneLayout(configuration='single', p=dock_windows)
     cmds.control(ui.objectName(), e=True, p=dock_layout)
 
 
-def setup_ui_logic(ui):
+def setup_ui_logic():
     ui.bt_sdk.clicked.connect(partial(showSDK_UI))
     ui.bt_importFit.clicked.connect(partial(importFit))
     ui.bt_exportFit.clicked.connect(partial(exportFit))
