@@ -104,7 +104,8 @@ class D_FnSkin(oma.MFnSkinCluster):
         component.addElements(weightData.component)
 
         self.setWeights(self.shape, component_mObj, om.MIntArray(index_list), om.MDoubleArray(weightData.weights), False)
-        self.setBlendWeights(self.shape, component_mObj, om.MDoubleArray(weightData.blendWeights))
+        if weightData.blendWeights:
+            self.setBlendWeights(self.shape, component_mObj, om.MDoubleArray(weightData.blendWeights))
 
 
 def exportWeights(obj=None, path=None, **kwargs):
@@ -123,18 +124,19 @@ def exportWeights(obj=None, path=None, **kwargs):
     showMessage("Export weights.")
 
 
-def importWeights(obj=None, path=None):
+def importWeights(obj=None, path=None, data=None):
     if not obj:
         obj = cmds.ls(sl=1)[0]
     if not cmds.objExists(obj):
         raise RuntimeError(f"Can not find '{obj}'.")
 
-    path = choseFile(path, dialogStyle=2, caption="Import weights", fileFilter="Weight YAML file(*.yaml)", fileMode=1)
-    if not path:
-        return
+    if not data:
+        path = choseFile(path, dialogStyle=2, caption="Import weights", fileFilter="Weight YAML file(*.yaml)", fileMode=1)
+        if not path:
+            return
 
-    with open(path, "r") as f:
-        data = yaml.unsafe_load(f)
+        with open(path, "r") as f:
+            data = yaml.unsafe_load(f)
 
     noFindJoint = []
     for x in data.influenceName:

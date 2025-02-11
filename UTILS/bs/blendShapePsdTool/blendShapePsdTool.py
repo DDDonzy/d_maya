@@ -205,7 +205,7 @@ def import_proxyTransformData():
         cmds.orientConstraint(obj, pxy_obj)
     path = cmds.fileDialog2(dialogStyle=2, caption="Load proxy transform data", fileFilter="YAML file(*.yaml)", fileMode=1)
     if not path:
-        return 
+        return
     path = path[0]
     with open(path, "r") as f:
         data = yaml.unsafe_load(f)
@@ -231,7 +231,7 @@ def export_poseInterpolatorData(node=None):
         data_list.append(load_dataByNode(i))
     path = cmds.fileDialog2(dialogStyle=2, caption="Export poseInterpolator data", fileFilter="YAML file(*.yaml)")
     if not path:
-        return 
+        return
     path = path[0]
     with open(path, "w") as f:
         yaml.dump(data_list, f, sort_keys=False, indent=4, width=80)
@@ -243,7 +243,7 @@ def import_poseInterpolatorData():
     """
     path = cmds.fileDialog2(dialogStyle=2, caption="Load poseInterpolator data", fileFilter="YAML file(*.yaml)", fileMode=1)
     if not path:
-        return 
+        return
     path = path[0]
     with open(path, "r") as f:
         data_list = yaml.unsafe_load(f)
@@ -269,7 +269,8 @@ def add_bsTarget(bs: str, name: str):
             num += 1
             name = f"{base_name}{num}"
     cmds.aliasAttr(name, f"{bs}.w[{i}]")
-    cmds.getAttr(f'{bs}.inputTarget[0].inputTargetGroup[{i}].inputTargetItem[6000]',typ=1)
+    cmds.setAttr(f"{bs}.it[0].itg[{i}].iti[6000].ipt", *[1, (0, 0, 0, 1)], type="pointArray")
+    cmds.setAttr(f"{bs}.it[0].itg[{i}].iti[6000].ict", *[1, "vtx[0]"], type="componentList")
     return f"{bs}.{name}"
 
 
@@ -322,7 +323,7 @@ class FingerTargetData(yaml.YAMLObject):
 def create_fingerTarget(bs):
     path = cmds.fileDialog2(dialogStyle=2, caption="Load finger blendShape data", fileFilter="YAML file(*.yaml)", fileMode=1)
     if not path:
-        return 
+        return
     path = path[0]
     with open(path, "r") as f:
         data_list = yaml.unsafe_load(f)

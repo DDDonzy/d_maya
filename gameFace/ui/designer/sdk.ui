@@ -37,7 +37,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="bt_importSDK">
+       <widget class="QPushButton" name="bt_importPose">
         <property name="enabled">
          <bool>true</bool>
         </property>

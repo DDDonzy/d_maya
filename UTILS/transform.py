@@ -686,31 +686,35 @@ class uvPin(CreateBase):
 
         super().__init__(*args, **kwargs)
 
-    @staticmethod
-    def get_UVByClosestPoint(point, shape: str):
-        p = om.MPoint(point)
-        sel: om.MSelectionList = om.MGlobal.getSelectionListByName(shape)
-        dag: om.MDagPath = sel.getDagPath(0)
-        fn_mesh = om.MFnMesh(dag)
-        set_name = fn_mesh.currentUVSetName()
-        return fn_mesh.getUVAtPoint(p, space=om.MSpace.kWorld, uvSet=set_name)[0:2]
+    def create(self):
+        # create mesh
+        self.mesh, self.meshShape = uvPin.create_planeByObjectList(targetList=self.targetList,
+                                                                   size=self.size,
+                                                                   name=f"{self.name}_uvPinMesh")
+        # create uvPin node
+        self.uvPinNode = CreateNode("uvPin", name=f"{self.name}_uvPin")
+        orig_outMesh = cmds.deformableShape(self.mesh, cog=1)[0]
+        cmds.setAttr(f"{self.uvPinNode}.normalAxis", 0)
+        cmds.setAttr(f"{self.uvPinNode}.tangentAxis", 5)
+        cmds.setAttr(f"{self.uvPinNode}.uvSetName",
+                     uvPin.get_currentUVSetName(self.mesh),
+                     type="string")
+        cmds.connectAttr(orig_outMesh,
+                         f"{self.uvPinNode}.originalGeometry")
+        cmds.connectAttr(f"{self.mesh}.worldMesh[0]",
+                         f"{self.uvPinNode}.deformedGeometry")
+        for i, obj in enumerate(self.targetList):
+            # set uvPin.uv value
+            cmds.setAttr(f"{self.uvPinNode}.coordinate[{i}].coordinateU", i + 0.5)
+            cmds.setAttr(f"{self.uvPinNode}.coordinate[{i}].coordinateV", 0.5)
+            node_decom = decomMatrix(name=obj, scale=False, shear=False)
+            cmds.connectAttr(f"{self.uvPinNode}.outputMatrix[{i}]", node_decom.inputMatrix)
 
     @staticmethod
-    def get_currentUVSetName(shape):
-        sel: om.MSelectionList = om.MGlobal.getSelectionListByName(shape)
-        dag: om.MDagPath = sel.getDagPath(0)
-        fn_mesh = om.MFnMesh(dag)
-        return fn_mesh.currentUVSetName()
-
-    @staticmethod
-    def create_planeByObjectList(targetList, size=1, name="uvPinPlane"):
+    def create_planeByObjectList(targetList, size=0.1, name="uvPinPlane", buildInMaya=True):
         if not targetList:
             raise ValueError("No object need to create plane, please input object list first.")
         num = len(targetList)
-        transform = cmds.createNode("transform", name=name)
-        mSel = om.MSelectionList()
-        mSel.add(transform)
-        mObject = mSel.getDependNode(0)
 
         base_vtx_pos_ary = [[0.0, 0.0, 0.0], [0.0, 0.0, -1.0], [0.0, -1.0, 0.0], [0.0, 0.0, 1.0], [0.0, 1.0, 0.0]]
         base_poly_count = [3, 3, 3, 3]
@@ -729,8 +733,11 @@ class uvPin(CreateBase):
         u = []
         v = base_v * num
         uvIds = []
+
+        info = []
         # num
         for i in range(num):
+            info.append({"driven": targetList[i], "meshComponent": list(range(5*i, 5*i+5))})
             # pos_ary
             mult_matrix = get_worldMatrix(targetList[i])
             for pos in base_vtx_pos_ary:
@@ -745,50 +752,49 @@ class uvPin(CreateBase):
             for id in base_uvIds:
                 uvIds.append(id + (i * base_vtx_num))
 
+        if not buildInMaya:
+            data = om.MFnMeshData()
+            mObject = data.create()
+            fnMesh = om.MFnMesh()
+            fnMesh.create(pos_ary, face_count_ary, face_connect_ary, parent=mObject)
+            fnMesh.setUVs(u, v)
+            fnMesh.assignUVs(uvCounts, uvIds)
+            return fnMesh, data
+
         fnMesh = om.MFnMesh()
+        transform: str = CreateNode("transform", name=name)
+        mObject = om.MSelectionList().add(transform).getDependNode(0)
         mObj = fnMesh.create(pos_ary, face_count_ary, face_connect_ary, parent=mObject)
+        fnMesh.setUVs(u, v)
+        fnMesh.assignUVs(uvCounts, uvIds)
         fnDep = om.MFnDependencyNode(mObj)
         fnDep.setName(f"{transform}Shape")
 
-        fnMesh.setUVs(u, v)
-        fnMesh.assignUVs(uvCounts, uvIds)
-        return transform, fnDep.name()
-
-    def create(self):
-        # create mesh
-        mesh, shape = uvPin.create_planeByObjectList(targetList=self.targetList,
-                                                     size=self.size,
-                                                     name=f"{self.name}_uvPinMesh")
-        # create uvPin node
-        node_uvPin = cmds.createNode("uvPin", name=f"{self.name}_uvPin")
-        orig_outMesh = cmds.deformableShape(mesh, cog=1)[0]
-        cmds.setAttr(".normalAxis", 0)
-        cmds.setAttr(".tangentAxis", 5)
-        cmds.setAttr(f"{node_uvPin}.uvSetName",
-                     uvPin.get_currentUVSetName(mesh),
-                     type="string")
-        cmds.connectAttr(orig_outMesh,
-                         f"{node_uvPin}.originalGeometry")
-        cmds.connectAttr(f"{mesh}.worldMesh[0]",
-                         f"{node_uvPin}.deformedGeometry")
-        info = {}
-        for i, obj in enumerate(self.targetList):
-            # set uvPin.uv value
-            cmds.setAttr(f"{node_uvPin}.coordinate[{i}].coordinateU", i + 0.5)
-            cmds.setAttr(f"{node_uvPin}.coordinate[{i}].coordinateV", 0.5)
-            node_decom = decomMatrix(name=obj, scale=False, shear=False)
-            cmds.connectAttr(f"{node_uvPin}.outputMatrix[{i}]", node_decom.inputMatrix)
-            info.update({i: obj})
         try:
-            cmds.addAttr(mesh, ln="notes", dt="string")
+            cmds.addAttr(transform, ln="notes", dt="string")
         except:
             pass
-        infoStr = yaml.dump(info, indent=4)
-        cmds.setAttr(f"{mesh}.notes", infoStr, type="string")
 
-        self.mesh = mesh
-        self.meshShape = shape
-        self.uvPinNode = node_uvPin
+        infoStr = yaml.dump(info, indent=4)
+        cmds.setAttr(f"{transform}.notes", infoStr, type="string")
+
+        return transform, fnDep.name()
+
+    @staticmethod
+    def get_UVByClosestPoint(point, shape: str):
+        p = om.MPoint(point)
+        sel: om.MSelectionList = om.MGlobal.getSelectionListByName(shape)
+        dag: om.MDagPath = sel.getDagPath(0)
+        fn_mesh = om.MFnMesh(dag)
+        set_name = fn_mesh.currentUVSetName()
+        return fn_mesh.getUVAtPoint(p, space=om.MSpace.kWorld, uvSet=set_name)[0:2]
+
+    @staticmethod
+    def get_currentUVSetName(shape):
+        sel: om.MSelectionList = om.MGlobal.getSelectionListByName(shape)
+        dag: om.MDagPath = sel.getDagPath(0)
+        fn_mesh = om.MFnMesh(dag)
+        return fn_mesh.currentUVSetName()
 
     @staticmethod
     def normalizedWeights(uvPinMesh: str, skinCluster: str):
@@ -819,9 +825,9 @@ class follicle(uvPin):
         self.uvPinNode = []
         for i, obj in enumerate(self.targetList):
             node_follicle = generateUniqueName(f"{obj}_follicle")
-            node_follicle = cmds.createNode("transform", name=node_follicle)
+            node_follicle = CreateNode("transform", name=node_follicle)
             cmds.setAttr(f"{node_follicle}.v", 0)
-            follicle_shape = cmds.createNode("follicle", name=f"{node_follicle}Shape", parent=node_follicle)
+            follicle_shape = CreateNode("follicle", name=f"{node_follicle}Shape", parent=node_follicle)
             cmds.connectAttr(f"{mesh}.outMesh", f"{follicle_shape}.inputMesh")
             cmds.connectAttr(f"{mesh}.worldMatrix[0]", f"{follicle_shape}.inputWorldMatrix")
             cmds.setAttr(f"{follicle_shape}.parameterU", i + 0.5)
