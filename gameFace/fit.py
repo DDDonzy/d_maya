@@ -1,10 +1,10 @@
-from UTILS.other.choseFile import *
 from UTILS.mirrorEnv import MIRROR_CONFIG
+from UTILS.other.choseFile import choseFile
 from UTILS.ui.showMessage import showMessage
 from UTILS.transform import get_worldMatrix, set_worldMatrix, flip_transform
 
 from gameFace.data.config import *
-from gameFace.hierarchyIter import *
+from gameFace.hierarchyIter import hierarchyIter
 
 import yaml
 from dataclasses import dataclass, field
@@ -206,22 +206,6 @@ def hidePart():
             if cmds.objExists(f"{x}.drawStyle"):
                 cmds.setAttr(f"{x}.drawStyle", 2 if not isAverageTrue(boolList) else 0)
     showMessage("Hide Part Controls")
-
-
-def addPartJoint(force=False):
-    """Add part joints in fit"""
-    for part, ref in PART_JOINT.items():
-        if cmds.objExists(part):
-            if force:
-                cmds.delete(part)
-            continue
-
-        cmds.createNode("joint", name=part, ss=1)
-        ref_data = JointData(ref)
-        part_data = ref_data
-        part_data.name = part
-        part_data.radius *= 2
-        part_data.setData()
 
 
 def get_allFitJoint():

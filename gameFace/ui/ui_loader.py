@@ -1,5 +1,6 @@
-from maya import cmds
 from UTILS.ui.getMayaMainWindow import getMayaMainWindow
+
+from maya import cmds
 
 
 def build_ui_2022(path):
@@ -25,7 +26,3 @@ def build_ui(path):
         return build_ui_2022(path)
     else:
         return build_ui_2019(path)
-
-
-
-from PySide2.QtWidgets import QListWidget

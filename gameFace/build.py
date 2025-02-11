@@ -6,23 +6,15 @@ from UTILS.create.createBase import CreateBase, CreateNode
 
 
 from gameFace.data.config import *
-from gameFace.hierarchyIter import *
-from gameFace.controlPanel import controlPanel, importSDK
+from gameFace.pose import importSDK
+from gameFace.hierarchyIter import hierarchyIter
 from gameFace.fit import get_allFitJoint, mirrorDuplicateTransform_cmd
-from gameFace.createControls import ControlData, buildControl, get_allControls, get_controlsByLabel, get_allSkinJoint
+from gameFace.control import ControlData, ControlPanel, buildControl, get_allControls, get_controlsByLabel
 
-from maya import cmds, mel
+from maya import cmds
 from maya.api import OpenMaya as om
 
 import yaml
-import numpy as np
-import time
-
-
-if cmds.about(api=1) >= 2020_0000:
-    uvPin = t.uvPin
-else:
-    uvPin = t.follicle
 
 
 class build(CreateBase):
@@ -101,17 +93,18 @@ class build(CreateBase):
         part_grp = list(set(all_grp) - set(head_grp+jaw_grp+sec_grp))
         part_grp.sort()
 
-        head_pin = uvPin(head_grp, name='Head')
+        head_pin = t.uvPin(head_grp, name='Head')
+
         t.matrixConstraint(CONTROL_ROOT, head_pin.mesh)
         cmds.setAttr(f"{head_pin.thisAssetName}.inheritsTransform", False)
 
-        jaw_pin = uvPin(jaw_grp, name='Jaw')
+        jaw_pin = t.uvPin(jaw_grp, name='Jaw')
         cmds.setAttr(f"{jaw_pin.thisAssetName}.inheritsTransform", False)
 
-        sec_pin = uvPin(sec_grp, name="Sec")
+        sec_pin = t.uvPin(sec_grp, name="Sec")
         cmds.setAttr(f"{sec_pin.thisAssetName}.inheritsTransform", False)
 
-        part_pin = uvPin(part_grp, name="part")
+        part_pin = t.uvPin(part_grp, name="part")
         cmds.setAttr(f"{part_pin.thisAssetName}.inheritsTransform", False)
 
         sk.importWeights(sec_pin.mesh, SEC_WEIGHT_FILE)
@@ -167,8 +160,7 @@ class build(CreateBase):
 
     @staticmethod
     def buildControlsPanelAndSDK():
-        with open(CONTROLS_PANEL_FILE, "r") as f:
-            mel.eval(f.read())
+        panel = ControlPanel()
         # set control panel position
         cmds.refresh()
         boundingBox = cmds.exactWorldBoundingBox(CONTROL_ROOT)
@@ -179,4 +171,4 @@ class build(CreateBase):
         data = importSDK(DEFAULT_SDK_FILE)
         meshStr = cmds.getAttr(f"{FACE_ROOT}.notes")
         mesh = yaml.unsafe_load(meshStr)["uvPin"]
-        sdk = controlPanel(data=data, mesh=mesh)
+        panel.setSDK(data=data, mesh=mesh)

@@ -870,3 +870,9 @@ def reset_transformObjectValue_cmd(transform=True, userDefined=False):
     if userDefined:
         msg = "Reset value (all)."
     showMessage(msg)
+
+
+if cmds.about(api=1) >= 2020_0000:
+    uvPin = uvPin
+else:
+    uvPin = follicle

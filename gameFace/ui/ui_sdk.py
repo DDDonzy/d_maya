@@ -1,16 +1,19 @@
 from UTILS.other.mPartial import partial
+from UTILS.ui.showMessage import showMessage
+from UTILS.mirrorEnv import MIRROR_CONFIG
 
 from gameFace.data.config import *
 from gameFace.ui.ui_loader import build_ui
-from gameFace.controlPanel import controlPanel
+from gameFace.pose import setPose, delPoseData, mirrorPose, flipPose, importPose, exportPose
+
 
 import os
 import yaml
 
-from maya import cmds
-
 from PySide2.QtGui import QFont, QBrush, QColor
 from PySide2.QtCore import Qt
+
+from maya import cmds
 
 
 uiFile = f"{os.path.dirname(__file__) }\\designer\\sdk.ui"
@@ -41,6 +44,8 @@ def setup_ui_logic():
     ui.bt_mirror.clicked.connect(partial(mirror_pose_command))
     ui.bt_flip.clicked.connect(partial(flip_pose_command))
     ui.bt_mirrorFlip.clicked.connect(partial(mirror_flip_all_command))
+    ui.bt_defaultPose.clicked.connect(partial(default_pose_command))
+    ui.bt_delPoseData.clicked.connect(partial(del_pose_command))
 
     # listWidget
     update_listWidget()
@@ -57,13 +62,10 @@ def listWidget_change_command(currentIndex, lastIndex):
         if data[last_i].driverAttr:
             if cmds.objExists(data[last_i].driverAttr):
                 cmds.setAttr(data[last_i].driverAttr, data[last_i].min)
-                print(f"setAttr {data[last_i].driverAttr} {data[last_i].min}")
 
     if data[i].driverAttr:
         if cmds.objExists(data[i].driverAttr):
             cmds.setAttr(data[i].driverAttr, data[i].max)
-            print(f"setAttr {data[i].driverAttr} {data[i].max}")
-    # TODO Update Pose
 
 
 def update_listWidget():
@@ -106,24 +108,70 @@ def filter_items_command():
 
 
 def set_pose_command():
-    print("Set Pose")
+    current_item = ui.listWidget.currentIndex()
+    if not current_item:
+        return
+    current_index = current_item.row()
+    if current_index >= 0:
+        setPose(current_index)
+        showMessage("Set Pose")
 
 
 def mirror_pose_command():
-    print("mirror Pose")
+    current_item = ui.listWidget.currentIndex()
+    if not current_item:
+        return
+    current_index = current_item.row()
+    if current_index >= 0:
+        mirrorPose(data[current_index].name)
 
 
 def flip_pose_command():
-    print("flip Pose")
+    current_item = ui.listWidget.currentIndex()
+    if not current_item:
+        return
+    current_index = current_item.row()
+    if current_index >= 0:
+        flipPose(data[current_index].name)
 
 
 def mirror_flip_all_command():
-    print("Mirror Flip All Pose")
+    for i, x in enumerate(data):
+        if not x.driverAttr:
+            continue
+        source = x.name
+        target = MIRROR_CONFIG.exchange(x.name)[0]
+        if source == target:
+            mirrorPose(source)
+            continue
+        if MIRROR_CONFIG.l.lower() in x.name.lower().split("_"):
+            flipPose(source)
+            continue
 
 
 def import_pose_command():
-    print("import pose")
+    importPose()
+    showMessage("Import PoseData")
 
 
 def export_pose_command():
-    print("export pose")
+    exportPose()
+    showMessage("Export PoseData")
+
+
+def default_pose_command():
+    for x in data:
+        if x.driverAttr:
+            if cmds.objExists(x.driverAttr):
+                cmds.setAttr(x.driverAttr, x.min)
+    showMessage("Reset to default pose.")
+
+
+def del_pose_command():
+    current_item = ui.listWidget.currentIndex()
+    if not current_item:
+        return
+    current_index = current_item.row()
+    if current_index >= 0:
+        delPoseData(current_index)
+        showMessage("Set Pose")

@@ -93,14 +93,13 @@ def flip_bsTarget(blendShapeNode,
     targetData = get_bsData(blendShapeNode)
     for x in targetName:
         cmds.blendShape(blendShapeNode, e=1, flipTarget=(0, targetData[x].index), symmetryAxis=axis, symmetrySpace=1)
-        print("Flip_bsTarget:  %s" % x)
     cmds.symmetricModelling(e=True, r=1)
 
 
 # 镜像bs目标
 # mirrorDirection = 0    +X   --->   -X
 # mirrorDirection = 1    -X   --->   +X
-def mirror_bsTarget(blendShapeNode,
+def mirrorPose(blendShapeNode,
                     targetName,
                     axis="x",
                     mirrorDirection=0):
@@ -136,7 +135,7 @@ def copy_bsTargetData(blendShapeNode,
                      % (blendShapeNode, targetIndex, inbetween), type="pointArray", *pointArray)
         cmds.setAttr("%s.inputTarget[0].inputTargetGroup[%s].inputTargetItem[%s].inputComponentsTarget"
                      % (blendShapeNode, targetIndex, inbetween), type="componentList", *componentList)
-        print("Copy_bsTarget:  %s[%s] ------>   %s[%s]" % (sourceTargetName, inbetween, newTargetName, inbetween))
+        # print("Copy_bsTarget:  %s[%s] ------>   %s[%s]" % (sourceTargetName, inbetween, newTargetName, inbetween))
 
 
 # 重置bs目标体上的变形数据
@@ -151,7 +150,6 @@ def reset_bsTargetData(blendShapeNode, targetName):
             for inbetween in targetInbetween:
                 cmds.removeMultiInstance('%s.inputTarget[0].inputTargetGroup[%s].inputTargetItem[%s]'
                                          % (blendShapeNode, targetIndex, inbetween))
-        print("Reset bsTargetData:  %s" % x)
 
 
 # 设置bs目标体的post 为 transformSpace模式

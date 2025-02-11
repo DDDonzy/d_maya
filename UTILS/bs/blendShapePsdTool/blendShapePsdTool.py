@@ -273,6 +273,16 @@ def add_bsTarget(bs: str, name: str):
     cmds.setAttr(f"{bs}.it[0].itg[{i}].iti[6000].ict", *[1, "vtx[0]"], type="componentList")
     return f"{bs}.{name}"
 
+def del_bsTargetData(bs: str, index: int):
+    """ del blendShape target data
+    Args:
+        bs (str): blendShape name
+        index (str): target index
+    """
+    cmds.setAttr(f"{bs}.it[0].itg[{index}].iti[6000].ipt", *[1, (0, 0, 0, 1)], type="pointArray")
+    cmds.setAttr(f"{bs}.it[0].itg[{index}].iti[6000].ict", *[1, "vtx[0]"], type="componentList")
+    
+
 
 def create_bsByPSD(bs: str, psd_node_list: list = None):
     """

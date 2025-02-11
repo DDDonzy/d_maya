@@ -1,13 +1,18 @@
-from UTILS.create.createBase import CreateNode
+from UTILS.getHistory import get_history
+from UTILS.other.choseFile import choseFile
+from UTILS.ui.showMessage import showMessage
+from UTILS.create.createBase import CreateNode, CreateBase
 from UTILS.transform import matrixConstraint, alignTransform
+from UTILS.bs.blendShapePsdTool.blendShapePsdTool import add_bsTarget
 
-from gameFace.fit import JointData
 from gameFace.data.config import *
-from gameFace.hierarchyIter import *
-
-from dataclasses import dataclass
+from gameFace.fit import JointData
+from gameFace.hierarchyIter import hierarchyIter
 
 from maya import cmds, mel
+
+import yaml
+from dataclasses import dataclass
 
 
 @dataclass
@@ -19,10 +24,10 @@ class ControlData():
 
     def update(self):
         split_list = self.name.split("_")
-        for x in SUFFIX_LIST:
-            if x in split_list:
-                split_list.remove(x)
-        self.name = "_".join(split_list)
+        if split_list[-1] in ALL_LABEL:
+            self.name = "_".join(split_list[0:-1])
+        else:
+            self.name = "_".join(split_list)
 
     @property
     def sk(self):
@@ -158,3 +163,56 @@ def get_controlsByLabel(label):
             continue
         controls_list.append(ControlData(x))
     return controls_list
+
+
+class ControlPanel(CreateBase):
+    isDagAsset = False
+    isBlackBox = False
+
+    def _pre_create(self):
+        self.thisAssetName = BRIDGE
+        if cmds.objExists(BRIDGE):
+            cmds.delete(BRIDGE)
+
+    def create(self):
+        with open(CONTROLS_PANEL_FILE, "r") as f:
+            mel.eval(f.read())
+
+    def setSDK(self, data, mesh):
+        self.data = data
+        if isinstance(mesh, str):
+            mesh = [mesh]
+        self.mesh = mesh
+
+        bridge_list = []
+        for x in self.data:
+            cmds.addAttr(self.thisAssetName, ln=x.name, at="double", dv=0, k=1)
+            attr_name = f"{self.thisAssetName}.{x.name}"
+            bridge_list.append(attr_name)
+
+            if not x.driverAttr:
+                continue
+            if not cmds.objExists(x.driverAttr):
+                continue
+
+            cmds.setDrivenKeyframe(attr_name, cd=x.driverAttr, dv=x.min, v=0, inTangentType="linear", outTangentType="linear")
+            cmds.setDrivenKeyframe(attr_name, cd=x.driverAttr, dv=x.max, v=1, inTangentType="linear", outTangentType="linear")
+
+        for _mesh in self.mesh:
+            check_bs = get_history(_mesh, "blendShape")
+            if check_bs:
+                cmds.delete(check_bs)
+
+            bsNode = cmds.blendShape(_mesh, name=f"{_mesh}_bs", foc=1, tc=0)[0]
+            for i, x in enumerate(self.data):
+                bs_attr = add_bsTarget(bsNode, x.name)
+
+                cmds.setDrivenKeyframe(bs_attr, cd=bridge_list[i], dv=0, v=0, inTangentType="linear", outTangentType="linear")
+                cmds.setDrivenKeyframe(bs_attr, cd=bridge_list[i], dv=1, v=1, inTangentType="linear", outTangentType="linear")
+        try:
+            cmds.addAttr(BRIDGE, ln="notes", dt="string")
+        except:
+            pass
+        info = self.data
+        infoStr = yaml.dump(info, sort_keys=False, indent=4, width=80)
+        cmds.setAttr(f"{BRIDGE}.notes", infoStr, type="string")
