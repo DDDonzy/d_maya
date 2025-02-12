@@ -1,0 +1,48 @@
+-   M_Head:
+        Joint: Head01_jnt
+        Parent: Neck02_jnt
+-   M_Neck:
+        Joint: Neck01_jnt
+        Parent: Chest_jnt
+-   L_Clavicle:
+        Joint: L_Clavicle_UD_jnt
+        Parent: Chest_jnt
+-   L_Shoulder:
+        Joint: L_ArmA_01_jnt
+        Parent: L_Clavicle_UD_jnt
+-   L_Elbow:
+        Joint: L_ArmB_01_jnt
+        Parent: L_ArmA_04_jnt
+-   L_Wrist:
+        Joint: L_Hand_jnt
+        Parent: L_ArmB_04_jnt
+-   L_Hip:
+        Joint: L_LegA_01_jnt
+        Parent: hip_jnt
+-   L_Knee:
+        Joint: L_LegB_01_jnt
+        Parent: L_LegA_04_jnt
+-   L_Ankle:
+        Joint: L_Foot_jnt
+        Parent: L_LegB_04_jnt
+-   R_Clavicle:
+        Joint: R_Clavicle_UD_jnt
+        Parent: Chest_jnt
+-   R_Shoulder:
+        Joint: R_ArmA_01_jnt
+        Parent: R_Clavicle_UD_jnt
+-   R_Elbow:
+        Joint: R_ArmB_01_jnt
+        Parent: R_ArmA_04_jnt
+-   R_Wrist:
+        Joint: R_Hand_jnt
+        Parent: R_ArmB_04_jnt
+-   R_Hip:
+        Joint: R_LegA_01_jnt
+        Parent: hip_jnt
+-   R_Knee:
+        Joint: R_LegB_01_jnt
+        Parent: R_LegA_04_jnt
+-   R_Ankle:
+        Joint: R_Foot_jnt
+        Parent: R_LegB_04_jnt

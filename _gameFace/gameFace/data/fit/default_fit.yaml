@@ -1,0 +1,1179 @@
+- !<JointData>
+    drawStyle: 2
+    inheritsTransform: true
+    name: !!python/unicode 'M_HeadUpper'
+    parent: !!python/unicode 'FaceFit'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 1.0
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+        142.88620858272904, -0.6676857524050732, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_BrowClass'
+    parent: !!python/unicode 'M_HeadUpper'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 3.9822213649749756,
+        145.58926391601562, 4.48307122121832, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_BrowSec1'
+    parent: !!python/unicode 'L_BrowClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 2.130849599838257,
+        145.07411193847656, 5.33709716796875, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_BrowSec2'
+    parent: !!python/unicode 'L_BrowClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 3.1103501319885254,
+        145.4040069580078, 5.3070831298828125, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_BrowSec3'
+    parent: !!python/unicode 'L_BrowClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 3.9822213649749756,
+        145.58926391601562, 5.070220947265625, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_BrowSec4'
+    parent: !!python/unicode 'L_BrowClass'
+    preferredAngle: [0.5, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 4.931291103363037,
+        145.76885986328125, 4.483917236328125, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_BrowSec5'
+    parent: !!python/unicode 'L_BrowClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 5.650105953216553,
+        145.8892059326172, 3.846893310546875, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_BrowPart1'
+    parent: !!python/unicode 'L_BrowClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.4
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 2.130849599838257,
+        145.07411193847656, 5.33709716796875, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_BrowPart2'
+    parent: !!python/unicode 'L_BrowClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.4
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 3.9822213649749756,
+        145.58926391601562, 5.070220947265625, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_BrowPart3'
+    parent: !!python/unicode 'L_BrowClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.4
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 5.650105953216553,
+        145.8892059326172, 3.846893310546875, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_EyeClass'
+    parent: !!python/unicode 'M_HeadUpper'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 3.511911153793335,
+        143.06280517578125, 2.2901285125131166, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_LidInnerSec'
+    parent: !!python/unicode 'L_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.9951072931289673,
+        142.85687255859375, 4.1965484619140625, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_LidOuterSec'
+    parent: !!python/unicode 'L_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 5.273369312286377,
+        143.43328857421875, 3.4195404052734375, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_Eye'
+    parent: !!python/unicode 'L_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 3.511911153793335,
+        143.06280517578125, 3.675384521484375, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_LidInnerPart'
+    parent: !!python/unicode 'L_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.4
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.9951072931289673,
+        142.85687255859375, 4.1965484619140625, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_LidOuterPart'
+    parent: !!python/unicode 'L_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.4
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 5.273369312286377,
+        143.43328857421875, 3.4195404052734375, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_LidUpperPart'
+    parent: !!python/unicode 'L_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.4
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 3.878119945526123,
+        143.7268829345703, 4.2765045166015625, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_LidLowerPart'
+    parent: !!python/unicode 'L_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.4
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 3.7285001277923584,
+        142.05935668945312, 3.764251708984375, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_LidUpperSec1'
+    parent: !!python/unicode 'L_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 2.6160801599309185,
+        143.2761238221495, 4.260104689793063, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_LidUpperSec2'
+    parent: !!python/unicode 'L_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 3.298247365422054,
+        143.58667948337867, 4.287770576708998, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_LidUpperSec3'
+    parent: !!python/unicode 'L_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 4.030280319972075,
+        143.7018465540355, 4.183095862590013, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_LidUpperSec4'
+    parent: !!python/unicode 'L_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 4.7019640879991265,
+        143.64132483328783, 3.8604477385242655, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_LidLowerSec1'
+    parent: !!python/unicode 'L_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 2.6124211371277237,
+        142.29089958599917, 4.049868752553177, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_LidLowerSec2'
+    parent: !!python/unicode 'L_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 3.383146016222896,
+        142.05127663507085, 3.854646777814677, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_LidLowerSec3'
+    parent: !!python/unicode 'L_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 4.194791312917622,
+        142.1827859311838, 3.637288244897272, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_LidLowerSec4'
+    parent: !!python/unicode 'L_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 4.826001228901534,
+        142.71328365561146, 3.494015698159431, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_EyeLineSec1'
+    parent: !!python/unicode 'M_HeadUpper'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 2.031469762984636,
+        143.91144889709415, 4.7141876220703125, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_EyeLineSec2'
+    parent: !!python/unicode 'M_HeadUpper'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 2.9309178066989183,
+        144.21824569631607, 4.7167816162109375, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_EyeLineSec3'
+    parent: !!python/unicode 'M_HeadUpper'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 4.082785785857561,
+        144.32238953653302, 4.3403167724609375, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_BrowClass'
+    parent: !!python/unicode 'M_HeadUpper'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -3.9822213649749756, 145.58926391601562, 4.48307122121832,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_BrowSec1'
+    parent: !!python/unicode 'R_BrowClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -2.130849599838257, 145.07411193847656, 5.3370971679687464,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_BrowSec2'
+    parent: !!python/unicode 'R_BrowClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -3.1103501319885254, 145.4040069580078, 5.307083129882809,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_BrowSec3'
+    parent: !!python/unicode 'R_BrowClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -3.9822213649749756, 145.58926391601562, 5.070220947265625,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_BrowSec4'
+    parent: !!python/unicode 'R_BrowClass'
+    preferredAngle: [0.5, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -4.931291103363037, 145.76885986328125, 4.483917236328125,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_BrowSec5'
+    parent: !!python/unicode 'R_BrowClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -5.650105953216553, 145.8892059326172, 3.846893310546875,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_BrowPart1'
+    parent: !!python/unicode 'R_BrowClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.4
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -2.130849599838257, 145.07411193847656, 5.3370971679687464,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_BrowPart2'
+    parent: !!python/unicode 'R_BrowClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.4
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -3.9822213649749756, 145.58926391601562, 5.070220947265625,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_BrowPart3'
+    parent: !!python/unicode 'R_BrowClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.4
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -5.650105953216553, 145.8892059326172, 3.846893310546875,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_EyeClass'
+    parent: !!python/unicode 'M_HeadUpper'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -3.511911153793335, 143.06280517578125, 2.2901285125131166,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_LidInnerSec'
+    parent: !!python/unicode 'R_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -1.9951072931289682, 142.85687255859375, 4.1965484619140625,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_LidOuterSec'
+    parent: !!python/unicode 'R_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -5.2733693122863805, 143.43328857421875, 3.4195404052734375,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_Eye'
+    parent: !!python/unicode 'R_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -3.511911153793335, 143.06280517578125, 3.675384521484375,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_LidInnerPart'
+    parent: !!python/unicode 'R_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.4
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -1.9951072931289682, 142.85687255859375, 4.1965484619140625,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_LidOuterPart'
+    parent: !!python/unicode 'R_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.4
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -5.2733693122863805, 143.43328857421875, 3.4195404052734375,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_LidUpperPart'
+    parent: !!python/unicode 'R_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.4
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -3.878119945526123, 143.7268829345703, 4.2765045166015625,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_LidLowerPart'
+    parent: !!python/unicode 'R_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.4
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -3.7285001277923584, 142.05935668945312, 3.764251708984375,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_LidUpperSec1'
+    parent: !!python/unicode 'R_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -2.6160801599309185, 143.2761238221495, 4.260104689793062,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_LidUpperSec2'
+    parent: !!python/unicode 'R_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -3.2982473654220557, 143.58667948337867, 4.287770576708997,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_LidUpperSec3'
+    parent: !!python/unicode 'R_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -4.030280319972075, 143.7018465540355, 4.183095862590013,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_LidUpperSec4'
+    parent: !!python/unicode 'R_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -4.7019640879991265, 143.64132483328783, 3.8604477385242655,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_LidLowerSec1'
+    parent: !!python/unicode 'R_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -2.6124211371277237, 142.29089958599917, 4.049868752553177,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_LidLowerSec2'
+    parent: !!python/unicode 'R_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -3.383146016222896, 142.05127663507085, 3.854646777814677,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_LidLowerSec3'
+    parent: !!python/unicode 'R_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -4.194791312917622, 142.1827859311838, 3.637288244897272,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_LidLowerSec4'
+    parent: !!python/unicode 'R_EyeClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -4.8260012289015375, 142.71328365561146, 3.494015698159431,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_EyeLineSec1'
+    parent: !!python/unicode 'M_HeadUpper'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -2.031469762984636, 143.91144889709415, 4.7141876220703125,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_EyeLineSec2'
+    parent: !!python/unicode 'M_HeadUpper'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -2.9309178066989183, 144.21824569631607, 4.7167816162109375,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_EyeLineSec3'
+    parent: !!python/unicode 'M_HeadUpper'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -4.082785785857561, 144.32238953653302, 4.3403167724609375,
+        1.0]
+- !<JointData>
+    drawStyle: 2
+    inheritsTransform: true
+    name: !!python/unicode 'M_HeadLower'
+    parent: !!python/unicode 'FaceFit'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 1.0
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+        141.688367316082, -0.6676857524050732, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'M_LipClass'
+    parent: !!python/unicode 'M_HeadLower'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.00022069693659432232,
+        138.5657805541577, 2.664777287238021, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'M_LipUpperSec'
+    parent: !!python/unicode 'M_LipClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.00022146462288219482,
+        138.43576049804688, 4.9002532958984375, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'M_LipLowerSec'
+    parent: !!python/unicode 'M_LipClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.00022069693659432232,
+        138.3150177001953, 4.8491058349609375, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'M_LipUpperPart'
+    parent: !!python/unicode 'M_LipClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.4
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.00022146462288219482,
+        138.43576049804688, 4.9002532958984375, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'M_LipLowerPart'
+    parent: !!python/unicode 'M_LipClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.4
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.00022069693659432232,
+        138.3150177001953, 4.8491058349609375, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_LipUpperSec1'
+    parent: !!python/unicode 'M_LipClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.45229244038996375,
+        138.4390411376953, 4.841919606439089, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_LipUpperSec2'
+    parent: !!python/unicode 'M_LipClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.7552839302932391,
+        138.39107460907948, 4.6484348848939065, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_LipLowerSec1'
+    parent: !!python/unicode 'M_LipClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.4263302664512125,
+        138.3189239501953, 4.7772986347594015, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_LipLowerSec2'
+    parent: !!python/unicode 'M_LipClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.7345545077239642,
+        138.29408974579823, 4.596905954229844, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_LipCornerSec'
+    parent: !!python/unicode 'M_LipClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.8511499762535095,
+        138.33615112304688, 4.5721282958984375, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_LipCornerPart'
+    parent: !!python/unicode 'M_LipClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.4
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.8511499762535095,
+        138.33615112304688, 4.5721282958984375, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_LipUpperSec1'
+    parent: !!python/unicode 'M_LipClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -0.45229244038996375, 138.4390411376953, 4.841919606439089,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_LipUpperSec2'
+    parent: !!python/unicode 'M_LipClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -0.7552839302932391, 138.39107460907948, 4.6484348848939065,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_LipLowerSec1'
+    parent: !!python/unicode 'M_LipClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -0.4263302664512125, 138.3189239501953, 4.7772986347594015,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_LipLowerSec2'
+    parent: !!python/unicode 'M_LipClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -0.7345545077239642, 138.29408974579823, 4.596905954229844,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_LipCornerSec'
+    parent: !!python/unicode 'M_LipClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -0.8511499762535095, 138.33615112304688, 4.5721282958984375,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_LipCornerPart'
+    parent: !!python/unicode 'M_LipClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.4
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -0.8511499762535095, 138.33615112304688, 4.5721282958984375,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_CheekUpperClass'
+    parent: !!python/unicode 'M_HeadLower'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 3.79800320646605,
+        140.9441223144531, 4.0321502685546875, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_CheekUpperSec1'
+    parent: !!python/unicode 'L_CheekUpperClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 2.5083723068237305,
+        141.15338134765625, 4.392730712890625, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_CheekUpperSec2'
+    parent: !!python/unicode 'L_CheekUpperClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 4.933109760284424,
+        140.970458984375, 3.1998748779296875, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_CheekUpperPart1'
+    parent: !!python/unicode 'L_CheekUpperClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.4
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 2.904168228298231,
+        141.109620531666, 4.392730712890625, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_CheekUpperPart2'
+    parent: !!python/unicode 'L_CheekUpperClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.4
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 4.637217578528336,
+        140.97045898437491, 3.5716728848006656, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'M_Jaw'
+    parent: !!python/unicode 'M_HeadLower'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-6.661338147750938e-16, -0.6823182503600098, 0.7310552682428701,
+        0.0, 1.0547118733938985e-15, 0.7310552682428701, 0.6823182503600099, 0.0,
+        -1.0, 1.2767564783189298e-15, 2.220446049250313e-16, 0.0, 0.0, 140.2436843808229,
+        -0.6496066680313384, 1.0]
+- !<JointData>
+    drawStyle: 2
+    inheritsTransform: true
+    name: !!python/unicode 'M_JawEnd'
+    parent: !!python/unicode 'M_Jaw'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, -1.4634323882665826e-15, 5.932198398157676e-17, 0.0, 1.4476125354509289e-15,
+        1.0, -1.6653345369377353e-16, 0.0, 1.0623920516969317e-17, 1.6653345369377375e-16,
+        1.0, 0.0, 1.4125217041115154e-15, 135.90316307849133, 4.000951870181094, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'M_Tongue'
+    parent: !!python/unicode 'M_Jaw'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, -1.4634323882665826e-15, 5.932198398157676e-17, 0.0, 1.4476125354509289e-15,
+        1.0, -1.6653345369377353e-16, 0.0, 1.0623920516969317e-17, 1.6653345369377375e-16,
+        1.0, 0.0, 0.0002241384499940305, 138.56421582383, 1.5823794578762398, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'M_TeethLower'
+    parent: !!python/unicode 'M_Jaw'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, -1.7312717373219108e-15, 2.6493602972102136e-16, 0.0, 1.6696571403759602e-15,
+        1.0, -1.6653345369377358e-16, 0.0, -2.1142068440806172e-16, 2.775557561562897e-16,
+        0.9999999999999998, 0.0, 2.2738915592995665e-28, 138.18658524615307, 3.1445940388974023,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'M_JawUpper'
+    parent: !!python/unicode 'M_HeadLower'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-2.2204460492503127e-15, -0.10072869917330389, 0.9949139305301007,
+        0.0, -3.469446951953613e-17, 0.9949139305301002, 0.10072869917330386, 0.0,
+        -1.0, 1.8735013540549522e-16, -2.220446049250313e-15, 0.0, 0.0, 140.4070025516203,
+        -0.6496066680313384, 1.0]
+- !<JointData>
+    drawStyle: 2
+    inheritsTransform: true
+    name: !!python/unicode 'M_JawUpperEnd'
+    parent: !!python/unicode 'M_JawUpper'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, -1.6567071406457659e-16, 2.5574105212618996e-15, 0.0, 1.7117318935471556e-15,
+        0.7960661001432204, -0.6052096861442049, 0.0, -1.86898605681828e-15, 0.605209686144204,
+        0.7960661001432202, 0.0, -8.475130224669009e-15, 139.76622375919143, 5.679470866057504,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'M_TeethUpper'
+    parent: !!python/unicode 'M_JawUpper'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0000000000000004, -3.593766468984164e-16, 3.988467160118687e-15,
+        0.0, 3.7649476649364305e-16, 0.9999999999999999, -1.3877787807814415e-16,
+        0.0, -3.9890042745731276e-15, 6.938893903907262e-17, 1.000000000000001, 0.0,
+        -1.262177448353619e-29, 138.77658526885523, 3.1445940388974094, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'L_CheekSec'
+    parent: !!python/unicode 'M_HeadLower'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 3.7201919555664062,
+        138.6569366455078, 3.37109375, 1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_CheekUpperClass'
+    parent: !!python/unicode 'M_HeadLower'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -3.79800320646605, 140.9441223144531, 4.0321502685546875,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_CheekUpperSec1'
+    parent: !!python/unicode 'R_CheekUpperClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -2.5083723068237305, 141.15338134765625, 4.3927307128906214,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_CheekUpperSec2'
+    parent: !!python/unicode 'R_CheekUpperClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -4.933109760284424, 140.970458984375, 3.1998748779296857,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_CheekUpperPart1'
+    parent: !!python/unicode 'R_CheekUpperClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.4
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -2.904168228298231, 141.109620531666, 4.3927307128906214,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_CheekUpperPart2'
+    parent: !!python/unicode 'R_CheekUpperClass'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.4
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -4.637217578528336, 140.97045898437491, 3.571672884800664,
+        1.0]
+- !<JointData>
+    drawStyle: 0
+    inheritsTransform: true
+    name: !!python/unicode 'R_CheekSec'
+    parent: !!python/unicode 'M_HeadLower'
+    preferredAngle: [0.0, 0.0, 0.0]
+    radius: 0.2
+    rotateOrder: 0
+    segmentScaleCompensate: false
+    visibility: true
+    worldMatrix: [-1.0, 0.0, -1.2246467991473532e-16, 0.0, 0.0, 1.0, 0.0, 0.0, 1.2246467991473532e-16,
+        0.0, -1.0, 0.0, -3.7201919555664062, 138.6569366455078, 3.37109375, 1.0]

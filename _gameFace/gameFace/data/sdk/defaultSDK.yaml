@@ -1,0 +1,272 @@
+# brow up/dw
+- !<SDKData>
+    name: __Brow__
+    driverAttr: null
+    min: 0
+    max: 0
+- !<SDKData>
+    name: L_BrowUp
+    driverAttr: Brrow_ctrl2.ty
+    min: 0
+    max: 1
+- !<SDKData>
+    name: L_BrowDw
+    driverAttr: Brrow_ctrl2.ty
+    min: 0
+    max: -1
+- !<SDKData>
+    name: BrowConfuse
+    driverAttr: Brrow_ctrl1.ty
+    min: 0
+    max: 1
+- !<SDKData>
+    name: BrowSerious
+    driverAttr: Brrow_ctrl1.ty
+    min: 0
+    max: -1
+- !<SDKData>
+    name: BrowShy
+    driverAttr: Brrow_ctrl4.tx
+    min: 0
+    max: 1
+- !<SDKData>
+    name: BrowAngry
+    driverAttr: Brrow_ctrl5.tx
+    min: 0
+    max: 1
+- !<SDKData>
+    name: BrowSmile
+    driverAttr: Brrow_ctrl6.tx
+    min: 0
+    max: 1
+- !<SDKData>
+    name: R_BrowUp
+    driverAttr: Brrow_ctrl3.ty
+    min: 0
+    max: 1
+- !<SDKData>
+    name: R_BrowDw
+    driverAttr: Brrow_ctrl3.ty
+    min: 0
+    max: -1
+- !<SDKData>
+    name: __Eye__
+    driverAttr: null
+    min: 0
+    max: 0
+- !<SDKData>
+    name: L_EyeBlink
+    driverAttr: EyeControl_Blink_ctrl2.ty
+    min: 0
+    max: -1
+- !<SDKData>
+    name: L_EyeSmile
+    driverAttr: EyeControl_Smile_ctrl1.ty
+    min: 0
+    max: -1
+- !<SDKData>
+    name: R_EyeBlink
+    driverAttr: EyeControl_Blink_ctrl1.ty
+    min: 0
+    max: -1
+- !<SDKData>
+    name: R_EyeSmile
+    driverAttr: EyeControl_Smile_ctrl2.ty
+    min: 0
+    max: -1
+- !<SDKData>
+    name: __EyeBall__
+    driverAttr: null
+    min: 0
+    max: 0
+- !<SDKData>
+    name: L_EyeBallUp
+    driverAttr: EyeControl_ctrl2.ty
+    min: 0
+    max: 1
+- !<SDKData>
+    name: L_EyeBallDw
+    driverAttr: EyeControl_ctrl2.ty
+    min: 0
+    max: -1
+- !<SDKData>
+    name: L_EyeBallOut
+    driverAttr: EyeControl_ctrl2.tx
+    min: 0
+    max: -1
+- !<SDKData>
+    name: L_EyeBallIn
+    driverAttr: EyeControl_ctrl2.tx
+    min: 0
+    max: 1
+- !<SDKData>
+    name: R_EyeBallUp
+    driverAttr: EyeControl_ctrl1.ty
+    min: 0
+    max: 1
+- !<SDKData>
+    name: R_EyeBallDw
+    driverAttr: EyeControl_ctrl1.ty
+    min: 0
+    max: -1
+- !<SDKData>
+    name: R_EyeBallOut
+    driverAttr: EyeControl_ctrl1.tx
+    min: 0
+    max: -1
+- !<SDKData>
+    name: R_EyeBallIn
+    driverAttr: EyeControl_ctrl1.tx
+    min: 0
+    max: 1
+# cheek puff
+- !<SDKData>
+    name: __Cheek__
+    driverAttr: null
+    min: 0
+    max: 0
+- !<SDKData>
+    name: L_CheekPuff
+    driverAttr: Cheek_ctrl2.tx
+    min: 0
+    max: 1
+- !<SDKData>
+    name: R_CheekPuff
+    driverAttr: Cheek_ctrl20.tx
+    min: 0
+    max: 1
+# jaw
+- !<SDKData>
+    name: __Jaw__
+    driverAttr: null
+    min: 0
+    max: 0
+- !<SDKData>
+    name: Jaw_Up
+    driverAttr: JawPlane_ctrl.ty
+    min: 0
+    max: 1
+- !<SDKData>
+    name: Jaw_Dw
+    driverAttr: JawPlane_ctrl.ty
+    min: 0
+    max: -1
+- !<SDKData>
+    name: Jaw_Right
+    driverAttr: JawPlane_ctrl.tx
+    min: 0
+    max: -1
+- !<SDKData>
+    name: Jaw_Left
+    driverAttr: JawPlane_ctrl.tx
+    min: 0
+    max: 1
+
+# lip corner up/dw
+- !<SDKData>
+    name: __Lip__
+    driverAttr: null
+    min: 0
+    max: 0
+- !<SDKData>
+    name: L_LipCornerUp
+    driverAttr: Mouth_Down_L_ctrl1.ty
+    min: 0
+    max: 1
+- !<SDKData>
+    name: L_LipCornerDw
+    driverAttr: Mouth_Down_L_ctrl1.ty
+    min: 0
+    max: -1
+- !<SDKData>
+    name: L_LipCornerOut
+    driverAttr: Mouth_Down_L_ctrl1.tx
+    min: 0
+    max: 1
+- !<SDKData>
+    name: L_LipCornerIn
+    driverAttr: Mouth_Down_L_ctrl1.tx
+    min: 0
+    max: -1
+# lip up/dw
+- !<SDKData>
+    name: M_LipUpperUp
+    driverAttr: Mouth_LowerUp_ctrl1.ty
+    min: 0
+    max: -1
+- !<SDKData>
+    name: M_LipLowerDw
+    driverAttr: Mouth_LowerDown_ctrl1.ty
+    min: 0
+    max: -1
+- !<SDKData>
+    name: R_LipCornerUp
+    driverAttr: Mouth_R_ctrl1.ty
+    min: 0
+    max: 1
+- !<SDKData>
+    name: R_LipCornerDw
+    driverAttr: Mouth_R_ctrl1.ty
+    min: 0
+    max: -1
+- !<SDKData>
+    name: R_LipCornerOut
+    driverAttr: Mouth_R_ctrl1.tx
+    min: 0
+    max: 1
+- !<SDKData>
+    name: R_LipCornerIn
+    driverAttr: Mouth_R_ctrl1.tx
+    min: 0
+    max: -1
+# mouth pose
+- !<SDKData>
+    name: __Mouth__
+    driverAttr: null
+    min: 0
+    max: 0
+- !<SDKData>
+    name: MouthPose_A
+    driverAttr: MouthControl_ctrl1.tx
+    min: 0
+    max: 1
+- !<SDKData>
+    name: MouthPose_I
+    driverAttr: MouthControl_ctrl2.tx
+    min: 0
+    max: 1
+- !<SDKData>
+    name: MouthPose_O
+    driverAttr: MouthControl_ctrl3.tx
+    min: 0
+    max: 1
+- !<SDKData>
+    name: MouthPose_E
+    driverAttr: MouthControl_ctrl4.tx
+    min: 0
+    max: 1
+- !<SDKData>
+    name: MouthPose_U
+    driverAttr: MouthControl_ctrl5.tx
+    min: 0
+    max: 1
+- !<SDKData>
+    name: MouthPose_N
+    driverAttr: MouthControl_ctrl6.tx
+    min: 0
+    max: 1
+- !<SDKData>
+    name: MouthPose_Smile
+    driverAttr: MouthControl_ctrl7.tx
+    min: 0
+    max: 1
+- !<SDKData>
+    name: MouthPose_Angry
+    driverAttr: MouthControl_ctrl8.tx
+    min: 0
+    max: 1
+- !<SDKData>
+    name: MouthPose_Proud
+    driverAttr: MouthControl_ctrl9.tx
+    min: 0
+    max: 1

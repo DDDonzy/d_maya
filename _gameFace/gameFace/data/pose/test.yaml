@@ -1,0 +1,8 @@
+- {blendShapeName: !!python/unicode 'Head_mesh_bs', mesh: !!python/unicode 'Head_mesh',
+    path: test.yaml_Head_mesh_poseData}
+- {blendShapeName: !!python/unicode 'Jaw_mesh_bs', mesh: !!python/unicode 'Jaw_mesh',
+    path: test.yaml_Jaw_mesh_poseData}
+- {blendShapeName: !!python/unicode 'part_mesh_bs', mesh: !!python/unicode 'part_mesh',
+    path: test.yaml_part_mesh_poseData}
+- {blendShapeName: !!python/unicode 'Sec_mesh_bs', mesh: !!python/unicode 'Sec_mesh',
+    path: test.yaml_Sec_mesh_poseData}

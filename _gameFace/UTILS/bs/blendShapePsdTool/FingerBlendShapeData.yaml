@@ -1,0 +1,160 @@
+- !<FingerTargetData>
+    TargetName: __L_Finger__
+    DriverAttr: null
+    DriverMin: 0
+    DriverMax: 0
+- !<FingerTargetData>
+    TargetName: L_Thumb01
+    DriverAttr: L_Thumb01_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
+- !<FingerTargetData>
+    TargetName: L_Thumb02
+    DriverAttr: L_Thumb02_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
+- !<FingerTargetData>
+    TargetName: L_Thumb03
+    DriverAttr: L_Thumb03_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
+- !<FingerTargetData>
+    TargetName: L_Index01
+    DriverAttr: L_Index01_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
+- !<FingerTargetData>
+    TargetName: L_Index02
+    DriverAttr: L_Index02_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
+- !<FingerTargetData>
+    TargetName: L_Index03
+    DriverAttr: L_Index03_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
+- !<FingerTargetData>
+    TargetName: L_Middle01
+    DriverAttr: L_Middle01_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
+- !<FingerTargetData>
+    TargetName: L_Middle02
+    DriverAttr: L_Middle02_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
+- !<FingerTargetData>
+    TargetName: L_Middle03
+    DriverAttr: L_Middle03_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
+- !<FingerTargetData>
+    TargetName: L_Ring01
+    DriverAttr: L_Ring01_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
+- !<FingerTargetData>
+    TargetName: L_Ring02
+    DriverAttr: L_Ring02_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
+- !<FingerTargetData>
+    TargetName: L_Ring03
+    DriverAttr: L_Ring03_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
+- !<FingerTargetData>
+    TargetName: L_Pinky01
+    DriverAttr: L_Pinky01_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
+- !<FingerTargetData>
+    TargetName: L_Pinky02
+    DriverAttr: L_Pinky02_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
+- !<FingerTargetData>
+    TargetName: L_Pinky03
+    DriverAttr: L_Pinky03_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
+- !<FingerTargetData>
+    TargetName: __R_Finger__
+    DriverAttr: null
+    DriverMin: 0
+    DriverMax: 0
+- !<FingerTargetData>
+    TargetName: R_Thumb01
+    DriverAttr: R_Thumb01_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
+- !<FingerTargetData>
+    TargetName: R_Thumb02
+    DriverAttr: R_Thumb02_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
+- !<FingerTargetData>
+    TargetName: R_Thumb03
+    DriverAttr: R_Thumb03_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
+- !<FingerTargetData>
+    TargetName: R_Index01
+    DriverAttr: R_Index01_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
+- !<FingerTargetData>
+    TargetName: R_Index02
+    DriverAttr: R_Index02_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
+- !<FingerTargetData>
+    TargetName: R_Index03
+    DriverAttr: R_Index03_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
+- !<FingerTargetData>
+    TargetName: R_Middle01
+    DriverAttr: R_Middle01_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
+- !<FingerTargetData>
+    TargetName: R_Middle02
+    DriverAttr: R_Middle02_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
+- !<FingerTargetData>
+    TargetName: R_Middle03
+    DriverAttr: R_Middle03_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
+- !<FingerTargetData>
+    TargetName: R_Ring01
+    DriverAttr: R_Ring01_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
+- !<FingerTargetData>
+    TargetName: R_Ring02
+    DriverAttr: R_Ring02_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
+- !<FingerTargetData>
+    TargetName: R_Ring03
+    DriverAttr: R_Ring03_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
+- !<FingerTargetData>
+    TargetName: R_Pinky01
+    DriverAttr: R_Pinky01_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
+- !<FingerTargetData>
+    TargetName: R_Pinky02
+    DriverAttr: R_Pinky02_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
+- !<FingerTargetData>
+    TargetName: R_Pinky03
+    DriverAttr: R_Pinky03_jnt.RotZ
+    DriverMin: 0
+    DriverMax: -90
