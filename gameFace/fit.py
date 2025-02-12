@@ -1,6 +1,7 @@
 from UTILS.mirrorEnv import MIRROR_CONFIG
 from UTILS.other.choseFile import choseFile
 from UTILS.ui.showMessage import showMessage
+from UTILS.create.createBase import CreateNode
 from UTILS.transform import get_worldMatrix, set_worldMatrix, flip_transform
 
 from gameFace.data.config import *
@@ -30,7 +31,8 @@ class JointData(yaml.YAMLObject):
     visibility: bool = True
 
     def __post_init__(self):
-        self.getData(name=self.name)
+        if cmds.objExists(self.name):
+            self.getData(name=self.name)
 
     def getData(self, name):
         """Get joint data"""
@@ -75,6 +77,22 @@ class JointData(yaml.YAMLObject):
                 cmds.setAttr(f"{self.name}.{attr}", getattr(self, attr))
             except:
                 pass
+        if SET_SEGMENT_SCALE_COMPENSATE_FALSE_FORCE:
+            cmds.setAttr(f"{self.name}.segmentScaleCompensate", False)
+
+    def create(self):
+        if cmds.objExists(self.name):
+            self.setData()
+            om.MGlobal.displayWarning(f"'{self.name}' exists!")
+            return
+        jnt = CreateNode("joint", name=self.name)
+        self.setData()
+
+    def __repr__(self):
+        return self.name
+
+    def __str__(self):
+        return self.name
 
 
 def exportFit(path=None):
@@ -90,7 +108,10 @@ def exportFit(path=None):
     for bone, boneDag in hierarchyIter(FIT_ROOT):
         if bone == FIT_ROOT:
             continue
-        export_list.append(JointData(bone))
+        data = JointData(bone)
+        if SET_SEGMENT_SCALE_COMPENSATE_FALSE_FORCE:
+            data.segmentScaleCompensate = False
+        export_list.append(data)
 
     with open(path, "w") as f:
         yaml.dump(export_list, f, sort_keys=False, indent=4, width=80)
@@ -107,11 +128,13 @@ def importFit(path=None):
 
     if not cmds.objExists(FIT_ROOT):
         cmds.createNode("transform", name=FIT_ROOT, ss=1)
-    for bone in data_list:
-        if cmds.objExists(bone.name):
-            cmds.delete(bone.name)
-        cmds.createNode("joint", name=bone.name, ss=1)
-        bone.setData()
+    for data in data_list:
+        if cmds.objExists(data.name):
+            cmds.delete(data.name)
+        if SET_SEGMENT_SCALE_COMPENSATE_FALSE_FORCE:
+            data.segmentScaleCompensate = False
+        cmds.createNode("joint", name=data.name, ss=1)
+        data.setData()
     cmds.select(FIT_ROOT)
     showMessage(" Import fit successful ")
 
@@ -142,7 +165,8 @@ def mirrorDuplicateTransform_cmd(all=False):
 
     all_joint = get_allFitJoint()
     for x in all_joint:
-        if MIRROR_CONFIG.l in x:
+        c = x.split("_")
+        if MIRROR_CONFIG.l in c:
             if MIRROR_CONFIG.exchange(x)[0] != x:
                 x_parent = (cmds.listRelatives(x, p=1) or ['None'])[0]
                 if MIRROR_CONFIG.exchange(x_parent)[0] == x_parent:
@@ -232,3 +256,13 @@ def get_fitJointByLabel(label):
             continue
         joint_list.append(x)
     return joint_list
+
+
+def get_fitJointByKeyWord(*args, iterList=None):
+    if not iterList:
+        iterList = get_allFitJoint()
+    result_list = []
+    for x in iterList:
+        if all([arg in x for arg in args]):
+            result_list.append(x)
+    return result_list

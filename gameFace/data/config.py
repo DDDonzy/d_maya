@@ -1,5 +1,8 @@
 import os
 
+# Fit
+SET_SEGMENT_SCALE_COMPENSATE_FALSE_FORCE = True
+
 # Build
 MIRROR_BUILD = True
 

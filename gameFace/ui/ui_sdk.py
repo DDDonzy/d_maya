@@ -4,7 +4,7 @@ from UTILS.mirrorEnv import MIRROR_CONFIG
 
 from gameFace.data.config import *
 from gameFace.ui.ui_loader import build_ui
-from gameFace.pose import setPose, delPoseData, mirrorPose, flipPose, importPose, exportPose
+from gameFace.pose import setPose, delPoseData, mirrorPose, flipPose, importPose, exportPose, pose_scale
 
 
 import os
@@ -16,22 +16,24 @@ from PySide2.QtCore import Qt
 from maya import cmds
 
 
-uiFile = f"{os.path.dirname(__file__) }\\designer\\sdk.ui"
+uiFile = os.path.join(os.path.dirname(__file__), "designer", "sdk.ui")
+
 
 global data
 global ui
 
 
-def showSDK_UI():
+def show_UI():
     global ui
-
-    if cmds.workspaceControl('FacialSDK_UI', q=1, ex=1):
-        cmds.deleteUI('FacialSDK_UI')
-
     ui = build_ui(uiFile)
+    
+    workSpaceControlName = f"{ui.objectName()}_workSpaceControl"
+    if cmds.workspaceControl(workSpaceControlName, q=1, ex=1):
+        cmds.deleteUI(workSpaceControlName)
+
     setup_ui_logic()
 
-    dock_windows = cmds.workspaceControl('FacialSDK_UI', retain=True, label='Facial SDK')
+    dock_windows = cmds.workspaceControl(workSpaceControlName, retain=True, label=ui.windowTitle())
     dock_layout = cmds.paneLayout(configuration='single', p=dock_windows)
     cmds.control(ui.objectName(), e=True, p=dock_layout)
 
@@ -46,6 +48,8 @@ def setup_ui_logic():
     ui.bt_mirrorFlip.clicked.connect(partial(mirror_flip_all_command))
     ui.bt_defaultPose.clicked.connect(partial(default_pose_command))
     ui.bt_delPoseData.clicked.connect(partial(del_pose_command))
+    ui.bt_add.clicked.connect(partial(scaleAdd_pose_command))
+    ui.bt_sub.clicked.connect(partial(scaleSub_pose_command))
 
     # listWidget
     update_listWidget()
@@ -74,7 +78,7 @@ def update_listWidget():
     ui.listWidget_items = []
     ui.listWidget.clear()
     try:
-        data = yaml.unsafe_load(cmds.getAttr(f"{BRIDGE}.notes"))
+        data = yaml.unsafe_load(cmds.getAttr("{}.notes".format(BRIDGE)))
     except:
         return
 
@@ -98,6 +102,13 @@ def update_listWidget():
     return data
 
 
+def listWidget_currentIndex():
+    current_item = ui.listWidget.currentIndex()
+    if not current_item:
+        return None
+    return current_item.row()
+
+
 def filter_items_command():
     filter_text = ui.text_filter.text().lower()
     for item in ui.listWidget_items:
@@ -108,29 +119,21 @@ def filter_items_command():
 
 
 def set_pose_command():
-    current_item = ui.listWidget.currentIndex()
-    if not current_item:
-        return
-    current_index = current_item.row()
+    current_index = listWidget_currentIndex()
     if current_index >= 0:
         setPose(current_index)
         showMessage("Set Pose")
 
 
 def mirror_pose_command():
-    current_item = ui.listWidget.currentIndex()
-    if not current_item:
-        return
-    current_index = current_item.row()
+    current_index = listWidget_currentIndex()
     if current_index >= 0:
         mirrorPose(data[current_index].name)
+    showMessage("Mirror Pose")
 
 
 def flip_pose_command():
-    current_item = ui.listWidget.currentIndex()
-    if not current_item:
-        return
-    current_index = current_item.row()
+    current_index = listWidget_currentIndex()
     if current_index >= 0:
         flipPose(data[current_index].name)
 
@@ -147,6 +150,7 @@ def mirror_flip_all_command():
         if MIRROR_CONFIG.l.lower() in x.name.lower().split("_"):
             flipPose(source)
             continue
+    showMessage("Auto Flip/Mirror All.")
 
 
 def import_pose_command():
@@ -168,10 +172,19 @@ def default_pose_command():
 
 
 def del_pose_command():
-    current_item = ui.listWidget.currentIndex()
-    if not current_item:
-        return
-    current_index = current_item.row()
+    current_index = listWidget_currentIndex()
     if current_index >= 0:
         delPoseData(current_index)
         showMessage("Set Pose")
+
+
+def scaleAdd_pose_command():
+    current_index = listWidget_currentIndex()
+    pose_scale(current_index, 1.1)
+    showMessage("*= 1.1")
+
+
+def scaleSub_pose_command():
+    current_index = listWidget_currentIndex()
+    pose_scale(current_index, 0.9)
+    showMessage("*= 0.9")

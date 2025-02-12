@@ -111,22 +111,6 @@ class build(CreateBase):
         sk.importWeights(part_pin.mesh, PART_WEIGHT_FILE)
         sk.importWeights(jaw_pin.mesh, JAW_WEIGHT_FILE)
 
-        # # pose uv pin
-        # mesh, _ = uvPin.create_planeByObjectList(targetList=head_grp+jaw_grp+sec_grp+part_grp, name="uvPinPose")
-        # cmds.setAttr(f"{mesh}.inheritsTransform", False)
-        # # to max uv pin
-        # all_skin = get_allSkinJoint()
-        # mesh, _ = uvPin.create_planeByObjectList(targetList=all_skin, name="uvPinToMax")
-        # cmds.setAttr(f"{mesh}.inheritsTransform", False)
-        # # weights
-        # data = yaml.unsafe_load(cmds.getAttr(f"{mesh}.notes"))
-        # w_nAry = np.zeros((len(data), len(data)*5), dtype=float)
-        # for i, x in enumerate(data):
-        #     w_nAry[i, x["meshComponent"]] = 1.0
-        # w_nAry = w_nAry.T.reshape(-1)
-        # w_data = sk.weightsData(mesh=mesh, component=[], influenceIndex=[], influenceName=all_skin, weights=w_nAry, blendWeights=[])
-        # sk.importWeights(obj=mesh, data=w_data)
-
         try:
             cmds.addAttr(FACE_ROOT, ln="notes", dt="string")
         except:

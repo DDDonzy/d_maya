@@ -1,3 +1,4 @@
+import numpy as np
 from UTILS import apiundo
 from UTILS.getHistory import get_history
 from UTILS.mirrorEnv import MIRROR_CONFIG
@@ -129,6 +130,15 @@ def auto_mirror_flip_pose(source_name):
         mirrorPose(target_name)
     else:
         flipPose(source_name=source_name, target_name=target_name)
+
+
+def pose_scale(index, value=1.1):
+    uvPin_list = yaml.unsafe_load(cmds.getAttr(f"{FACE_ROOT}.notes"))["uvPin"]
+    for obj in uvPin_list:
+        blendShapeNode = get_history(obj, type="blendShape")[0]
+        nAry = np.array(cmds.getAttr(f"{blendShapeNode}.it[0].itg[{index}].iti[6000].ipt"))
+        nAry[:, :3] *= value
+        cmds.setAttr(f"{blendShapeNode}.it[0].itg[{index}].iti[6000].ipt", len(nAry), *nAry, type="pointArray")
 
 
 def exportPose(path=None):
