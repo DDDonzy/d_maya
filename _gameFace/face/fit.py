@@ -108,6 +108,8 @@ def exportFit(path=None):
     for bone, boneDag in hierarchyIter(FIT_ROOT):
         if bone == FIT_ROOT:
             continue
+        if not cmds.objectType(bone, isAType="joint"):
+            continue
         data = JointData(bone)
         if SET_SEGMENT_SCALE_COMPENSATE_FALSE_FORCE:
             data.segmentScaleCompensate = False

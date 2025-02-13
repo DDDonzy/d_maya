@@ -6,7 +6,7 @@ from face.fn import skinFn as sk
 from face.fn.calWeights import CalWeights
 from face.fn.showMessage import muteMessage, showMessage
 from face.fn.createBase import CreateBase, CreateNode
-from face.fn.hideShapeInChannelBox import hideShapeContainer
+from face.fn.hideShapeInChannelBox import HideShapeContainer
 
 from face.data.config import *
 from face.fn.getHistory import get_history
@@ -54,7 +54,7 @@ class build(CreateBase):
         cmds.parent(UN_SKIN_JOINT_ROOT, w=1)
         
         shape_list = [x for x,_ in hierarchyIter('Controls_GRP') if cmds.objectType(x,isAType="shape")]
-        hideShapeContainer(shape_list)
+        HideShapeContainer(shape_list)
         
         muteMessage(False)
         showMessage("Build !")
@@ -107,10 +107,10 @@ class build(CreateBase):
         class_part_grp = list(set(all_grp) - set(head_grp+jaw_grp+sec_grp))
         class_part_grp.sort()
 
-        head_pin = t.uvPin(head_grp, name='Head')
-        jaw_pin = t.uvPin(jaw_grp, name='Jaw')
-        part_pin = t.uvPin(class_part_grp, name="part")
-        sec_pin = t.uvPin(sec_grp, name="Sec")
+        head_pin = t.uvPin(head_grp, name='Head',size=1)
+        jaw_pin = t.uvPin(jaw_grp, name='Jaw',size=1)
+        part_pin = t.uvPin(class_part_grp, name="part",size=1)
+        sec_pin = t.uvPin(sec_grp, name="Sec",size=0.5)
 
         t.matrixConstraint(CONTROL_ROOT, head_pin.mesh)
 

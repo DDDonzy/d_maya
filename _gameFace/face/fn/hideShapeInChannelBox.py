@@ -1,6 +1,9 @@
 from maya import cmds
 from maya.api import OpenMaya as om
 from face.fn.createBase import CreateBase
+import face.fn.createBase
+from imp import reload
+reload(face.fn.createBase)
 
 
 def get_shape(transform_object):
@@ -29,9 +32,9 @@ def hideShapeInChannelBox(objectList):
             cmds.setAttr("{}.isHistoricallyInteresting".format(obj), 0)
 
 
-class hideShapeContainer(CreateBase):
+class HideShapeContainer(CreateBase):
     thisAssetName = "HideShapeContainer"
-    isDagAsset = True
+    isDagAsset = False
     isBlackBox = True
 
     def __init__(self, *args, **kwargs):
@@ -41,16 +44,23 @@ class hideShapeContainer(CreateBase):
         self.obj = args.pop(0)
         if isinstance(self.obj, basestring):
             self.obj = [self.obj]
+        kwargs.update({"name": self.thisAssetName})
 
-        super(hideShapeContainer, self).__init__(*args, **kwargs)
+        super(HideShapeContainer, self).__init__(*args, **kwargs)
 
     def create(self):
+        shape_list = []
         for x in self.obj:
             if cmds.objectType(x, isAType="transform"):
                 for shape in get_shape(x):
-                    cmds.container(self.name, an=[shape])
+                    shape_list.append(shape)
             if cmds.objectType(x, isAType="shape"):
-                cmds.container(self.name, an=[x])
+                shape_list.append(x)
+        cmds.container(self.thisType, e=1, addNode=shape_list, f=1)
+
+    def _post_create(self):
+        if str(self.thisAssetName) != str(self.thisType):
+            cmds.delete(self.thisAssetName)
 
 
 if __name__ == "__main__":

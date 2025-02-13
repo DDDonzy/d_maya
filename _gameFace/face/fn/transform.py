@@ -79,7 +79,11 @@ def mirror_transform(source_obj,
 def flip_transform(source_obj,
                    target_obj,
                    mirror_axis="x",):
-    sour_worldMatrix = get_worldMatrix(source_obj)
+    transform = CreateNode("transform",name = "mirrorTemp")
+    cmds.delete(cmds.parentConstraint(source_obj,transform,mo = 0))
+    cmds.delete(cmds.scaleConstraint(source_obj,transform,mo = 0))
+    sour_worldMatrix = get_worldMatrix(transform)
+    cmds.delete(transform)
     sour_worldMatrix_flip = flip_matrix(sour_worldMatrix, mirror_axis)
     set_worldMatrix(target_obj, sour_worldMatrix_flip)
     for x in "xyz":
