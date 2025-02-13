@@ -3,7 +3,7 @@ from maya.api import OpenMaya as om
 
 def get_shape(transform_object):
     if not cmds.objExists(transform_object):
-        raise RuntimeError(transform_object + "is not exists")
+        raise RuntimeError("'{}'is not exists".format(transform_object))
     shape_list = []
     mSel = om.MSelectionList()
     mSel.add(transform_object)
@@ -20,7 +20,7 @@ def hideShapeInChannelBox(objectList: list):
         objectList = [objectList]
     for obj in objectList:
         for shape in get_shape(obj):
-            cmds.setAttr(f"{shape}.isHistoricallyInteresting",0)
+            cmds.setAttr("{}.isHistoricallyInteresting".format(shape),0)
 
 
 hideShapeInChannelBox(cmds.ls(sl=1))

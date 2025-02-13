@@ -38,6 +38,6 @@ def show_message(msg):
 def onMayaDroppedPythonFile(*args, **kwargs):
     """Dropped to maya functions"""
     modify_mayaUserSetup()
-    import gameFace.main
-    gameFace.main.show_UI()
+    import face.main
+    face.main.show_UI()
     show_message("Setup Done")
