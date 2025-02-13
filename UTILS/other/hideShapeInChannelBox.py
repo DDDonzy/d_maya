@@ -22,5 +22,5 @@ def hideShapeInChannelBox(objectList: list):
         for shape in get_shape(obj):
             cmds.setAttr("{}.isHistoricallyInteresting".format(shape),0)
 
-
-hideShapeInChannelBox(cmds.ls(sl=1))
+if __name__ == "__main__":
+    hideShapeInChannelBox(cmds.ls(sl=1))
