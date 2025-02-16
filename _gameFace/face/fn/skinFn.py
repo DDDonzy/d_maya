@@ -93,6 +93,7 @@ class D_FnSkin(oma.MFnSkinCluster):
                 noInSkinInfluence.append(name)
             if name in inf_name:
                 index_list.append(inf_name.index(name))
+        
 
         if noInSkinInfluence:
             raise RuntimeError("'{}' not in skinCluster.".format(noInSkinInfluence))

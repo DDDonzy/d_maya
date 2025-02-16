@@ -147,7 +147,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QSpinBox" name="lidUpper_spinBox">
+       <widget class="QSpinBox" name="lid_spinBox">
         <property name="minimumSize">
          <size>
           <width>50</width>

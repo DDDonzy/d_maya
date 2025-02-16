@@ -1,11 +1,13 @@
-from __future__ import print_function
 import os
 import sys
 from maya import cmds, mel
 
-path = os.path.dirname(__file__)
-if path not in sys.path:
-    sys.path.append(path)
+try:
+    path = os.path.dirname(__file__)
+    if path not in sys.path:
+        sys.path.append(path)
+except:
+    pass
 
 
 def modify_mayaUserSetup():
@@ -41,3 +43,8 @@ def onMayaDroppedPythonFile(*args, **kwargs):
     import face.main
     face.main.show_UI()
     show_message("Setup Done")
+
+
+if __name__ == "__main__":
+    import face.main
+    face.main.show_UI()

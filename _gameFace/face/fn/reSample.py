@@ -8,25 +8,36 @@ from maya import cmds
 from maya.api import OpenMaya as om
 
 
-def reSample(baseFit, num):
-    modify_str_list = baseFit[1:-1]
-    modify_list = [JointData(x) for x in modify_str_list]
+def reSample(baseFit, num, name=""):
+    if len(baseFit) > 2:
+        degree = 1
+    else:
+        degree = 2
 
-    cv = CurveData(controlPoints=[cmds.xform(x, q=1, t=1, ws=1) for x in baseFit],
-                   degree=2)
-    t_list = [cv.length()/(num+1) * (x) for x in range(num+2)][1:-1]
+    CP_pos = [cmds.xform(x, q=1, t=1, ws=1) for x in baseFit]
+
+    cv = CurveData(controlPoints=CP_pos, degree=degree)
+    t_list = [cv.length()/(num-1) * (x) for x in range(num)]
     newPos_ary = [cv.getPointAtParam(cv.findParamFromLength(x)) for x in t_list]
 
-    if len(newPos_ary) > len(modify_list):
-        modify_list.extend([modify_list[-1]] * (len(newPos_ary) - len(modify_list)))
-    elif len(modify_list) > len(newPos_ary):
-        modify_list = modify_list[:len(newPos_ary)]
-
-    cmds.delete(modify_str_list)
+    jntData = JointData("x")
+    jntData.parent = JointData(baseFit[0]).parent
     for i, pos in enumerate(newPos_ary):
-        jntData = modify_list[i]
-        jntData.name = generateUniqueName(jntData.name)
-        trs = t.matrix_to_trs(om.MMatrix(jntData.worldMatrix))
+        jntData.name = generateUniqueName(name)
+        trs = t.matrix_to_trs(om.MMatrix())
         trs[0:3] = [pos[0], pos[1], pos[2]]
         jntData.worldMatrix = t.trs_to_matrix(trs)
         jntData.create()
+
+
+def reSampleBrow(num):
+    cmds.delete(get_fitJointByKeyWord("Brow", "Sec"))
+    reSample(cmds.ls("L_BrowPart*"), num, name="L_BrowSec")
+    reSample(cmds.ls("R_BrowPart*"), num, name="R_BrowSec")
+
+
+def reSampleEye(num):
+    cmds.delete(get_fitJointByKeyWord("Lid", "Sec", "Upper"))
+    cmds.delete(get_fitJointByKeyWord("Lid", "Sec", "Lower"))
+    reSample(["L_LidOuterPart"]+cmds.ls("L_LidUpperPart*")+["L_LidOuterPart"], num, name="L_LidUpperSec")
+    reSample(cmds.ls("R_BrowPart*"), num, name="R_BrowSec")

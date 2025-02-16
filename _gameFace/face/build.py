@@ -13,6 +13,7 @@ from face.fn.getHistory import get_history
 from face.fn.hierarchyIter import hierarchyIter
 from face.fit import get_allFitJoint, mirrorDuplicateTransform_cmd, get_fitJointByKeyWord
 from face.control import ControlData, ControlPanel, buildControl, get_allControls, get_controlsByLabel, get_brow, get_eyeLine, get_lid, get_lip, get_cheek
+from face.toMax import buildMaxJoint
 
 from maya import cmds
 from maya.api import OpenMaya as om
@@ -47,14 +48,19 @@ class build(CreateBase):
         build.buildControlsPanelAndSDK()
 
     def _post_create(self):
+        # hide fit
         cmds.setAttr("{}.v".format(FIT_ROOT), 0)
-
+        # parent to world
         cmds.parent(CONTROL_ROOT, w=1)
         cmds.parent(SKIN_JOINT_ROOT, w=1)
-        cmds.parent(UN_SKIN_JOINT_ROOT, w=1)
 
+        cmds.parent(UN_SKIN_JOINT_ROOT, w=1)
+        cmds.setAttr(UN_SKIN_JOINT_ROOT+".v", 0)
+        # hide shape
         shape_list = [x for x, _ in hierarchyIter('Controls_GRP') if cmds.objectType(x, isAType="shape")]
         HideShapeContainer(shape_list)
+        # build max joints
+        buildMaxJoint("MaxJoints")
 
         muteMessage(False)
         showMessage("Build !")
@@ -103,8 +109,8 @@ class build(CreateBase):
         sec_list = get_controlsByLabel(SEC_LABEL)
         sec_grp = [ctl.grp for ctl in sec_list]
         sec_grp.sort()
-
-        class_part_grp = list(set(all_grp) - set(head_grp+jaw_grp+sec_grp))
+        tongue_removeUvPin = [ControlData(x).grp for x in get_fitJointByKeyWord("Tongue")[1:]]
+        class_part_grp = list((set(all_grp) - set(head_grp+jaw_grp+sec_grp)) - set(tongue_removeUvPin))
         class_part_grp.sort()
 
         head_pin = t.uvPin(head_grp, name='Head', size=UV_PIN_SIZE)

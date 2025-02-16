@@ -119,11 +119,9 @@ def exportPose(path=None):
         obj_path = os.path.join(dir, obj_file_name)
         bs = get_history(obj, type="blendShape")[0]
         cmds.blendShape(bs, e=1, ep=obj_path)
-        data.append({
-            "mesh": obj,
-            "blendShapeName": bs,
-            "path": obj_file_name
-        })
+        data.append({"meshName": obj,
+                     "blendShapeName": bs,
+                     "path": obj_file_name})
 
     with open(path, "wb") as f:
         yaml.dump(data, f, indent=4, width=80)

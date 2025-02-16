@@ -152,15 +152,15 @@
     min: 0
     max: -1
 - !<BridgeData>
-    name: Jaw_Right
-    driverAttr: JawPlane_ctrl.tx
-    min: 0
-    max: -1
-- !<BridgeData>
-    name: Jaw_Left
+    name: L_Jaw
     driverAttr: JawPlane_ctrl.tx
     min: 0
     max: 1
+- !<BridgeData>
+    name: R_Jaw
+    driverAttr: JawPlane_ctrl.tx
+    min: 0
+    max: -1
 
 # lip corner up/dw
 - !<BridgeData>

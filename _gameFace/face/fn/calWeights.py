@@ -34,8 +34,8 @@ class CalWeights(D_FnSkin):
         if not influenceList:
             influenceList = cmds.ls(sl=1) or self.all_inf_name
 
-        self.inf_name = influenceList
-        self.inf_pos = om.MVectorArray()
+        self.cal_influences = influenceList
+        self.cal_influences_pos = om.MVectorArray()
 
         index_list = []
         noInSkinInfluence = []
@@ -51,7 +51,7 @@ class CalWeights(D_FnSkin):
             mDataHandle = mPlug.asMDataHandle()
             fnMatrix = om.MFnMatrixData(mDataHandle.data())
             mTransformMatrix = om.MTransformationMatrix(fnMatrix.matrix().inverse())
-            self.inf_pos.append(mTransformMatrix.translation(om.MSpace.kWorld))
+            self.cal_influences_pos.append(mTransformMatrix.translation(om.MSpace.kWorld))
 
     def setVertex(self, componentList=[]):
 
@@ -61,28 +61,34 @@ class CalWeights(D_FnSkin):
             except Exception as e:
                 componentList = [x for x in xrange(self.orig_fnMesh.numVertices)]
 
-        self.componentList = componentList
+        self.cal_components = componentList
 
         component = om.MFnSingleIndexedComponent()
         self.component_mObj = component.create(om.MFn.kMeshVertComponent)
         component.addElements(componentList)
 
-        self.vtx_pos = om.MPointArray()
-        for x in self.componentList:
-            self.vtx_pos.append(self.orig_fnMesh.getPoint(x))
+        self.cal_components_pos = om.MPointArray()
+        for x in self.cal_components:
+            self.cal_components_pos.append(self.orig_fnMesh.getPoint(x))
 
     def calWeights(self, degree=2, smooth=0.3):
 
-        w = calWeightsBase(inf_position=self.inf_pos,
-                           vtx_position=self.vtx_pos,
+        w = calWeightsBase(inf_position=self.cal_influences_pos,
+                           vtx_position=self.cal_components_pos,
                            smooth=smooth,
                            degree=degree)
+        w_nAry = np.array(w).reshape(-1, len(self.cal_influences))
+
+        base_weight = self.auto_getWeights()
+        base_nAry = np.array(base_weight.weights).reshape(-1, len(base_weight.influenceName))
+        # for i in self.cal_components:
+
         data = weightsData(mesh=self.shape.partialPathName(),
-                           component=self.componentList,
+                           component=self.cal_components,
                            influenceIndex=[],
-                           influenceName=self.inf_name,
+                           influenceName=self.cal_influences,
                            weights=w,
-                           blendWeights=[0]*len(self.componentList))
+                           blendWeights=[0]*len(self.cal_components))
         self.auto_setWeights(data)
 
     @staticmethod
@@ -162,7 +168,8 @@ def calWeightsBase(inf_position, vtx_position, smooth=0.3, degree=2):
     for i, x in enumerate(combine_list):
         for ii in x:
             combineWeight_nAry[i] += weightList_nAry[ii]
-    return combineWeight_nAry.T.reshape(-1)
+    weights = combineWeight_nAry.T.reshape(-1)
+    return weights
 
 
 def sharpen_weights(weights, intensity):
