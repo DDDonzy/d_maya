@@ -807,12 +807,12 @@ class uvPin(CreateBase):
         singleIdComp = om.MFnSingleIndexedComponent()
         vertexComp = singleIdComp.create(om.MFn.kMeshVertComponent)
         weight, infCount = fnSkin.getWeights(uvPinMesh_mDag, vertexComp)
-        weightAry = np.array(weight)
-        weightAry = weightAry.reshape(int(len(weightAry)/infCount), infCount)
-        for i in range(0, len(weightAry) - 4, 4 + 1):
-            weightAry[i + 1:i + 1 + 4] = weightAry[i]
-        weightAry = weightAry.reshape(1, len(weight))[0]
-        fnSkin.setWeights(uvPinMesh_mDag, vertexComp, om.MIntArray(list(range(infCount))), om.MDoubleArray(weightAry))
+        for i in range(0, len(weight), infCount):
+            print ([weight[i]] * 4)
+            print(weight[i + 1:i + 5])
+            #weight[i + 1:i + 5] = [weight[i]] * 4
+
+        #fnSkin.setWeights(uvPinMesh_mDag, vertexComp, om.MIntArray(list(range(infCount))), weight)
 
 
 class follicle(uvPin):

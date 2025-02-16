@@ -77,7 +77,7 @@ class JointData(yaml.YAMLObject):
                 cmds.setAttr("{0}.{1}".format(self.name, attr), getattr(self, attr))
             except:
                 pass
-        if SET_SEGMENT_SCALE_COMPENSATE_FALSE_FORCE:
+        if FORCE_SEGMENT_SCALE_COMPENSATE_FALSE:
             cmds.setAttr("{0}.segmentScaleCompensate".format(self.name), False)
 
     def create(self):
@@ -111,7 +111,7 @@ def exportFit(path=None):
         if not cmds.objectType(bone, isAType="joint"):
             continue
         data = JointData(bone)
-        if SET_SEGMENT_SCALE_COMPENSATE_FALSE_FORCE:
+        if FORCE_SEGMENT_SCALE_COMPENSATE_FALSE:
             data.segmentScaleCompensate = False
         export_list.append(data)
 
@@ -133,7 +133,7 @@ def importFit(path=None):
     for data in data_list:
         if cmds.objExists(data.name):
             cmds.delete(data.name)
-        if SET_SEGMENT_SCALE_COMPENSATE_FALSE_FORCE:
+        if FORCE_SEGMENT_SCALE_COMPENSATE_FALSE:
             data.segmentScaleCompensate = False
         cmds.createNode("joint", name=data.name, ss=1)
         data.setData()
