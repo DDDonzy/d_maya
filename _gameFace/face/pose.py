@@ -27,7 +27,7 @@ def setPoseBase(obj, bs, targetIndex, pose_position=None):
         driven_list = [ControlData(x["driven"]) for x in uvPin_data]
         control_list = [x.ctl for x in driven_list]
 
-        data_fnMesh, data = uvPin.create_planeByObjectList(targetList=control_list, buildInMaya=False)
+        data_fnMesh, data = uvPin.create_planeByObjectList(targetList=control_list, buildInMaya=False, size=UV_PIN_SIZE)
         pose_position = data_fnMesh.getPoints(om.MSpace.kObject)
 
     obj_fnMesh = om.MFnMesh(om.MSelectionList().add(obj).getDagPath(0))

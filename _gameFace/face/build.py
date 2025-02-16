@@ -48,14 +48,14 @@ class build(CreateBase):
 
     def _post_create(self):
         cmds.setAttr("{}.v".format(FIT_ROOT), 0)
-        
+
         cmds.parent(CONTROL_ROOT, w=1)
         cmds.parent(SKIN_JOINT_ROOT, w=1)
         cmds.parent(UN_SKIN_JOINT_ROOT, w=1)
-        
-        shape_list = [x for x,_ in hierarchyIter('Controls_GRP') if cmds.objectType(x,isAType="shape")]
+
+        shape_list = [x for x, _ in hierarchyIter('Controls_GRP') if cmds.objectType(x, isAType="shape")]
         HideShapeContainer(shape_list)
-        
+
         muteMessage(False)
         showMessage("Build !")
 
@@ -107,10 +107,10 @@ class build(CreateBase):
         class_part_grp = list(set(all_grp) - set(head_grp+jaw_grp+sec_grp))
         class_part_grp.sort()
 
-        head_pin = t.uvPin(head_grp, name='Head',size=1)
-        jaw_pin = t.uvPin(jaw_grp, name='Jaw',size=1)
-        part_pin = t.uvPin(class_part_grp, name="part",size=1)
-        sec_pin = t.uvPin(sec_grp, name="Sec",size=0.5)
+        head_pin = t.uvPin(head_grp, name='Head', size=UV_PIN_SIZE)
+        jaw_pin = t.uvPin(jaw_grp, name='Jaw', size=UV_PIN_SIZE)
+        part_pin = t.uvPin(class_part_grp, name="part", size=UV_PIN_SIZE)
+        sec_pin = t.uvPin(sec_grp, name="Sec", size=UV_PIN_SIZE)
 
         t.matrixConstraint(CONTROL_ROOT, head_pin.mesh)
 
@@ -259,6 +259,7 @@ class build(CreateBase):
         pos = (om.MVector(boundingBox[3]-boundingBox[0], boundingBox[1], boundingBox[5]))
         cmds.setAttr("{}.t".format(CONTROLS_PANEL_ROOT), *pos)
         cmds.parent(CONTROLS_PANEL_ROOT, CONTROL_ROOT)
+
 
 def exportUVPinWeights(path=None):
     path = choseFile(path, dialogStyle=2, caption="Export UVPin Weights", fileFilter="Weights YAML file(*.w)", startingDirectory=DEFAULT_WEIGHT_DIR)

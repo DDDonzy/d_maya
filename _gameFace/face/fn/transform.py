@@ -876,7 +876,7 @@ def reset_transformObjectValue_cmd(transform=True, userDefined=False):
     showMessage(msg)
 
 
-if cmds.about(api=1) >= 20230000:
+if cmds.about(api=1) >= 20200000:
     uvPin = _uvPin
 else:
     uvPin = _follicle

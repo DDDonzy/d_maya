@@ -5,6 +5,7 @@ FORCE_SEGMENT_SCALE_COMPENSATE_FALSE = True
 
 # Build
 MIRROR_BUILD = True
+UV_PIN_SIZE = 0.1
 
 # Maya Dag
 FIT_ROOT = "FaceFit"
