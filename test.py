@@ -1,29 +1,26 @@
-import maya.api.OpenMaya as om
-import maya.api.OpenMayaAnim as oma
-from UTILS.apiundo import commit
-from functools import partial
+# max
+for x in range(10):
+    uv = [0, 0]
+    faceIndex = 0
+    uvPin = "Sphere001"
+    
+    maxScript = """
+    uv = {0}
+    faceIndex = {1}
+    uvPin = ${2}
 
+    ctl = Point()
+    ctl.cross = True
+    ctl.wireColor = color 50 120 20
 
-def normalizedUvPinWeights(uvPinMesh: str, skinCluster: str, componentNumVertices: int = 5, referenceComponentIndex: int = 0):
-    mSel = om.MSelectionList()
-    mSel.add(uvPinMesh)
-    mSel.add(skinCluster)
-    uvPinMesh_mDag = mSel.getDagPath(0)
-    skin_mObj = mSel.getDependNode(1)
-    fnSkin = oma.MFnSkinCluster(skin_mObj)
-    singleIdComp = om.MFnSingleIndexedComponent()
-    vertexComp = singleIdComp.create(om.MFn.kMeshVertComponent)
-    weight_base, numInf = fnSkin.getWeights(uvPinMesh_mDag, vertexComp)
-    weight = list(weight_base)
-    numVertices = int(len(weight)/numInf)
-    for i in range(0, len(weight), numVertices):
-        weight[i: i+numInf*componentNumVertices] = weight[i:i+numInf] * componentNumVertices
+    attachController = Attachment()
+    ctl.pos.controller = attachController
+    attachController.node = uvPin
+    attachController.align = true
 
-    _doit = partial(fnSkin.setWeights, uvPinMesh_mDag, vertexComp, om.MIntArray(list(range(numInf))), om.MDoubleArray(weight))
-    _undo = partial(fnSkin.setWeights, uvPinMesh_mDag, vertexComp, om.MIntArray(list(range(numInf))), weight_base)
+    keyNew = AttachCtrl.addNewKey attachController 0
+    keyNew.face = faceIndex
+    keyNew.coord = uv
+    """.format(uv,faceIndex,uvPin)
 
-    _doit()
-    commit(_undo, _doit)
-
-
-normalizedUvPinWeights("pPlane1", "skinCluster1")
+    pymxs.runtime.execute(maxScript)
