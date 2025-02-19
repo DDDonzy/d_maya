@@ -27,6 +27,7 @@ class toMaxCommand():
         pin.wireColor = color 50 120 20
         pin.isHidden = {3}
         pin.isFrozen = {3}
+        pin.parent = obj.parent
         
         attachController = Attachment()
         pin.pos.controller = attachController
@@ -35,6 +36,7 @@ class toMaxCommand():
         keyNew = AttachCtrl.addNewKey attachController 0
         keyNew.face = {2}
         keyNew.coord = [0,0]
+        AttachCtrl.update attachController
         
         driver = pin
         driven = obj
@@ -70,6 +72,95 @@ class toMaxCommand():
 
         self.command += command
 
+    def limitAll(self, obj):
+        command = textwrap.dedent("""
+                                  
+        obj = ${0}
+
+        limit = obj.position.controller.X_Position.controller = float_limit ()
+        limit.Enable=True
+        limit.upper_limit = 0
+        limit.upper_limit_enabled = True
+        limit.lower_limit = -0
+        limit.lower_limit_enabled = True
+
+        limit = obj.position.controller.Y_Position.controller = float_limit ()
+        limit.Enable=True
+        limit.upper_limit = 0
+        limit.upper_limit_enabled = True
+        limit.lower_limit = -0
+        limit.lower_limit_enabled = True
+
+        limit = obj.position.controller.Z_Position.controller = float_limit ()
+        limit.Enable=True
+        limit.upper_limit = 0
+        limit.upper_limit_enabled = True
+        limit.lower_limit = -0
+        limit.lower_limit_enabled = True
+
+
+        limit = obj.rotation.controller.X_Rotation.controller = float_limit ()
+        limit.Enable=True
+        limit.upper_limit = 0
+        limit.upper_limit_enabled = True
+        limit.lower_limit = -0
+        limit.lower_limit_enabled = True
+
+        limit = obj.rotation.controller.Y_Rotation.controller = float_limit ()
+        limit.Enable=True
+        limit.upper_limit = 0
+        limit.upper_limit_enabled = True
+        limit.lower_limit = -0
+        limit.lower_limit_enabled = True
+
+        limit = obj.rotation.controller.Z_Rotation.controller = float_limit ()
+        limit.Enable=True
+        limit.upper_limit = 0
+        limit.upper_limit_enabled = True
+        limit.lower_limit = -0
+        limit.lower_limit_enabled = True
+
+
+        limitScale = obj.scale.controller = ScaleXYZ ()
+        limit = limitScale.X_Scale.controller = float_limit()
+        limit.Enable=True
+        limit.upper_limit = 1
+        limit.upper_limit_enabled = True
+        limit.lower_limit = 1
+        limit.lower_limit_enabled = True
+
+        limit = limitScale.Y_Scale.controller = float_limit()
+        limit.Enable=True
+        limit.upper_limit = 1
+        limit.upper_limit_enabled = True
+        limit.lower_limit = 1
+        limit.lower_limit_enabled = True
+
+        limit = limitScale.Z_Scale.controller = float_limit()
+        limit.Enable=True
+        limit.upper_limit = 1
+        limit.upper_limit_enabled = True
+        limit.lower_limit = 1
+        limit.lower_limit_enabled = True
+        
+        """.format(obj))
+
+        self.command += command
+
+    def unLimit(self,obj, axis, limit):
+        
+        command = textwrap.dedent("""
+                                  
+        limit = ${0}.position.controller.{1}Position.controller
+        limit.Enable=True
+        limit.upper_limit = {2}
+        limit.upper_limit_enabled = True
+        limit.lower_limit = {3}
+        limit.lower_limit_enabled = True
+        
+        """.format(obj,axis,max(*limit),min(*limit)))
+        self.command += command
+
 
 command = toMaxCommand()
 
@@ -83,4 +174,4 @@ uvPinList = ['Head_uvPinMesh', "Jaw_uvPinMesh", "part_uvPinMesh", "Sec_uvPinMesh
 for uvPin in uvPinList:
     data = yaml.load(cmds.getAttr("{}.notes".format(uvPin)))
     for x in data:
-        command.uvPin(obj=x["driven"], uvPin=uvPin, faceIndex=x["meshComponent"][1], vis=False)
+        command.uvPin(obj=x["driven"], uvPin=uvPin, faceIndex=(x["meshComponent"][0]/5)*4, vis=False)
