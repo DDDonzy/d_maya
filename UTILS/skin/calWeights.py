@@ -1,10 +1,10 @@
 
 import numpy as np
+from maya import cmds
 from maya.api import OpenMaya as om
 
 from UTILS.bSpline import CurveData
 from UTILS.skin.fnSkin import D_FnSkin, weightsData
-from maya import cmds
 
 
 class CalWeights(D_FnSkin):

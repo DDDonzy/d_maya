@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import yaml
 
-from gameFace.getHistory import get_history
+from UTILS.getHistory import get_history
 from UTILS.other.choseFile import choseFile
 
 from UTILS.ui.showMessage import showMessage
