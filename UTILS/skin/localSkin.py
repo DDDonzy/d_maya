@@ -1,7 +1,8 @@
+from UTILS.getHistory import get_history
 from maya import cmds
 from UTILS.create.createBase import CreateBase
 from UTILS.apiundo import commit
-from UTILS import transform as t
+from UTILS.transform import matrixConstraint
 
 from maya import cmds
 from UTILS.create.createBase import CreateBase
@@ -11,26 +12,59 @@ class skinClusterToLocal(CreateBase):
 
     def create(self):
         skin = self.name
-        self.local_transform = cmds.createNode('transform', name=f'{skin}_localSkin')
-
-        skin_bindPreMatrix = f"{skin}.bindPreMatrix"
-        skin_geomMatrix = f"{skin}.geomMatrix"
-
         shape = cmds.skinCluster(skin, q=True, g=True)[0]
+        shape_transform = cmds.listRelatives(shape, parent=True)[0]
+        shape_worldMatrix = f"{shape}.worldMatrix[0]"
+        if not cmds.objExists(f"{shape_transform}.relativeSpaceEnable"):
+            cmds.addAttr(shape_transform, ln="relativeSpaceEnable", at="bool", dv=0, k=1)
 
-        local_worldInverseMatrix = f"{self.local_transform}.worldInverseMatrix[0]"
+        self.relativesSpace_loc = cmds.createNode('transform', name=f'{skin}_relativesSpace')
+        cmds.addAttr(self.relativesSpace_loc, ln="relativeSpaceEnable", at="bool", dv=0, k=1, pxy=f"{shape_transform}.relativeSpaceEnable")
+        relativesSpace_worldMatrixI = f"{self.relativesSpace_loc}.worldInverseMatrix[0]"
 
-        cmds.connectAttr(f"{shape}.worldMatrix[0]", skin_geomMatrix)
+        sk_bindPreMatrix = f"{skin}.bindPreMatrix"
+        cmds.addAttr(skin, ln="bindPreMatrixBake", at="matrix", m=1)
+        sk_bindPreMatrixBake = f"{skin}.bindPreMatrixBake"
 
-        indexes = cmds.getAttr(skin_bindPreMatrix, mi=1) or []
-        for index in indexes:
-            mult = cmds.createNode('multMatrix', name=f"{skin}_localSkin{index}")
-            bindPreMatrix = cmds.getAttr(f"{skin_bindPreMatrix}[{index}]")
-            cmds.connectAttr(local_worldInverseMatrix, f"{mult}.matrixIn[0]")
-            cmds.setAttr(f"{mult}.matrixIn[1]", bindPreMatrix, type='matrix')
-            cmds.connectAttr(f"{mult}.matrixSum", f"{skin_bindPreMatrix}[{index}]")
-            
-            
+        sk_geomMatrix = f"{skin}.geomMatrix"
+        cmds.addAttr(skin, ln="skin_geoMatrixBake", at="matrix")
+        sk_geomMatrixBake = f"{skin}.skin_geoMatrixBake"
+        cmds.setAttr(sk_geomMatrixBake, cmds.getAttr(shape_worldMatrix), type='matrix')
+
+        choice = cmds.createNode("choice", n=f"{skin}_choiceGeoMatrix")
+
+        # geomMatrix choice
+        cmds.connectAttr(sk_geomMatrixBake,
+                         f"{choice}.input[0]")
+        cmds.connectAttr(shape_worldMatrix,
+                         f"{choice}.input[1]")
+        cmds.connectAttr(f'{choice}.output', sk_geomMatrix)
+        cmds.connectAttr(f"{self.relativesSpace_loc}.relativeSpaceEnable", f"{choice}.selector")
+
+        indexes = cmds.getAttr(sk_bindPreMatrix, mi=1) or []
+        for i in indexes:
+            # get bindPreMatrix
+            bindPreMatrix = cmds.getAttr(f"{sk_bindPreMatrix}[{i}]")
+            # bake bindPreMatrix
+            cmds.setAttr(f"{sk_bindPreMatrixBake}[{i}]", bindPreMatrix, type='matrix')
+            # create matrix mult
+            # (bind.I * relativesSpace).I = relativesSpace.I * (bind.I).I = relativesSpace.I * bind
+            mult = cmds.createNode('multMatrix', name=f"{skin}_localSkin{i}")
+            cmds.connectAttr(relativesSpace_worldMatrixI,
+                             f"{mult}.matrixIn[0]")
+            cmds.connectAttr(f"{sk_bindPreMatrixBake}[{i}]",
+                             f"{mult}.matrixIn[1]")
+            # switch
+            choice = cmds.createNode("choice", n=f"{skin}_choice{i}")
+            cmds.connectAttr(f"{sk_bindPreMatrixBake}[{i}]",
+                             f"{choice}.input[0]")
+            cmds.connectAttr(f"{mult}.matrixSum",
+                             f"{choice}.input[1]")
+            cmds.connectAttr(f'{choice}.output', f"{sk_bindPreMatrix}[{i}]")
+            cmds.connectAttr(f"{self.relativesSpace_loc}.relativeSpaceEnable", f"{choice}.selector")
+
+        matrixConstraint(shape_transform, self.relativesSpace_loc, mo=1)
+
     def _pre_create(self):
         skin = self.name
         skin_bindPreMatrix = f"{skin}.bindPreMatrix"
@@ -43,17 +77,12 @@ class skinClusterToLocal(CreateBase):
             for index, matrix in self.bindPreMatrixBake.items():
                 cmds.setAttr(f"{skin_bindPreMatrix}[{index}]", matrix, type='matrix')
         commit(_undo, self.create)
-    
-    def _post_create(self):
-        cmds.parent(self.local_transform, w=1)
-
 
 
 for x in cmds.ls(sl=1):
-    sk = get_history(x,"skinCluster")[0]
+    sk = get_history(x, "skinCluster")[0]
+    cmds.undoInfo(openChunk=True)
     if not cmds.listConnections(sk+".bindPreMatrix"):
         s = skinClusterToLocal(sk)
-        cmds.setAttr(s.local_transform+".tx",l=0)
-        cmds.setAttr(s.local_transform+".tx",20)
     else:
         print("bind pass")
