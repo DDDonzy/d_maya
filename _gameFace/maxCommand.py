@@ -8,10 +8,103 @@ from face.data.config import *
 
 class toMaxCommand():
     def __init__(self):
-        self.command = ""
+        self._command = ""
 
     def __repr__(self):
-        return self.command
+        return self._command
+
+    @property
+    def command(self):
+        self._command = ""
+        self.disableSceneRedraw()
+        self.deleteKeys()
+
+        # joint constraint
+        all_sk = control.get_allSkinJoint()
+        un_sk = cmds.listRelatives(UN_SKIN_JOINT_ROOT, c=1)
+        for sk in un_sk:
+            if cmds.objectType(sk, isa="joint"):
+                all_sk.append(sk)
+        for sk in all_sk:
+            ctl = control.ControlData(sk)
+            self.matrixConstraint(driver=ctl.loc, driven=sk)
+
+        # uvpin -> attachment
+        uvPinList = ['Head_uvPinMesh', "Jaw_uvPinMesh", "part_uvPinMesh", "Sec_uvPinMesh"]
+        for uvPin in uvPinList:
+            data = yaml.load(cmds.getAttr("{}.notes".format(uvPin)))
+            for x in data:
+                self.uvPin(obj=x["driven"], uvPin=uvPin, faceIndex=(x["meshComponent"][0]/5)*4, vis=False)
+
+        # sdk
+        data = yaml.load(cmds.getAttr("FaceBridge.notes"))
+        for i, x in enumerate(data):
+            if x.driverAttr:
+                axis = x.driverAttr[-1]
+                driverValue = [x.min, x.max]
+                index = i+1
+                driver = x.driverAttr.split(".")[0]
+
+                for mesh in ['Head_uvPinMesh', "Jaw_uvPinMesh", "part_uvPinMesh", "Sec_uvPinMesh"]:
+                    self.sdk(driver=driver, mesh=mesh, driverValue=driverValue, drivenValue=[0, 100], axis=axis, index=index)
+
+        # class matrix constraint
+        sec_list = control.get_controlsByLabel(SEC_LABEL)
+        sec_loc = [x.loc for x in sec_list]
+        class_list = control.get_controlsByLabel(CLASS_LABEL)
+        for x in class_list:
+            children = cmds.listRelatives(x.ctl, c=1)
+            for c in children:
+                if cmds.objectType(c) != "transform":
+                    continue
+                ctl = control.ControlData(c)
+                if ctl.loc in sec_loc:
+                    continue
+                if ctl.loc != x.loc:
+                    self.classMatrixConstraint(driver=x.loc, driver_grp=x.grp, driven=ctl.sdk, driven_grp=ctl.grp)
+
+        # limit
+        ctl = []
+        data = {}
+        data = yaml.load(cmds.getAttr("FaceBridge.notes"))
+        for i, x in enumerate(data):
+            if x.driverAttr:
+                driver = x.driverAttr.split(".")[0]
+                if driver not in ctl:
+                    ctl.append(driver)
+        for x in ctl:
+            self.limitAll(x)
+            v = eval("cmds.transformLimits('{}',q=1,tx=1)".format(x))
+            self.unLimit(x, "x", v)
+            v = eval("cmds.transformLimits('{}',q=1,ty=1)".format(x))
+            self.unLimit(x, "y", v)
+
+        # freeze hide
+        self.hiddenChildren("RigAsset")
+        self.hiddenChildren("SkinJoint_GRP")
+        self.hiddenChildren("UnSkinJoint_GRP")
+
+        self.freezeChildren("Face_Main")
+        self.freezeChildren("RigAsset")
+        self.freezeChildren("SkinJoint_GRP")
+        self.freezeChildren("UnSkinJoint_GRP")
+
+        # color
+        cv = {}
+        for x in cmds.ls(type="nurbsCurve"):
+            parent = cmds.listRelatives(x, p=1)[0]
+            if cmds.getAttr(x+".overrideRGBColors"):
+                rgb = cmds.getAttr(x+".overrideColorRGB")[0]
+            else:
+                rgb = toMaxCommand.canvas_color(cmds.getAttr(x+".overrideColor"))
+            rgb = (rgb[0]*255, rgb[1]*255, rgb[2]*255)
+            cv.update({parent: rgb})
+
+        for k, v in cv.items():
+            self.setColor(k, v)
+
+        self.enableSceneRedraw()
+        return self._command
 
     def uvPin(self, obj, uvPin, faceIndex, vis):
         vis = bool(vis)
@@ -51,7 +144,7 @@ class toMaxCommand():
 
         """.format(obj, uvPin, faceIndex, vis))
 
-        self.command += command
+        self._command += command
 
     def matrixConstraint(self, driver, driven):
 
@@ -70,7 +163,7 @@ class toMaxCommand():
 
         """.format(driver, driven))
 
-        self.command += command
+        self._command += command
 
     def limitAll(self, obj):
         command = textwrap.dedent("""
@@ -145,7 +238,7 @@ class toMaxCommand():
 
         """.format(obj))
 
-        self.command += command
+        self._command += command
 
     def unLimit(self, obj, axis, limit):
 
@@ -159,7 +252,7 @@ class toMaxCommand():
         limit.lower_limit_enabled = True
 
         """.format(obj, axis, max(*limit), min(*limit)))
-        self.command += command
+        self._command += command
 
     def sdk(self, driver, mesh, driverValue, drivenValue, axis, index):
         command = textwrap.dedent("""
@@ -196,48 +289,175 @@ class toMaxCommand():
                    max(driverValue),
                    drivenValue[driverValue.index(min(driverValue))],
                    drivenValue[driverValue.index(max(driverValue))]))
-        self.command += command
+        self._command += command
+
+    def classMatrixConstraint(self, driver, driver_grp, driven, driven_grp):
+
+        command = textwrap.dedent("""
+
+        class_grp = ${0}
+        class_loc = ${1}
+        ctl_grp = ${2}
+        ctl_sdk = ${3}
+
+        obj_exp = ctl_sdk.Transform.controller = transform_script ()
+
+        obj_exp.addNode "class_grp" class_grp
+        obj_exp.addNode "class_loc" class_loc
+        obj_exp.addNode "ctl_grp" ctl_grp
+
+        obj_exp.script = "ctl_grp.transform * inverse class_grp.transform * class_loc.transform * inverse ctl_grp.transform"
+
+        """.format(driver_grp, driver, driven_grp, driven))
+
+        self._command += command
+
+    def disableSceneRedraw(self):
+        command = textwrap.dedent("""
+        disableSceneRedraw()
+        """)
+        self._command += command
+
+    def enableSceneRedraw(self):
+        command = textwrap.dedent("""
+        enableSceneRedraw()
+        """)
+        self._command += command
+
+    def deleteKeys(self):
+        command = textwrap.dedent("""
+                                  for obj in objects do (if isValidNode obj do (deleteKeys obj))
+                                  """)
+        self._command += command
+
+    def freezeChildren(self, groupName):
+        command = textwrap.dedent("""
+                                  objList = ${0}*...*
+
+                                  for x in objList do
+                                  (
+                                    x.isFrozen  = true
+                                  )
+                                  """).format(groupName)
+        self._command += command
+
+    def hiddenChildren(self, groupName):
+        command = textwrap.dedent("""
+                                  objList = ${0}*...*
+
+                                  for x in objList do
+                                  (
+                                    x.isHidden  = true
+                                  )
+                                  """).format(groupName)
+        self._command += command
+
+    def setColor(self, obj, colorRGB):
+        command = textwrap.dedent("""
+                                  obj = ${0}
+                                  obj.wireColor = color {1} {2} {3}
+                                  """).format(obj, colorRGB[0], colorRGB[1], colorRGB[2])
+        self._command += command
+
+    @staticmethod
+    def canvas_color(index):
+        if index == 0:
+            return (0.627, 0.627, 0.627)
+
+        elif index == 1:
+            return (0, 0, 0)
+
+        elif index == 2:
+            return (0.247, 0.247, 0.247)
+
+        elif index == 3:
+            return (0.498, 0.498, 0.498)
+
+        elif index == 4:
+            return (0.608, 0, 0.157)
+
+        elif index == 5:
+            return (0, 0.016, 0.373)
+
+        elif index == 6:
+            return (0, 0, 1)
+
+        elif index == 7:
+            return (0, 0.275, 0.094)
+
+        elif index == 8:
+            return (0.145, 0, 0.263)
+
+        elif index == 9:
+            return (0.78, 0, 0.78)
+
+        elif index == 10:
+            return (0.537, 0.278, 0.2)
+
+        elif index == 11:
+            return (0.243, 0.133, 0.122)
+
+        elif index == 12:
+            return (0.6, 0.145, 0)
+
+        elif index == 13:
+            return (1, 0, 0)
+
+        elif index == 14:
+            return (0, 1, 0)
+
+        elif index == 15:
+            return (0, 0.255, 0.6)
+
+        elif index == 16:
+            return (1, 1, 1)
+
+        elif index == 17:
+            return (1, 1, 0)
+
+        elif index == 18:
+            return (0.388, 0.863, 1)
+
+        elif index == 19:
+            return (0.263, 1, 0.635)
+
+        elif index == 20:
+            return (1, 0.686, 0.686)
+
+        elif index == 21:
+            return (0.89, 0.675, 0.475)
+
+        elif index == 22:
+            return (1, 1, 0.384)
+
+        elif index == 23:
+            return (0, 0.6, 0.325)
+
+        elif index == 24:
+            return (0.627, 0.412, 0.188)
+
+        elif index == 25:
+            return (0.62, 0.627, 0.188)
+
+        elif index == 26:
+            return (0.408, 0.627, 0.188)
+
+        elif index == 27:
+            return (0.188, 0.627, 0.365)
+
+        elif index == 28:
+            return (0.188, 0.627, 0.627)
+
+        elif index == 29:
+            return (0.188, 0.404, 0.627)
+
+        elif index == 30:
+            return (0.435, 0.188, 0.627)
+
+        else:
+            return (0.627, 0.188, 0.412)
 
 
-command = toMaxCommand()
+maxCommand = toMaxCommand()
 
-# joint constraint
-all_sk = control.get_allSkinJoint()
-for sk in all_sk:
-    ctl = control.ControlData(sk)
-    command.matrixConstraint(driver=ctl.loc, driven=sk)
-
-# uvpin -> attachment
-uvPinList = ['Head_uvPinMesh', "Jaw_uvPinMesh", "part_uvPinMesh", "Sec_uvPinMesh"]
-for uvPin in uvPinList:
-    data = yaml.load(cmds.getAttr("{}.notes".format(uvPin)))
-    for x in data:
-        command.uvPin(obj=x["driven"], uvPin=uvPin, faceIndex=(x["meshComponent"][0]/5)*4, vis=False)
-
-# sdk
-data = yaml.load(cmds.getAttr("FaceBridge.notes"))
-for i, x in enumerate(data):
-    if x.driverAttr:
-        axis = x.driverAttr[-1]
-        driverValue = [x.min, x.max]
-        index = i+1
-        driver = x.driverAttr.split(".")[0]
-
-        for mesh in ['Head_uvPinMesh', "Jaw_uvPinMesh", "part_uvPinMesh", "Sec_uvPinMesh"]:
-            command.sdk(driver=driver, mesh=mesh, driverValue=driverValue, drivenValue=[0, 100], axis=axis, index=index)
-
-# limit
-ctl = []
-data = {}
-data = yaml.load(cmds.getAttr("FaceBridge.notes"))
-for i, x in enumerate(data):
-    if x.driverAttr:
-        driver = x.driverAttr.split(".")[0]
-        if driver not in ctl:
-            ctl.append(driver)
-for x in ctl:
-    command.limitAll(x)
-    v = eval("cmds.transformLimits('{}',q=1,tx=1)".format(x))
-    command.unLimit(x, "x", v)
-    v = eval("cmds.transformLimits('{}',q=1,ty=1)".format(x))
-    command.unLimit(x, "y", v)
+maxCommand.command

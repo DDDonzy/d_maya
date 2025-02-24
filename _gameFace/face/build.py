@@ -61,6 +61,13 @@ class build(CreateBase):
         HideShapeContainer(shape_list)
         # build max joints
         buildMaxJoint("MaxJoints")
+        # joint hierarchy to skinJointGrp
+        for x, x_dag in hierarchyIter(SKIN_JOINT_ROOT):
+            if x == SKIN_JOINT_ROOT:
+                continue
+            p = cmds.listRelatives(x,p=1)[0]
+            if p != SKIN_JOINT_ROOT:
+                cmds.parent(x, SKIN_JOINT_ROOT)
 
         muteMessage(False)
         showMessage("Build !")
