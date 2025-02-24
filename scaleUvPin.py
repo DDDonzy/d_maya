@@ -165,10 +165,6 @@ def normalizedUvPinWeights(uvPinMesh: str, componentNumVertices: int = 5, compon
     _doit()
     commit(_undo, _doit)
 
-
-if __name__ == "__main__":
-    mesh = "xc_gd:Jianjia_Uvpin"
-    # normalizedUvPinWeights(mesh, 5, 1)
     
 
 

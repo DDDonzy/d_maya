@@ -270,3 +270,15 @@
     driverAttr: MouthControl_ctrl9.tx
     min: 0
     max: 1
+
+- !<BridgeData>
+    name: __TEST__
+    driverAttr: null
+    min: 0
+    max: 1
+    
+- !<BridgeData>
+    name: happy
+    driverAttr: Eye_Down_R_ctrl1.ty
+    min: 0
+    max: -1

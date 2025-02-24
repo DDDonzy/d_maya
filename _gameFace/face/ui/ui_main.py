@@ -7,6 +7,8 @@ from face.data.config import *
 from face.ui import ui_sdk
 from face.ui.ui_loader import build_ui
 from face.fit import importFit, exportFit, mirrorDuplicateTransform_cmd, hideClass, hidePart
+from face.fn.maxCommand import toMaxCommand
+from face.fn.showMessage import showMessage
 
 from maya import cmds
 
@@ -42,8 +44,15 @@ def setup_ui_logic():
     ui.bt_mirror.clicked.connect(partial(mirrorDuplicateTransform_cmd))
     ui.bt_importShape.clicked.connect(partial(import_cvData, startingDirectory=DEFAULT_SHAPES_DIR))
     ui.bt_exportShape.clicked.connect(partial(export_cvData, startingDirectory=DEFAULT_SHAPES_DIR))
-    ui.bt_exportMax.clicked.connect(partial(print, "Export Max"))
+    ui.bt_exportMax.clicked.connect(partial(exportMax))
     ui.bt_exportPoseAsset.clicked.connect(partial(print, "Export PoseAsset"))
     ui.bt_importSDK.clicked.connect(partial(importUVPinWeights))
     ui.bt_exportSDK.clicked.connect(partial(exportUVPinWeights))
     ui.bt_build.clicked.connect(partial(build, "Face"))
+
+
+def exportMax():
+    command = toMaxCommand()
+    command.exportToMax()
+    showMessage("Export Max Done")
+    print("Export Max")

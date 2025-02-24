@@ -80,8 +80,12 @@ class skinClusterToLocal(CreateBase):
 
 
 for x in cmds.ls(sl=1):
-    sk = get_history(x, "skinCluster")[0]
-    cmds.undoInfo(openChunk=True)
+    sk = get_history(x, "skinCluster")
+    if sk:
+        sk = sk[0]
+    else:
+        print(f"{x} has no skinCluster")
+        continue
     if not cmds.listConnections(sk+".bindPreMatrix"):
         s = skinClusterToLocal(sk)
     else:

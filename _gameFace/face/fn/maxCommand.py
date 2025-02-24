@@ -1,9 +1,10 @@
 
 import textwrap
 import face.control as control
-from maya import cmds
+from maya import cmds, mel
 import yaml
 from face.data.config import *
+from face.fn.choseFile import choseFile
 
 
 class toMaxCommand():
@@ -15,10 +16,15 @@ class toMaxCommand():
 
     @property
     def command(self):
+        self._importFbx = ""
         self._command = ""
+        # import fbx
+        self.maxImportFbx()
+        
+        # mute scene
         self.disableSceneRedraw()
         self.deleteKeys()
-
+        
         # joint constraint
         all_sk = control.get_allSkinJoint()
         un_sk = cmds.listRelatives(UN_SKIN_JOINT_ROOT, c=1)
@@ -28,14 +34,12 @@ class toMaxCommand():
         for sk in all_sk:
             ctl = control.ControlData(sk)
             self.matrixConstraint(driver=ctl.loc, driven=sk)
-
         # uvpin -> attachment
         uvPinList = ['Head_uvPinMesh', "Jaw_uvPinMesh", "part_uvPinMesh", "Sec_uvPinMesh"]
         for uvPin in uvPinList:
             data = yaml.load(cmds.getAttr("{}.notes".format(uvPin)))
             for x in data:
                 self.uvPin(obj=x["driven"], uvPin=uvPin, faceIndex=(x["meshComponent"][0]/5)*4, vis=False)
-
         # sdk
         data = yaml.load(cmds.getAttr("FaceBridge.notes"))
         for i, x in enumerate(data):
@@ -44,10 +48,8 @@ class toMaxCommand():
                 driverValue = [x.min, x.max]
                 index = i+1
                 driver = x.driverAttr.split(".")[0]
-
                 for mesh in ['Head_uvPinMesh', "Jaw_uvPinMesh", "part_uvPinMesh", "Sec_uvPinMesh"]:
                     self.sdk(driver=driver, mesh=mesh, driverValue=driverValue, drivenValue=[0, 100], axis=axis, index=index)
-
         # class matrix constraint
         sec_list = control.get_controlsByLabel(SEC_LABEL)
         sec_loc = [x.loc for x in sec_list]
@@ -62,7 +64,6 @@ class toMaxCommand():
                     continue
                 if ctl.loc != x.loc:
                     self.classMatrixConstraint(driver=x.loc, driver_grp=x.grp, driven=ctl.sdk, driven_grp=ctl.grp)
-
         # limit
         ctl = []
         data = {}
@@ -78,7 +79,6 @@ class toMaxCommand():
             self.unLimit(x, "x", v)
             v = eval("cmds.transformLimits('{}',q=1,ty=1)".format(x))
             self.unLimit(x, "y", v)
-
         # freeze hide
         self.hiddenChildren("RigAsset")
         self.hiddenChildren("SkinJoint_GRP")
@@ -88,7 +88,6 @@ class toMaxCommand():
         self.freezeChildren("RigAsset")
         self.freezeChildren("SkinJoint_GRP")
         self.freezeChildren("UnSkinJoint_GRP")
-
         # color
         cv = {}
         for x in cmds.ls(type="nurbsCurve"):
@@ -99,11 +98,13 @@ class toMaxCommand():
                 rgb = toMaxCommand.canvas_color(cmds.getAttr(x+".overrideColor"))
             rgb = (rgb[0]*255, rgb[1]*255, rgb[2]*255)
             cv.update({parent: rgb})
-
         for k, v in cv.items():
             self.setColor(k, v)
-
+        # un mute scene
         self.enableSceneRedraw()
+        # combine command
+        self._command = self._importFbx.replace("##FACE_RIG_LOGIC##", self._command)
+
         return self._command
 
     def uvPin(self, obj, uvPin, faceIndex, vis):
@@ -360,6 +361,78 @@ class toMaxCommand():
         self._command += command
 
     @staticmethod
+    def mayaExportFaceFBX(path=None):
+
+        cmds.loadPlugin('fbxmaya', qt=True)
+        
+        cmds.select(['RigAsset', 'Controls_GRP', 'SkinJoint_GRP', 'UnSkinJoint_GRP'])
+
+        path = choseFile(path=path, dialogStyle=2, caption="Export FBX", fileFilter="FBX file(*.fbx)")
+        if path is None:
+            return
+        mel.eval('FBXResetExport')
+        mel.eval('FBXExportInputConnections -v 0')
+        mel.eval('FBXExportIncludeChildren -v 1')
+        mel.eval('FBXExportBakeComplexAnimation -v 0')
+        mel.eval('FBXExportShapes -v 1')
+        mel.eval('FBXExportSkins -v 1')
+
+        mel.eval('FBXExport -f "{}" -s'.format(path))
+
+    def maxImportFbx(self):
+        command = textwrap.dedent("""
+                                  
+        fn getFilePath = (
+        filePath = getOpenFileName \
+            caption:"Import FBX File" \
+            types:"FBX File (*.fbx)|*.fbx|All File (*.*)|*.*" \
+            historyCategory:"FBXImports"
+
+        if filePath != undefined then (
+            return filePath
+        ) else (
+            return undefined
+        )
+        )
+
+        fbxFilePath = getFilePath()
+        if not doesFileExist fbxFilePath then (
+            messageBox ("Can not find:" + fbxFilePath)
+            return false
+            )
+        else(
+            max file new
+            FBXImporterSetParam "Animation" false        
+            FBXImporterSetParam "Cameras" false        
+            FBXImporterSetParam "Lights" false         
+            FBXImporterSetParam "Skin" true            
+            FBXImporterSetParam "Shape" true           
+            FBXImporterSetParam "ImportBoneAsDummy" false
+            FBXImporterSetParam "Mode" #merge
+            importFile fbxFilePath #noPrompt using:FBXIMP
+            forceCompleteRedraw()
+            ##FACE_RIG_LOGIC##
+            )
+                                  """)
+        self._importFbx += command
+    
+    def exportMaxScript(self, path=None):
+        path = choseFile(path=path, dialogStyle=2, caption="Export Max Script", fileFilter="Max Script file(*.ms)")
+        if path is None:
+            return
+        with open(path, "w") as f:
+            f.write(self.command)
+        print("Export successful")
+    
+    def exportToMax(self):
+        path = choseFile(dialogStyle=2, caption="Export Max Script", fileFilter="Max Script file(*.ms)")
+        if path is None:
+            return
+        fbx_path = path.replace(".ms", ".fbx")
+        self.exportMaxScript(path)
+        self.mayaExportFaceFBX(fbx_path)
+
+    @staticmethod
     def canvas_color(index):
         if index == 0:
             return (0.627, 0.627, 0.627)
@@ -458,6 +531,6 @@ class toMaxCommand():
             return (0.627, 0.188, 0.412)
 
 
-maxCommand = toMaxCommand()
-
-maxCommand.command
+if __name__ == "__main__":
+    maxCommand = toMaxCommand()
+    maxCommand.exportToMax()
