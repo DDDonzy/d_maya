@@ -1,7 +1,6 @@
-from __future__ import print_function
-
+# -*- coding: utf-8 -*-
 from face.fn import apiundo
-from face.fn.getHistory import get_history
+from face.fn.getHistory import get_history, get_obj, get_orig
 from face.fn.mirrorEnv import MIRROR_CONFIG
 from face.fn.choseFile import choseFile
 from face.fn.showMessage import showMessage
@@ -19,6 +18,47 @@ import os
 import yaml
 
 import numpy as np
+from functools import partial
+
+
+def move_uvPin_orig():
+    """
+    避免骨骼重叠的时候，镜像翻转bs的时候，出现问题
+    大概原理，根据对称控制器修改对应的uvPin的位置，每对控制器保持对称
+    且其他控制器不会和对称控制器重叠，然后进行bs的翻转和镜像
+    
+    由于API不可以撤销，所以这里使用了apiundo模块
+    并且返回一个函数列表，用于镜像翻转之后进行orig的还原
+    
+    """
+    uvPin_list = yaml.load(cmds.getAttr("{0}.notes".format(FACE_ROOT)))["uvPin"]
+    returnFunctionList = []
+    for uvPin in uvPin_list:
+        uvPin_list = yaml.load(cmds.getAttr("{0}.notes".format(uvPin)))
+        tempDict = {}
+        for x in uvPin_list:
+            tempDict.update({x["driven"]: x["meshComponent"]})
+        outValueDict = {}
+        for k, v in tempDict.items():
+            obj_o = MIRROR_CONFIG.exchange(k)[0]
+            outValueDict.update({k: list(set(tempDict[k]+tempDict[obj_o]))})
+
+        orig = get_orig(uvPin)[0]
+        dag = get_obj(orig, dag=1)
+
+        fnMesh = om.MFnMesh(dag)
+        posBase = fnMesh.getPoints()
+        pos = np.array(posBase)
+        value = 0
+        for k, v in outValueDict.items():
+            pos[v, 2] += value
+            value += 1
+
+        apiundo.commit(undo=partial(fnMesh.setPoints, posBase),
+                       redo=partial(fnMesh.setPoints, om.MPointArray(pos)))
+        fnMesh.setPoints(om.MPointArray(pos))
+        returnFunctionList.append(partial(fnMesh.setPoints, posBase))
+    return returnFunctionList
 
 
 def setPoseBase(obj, bs, targetIndex, pose_position=None):
@@ -63,7 +103,12 @@ def delPoseData(targetIndex):
         del_bsTargetData(bs, targetIndex)
 
 
+def prePose(targetIndex):
+    uvPin_list = yaml.load(cmds.getAttr("{0}.notes".format(FACE_ROOT)))["uvPin"]
+
+
 def flipPose(source_name):
+    resetList = move_uvPin_orig()
     target_name = MIRROR_CONFIG.exchange(source_name)[0]
     if source_name == target_name:
         return
@@ -72,19 +117,24 @@ def flipPose(source_name):
         blendShapeNode = get_history(obj, type="blendShape")[0]
         copy_bsTargetData(blendShapeNode, source_name, target_name)
         flip_bsTarget(blendShapeNode, target_name)
+    for x in resetList:
+        x()
 
 
 def mirrorPose(targetName,
                axis="x",
                mirrorDirection=0):
-
+    restList = move_uvPin_orig()
     uvPin_list = yaml.load(cmds.getAttr("{0}.notes".format(FACE_ROOT)))["uvPin"]
     for obj in uvPin_list:
         blendShapeNode = get_history(obj, type="blendShape")[0]
         targetData = get_bsData(blendShapeNode)
+
         cmds.blendShape(blendShapeNode, e=1, mirrorTarget=(0, targetData[targetName].index),
                         symmetryAxis=axis, mirrorDirection=mirrorDirection, symmetrySpace=1)
         cmds.symmetricModelling(e=True, r=1)
+    for x in restList:
+        x()
 
 
 def auto_mirror_flip_pose(source_name):

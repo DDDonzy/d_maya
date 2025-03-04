@@ -87,6 +87,13 @@
      </layout>
     </item>
     <item>
+     <widget class="QPushButton" name="bt_align">
+      <property name="text">
+       <string>Align</string>
+      </property>
+     </widget>
+    </item>
+    <item>
      <widget class="QPushButton" name="bt_mirror">
       <property name="text">
        <string>Mirror Fit</string>

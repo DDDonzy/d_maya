@@ -1,4 +1,3 @@
-from __future__ import print_function
 from face.fn import cvFn
 from face.fn import transform as t
 from face.fn.choseFile import choseFile
@@ -13,7 +12,7 @@ from face.fn.getHistory import get_history
 from face.fn.hierarchyIter import hierarchyIter
 from face.fit import get_allFitJoint, mirrorDuplicateTransform_cmd, get_fitJointByKeyWord
 from face.control import ControlData, ControlPanel, buildControl, get_allControls, get_controlsByLabel, get_brow, get_eyeLine, get_lid, get_lip, get_cheek
-from face.toMax import buildMaxJoint
+from face.fn.maxJoint import buildMaxJoint
 
 from maya import cmds
 from maya.api import OpenMaya as om
@@ -48,29 +47,38 @@ class build(CreateBase):
         build.buildControlsPanelAndSDK()
 
     def _post_create(self):
+        # build face geo group
+        if not cmds.objExists(GEOMETRY_ROOT):
+            CreateNode("transform", name=GEOMETRY_ROOT)
+            
         # hide fit
         cmds.setAttr("{}.v".format(FIT_ROOT), 0)
+        
         # parent to world
         cmds.parent(CONTROL_ROOT, w=1)
         cmds.parent(SKIN_JOINT_ROOT, w=1)
 
         cmds.parent(UN_SKIN_JOINT_ROOT, w=1)
         cmds.setAttr(UN_SKIN_JOINT_ROOT+".v", 0)
+        
         # hide shape
         shape_list = [x for x, _ in hierarchyIter('Controls_GRP') if cmds.objectType(x, isAType="shape")]
         HideShapeContainer(shape_list)
+        
         # build max joints
-        buildMaxJoint("MaxJoints")
+        if BUILD_MAX_JOINTS:
+            buildMaxJoint("MaxJoints")
+            
         # joint hierarchy to skinJointGrp
         for x, x_dag in hierarchyIter(SKIN_JOINT_ROOT):
             if x == SKIN_JOINT_ROOT:
                 continue
-            p = cmds.listRelatives(x,p=1)[0]
+            p = cmds.listRelatives(x, p=1)[0]
             if p != SKIN_JOINT_ROOT:
                 cmds.parent(x, SKIN_JOINT_ROOT)
 
         muteMessage(False)
-        showMessage("Build !")
+        showMessage("Build Successful !")
 
     ############################
 

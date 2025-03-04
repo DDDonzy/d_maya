@@ -119,6 +119,61 @@
     driverAttr: EyeControl_ctrl1.tx
     min: 0
     max: 1
+- !<BridgeData>
+    name: R_EyeDown
+    driverAttr: Eye_Down_R_ctrl1.ty
+    min: 0
+    max: -1
+- !<BridgeData>
+    name: L_EyeDown
+    driverAttr: Eye_Down_L_ctrl1.ty
+    min: 0
+    max: -1
+- !<BridgeData>
+    name: L_EyeUp
+    driverAttr: Eye_UP_L_ctrl1.ty
+    min: 0
+    max: -1
+- !<BridgeData>
+    name: R_EyeUp
+    driverAttr: Eye_UP_R_ctrl1.ty
+    min: 0
+    max: -1
+- !<BridgeData>
+    name: Eye_Wail
+    driverAttr: EyeControl_Custom_ctrl2.tx
+    min: 0
+    max: 1
+- !<BridgeData>
+    name: Eye_Conternpt
+    driverAttr: EyeControl_Custom_ctrl30.tx
+    min: 0
+    max: 1
+- !<BridgeData>
+    name: Eye_Scale
+    driverAttr: EyeControl_Custom_ctrl1.tx
+    min: 0
+    max: 1
+- !<BridgeData>
+    name: R_Eye_Squint
+    driverAttr: EyeControl_Custom_ctrl4.tx
+    min: 0
+    max: -1
+- !<BridgeData>
+    name: L_Eye_Squint
+    driverAttr: EyeControl_Custom_ctrl5.tx
+    min: 0
+    max: -1
+- !<BridgeData>
+    name: L_Eye_Wide
+    driverAttr: EyeControl_Custom_ctrl5.tx
+    min: 0
+    max: 1
+- !<BridgeData>
+    name: R_Eye_Wide
+    driverAttr: EyeControl_Custom_ctrl4.tx
+    min: 0
+    max: 1
 # cheek puff
 - !<BridgeData>
     name: __Cheek__
@@ -270,15 +325,3 @@
     driverAttr: MouthControl_ctrl9.tx
     min: 0
     max: 1
-
-- !<BridgeData>
-    name: __TEST__
-    driverAttr: null
-    min: 0
-    max: 1
-    
-- !<BridgeData>
-    name: happy
-    driverAttr: Eye_Down_R_ctrl1.ty
-    min: 0
-    max: -1

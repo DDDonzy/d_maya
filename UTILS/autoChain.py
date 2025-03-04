@@ -74,7 +74,7 @@ def selectVertexByIndex(mesh, indexList):
 
 def getGrowVtxGroup(mesh, step=1):
     vtx_neighbor = get_neighbor_faceVtx(mesh)
-    vtxIndex_list = getSelectedVertexIndex()
+    vtxIndex_list,_ = getSelectedVertexIndex()
 
     filter_list = set(vtxIndex_list)
 
@@ -105,14 +105,14 @@ def getGrowVtxGroup(mesh, step=1):
     return step_list
 
 
-def calCenterPosition(vtxGroup, mesh):
+def calCenterPosition(vtxList, mesh):
     mDag = om.MSelectionList().add(mesh).getDagPath(0)
     fnMesh = om.MFnMesh(mDag)
     position = fnMesh.getPoints(om.MSpace.kWorld)
     position = np.array(position)
 
     center_list = []
-    for v_list in vtxGroup:
+    for v_list in vtxList:
         points = np.array(position[v_list])[:, :-1]
         center_list.append(np.mean(points, axis=0))
     return center_list
@@ -145,6 +145,7 @@ class chainFit(CreateBase):
 
     def buildCurve(self):
         cvPosition = calCenterPosition(getGrowVtxGroup(self.mesh, step=self.step), self.mesh)
+        cvPosition = [[x[0]/100, x[1]/100, x[2]/100] for x in cvPosition]
         cvTransform = cmds.curve(d=1, ep=cvPosition, name=self.createName("curve"))
         cvShape = cmds.rename(cmds.listRelatives(cvTransform, s=1)[0], f"{cvTransform}Shape")
         cvRebuild = cmds.createNode("rebuildCurve", name=self.createName("rebuildCurve"))

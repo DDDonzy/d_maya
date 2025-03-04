@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 from face.data.config import *
 
 from face.fn.getHistory import get_history
@@ -11,6 +9,7 @@ from face.fn.bsData import add_bsTarget
 
 from face.fit import JointData, get_fitJointByKeyWord
 from face.fn.hierarchyIter import hierarchyIter
+
 from maya import cmds, mel
 import yaml
 

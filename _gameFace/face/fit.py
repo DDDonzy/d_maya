@@ -1,12 +1,10 @@
-from __future__ import print_function
-
 from face.data.config import *
 
 from face.fn.mirrorEnv import MIRROR_CONFIG
 from face.fn.choseFile import choseFile
 from face.fn.showMessage import showMessage
 from face.fn.createBase import CreateNode
-from face.fn.transform import get_worldMatrix, set_worldMatrix, flip_transform
+from face.fn.transform import get_worldMatrix, set_worldMatrix, flip_transform, alignTransform
 from face.fn.hierarchyIter import hierarchyIter
 
 import yaml
@@ -269,3 +267,53 @@ def get_fitJointByKeyWord(*args):
     return result_list
 
 
+def alignFromSec():
+    """Align all class and part joints from sec joints"""
+    alignDict = {
+        "L_BrowClass": "L_BrowSec3",
+        "L_BrowPart1": "L_BrowSec1",
+        "L_BrowPart2": "L_BrowSec3",
+        "L_BrowPart3": "L_BrowSec5",
+
+        "R_BrowClass": "R_BrowSec3",
+        "R_BrowPart1": "R_BrowSec1",
+        "R_BrowPart2": "R_BrowSec3",
+        "R_BrowPart3": "R_BrowSec5",
+
+        "L_LidInnerPart": "L_LidInnerSec",
+        "L_LidUpperPart": "L_LidUpperSec3",
+        "L_LidOuterPart": "L_LidOuterSec",
+        "L_LidLowerPart": "L_LidLowerSec3",
+
+        "R_LidInnerPart": "R_LidInnerSec",
+        "R_LidUpperPart": "R_LidUpperSec3",
+        "R_LidOuterPart": "R_LidOuterSec",
+        "R_LidLowerPart": "R_LidLowerSec3",
+
+        "L_CheekUpperClass": "L_CheekUpperSec2",
+        "L_CheekUpperPart1": "L_CheekUpperSec1",
+        "L_CheekUpperPart2": "L_CheekUpperSec3",
+
+        "R_CheekUpperClass": "R_CheekUpperSec2",
+        "R_CheekUpperPart1": "R_CheekUpperSec1",
+        "R_CheekUpperPart2": "R_CheekUpperSec3",
+        
+        "M_LipUpperPart":"M_LipUpperSec",
+        "M_LipLowerPart":"M_LipLowerSec",
+        "R_LipCornerPart":"R_LipCornerSec",
+        "L_LipCornerPart":"L_LipCornerSec"
+    }
+    matrixDict = {}
+    for x, dag in hierarchyIter(FIT_ROOT):
+        if x == FIT_ROOT:
+            continue
+        matrixDict.update({x: get_worldMatrix(x)})
+    
+    for key, value in matrixDict.items():
+        if key in alignDict:
+            matrixDict[key] = matrixDict[alignDict[key]]
+    
+    for x, dag in hierarchyIter(FIT_ROOT):
+        if x == FIT_ROOT:
+            continue
+        set_worldMatrix(x, matrixDict[x])

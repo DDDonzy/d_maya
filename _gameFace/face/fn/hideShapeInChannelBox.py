@@ -1,9 +1,6 @@
 from maya import cmds
 from maya.api import OpenMaya as om
 from face.fn.createBase import CreateBase
-import face.fn.createBase
-from imp import reload
-reload(face.fn.createBase)
 
 
 def get_shape(transform_object):

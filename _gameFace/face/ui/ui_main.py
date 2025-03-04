@@ -6,7 +6,7 @@ from face.build import build, importUVPinWeights, exportUVPinWeights
 from face.data.config import *
 from face.ui import ui_sdk
 from face.ui.ui_loader import build_ui
-from face.fit import importFit, exportFit, mirrorDuplicateTransform_cmd, hideClass, hidePart
+from face.fit import importFit, exportFit, mirrorDuplicateTransform_cmd, hideClass, hidePart, alignFromSec
 from face.fn.maxCommand import toMaxCommand
 from face.fn.showMessage import showMessage
 
@@ -49,6 +49,7 @@ def setup_ui_logic():
     ui.bt_importSDK.clicked.connect(partial(importUVPinWeights))
     ui.bt_exportSDK.clicked.connect(partial(exportUVPinWeights))
     ui.bt_build.clicked.connect(partial(build, "Face"))
+    ui.bt_align.clicked.connect(partial(alignFromSec))
 
 
 def exportMax():

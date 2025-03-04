@@ -1,4 +1,3 @@
-
 import textwrap
 import face.control as control
 from maya import cmds, mel
@@ -20,11 +19,11 @@ class toMaxCommand():
         self._command = ""
         # import fbx
         self.maxImportFbx()
-        
+
         # mute scene
         self.disableSceneRedraw()
         self.deleteKeys()
-        
+
         # joint constraint
         all_sk = control.get_allSkinJoint()
         un_sk = cmds.listRelatives(UN_SKIN_JOINT_ROOT, c=1)
@@ -364,8 +363,8 @@ class toMaxCommand():
     def mayaExportFaceFBX(path=None):
 
         cmds.loadPlugin('fbxmaya', qt=True)
-        
-        cmds.select(['RigAsset', 'Controls_GRP', 'SkinJoint_GRP', 'UnSkinJoint_GRP'])
+
+        cmds.select([RIG_ASSET, CONTROL_ROOT, SKIN_JOINT_ROOT, UN_SKIN_JOINT_ROOT, GEOMETRY_ROOT])
 
         path = choseFile(path=path, dialogStyle=2, caption="Export FBX", fileFilter="FBX file(*.fbx)")
         if path is None:
@@ -415,7 +414,7 @@ class toMaxCommand():
             )
                                   """)
         self._importFbx += command
-    
+
     def exportMaxScript(self, path=None):
         path = choseFile(path=path, dialogStyle=2, caption="Export Max Script", fileFilter="Max Script file(*.ms)")
         if path is None:
@@ -423,7 +422,7 @@ class toMaxCommand():
         with open(path, "w") as f:
             f.write(self.command)
         print("Export successful")
-    
+
     def exportToMax(self):
         path = choseFile(dialogStyle=2, caption="Export Max Script", fileFilter="Max Script file(*.ms)")
         if path is None:
