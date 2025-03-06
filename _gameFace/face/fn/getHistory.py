@@ -2,14 +2,18 @@ from maya import cmds
 from maya.api import OpenMaya as om
 
 
-
 def get_history(obj, type=None):
     out_list = []
     if not cmds.objExists(obj):
         return out_list
-    history_list = cmds.listHistory(obj, pdo=1, il=1)
+    shape = cmds.listRelatives(obj, s=1) or []
+    objList = [shape]+shape
+    history_list = []
+    for obj in objList:
+        history_list += cmds.listHistory(obj, pdo=1, il=1) or []
     if not history_list:
         return out_list
+    history_list = list(set(history_list))
 
     if type:
         for his in history_list:
