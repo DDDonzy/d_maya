@@ -2,7 +2,7 @@ from maya.api import OpenMaya as om
 from maya import cmds
 
 
-def selectInputTargetGeometry():
+def getInputTargetGeometry(select=True):
     objList = []
     bsNode = cmds.ls(sl=1)
     if not bsNode:
@@ -17,8 +17,9 @@ def selectInputTargetGeometry():
         logicalIndex = mPlug.logicalIndex()
         inputTargetAttr = f"{bsNode}.inputTarget[0].inputTargetGroup[{logicalIndex}].inputTargetItem[6000].inputGeomTarget"
         objList.extend(cmds.listConnections(inputTargetAttr, s=1, d=0))
-    cmds.select(objList)
+    if select:
+        cmds.select(objList)
 
 
 if __name__ == "__main__":
-    selectInputTargetGeometry()
+    getInputTargetGeometry()
