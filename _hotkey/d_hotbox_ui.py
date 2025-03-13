@@ -5,11 +5,12 @@ from UTILS.control.cvShape import (mirror_cvShape_cmd,
                                    select_cvControlVertex_cmd,
                                    import_cvData,
                                    export_cvData)
-from UTILS.transform import (matrixConstraint,
-                             uvPin,
-                             reset_transformObjectValue_cmd)
+from UTILS.compounds import (matrixConstraint,
+                             uvPin)
+
 
 import UTILS.other.attr as attr
+from UTILS.transform import reset_transformObjectValue_cmd
 from UTILS.mirrorEnv import mirror_selected, MIRROR_CONFIG
 from Rainbow.rainbow_UI import rainbow_win
 from UTILS.skin.getSkinJoint import get_skinJoint_cmd
