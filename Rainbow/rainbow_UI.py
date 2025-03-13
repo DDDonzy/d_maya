@@ -28,15 +28,15 @@ def rainbow_win():
 
     cmds.rowLayout(p=curve_frame, nc=3, cw3=(300, 50, 50), cat=[(2, 'left', 10), (3, 'left', 5)])
     cmds.floatSliderGrp('scale_slider', label='Scale : ', field=True, minValue=0, maxValue=1,  value=0.2, cw3=(50, 50, 200), cat=(3, 'both', 5))
-    cmds.iconTextButton('sub_scale_button', image1='addClip.png', c='curve_scale(0)')
-    cmds.iconTextButton('add_scale_button', image1='addClip.png', c='curve_scale(1)')
+    cmds.iconTextButton('sub_scale_button', image1='addClip.png', command=lambda: curve_scale(0))
+    cmds.iconTextButton('add_scale_button', image1='addClip.png', command=lambda: curve_scale(1))
 
     # cmds.separator(p = curve_frame)
     color_frame = cmds.frameLayout(label='Colors', p=mainLayout)
     cmds.scrollLayout(childResizable=1, p=color_frame)
     cmds.gridLayout(numberOfColumns=8, cellWidthHeight=(50, 40))
     for i in range(32):
-        cmds.canvas(rgbValue=canvas_color(i), pc='change_color({})'.format(i))
+        cmds.canvas(rgbValue=canvas_color(i), pc=lambda i=i: change_color(i))
 
     cmds.showWindow('rainbow_win')
 
@@ -67,8 +67,9 @@ def curve_grid():
             curve_img[name] = img
 
     for icon in curve_name:
-        cmds.iconTextButton(style='iconOnly', image1=curve_img[icon], label='', c='create_curve(0,"{}")'.format(icon),
-                            dcc='create_curve(1,"{}")'.format(icon))
+        cmds.iconTextButton(style='iconOnly', image1=curve_img[icon], label='', 
+                            command=lambda icon=icon: create_curve(0, icon),
+                            dcc=lambda icon=icon: create_curve(1, icon))
 
 
 def create_curve(mod, name):
