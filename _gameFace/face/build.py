@@ -6,7 +6,7 @@ from face.fn.calWeights import CalWeights
 from face.fn.showMessage import muteMessage, showMessage
 from face.fn.createBase import CreateBase, CreateNode
 from face.fn.hideShapeInChannelBox import HideShapeContainer
-
+from face.fn.localSkin import skinClusterToLocal
 from face.data.config import *
 from face.fn.getHistory import get_history
 from face.fn.hierarchyIter import hierarchyIter
@@ -247,6 +247,14 @@ class build(CreateBase):
                     data)
 
         t._uvPin.normalizedWeights(sec_pin.mesh, sec_sk)
+        
+        # solver move to large distance bug
+        jaw_local = skinClusterToLocal(jaw_sk)
+        part_local = skinClusterToLocal(part_sk)
+        sec_local = skinClusterToLocal(sec_sk)
+        t.matrixConstraint(CONTROL_ROOT,jaw_pin.mesh)
+        t.matrixConstraint(CONTROL_ROOT,part_pin.mesh)
+        t.matrixConstraint(CONTROL_ROOT,sec_pin.mesh)
 
     @staticmethod
     def buildClassConstraint():
