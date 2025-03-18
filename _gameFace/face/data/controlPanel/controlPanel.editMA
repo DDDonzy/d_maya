@@ -9686,7 +9686,7 @@ createNode transform -n "Face_Control" -p "EM_FaceSystem";
 createNode transform -n "EyeControl_ctrl1_GRP" -p "Face_Control";
 	rename -uid "066EEE0B-4089-6E80-63F4-029831ACFA2C";
 	setAttr ".t" -type "double3" -1.2000000000000011 -2.4654700836422876 3.3881317890172014e-21 ;
-	setAttr ".r" -type "double3" 0 180 0 ;
+	setAttr ".r" -type "double3" 0 0 0 ;
 	setAttr ".s" -type "double3" 1.0000000000000002 1 1.0000000000000002 ;
 	setAttr ".rp" -type "double3" 0 -6.9388939039072284e-17 0 ;
 	setAttr ".sp" -type "double3" 0 -6.9388939039072284e-17 0 ;
