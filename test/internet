@@ -8,5 +8,5 @@ git config --global https.proxy 127.0.0.1:10809
 git config --global --get http.proxy
 git config --global --get https.proxy
 
-git config --global --unset-all https.proxy
-git config --global --unset-all http.proxy
+#git config --global --unset-all https.proxy
+#git config --global --unset-all http.proxy
