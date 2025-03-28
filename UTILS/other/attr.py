@@ -83,6 +83,12 @@ def showJointOrient(objList: list = []):
     if not objList:
         objList = cmds.ls(type="joint")
 
+    # attr list
+    attr_list = ["jointOrientX",
+                 "jointOrientY",
+                 "jointOrientZ",
+                 "segmentScaleCompensate"]
+
     jointList = []
     for obj in objList:
         if cmds.objectType(obj) == "joint":
@@ -90,12 +96,12 @@ def showJointOrient(objList: list = []):
 
     boolList = []
     for obj in jointList:
-        for a in "XYZ":
-            boolList.append(cmds.getAttr(f"{obj}.jointOrient{a}", k=1))
+        for a in attr_list:
+            boolList.append(cmds.getAttr(f"{obj}.{a}", k=1))
     boolValue = not isAverageTrue(bool_list=boolList)
     for obj in jointList:
-        for a in "XYZ":
-            cmds.setAttr(f"{obj}.jointOrient{a}", k=boolValue)
+        for a in attr_list:
+            cmds.setAttr(f"{obj}.{a}", k=boolValue)
     showMessage("SHOW JOINT ORIENT")
 
 
