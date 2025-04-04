@@ -87,18 +87,11 @@ def create_curve(mod, name):
             sel = cmds.ls(sl=True)
             for i in sel:
                 old_shape = cmds.listRelatives(i, f=True, s=True)
-                old_enabled = None
-                old_color = None
-                if old_shape:
-                    old_enabled = cmds.getAttr('{}.overrideEnabled'.format(old_shape[0]))
-                    old_color = cmds.getAttr('{}.overrideColor'.format(old_shape[0]))
-                    cmds.delete(old_shape)
-
-                new_shape = cmds.createNode('nurbsCurve', n='{}Shape'.format(i), p=i)
+                if old_shape[1:]:
+                    cmds.delete(old_shape[1:])
+                new_shape = old_shape[0]
+                cmds.select(new_shape)
                 mel.eval(shape)
-                if old_enabled:
-                    cmds.setAttr('{}.overrideEnabled'.format(new_shape), 1)
-                    cmds.setAttr('{}.overrideColor'.format(new_shape), old_color)
             cmds.select(sel, r=True)
 
 
