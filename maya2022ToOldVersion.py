@@ -38,11 +38,16 @@ def createGroupParts(deformName):
     else:
         cmds.undoInfo(cck=1)
 
+    om.MGlobal.displayInfo(f"'{deformName}' create groupParts success!")
     return groupParts, groupId
 
 
-if __name__ == "__main__":
-    deformTypeList = ["skinCluster", "blendShape"]
+def createGroupPartsForAllDeformers():
+    deformTypeList = ["skinCluster", "blendShape", "proximityWrap", "deltaMush", "wrap", "cluster"]
     for deformType in deformTypeList:
         for deformNode in cmds.ls(type=deformType):
             createGroupParts(deformNode)
+
+
+if __name__ == "__main__":
+    createGroupPartsForAllDeformers()
