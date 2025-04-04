@@ -1,3 +1,29 @@
+"""
+Maya 2022+ deform to old Version Compatibility Script
+==============================================
+
+This script modifies deformers created in Maya 2022+ to make them compatible with older Maya versions.
+It achieves compatibility by creating groupParts nodes for each deformer in the scene.
+
+Features:
+- Removes existing groupParts nodes (if present)
+- Creates new groupId and groupParts nodes for deformers
+- Properly connects input and output attributes for the deformer
+
+Supported deformer types:
+- skinCluster
+- blendShape
+- proximityWrap
+- deltaMush
+- wrap
+- cluster
+
+Usage:
+1. Load the script in Maya
+2. Run createGroupPartsForAllDeformers() to process all supported deformers
+3. Or use createGroupParts(deformName) for a specific deformer
+"""
+
 from maya import cmds
 import maya.api.OpenMaya as om
 
