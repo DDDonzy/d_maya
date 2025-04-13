@@ -37,7 +37,7 @@ def addUI(*args, **kwargs):
              dividerLabel="separator")
     menuItem(label="Zero Pivot",
              sourceType="python", command=ZERO_PIVOT_CMD)
-    
+
     cmds.setParent("..", menu=True)
     # Curve Menu
     menuItem(label="Curve",
@@ -80,20 +80,6 @@ def addUI(*args, **kwargs):
     menuItem(label="Skin",
              subMenu=True,
              radialPosition="N")
-    menuItem(label="Get Skin Influence",
-             radialPosition="SE",
-             sourceType="python", command=GET_SKIN_INFLUENCE_CMD)
-    menuItem(label="Add Influence",
-             radialPosition="W",
-             image="addWrapInfluence.png",
-             command="AddInfluence")
-    menuItem(label="menuEditorMenuItem3",
-             optionBox=True,
-             command="AddInfluenceOptions")
-    menuItem(label="Remove Influence",
-             radialPosition="NW",
-             image="removeWrapInfluence.png",
-             command="RemoveInfluence")
     menuItem(label="Bind Skin",
              radialPosition="N",
              image="smoothSkin.png",
@@ -101,22 +87,45 @@ def addUI(*args, **kwargs):
     menuItem(label="menuEditorMenuItem1",
              optionBox=True,
              command="SmoothBindSkinOptions")
-    menuItem(label="Copy Skin One To N",
-             radialPosition="E",
-             sourceType="python", command=COPY_SKIN_ONE_TO_N_CMD)
     menuItem(label="Unbind Skin",
              radialPosition="S",
              image="detachSkin.png",
              command="DetachSkin")
     menuItem(label="Go to Bind Pose",
-             radialPosition="NE",
+             radialPosition="NW",
              image="goToBindPose.png",
              command="GoToBindPose")
-    menuItem(label="Remove Unused Influences",
+    menuItem(label="Copy Skin One To N",
+             radialPosition="E",
+             sourceType="python", command=COPY_SKIN_ONE_TO_N_CMD)
+    menuItem(label="Copy Skin Weights",
+             radialPosition="NE",
+             image="copySkinWeight.png",
+             sourceType="python", command=GET_SKIN_INFLUENCE_CMD)
+    menuItem(label="Copy Skin Weights Options",
+             optionBox=True,
+             command="CopySkinWeightsOptions")
+    menuItem(label="Get Skin Influence",
              radialPosition="SW",
+             sourceType="python", command=GET_SKIN_INFLUENCE_CMD)
+
+    menuItem(label="Add Influence",
+             image="addWrapInfluence.png",
+             command="AddInfluence")
+    menuItem(label="Add Influence Options",
+             optionBox=True,
+             command="AddInfluenceOptions")
+    menuItem(label="Remove Influence",
+             image="removeWrapInfluence.png",
+             command="RemoveInfluence")
+    menuItem(label="Remove Unused Influences",
              command="RemoveUnusedInfluences")
+    menuItem(label="separator", divider=True,
+             dividerLabel="separator")
     menuItem(label="Update Bind Pose",
-             sourceType="python", command=UPDATE_BIND_SKIN_CMD)
+             sourceType="python",
+             command=UPDATE_BIND_SKIN_CMD)
+
     cmds.setParent("..", menu=True)
     # Rename Menu
     menuItem(label="Rename",
