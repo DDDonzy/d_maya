@@ -1,7 +1,7 @@
 from maya.api import OpenMaya as om
 
 
-class IterHierarchy(object):
+class iterHierarchy(object):
     def __init__(self, rootDag, shape=True):
         # check input
         if isinstance(rootDag, om.MDagPath):
@@ -27,14 +27,16 @@ class IterHierarchy(object):
         if not self.iterList:
             raise StopIteration("End of iteration.")
         # get the current node
-        current_node = self.iterList.pop()
+        current_dag = self.iterList.pop()
         # get the children
         children = []
-        for x in range(current_node.childCount()):
-            mObj = current_node.child(x)
+        for x in range(current_dag.childCount()):
+            mObj = current_dag.child(x)
             if (not mObj.hasFn(om.MFn.kTransform)) and (not self.shape):
                 continue
             children.append(om.MDagPath.getAPathTo(mObj))
 
         self.iterList.extend(reversed(children))
-        return current_node.partialPathName(), current_node
+        name: str = current_dag.partialPathName()
+        dag: om.MDagPath = current_dag
+        return name, dag

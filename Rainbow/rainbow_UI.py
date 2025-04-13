@@ -86,7 +86,9 @@ def create_curve(mod, name):
         else:
             sel = cmds.ls(sl=True)
             for i in sel:
-                old_shape = cmds.listRelatives(i, f=True, s=True)
+                old_shape = cmds.listRelatives(i, f=True, s=True) or []
+                if not old_shape:
+                    old_shape.append(cmds.createNode("nurbsCurve",name="{}Shape".format(i), p=i))
                 if old_shape[1:]:
                     cmds.delete(old_shape[1:])
                 new_shape = old_shape[0]

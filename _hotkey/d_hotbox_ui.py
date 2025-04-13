@@ -30,6 +30,7 @@ def addUI(*args, **kwargs):
              radialPosition="N",
              sourceType="python", command=LOCK_PIVOT_CMD)
     menuItem(label="Show Local Axes",
+             radialPosition="S",
              sourceType="python", command=SHOW_LOCAL_AXES_CMD)
     menuItem(label="separator",
              divider=True,
@@ -67,10 +68,13 @@ def addUI(*args, **kwargs):
              radialPosition="SE")
     menuItem(label="Mirror Selected",
              radialPosition="SE",
-             sourceType="python", command=MIRROR_SELECTED_CMD)
+             sourceType="python", command=SELECT_MIRROR_CMD)
     menuItem(label="Mirror Selected Addon",
              radialPosition="E",
-             sourceType="python", command=MIRROR_SELECTED_ADDON_CMD)
+             sourceType="python", command=SELECT_MIRROR_ADDON_CMD)
+    menuItem(label="Select Hierarchy",
+             radialPosition="S",
+             sourceType="python", command=SELECT_HIERARCHY_CMD)
     cmds.setParent("..", menu=True)
     # Skin Menu
     menuItem(label="Skin",
