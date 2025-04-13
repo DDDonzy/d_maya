@@ -284,6 +284,18 @@ def alignTransform(source: str, target: str):
     set_worldMatrix(target, get_worldMatrix(source))
 
 
+def alignTransform_cmd():
+    """Align selected objects to the first selected object"""
+    selected_objects = cmds.ls(sl=True)
+    if len(selected_objects) < 2:
+        om.MGlobal.displayError("Please select at least two objects.")
+        return
+    source = selected_objects[0]
+    for target in selected_objects[1:]:
+        alignTransform(source, target)
+    showMessage("Align Complete.")
+
+
 def reset_transformObjectValue(obj, transform=True, userDefined=True):
     def _set_trsv(obj, trs):
         attrs = ["tx", "ty", "tz", "rx", "ry", "rz", "sx", "sy", "sz", "v"]

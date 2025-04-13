@@ -23,4 +23,5 @@ def updateBindSkin_cmd(obj=None):
                 updateBindSkin(sk)
 
 
-# updateBindSkin_cmd()
+if __name__ == "__main__":
+    updateBindSkin_cmd()

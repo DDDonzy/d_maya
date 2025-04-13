@@ -7,6 +7,37 @@ TRANSLATE_ATTR = ["tx", "ty", "tz"]
 ROTATE_ATTR = ["rx", "ry", "rz"]
 SCALE_ATTR = ["sx", "sy", "sz",]
 VIS_ATTR = ["v"]
+PIVOT_ATTR = ["rotatePivot",
+              "rotatePivotX",
+              "rotatePivotY",
+              "rotatePivotZ",
+              "rotatePivotTranslate",
+              "rotatePivotTranslateX",
+              "rotatePivotTranslateY",
+              "rotatePivotTranslateZ",
+              "scalePivot",
+              "scalePivotX",
+              "scalePivotY",
+              "scalePivotZ",
+              "scalePivotTranslate",
+              "scalePivotTranslateX",
+              "scalePivotTranslateY",
+              "scalePivotTranslateZ",
+              "transMinusRotatePivot",
+              "transMinusRotatePivotX",
+              "transMinusRotatePivotY",
+              "transMinusRotatePivotZ"]
+
+
+def _getObjectFromSceneOrParameter(objList: list = []):
+    """ Get object from scene or parameter."""
+    if isinstance(objList, str):
+        objList = [objList]
+    if not objList:
+        objList = cmds.ls(sl=1)
+    if not objList:
+        raise ValueError("No object selected or No parameter.")
+    return objList
 
 
 def _getSelectionFliteShapes():
@@ -79,7 +110,7 @@ def showJointOrient(objList: list = []):
     if isinstance(objList, str):
         objList = [objList]
     if not objList:
-        objList = cmds.ls(sl=1)
+        objList = cmds.ls(sl=1,type="joint")
     if not objList:
         objList = cmds.ls(type="joint")
 
@@ -102,19 +133,44 @@ def showJointOrient(objList: list = []):
     for obj in jointList:
         for a in attr_list:
             cmds.setAttr(f"{obj}.{a}", k=boolValue)
-    showMessage("SHOW JOINT ORIENT")
+    showMessage(f"SHOW JOINT ORIENT: {boolValue}".upper())
 
 
 def showLocalAxes(objList: list = []):
     if isinstance(objList, str):
         objList = [objList]
     if not objList:
-        objList = cmds.ls(sl=1)
+        objList = cmds.ls(sl=1, type="transform")
+    if not objList:
+        objList = cmds.ls(type="transform")
 
     boolList = []
     for obj in objList:
         boolList.append(cmds.getAttr(f"{obj}.displayLocalAxis"))
     boolValue = not isAverageTrue(bool_list=boolList)
     for obj in objList:
-        cmds.setAttr(f"{obj}.displayLocalAxis", boolValue)
-    showMessage("SHOW LOCAL AXES")
+        if cmds.objExists(f"{obj}.displayLocalAxis"):
+            cmds.setAttr(f"{obj}.displayLocalAxis", boolValue)
+    showMessage(f"SHOW LOCAL AXES: {boolValue}".upper())
+
+
+def lockPivot(objList: list = []):
+    if isinstance(objList, str):
+        objList = [objList]
+    if not objList:
+        objList = cmds.ls(sl=1, type="transform")
+    if not objList:
+        objList = cmds.ls(type="transform")
+
+    boolList = []
+    for obj in objList:
+        for attr in PIVOT_ATTR:
+            boolList.append(cmds.getAttr(f"{obj}.{attr}", l=1))
+
+    boolValue = not isAverageTrue(bool_list=boolList)
+
+    for obj in objList:
+        for attr in PIVOT_ATTR:
+            cmds.setAttr(f"{obj}.{attr}", l=boolValue)
+
+    showMessage(f"LOCK PIVOT: {boolValue}".upper())

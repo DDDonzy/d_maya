@@ -2,7 +2,7 @@ from UTILS.getHistory import get_history
 from maya import cmds
 from UTILS.create.createBase import CreateBase
 from UTILS.apiundo import commit
-from UTILS.transform import matrixConstraint
+from UTILS.compounds import matrixConstraint
 
 from maya import cmds
 from UTILS.create.createBase import CreateBase
@@ -79,14 +79,18 @@ class skinClusterToLocal(CreateBase):
         commit(_undo, self.create)
 
 
-for x in cmds.ls(sl=1):
-    sk = get_history(x, "skinCluster")
-    if sk:
-        sk = sk[0]
-    else:
-        print(f"{x} has no skinCluster")
-        continue
-    if not cmds.listConnections(sk+".bindPreMatrix"):
-        s = skinClusterToLocal(sk)
-    else:
-        print("bind pass")
+def skinClusterToLocal_cmd():
+    for x in cmds.ls(sl=1):
+        sk = get_history(x, "skinCluster")
+        if sk:
+            sk = sk[0]
+        else:
+            print(f"{x} has no skinCluster")
+            continue
+        if not cmds.listConnections(sk+".bindPreMatrix"):
+            s = skinClusterToLocal(sk)
+        else:
+            print("bind pass")
+
+if __name__ == "__main__":
+    skinClusterToLocal_cmd()
