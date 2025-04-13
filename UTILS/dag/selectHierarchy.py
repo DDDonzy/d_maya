@@ -1,4 +1,4 @@
-from UTILS.dag.iterHierarchy import iterHierarchy
+from UTILS.dag.iiiterHierarchy import iterHierarchy
 from maya import cmds
 
 
