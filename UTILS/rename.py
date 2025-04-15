@@ -53,13 +53,15 @@ class RenameUI(QLineEdit):
             self.updated_suffix = [self._adjustText(f"{text}{x}") for x in RenameUI._suffix]
             self.model.setStringList(self.updated_suffix)
         self.modelNeedUpdate = True
+        cursorPosition = self.cursorPosition()
         self.setText(text)
+        self.setCursorPosition(cursorPosition)
 
     def _adjustText(self, text):
+        text = re.sub(r'[`·]', '', text)
+        text = re.sub(r'[^a-zA-Z0-9_#@]', '_', string=text)
         if not text:
             return text
-        text = re.sub(r'[^a-zA-Z0-9_#@]', '_', string=text)
-        text = re.sub(r'_{2,}', '_', text)
         if text[0].isdigit():
             text = "_" + text
         return text
