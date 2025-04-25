@@ -92,7 +92,7 @@ def addUI(*args, **kwargs):
              image="detachSkin.png",
              command="DetachSkin")
     menuItem(label="Go to Bind Pose",
-             radialPosition="NW",
+             radialPosition="W",
              image="goToBindPose.png",
              command="GoToBindPose")
     menuItem(label="Copy Skin One To N",
@@ -101,12 +101,12 @@ def addUI(*args, **kwargs):
     menuItem(label="Copy Skin Weights",
              radialPosition="NE",
              image="copySkinWeight.png",
-             sourceType="python", command=GET_SKIN_INFLUENCE_CMD)
+             sourceType="python", command="CopySkinWeights")
     menuItem(label="Copy Skin Weights Options",
              optionBox=True,
              command="CopySkinWeightsOptions")
     menuItem(label="Get Skin Influence",
-             radialPosition="SW",
+             radialPosition="SE",
              sourceType="python", command=GET_SKIN_INFLUENCE_CMD)
 
     menuItem(label="Add Influence",
