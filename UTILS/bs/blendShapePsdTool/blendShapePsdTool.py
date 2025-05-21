@@ -1,5 +1,7 @@
 from maya import cmds
 from maya.api import OpenMaya as om
+from UTILS.create.assetCallback import AssetCallback
+
 import yaml
 from dataclasses import dataclass
 
@@ -72,11 +74,11 @@ def load_dataByNode(node_name):
     enableTranslation = cmds.getAttr(f"{node_name}.enableTranslation")
     # get driver data
     driver_data = []
-    for i, driver in enumerate(cmds.poseInterpolator(node_name, q=1, d=1)):
+    for pose_idx, driver in enumerate(cmds.poseInterpolator(node_name, q=1, d=1)):
         driverObject = driver
-        driverTwistAxis = cmds.getAttr(f"{node_name}.driver[{i}].driverTwistAxis")
-        driverEulerTwist = cmds.getAttr(f"{node_name}.driver[{i}].driverEulerTwist")
-        driverController = cmds.listConnections(f"{node_name}.driver[{i}].driverController", p=1, d=0)
+        driverTwistAxis = cmds.getAttr(f"{node_name}.driver[{pose_idx}].driverTwistAxis")
+        driverEulerTwist = cmds.getAttr(f"{node_name}.driver[{pose_idx}].driverEulerTwist")
+        driverController = cmds.listConnections(f"{node_name}.driver[{pose_idx}].driverController", p=1, d=0)
         if not driverController:
             driverController = []
         controls_obj_list += driverController
@@ -89,37 +91,38 @@ def load_dataByNode(node_name):
     # get pose data
     pose_data = []
     pose_name_list = cmds.poseInterpolator(node_name, q=1, pn=1)
-    for i in cmds.poseInterpolator(node_name, q=1, i=1):
+    pose_index_list = cmds.poseInterpolator(node_name, q=1, i=1)
+    for i, poseName in enumerate(pose_name_list):
         # pose
-        poseName = pose_name_list[i]
+        pose_idx = pose_index_list[i]
         poseRotation_list = []
         poseTranslation_list = []
         # pose driver data
         for dr_i, dr_obj in enumerate(cmds.poseInterpolator(node_name, q=1, d=1)):
-            poseRotation_list.append(cmds.getAttr(f"{node_name}.pose[{i}].poseRotation[{dr_i}]"))
-            poseTranslation_list.append(cmds.getAttr(f"{node_name}.pose[{i}].poseTranslation[{dr_i}]"))
+            poseRotation_list.append(cmds.getAttr(f"{node_name}.pose[{pose_idx}].poseRotation[{dr_i}]"))
+            poseTranslation_list.append(cmds.getAttr(f"{node_name}.pose[{pose_idx}].poseTranslation[{dr_i}]"))
         # controls data
         ctl_data = []
-        for ctl in cmds.ls(f"{node_name}.pose[{i}].poseControllerData[*]"):
+        for ctl in cmds.ls(f"{node_name}.pose[{pose_idx}].poseControllerData[*]"):
             item_data = []
             for item in cmds.ls(f"{ctl}.poseControllerDataItem[*]"):
                 item_name = cmds.getAttr(f"{item}.poseControllerDataItemName")
                 item_type = cmds.getAttr(f"{item}.poseControllerDataItemType")
-                item_value = cmds.getAttr(f"{item}.poseControllerDataItemValue")[0]
-                if len(item_value) == 3:
-                    item_value = {"x": item_value[0], "y": item_value[1], "z": item_value[2]}
+                item_value = cmds.getAttr(f"{item}.poseControllerDataItemValue")
+                if item_type == 8:
+                    item_value = {"x": item_value[0][0], "y": item_value[0][1], "z": item_value[0][2]}
                 data = PoseControllerDataItem(name=item_name,
                                               type=item_type,
                                               value=item_value)
                 item_data.append(data)
             ctl_data.append(item_data)
         # pose attr
-        poseType = cmds.getAttr(f"{node_name}.pose[{i}].poseType")
-        isEnabled = cmds.getAttr(f"{node_name}.pose[{i}].isEnabled")
-        poseFalloff = cmds.getAttr(f"{node_name}.pose[{i}].poseFalloff")
-        isIndependent = cmds.getAttr(f"{node_name}.pose[{i}].isIndependent")
-        poseRotationFalloff = cmds.getAttr(f"{node_name}.pose[{i}].poseRotationFalloff")
-        poseTranslationFalloff = cmds.getAttr(f"{node_name}.pose[{i}].poseTranslationFalloff")
+        poseType = cmds.getAttr(f"{node_name}.pose[{pose_idx}].poseType")
+        isEnabled = cmds.getAttr(f"{node_name}.pose[{pose_idx}].isEnabled")
+        poseFalloff = cmds.getAttr(f"{node_name}.pose[{pose_idx}].poseFalloff")
+        isIndependent = cmds.getAttr(f"{node_name}.pose[{pose_idx}].isIndependent")
+        poseRotationFalloff = cmds.getAttr(f"{node_name}.pose[{pose_idx}].poseRotationFalloff")
+        poseTranslationFalloff = cmds.getAttr(f"{node_name}.pose[{pose_idx}].poseTranslationFalloff")
         pose_i = PoseData(poseName=poseName,
                           poseRotation=poseRotation_list,
                           poseTranslation=poseTranslation_list,
@@ -183,7 +186,10 @@ def create_nodeByData(data: PoseInterpolatorData):
                     item_attr = f"{ctl_attr}.poseControllerDataItem[{i_i}]"
                     cmds.setAttr(f"{item_attr}.poseControllerDataItemName", item.name, type='string')
                     cmds.setAttr(f"{item_attr}.poseControllerDataItemType", item.type)
-                    cmds.setAttr(f"{item_attr}.poseControllerDataItemValue", *item.value.values(), type="double3")
+                    if item.type == 8:
+                        cmds.setAttr(f"{item_attr}.poseControllerDataItemValue", *item.value.values(), type="double3")
+                    else:
+                        cmds.setAttr(f"{item_attr}.poseControllerDataItemValue", item.value)
         # pose attr
         cmds.setAttr(f"{node_name}.pose[{i}].poseType", pose.poseType)
         cmds.setAttr(f"{node_name}.pose[{i}].isEnabled", pose.isEnabled)
@@ -208,10 +214,14 @@ def import_proxyTransformData():
         return
     path = path[0]
     with open(path, "r") as f:
-        data = yaml.unsafe_load(f)
-        for x in data:
-            for i in x:
-                create_proxyTransform(x[i]["Joint"], x[i]["Parent"], i)
+        with AssetCallback(name="proxyTransform",
+                           force=True,
+                           isBlackBox=False,
+                           isDagAsset=True):
+            data = yaml.unsafe_load(f)
+            for x in data:
+                for i in x:
+                    create_proxyTransform(x[i]["Joint"], x[i]["Parent"], i)
 
 
 def export_poseInterpolatorData(node=None):
@@ -273,6 +283,7 @@ def add_bsTarget(bs: str, name: str):
     cmds.setAttr(f"{bs}.it[0].itg[{i}].iti[6000].ict", *[1, "vtx[0]"], type="componentList")
     return f"{bs}.{name}"
 
+
 def del_bsTargetData(bs: str, index: int):
     """ del blendShape target data
     Args:
@@ -281,7 +292,6 @@ def del_bsTargetData(bs: str, index: int):
     """
     cmds.setAttr(f"{bs}.it[0].itg[{index}].iti[6000].ipt", *[1, (0, 0, 0, 1)], type="pointArray")
     cmds.setAttr(f"{bs}.it[0].itg[{index}].iti[6000].ict", *[1, "vtx[0]"], type="componentList")
-    
 
 
 def create_bsByPSD(bs: str, psd_node_list: list = None):
@@ -306,19 +316,30 @@ def create_bsByPSD(bs: str, psd_node_list: list = None):
         out_attr_list += [f"{psd_node}.output[{i}]" for i in out_index]
         pose_name = cmds.poseInterpolator(psd_node, q=1, pn=1)
         prefix = psd_node.replace("_poseInterpolator", "")
-        pose_name_list += [f"{prefix}_{n}" for n in pose_name]
+        pose_name_list += []
+        for n in pose_name:
+            if prefix not in n:
+                pose_name_list.append(f"__{prefix}_{n}__")
+            else:
+                pose_name_list.append(n)
     for i, x in enumerate(out_attr_list):
         attr = x
         name = pose_name_list[i]
-        if "DefaultPose" in name:
-            name = "__" + name.replace("DefaultPose", "_")
-        if cmds.objExists(f"{bs}.{name}"):
+        if not cmds.objExists(f"{bs}.{name}"):
+            bs_wAttr = add_bsTarget(bs, name)
+            if "Default" in name:
+                cmds.setAttr(f"{bs}.{name}", l=1)
+                continue
+            cmds.setDrivenKeyframe(bs_wAttr, cd=attr, driverValue=0, v=0, inTangentType="linear", outTangentType="linear")
+            cmds.setDrivenKeyframe(bs_wAttr, cd=attr, driverValue=1, v=1, inTangentType="linear", outTangentType="linear")
+            
+        if "Default" in name:
+            cmds.setAttr(f"{bs}.{name}", l=1)
+            continue
+        else:
             cmds.setDrivenKeyframe(f"{bs}.{name}", cd=attr, driverValue=0, v=0, inTangentType="linear", outTangentType="linear")
             cmds.setDrivenKeyframe(f"{bs}.{name}", cd=attr, driverValue=1, v=1, inTangentType="linear", outTangentType="linear")
-            continue
-        bs_wAttr = add_bsTarget(bs, name)
-        cmds.setDrivenKeyframe(bs_wAttr, cd=attr, driverValue=0, v=0, inTangentType="linear", outTangentType="linear")
-        cmds.setDrivenKeyframe(bs_wAttr, cd=attr, driverValue=1, v=1, inTangentType="linear", outTangentType="linear")
+
 
 
 @dataclass
@@ -348,8 +369,8 @@ def create_fingerTarget(bs):
                                        inTangentType="linear", outTangentType="linear")
 
 
-# import_proxy_transform_data()
-# export_poseInterpolator_data(cmds.ls(sl=1))
+# import_proxyTransformData()
+# export_poseInterpolatorData(cmds.ls(sl=1))
 # import_poseInterpolator_data()
-# create_bs_by_psd("blendShape1")
+# create_bsByPSD("blendShape1")
 # create_finger_bs("blendShape1")

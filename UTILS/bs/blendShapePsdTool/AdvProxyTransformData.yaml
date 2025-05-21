@@ -1,0 +1,48 @@
+-   M_Head:
+        Joint: Head_M
+        Parent: Neck_M
+-   M_Neck:
+        Joint: Neck_M
+        Parent: Chest_M
+-   L_Clavicle:
+        Joint: Scapula_L
+        Parent: Chest_M
+-   L_Shoulder:
+        Joint: Shoulder_L
+        Parent: Scapula_L
+-   L_Elbow:
+        Joint: Elbow_L
+        Parent: Shoulder_L
+-   L_Wrist:
+        Joint: Wrist_L
+        Parent: Elbow_L
+-   L_Hip:
+        Joint: Hip_L
+        Parent: Root_M
+-   L_Knee:
+        Joint: Knee_L
+        Parent: Hip_L
+-   L_Ankle:
+        Joint: Ankle_L
+        Parent: Knee_L
+-   R_Clavicle:
+        Joint: Scapula_R
+        Parent: Chest_M
+-   R_Shoulder:
+        Joint: Shoulder_R
+        Parent: Scapula_R
+-   R_Elbow:
+        Joint: Elbow_R
+        Parent: Shoulder_R
+-   R_Wrist:
+        Joint: Wrist_R
+        Parent: Elbow_R
+-   R_Hip:
+        Joint: Hip_R
+        Parent: Root_M
+-   R_Knee:
+        Joint: Knee_R
+        Parent: Hip_R
+-   R_Ankle:
+        Joint: Ankle_R
+        Parent: Knee_R

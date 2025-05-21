@@ -1,0 +1,1963 @@
+- !<PoseInterpolatorData>
+    name: Head_M_poseInterpolator
+    driver:
+    - !<DriverData>
+        driverObject: Head_M
+        driverTwistAxis: 0
+        driverEulerTwist: false
+        driverController:
+        - FKHead_M.rotate
+    pose:
+    - !<PoseData>
+        poseName: __Head_M_DefaultPose__
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKHead_M.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.0
+            - 1.0
+        poseTranslation:
+        -   - 0.5183571632368693
+            - 2.220446049250313e-15
+            - -1.743386177216023e-16
+    - !<PoseData>
+        poseName: Head_M_Front_60
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKHead_M.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 1.0471975511965976
+                type: 8
+        -   - !<ControlData>
+                name: FKHead_M.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 1.0471975511965976
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.49999999999999983
+            - 0.8660254037844387
+        poseTranslation:
+        -   - 0.5183571632368693
+            - 2.220446049250313e-15
+            - -1.743386177216023e-16
+    - !<PoseData>
+        poseName: Head_M_Back_60
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKHead_M.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: -1.0471975511965976
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - -0.5
+            - 0.8660254037844386
+        poseTranslation:
+        -   - 0.5183571632368693
+            - 2.220446049250313e-15
+            - -1.743386177216023e-16
+    - !<PoseData>
+        poseName: Head_M_Side_L_60
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKHead_M.rotate
+                value:
+                    x: 0.0
+                    y: -1.0471975511965976
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - -0.49999999999999983
+            - 0.0
+            - 0.8660254037844387
+        poseTranslation:
+        -   - 0.5183571632368693
+            - 2.220446049250313e-15
+            - -1.743386177216023e-16
+    - !<PoseData>
+        poseName: Head_M_Side_R_60
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKHead_M.rotate
+                value:
+                    x: 0.0
+                    y: 1.0471975511965976
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.49999999999999983
+            - 0.0
+            - 0.8660254037844387
+        poseTranslation:
+        -   - 0.5183571632368693
+            - 2.220446049250313e-15
+            - -1.743386177216023e-16
+    regularization: 0.0
+    outputSmoothing: 0.0
+    interpolation: 0
+    allowNegativeWeights: true
+    enableRotation: true
+    enableTranslation: false
+- !<PoseInterpolatorData>
+    name: Neck_M_poseInterpolator
+    driver:
+    - !<DriverData>
+        driverObject: Neck_M
+        driverTwistAxis: 0
+        driverEulerTwist: false
+        driverController:
+        - FKNeck_M.rotate
+    pose:
+    - !<PoseData>
+        poseName: __Neck_M_DefaultPose__
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKNeck_M.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.0
+            - 1.0
+        poseTranslation:
+        -   - 1.1676556525613577
+            - 3.1086244689504383e-15
+            - 4.608265026153594e-15
+    - !<PoseData>
+        poseName: Neck_M_Front_60
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKNeck_M.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 1.0471975511965976
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.17364818449688285
+            - 0.9848077518079031
+        poseTranslation:
+        -   - 1.1676556525613577
+            - 3.1086244689504383e-15
+            - 4.608265026153594e-15
+    - !<PoseData>
+        poseName: Neck_M_Back_60
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKNeck_M.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: -1.0471975511965976
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - -0.17364818449688296
+            - 0.9848077518079031
+        poseTranslation:
+        -   - 1.1676556525613577
+            - 3.1086244689504383e-15
+            - 4.608265026153594e-15
+    - !<PoseData>
+        poseName: Neck_M_Side_L_60
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKNeck_M.rotate
+                value:
+                    x: 0.0
+                    y: -1.0471975511965976
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - -0.1736481844968829
+            - 0.0
+            - 0.9848077518079031
+        poseTranslation:
+        -   - 1.1676556525613577
+            - 3.1086244689504383e-15
+            - 4.608265026153594e-15
+    - !<PoseData>
+        poseName: Neck_M_Side_R_60
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKNeck_M.rotate
+                value:
+                    x: 0.0
+                    y: 1.0471975511965976
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.1736481844968829
+            - 0.0
+            - 0.9848077518079031
+        poseTranslation:
+        -   - 1.1676556525613577
+            - 3.1086244689504383e-15
+            - 4.608265026153594e-15
+    regularization: 0.0
+    outputSmoothing: 0.0
+    interpolation: 0
+    allowNegativeWeights: true
+    enableRotation: true
+    enableTranslation: false
+- !<PoseInterpolatorData>
+    name: Scapula_L_poseInterpolator
+    driver:
+    - !<DriverData>
+        driverObject: Scapula_L
+        driverTwistAxis: 0
+        driverEulerTwist: false
+        driverController:
+        - FKScapula_L.rotate
+    pose:
+    - !<PoseData>
+        poseName: __Scapula_L_DefaultPose__
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKScapula_L.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.0
+            - 1.0
+        poseTranslation:
+        -   - 0.7642009376443113
+            - 0.2752891437952245
+            - 0.43653594851735433
+    - !<PoseData>
+        poseName: Scapula_L_Up_60
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKScapula_L.rotate
+                value:
+                    x: 0.0
+                    y: -1.0471975511965976
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - -0.5
+            - 0.0
+            - 0.8660254037844386
+        poseTranslation:
+        -   - 0.7642009376443113
+            - 0.2752891437952245
+            - 0.43653594851735433
+    - !<PoseData>
+        poseName: Scapula_L_Down_30
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKScapula_L.rotate
+                value:
+                    x: 0.0
+                    y: 0.5235987755982988
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.2588190451025205
+            - 0.0
+            - 0.9659258262890683
+        poseTranslation:
+        -   - 0.7642009376443113
+            - 0.2752891437952245
+            - 0.43653594851735433
+    - !<PoseData>
+        poseName: Scapula_L_Front_60
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKScapula_L.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 1.0471975511965976
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.5000000000000965
+            - 0.866025403784383
+        poseTranslation:
+        -   - 0.7642009376443113
+            - 0.2752891437952245
+            - 0.43653594851735433
+    - !<PoseData>
+        poseName: Scapula_L_Back_60
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKScapula_L.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: -1.0471975511965976
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - -0.4999999999999034
+            - 0.8660254037844944
+        poseTranslation:
+        -   - 0.7642009376443113
+            - 0.2752891437952245
+            - 0.43653594851735433
+    regularization: 0.0
+    outputSmoothing: 0.0
+    interpolation: 0
+    allowNegativeWeights: true
+    enableRotation: true
+    enableTranslation: false
+- !<PoseInterpolatorData>
+    name: Shoulder_L_poseInterpolator
+    driver:
+    - !<DriverData>
+        driverObject: Shoulder_L
+        driverTwistAxis: 0
+        driverEulerTwist: false
+        driverController:
+        - FKShoulder_L.rotate
+    pose:
+    - !<PoseData>
+        poseName: __Shoulder_L_DefaultPose__
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKShoulder_L.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.0
+            - 1.0
+        poseTranslation:
+        -   - -1.0925408230395597
+            - 3.2412961203931445e-13
+            - 4.618527782440651e-14
+    - !<PoseData>
+        poseName: Shoulder_L_Up_90
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKShoulder_L.rotate
+                value:
+                    x: 0.0
+                    y: -1.5707963267948966
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - -0.707106781186294
+            - 0.0
+            - 0.707106781186801
+        poseTranslation:
+        -   - -1.0925408230395597
+            - 3.2412961203931445e-13
+            - 4.618527782440651e-14
+    - !<PoseData>
+        poseName: Shoulder_L_Down_90
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKShoulder_L.rotate
+                value:
+                    x: 0.0
+                    y: 1.5707963267948966
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.707106781186255
+            - 0.0
+            - 0.70710678118684
+        poseTranslation:
+        -   - -1.0925408230395597
+            - 3.2412961203931445e-13
+            - 4.618527782440651e-14
+    - !<PoseData>
+        poseName: Shoulder_L_Front_90
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKShoulder_L.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 1.5707963267948966
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.7071067811865474
+            - 0.7071067811865477
+        poseTranslation:
+        -   - -1.0925408230395597
+            - 3.2412961203931445e-13
+            - 4.618527782440651e-14
+    - !<PoseData>
+        poseName: Shoulder_L_Back_90
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKShoulder_L.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: -1.5707963267948966
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - -0.7071067811865476
+            - 0.7071067811865475
+        poseTranslation:
+        -   - -1.0925408230395597
+            - 3.2412961203931445e-13
+            - 4.618527782440651e-14
+    regularization: 0.0
+    outputSmoothing: 0.0
+    interpolation: 0
+    allowNegativeWeights: true
+    enableRotation: true
+    enableTranslation: false
+- !<PoseInterpolatorData>
+    name: Elbow_L_poseInterpolator
+    driver:
+    - !<DriverData>
+        driverObject: Elbow_L
+        driverTwistAxis: 0
+        driverEulerTwist: false
+        driverController:
+        - FKElbow_L.rotate
+    pose:
+    - !<PoseData>
+        poseName: __Elbow_L_DefaultPose__
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKElbow_L.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.0
+            - 1.0
+        poseTranslation:
+        -   - -0.8714173014256126
+            - 6.800116025829084e-16
+            - 1.9539925233402755e-14
+    - !<PoseData>
+        poseName: Elbow_L_Swing_140
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKElbow_L.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 2.443460952792061
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.9396926207859083
+            - 0.3420201433256688
+        poseTranslation:
+        -   - -0.8714173014256126
+            - 6.800116025829084e-16
+            - 1.9539925233402755e-14
+    regularization: 0.0
+    outputSmoothing: 0.0
+    interpolation: 0
+    allowNegativeWeights: true
+    enableRotation: true
+    enableTranslation: false
+- !<PoseInterpolatorData>
+    name: Wrist_L_poseInterpolator
+    driver:
+    - !<DriverData>
+        driverObject: Wrist_L
+        driverTwistAxis: 0
+        driverEulerTwist: false
+        driverController:
+        - FKWrist_L.rotate
+    pose:
+    - !<PoseData>
+        poseName: __Wrist_L_DefaultPose__
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKWrist_L.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.0
+            - 1.0
+        poseTranslation:
+        -   - -0.7608678258752031
+            - -7.771561172376096e-16
+            - -1.8474111129762605e-13
+    - !<PoseData>
+        poseName: Wrist_L_Up_90
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKWrist_L.rotate
+                value:
+                    x: 0.0
+                    y: -1.5707963267948966
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - -1.1080342307988891e-08
+            - -0.7071067707133215
+            - 1.1080342636219172e-08
+            - 0.7071067916597732
+        poseTranslation:
+        -   - -0.7608678258752031
+            - -7.771561172376096e-16
+            - -1.8474111129762605e-13
+    - !<PoseData>
+        poseName: Wrist_L_Down_90
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKWrist_L.rotate
+                value:
+                    x: 0.0
+                    y: 1.5707963267948966
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - -9.929680186543539e-09
+            - 0.7071067707133216
+            - -9.929680480688035e-09
+            - 0.7071067916597732
+        poseTranslation:
+        -   - -0.7608678258752031
+            - -7.771561172376096e-16
+            - -1.8474111129762605e-13
+    - !<PoseData>
+        poseName: Wrist_L_Front_90
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKWrist_L.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 1.5707963267948966
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.7071067811865476
+            - 0.7071067811865475
+        poseTranslation:
+        -   - -0.7608678258752031
+            - -7.771561172376096e-16
+            - -1.8474111129762605e-13
+    - !<PoseData>
+        poseName: Wrist_L_Back_90
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKWrist_L.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: -1.5707963267948966
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - -0.7071067811865474
+            - 0.7071067811865477
+        poseTranslation:
+        -   - -0.7608678258752031
+            - -7.771561172376096e-16
+            - -1.8474111129762605e-13
+    regularization: 0.0
+    outputSmoothing: 0.0
+    interpolation: 0
+    allowNegativeWeights: true
+    enableRotation: true
+    enableTranslation: false
+- !<PoseInterpolatorData>
+    name: Hip_L_poseInterpolator
+    driver:
+    - !<DriverData>
+        driverObject: Hip_L
+        driverTwistAxis: 0
+        driverEulerTwist: false
+        driverController:
+        - FKHip_L.rotate
+    pose:
+    - !<PoseData>
+        poseName: __Hip_L_DefaultPose__
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKHip_L.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.0
+            - 1.0
+        poseTranslation:
+        -   - -0.19968944680793044
+            - -0.08224022199751757
+            - 0.8196866071477906
+    - !<PoseData>
+        poseName: Hip_L_Front_120
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKHip_L.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 2.0943951023931953
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.8660254037844379
+            - 0.5000000000000012
+        poseTranslation:
+        -   - -0.19968944680793044
+            - -0.08224022199751757
+            - 0.8196866071477906
+    - !<PoseData>
+        poseName: Hip_L_Back_70
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKHip_L.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: -1.2217304763960306
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - -0.5735764363510467
+            - 0.8191520442889914
+        poseTranslation:
+        -   - -0.19968944680793044
+            - -0.08224022199751757
+            - 0.8196866071477906
+    - !<PoseData>
+        poseName: Hip_L_Outer_90
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKHip_L.rotate
+                value:
+                    x: 0.0
+                    y: -1.5707963267948966
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - -0.7071067807924123
+            - 0.0
+            - 0.7071067815806827
+        poseTranslation:
+        -   - -0.19968944680793044
+            - -0.08224022199751757
+            - 0.8196866071477906
+    - !<PoseData>
+        poseName: Hip_L_Inner_90
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKHip_L.rotate
+                value:
+                    x: 0.0
+                    y: 1.5707963267948966
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.7071067808162911
+            - 0.0
+            - 0.7071067815568041
+        poseTranslation:
+        -   - -0.19968944680793044
+            - -0.08224022199751757
+            - 0.8196866071477906
+    regularization: 0.0
+    outputSmoothing: 0.0
+    interpolation: 0
+    allowNegativeWeights: true
+    enableRotation: true
+    enableTranslation: false
+- !<PoseInterpolatorData>
+    name: Knee_L_poseInterpolator
+    driver:
+    - !<DriverData>
+        driverObject: Knee_L
+        driverTwistAxis: 0
+        driverEulerTwist: false
+        driverController:
+        - FKKnee_L.rotate
+    pose:
+    - !<PoseData>
+        poseName: __Knee_L_DefaultPose__
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKKnee_L.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.0
+            - 1.0
+        poseTranslation:
+        -   - -1.6580415451890254
+            - 1.792364034969296e-09
+            - -1.790234627208065e-11
+    - !<PoseData>
+        poseName: Knee_L_Swing_140
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKKnee_L.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: -2.443460952792061
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - -0.9396926209707727
+            - 0.3420201428177582
+        poseTranslation:
+        -   - -1.6580415451890254
+            - 1.792364034969296e-09
+            - -1.790234627208065e-11
+    regularization: 0.0
+    outputSmoothing: 0.0
+    interpolation: 0
+    allowNegativeWeights: true
+    enableRotation: true
+    enableTranslation: false
+- !<PoseInterpolatorData>
+    name: Ankle_L_poseInterpolator
+    driver:
+    - !<DriverData>
+        driverObject: Ankle_L
+        driverTwistAxis: 0
+        driverEulerTwist: false
+        driverController:
+        - FKAnkle_L.rotate
+    pose:
+    - !<PoseData>
+        poseName: __Ankle_L_DefaultPose__
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKAnkle_L.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.0
+            - 1.0
+        poseTranslation:
+        -   - -3.830179491169418
+            - 4.1404816519818866e-09
+            - -6.198042079574861e-11
+    - !<PoseData>
+        poseName: Ankle_L_Front_60
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKAnkle_L.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 1.0471975511965976
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.500000002747596
+            - 0.8660254021981133
+        poseTranslation:
+        -   - -3.830179491169418
+            - 4.1404816519818866e-09
+            - -6.198042079574861e-11
+    - !<PoseData>
+        poseName: Ankle_L_Back_60
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKAnkle_L.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: -1.0471975511965976
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - -0.49999999725240346
+            - 0.8660254053707642
+        poseTranslation:
+        -   - -3.830179491169418
+            - 4.1404816519818866e-09
+            - -6.198042079574861e-11
+    - !<PoseData>
+        poseName: Ankle_L_Inner_60
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKAnkle_L.rotate
+                value:
+                    x: 0.0
+                    y: 1.0471975511965976
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.4999999999667194
+            - 0.0
+            - 0.8660254038036532
+        poseTranslation:
+        -   - -3.830179491169418
+            - 4.1404816519818866e-09
+            - -6.198042079574861e-11
+    - !<PoseData>
+        poseName: Ankle_L_Outer_60
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKAnkle_L.rotate
+                value:
+                    x: 0.0
+                    y: -1.0471975511965976
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - -0.5000000000332803
+            - 0.0
+            - 0.8660254037652243
+        poseTranslation:
+        -   - -3.830179491169418
+            - 4.1404816519818866e-09
+            - -6.198042079574861e-11
+    regularization: 0.0
+    outputSmoothing: 0.0
+    interpolation: 0
+    allowNegativeWeights: true
+    enableRotation: true
+    enableTranslation: false
+- !<PoseInterpolatorData>
+    name: Scapula_R_poseInterpolator
+    driver:
+    - !<DriverData>
+        driverObject: Scapula_R
+        driverTwistAxis: 0
+        driverEulerTwist: false
+        driverController:
+        - FKScapula_R.rotate
+    pose:
+    - !<PoseData>
+        poseName: __Scapula_R_DefaultPose__
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKScapula_R.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.0
+            - 1.0
+        poseTranslation:
+        -   - 0.7642009376443113
+            - 0.2752891437952245
+            - 0.43653594851735433
+    - !<PoseData>
+        poseName: Scapula_R_Up_60
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKScapula_R.rotate
+                value:
+                    x: 0.0
+                    y: -1.0471975511965976
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - -0.5
+            - 0.0
+            - 0.8660254037844386
+        poseTranslation:
+        -   - 0.7642009376443113
+            - 0.2752891437952245
+            - 0.43653594851735433
+    - !<PoseData>
+        poseName: Scapula_R_Down_30
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKScapula_R.rotate
+                value:
+                    x: 0.0
+                    y: 0.5235987755982988
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.2588190451025205
+            - 0.0
+            - 0.9659258262890683
+        poseTranslation:
+        -   - 0.7642009376443113
+            - 0.2752891437952245
+            - 0.43653594851735433
+    - !<PoseData>
+        poseName: Scapula_R_Front_60
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKScapula_R.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 1.0471975511965976
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.5000000000000965
+            - 0.866025403784383
+        poseTranslation:
+        -   - 0.7642009376443113
+            - 0.2752891437952245
+            - 0.43653594851735433
+    - !<PoseData>
+        poseName: Scapula_R_Back_60
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKScapula_R.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: -1.0471975511965976
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - -0.4999999999999034
+            - 0.8660254037844944
+        poseTranslation:
+        -   - 0.7642009376443113
+            - 0.2752891437952245
+            - 0.43653594851735433
+    regularization: 0.0
+    outputSmoothing: 0.0
+    interpolation: 0
+    allowNegativeWeights: true
+    enableRotation: true
+    enableTranslation: false
+- !<PoseInterpolatorData>
+    name: Shoulder_R_poseInterpolator
+    driver:
+    - !<DriverData>
+        driverObject: Shoulder_R
+        driverTwistAxis: 0
+        driverEulerTwist: false
+        driverController:
+        - FKShoulder_R.rotate
+    pose:
+    - !<PoseData>
+        poseName: __Shoulder_R_DefaultPose__
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKShoulder_R.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.0
+            - 1.0
+        poseTranslation:
+        -   - -1.0925408230395597
+            - 3.2412961203931445e-13
+            - 4.618527782440651e-14
+    - !<PoseData>
+        poseName: Shoulder_R_Up_90
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKShoulder_R.rotate
+                value:
+                    x: 0.0
+                    y: -1.5707963267948966
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - -0.707106781186294
+            - 0.0
+            - 0.707106781186801
+        poseTranslation:
+        -   - -1.0925408230395597
+            - 3.2412961203931445e-13
+            - 4.618527782440651e-14
+    - !<PoseData>
+        poseName: Shoulder_R_Down_90
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKShoulder_R.rotate
+                value:
+                    x: 0.0
+                    y: 1.5707963267948966
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.707106781186255
+            - 0.0
+            - 0.70710678118684
+        poseTranslation:
+        -   - -1.0925408230395597
+            - 3.2412961203931445e-13
+            - 4.618527782440651e-14
+    - !<PoseData>
+        poseName: Shoulder_R_Front_90
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKShoulder_R.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 1.5707963267948966
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.7071067811865474
+            - 0.7071067811865477
+        poseTranslation:
+        -   - -1.0925408230395597
+            - 3.2412961203931445e-13
+            - 4.618527782440651e-14
+    - !<PoseData>
+        poseName: Shoulder_R_Back_90
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKShoulder_R.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: -1.5707963267948966
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - -0.7071067811865476
+            - 0.7071067811865475
+        poseTranslation:
+        -   - -1.0925408230395597
+            - 3.2412961203931445e-13
+            - 4.618527782440651e-14
+    regularization: 0.0
+    outputSmoothing: 0.0
+    interpolation: 0
+    allowNegativeWeights: true
+    enableRotation: true
+    enableTranslation: false
+- !<PoseInterpolatorData>
+    name: Elbow_R_poseInterpolator
+    driver:
+    - !<DriverData>
+        driverObject: Elbow_R
+        driverTwistAxis: 0
+        driverEulerTwist: false
+        driverController:
+        - FKElbow_R.rotate
+    pose:
+    - !<PoseData>
+        poseName: __Elbow_R_DefaultPose__
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKElbow_R.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.0
+            - 1.0
+        poseTranslation:
+        -   - -0.8714173014256126
+            - 6.800116025829084e-16
+            - 1.9539925233402755e-14
+    - !<PoseData>
+        poseName: Elbow_R_Swing_140
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKElbow_R.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 2.443460952792061
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.9396926207859083
+            - 0.3420201433256688
+        poseTranslation:
+        -   - -0.8714173014256126
+            - 6.800116025829084e-16
+            - 1.9539925233402755e-14
+    regularization: 0.0
+    outputSmoothing: 0.0
+    interpolation: 0
+    allowNegativeWeights: true
+    enableRotation: true
+    enableTranslation: false
+- !<PoseInterpolatorData>
+    name: Wrist_R_poseInterpolator
+    driver:
+    - !<DriverData>
+        driverObject: Wrist_R
+        driverTwistAxis: 0
+        driverEulerTwist: false
+        driverController:
+        - FKWrist_R.rotate
+    pose:
+    - !<PoseData>
+        poseName: __Wrist_R_DefaultPose__
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKWrist_R.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.0
+            - 1.0
+        poseTranslation:
+        -   - -0.7608678258752031
+            - -7.771561172376096e-16
+            - -1.8474111129762605e-13
+    - !<PoseData>
+        poseName: Wrist_R_Up_90
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKWrist_R.rotate
+                value:
+                    x: 0.0
+                    y: -1.5707963267948966
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - -1.1080342307988891e-08
+            - -0.7071067707133215
+            - 1.1080342636219172e-08
+            - 0.7071067916597732
+        poseTranslation:
+        -   - -0.7608678258752031
+            - -7.771561172376096e-16
+            - -1.8474111129762605e-13
+    - !<PoseData>
+        poseName: Wrist_R_Down_90
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKWrist_R.rotate
+                value:
+                    x: 0.0
+                    y: 1.5707963267948966
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - -9.929680186543539e-09
+            - 0.7071067707133216
+            - -9.929680480688035e-09
+            - 0.7071067916597732
+        poseTranslation:
+        -   - -0.7608678258752031
+            - -7.771561172376096e-16
+            - -1.8474111129762605e-13
+    - !<PoseData>
+        poseName: Wrist_R_Front_90
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKWrist_R.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 1.5707963267948966
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.7071067811865476
+            - 0.7071067811865475
+        poseTranslation:
+        -   - -0.7608678258752031
+            - -7.771561172376096e-16
+            - -1.8474111129762605e-13
+    - !<PoseData>
+        poseName: Wrist_R_Back_90
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKWrist_R.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: -1.5707963267948966
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - -0.7071067811865474
+            - 0.7071067811865477
+        poseTranslation:
+        -   - -0.7608678258752031
+            - -7.771561172376096e-16
+            - -1.8474111129762605e-13
+    regularization: 0.0
+    outputSmoothing: 0.0
+    interpolation: 0
+    allowNegativeWeights: true
+    enableRotation: true
+    enableTranslation: false
+- !<PoseInterpolatorData>
+    name: Hip_R_poseInterpolator
+    driver:
+    - !<DriverData>
+        driverObject: Hip_R
+        driverTwistAxis: 0
+        driverEulerTwist: false
+        driverController:
+        - FKHip_R.rotate
+    pose:
+    - !<PoseData>
+        poseName: __Hip_R_DefaultPose__
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKHip_R.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.0
+            - 1.0
+        poseTranslation:
+        -   - -0.19968944680793044
+            - -0.08224022199751757
+            - 0.8196866071477906
+    - !<PoseData>
+        poseName: Hip_R_Front_120
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKHip_R.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 2.0943951023931953
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.8660254037844379
+            - 0.5000000000000012
+        poseTranslation:
+        -   - -0.19968944680793044
+            - -0.08224022199751757
+            - 0.8196866071477906
+    - !<PoseData>
+        poseName: Hip_R_Back_70
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKHip_R.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: -1.2217304763960306
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - -0.5735764363510467
+            - 0.8191520442889914
+        poseTranslation:
+        -   - -0.19968944680793044
+            - -0.08224022199751757
+            - 0.8196866071477906
+    - !<PoseData>
+        poseName: Hip_R_Outer_90
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKHip_R.rotate
+                value:
+                    x: 0.0
+                    y: -1.5707963267948966
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - -0.7071067807924123
+            - 0.0
+            - 0.7071067815806827
+        poseTranslation:
+        -   - -0.19968944680793044
+            - -0.08224022199751757
+            - 0.8196866071477906
+    - !<PoseData>
+        poseName: Hip_R_Inner_90
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKHip_R.rotate
+                value:
+                    x: 0.0
+                    y: 1.5707963267948966
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.7071067808162911
+            - 0.0
+            - 0.7071067815568041
+        poseTranslation:
+        -   - -0.19968944680793044
+            - -0.08224022199751757
+            - 0.8196866071477906
+    regularization: 0.0
+    outputSmoothing: 0.0
+    interpolation: 0
+    allowNegativeWeights: true
+    enableRotation: true
+    enableTranslation: false
+- !<PoseInterpolatorData>
+    name: Knee_R_poseInterpolator
+    driver:
+    - !<DriverData>
+        driverObject: Knee_R
+        driverTwistAxis: 0
+        driverEulerTwist: false
+        driverController:
+        - FKKnee_R.rotate
+    pose:
+    - !<PoseData>
+        poseName: __Knee_R_DefaultPose__
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKKnee_R.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.0
+            - 1.0
+        poseTranslation:
+        -   - -1.6580415451890254
+            - 1.792364034969296e-09
+            - -1.790234627208065e-11
+    - !<PoseData>
+        poseName: Knee_R_Swing_140
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKKnee_R.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: -2.443460952792061
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - -0.9396926209707727
+            - 0.3420201428177582
+        poseTranslation:
+        -   - -1.6580415451890254
+            - 1.792364034969296e-09
+            - -1.790234627208065e-11
+    regularization: 0.0
+    outputSmoothing: 0.0
+    interpolation: 0
+    allowNegativeWeights: true
+    enableRotation: true
+    enableTranslation: false
+- !<PoseInterpolatorData>
+    name: Ankle_R_poseInterpolator
+    driver:
+    - !<DriverData>
+        driverObject: Ankle_R
+        driverTwistAxis: 0
+        driverEulerTwist: false
+        driverController:
+        - FKAnkle_R.rotate
+    pose:
+    - !<PoseData>
+        poseName: __Ankle_R_DefaultPose__
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKAnkle_R.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.0
+            - 1.0
+        poseTranslation:
+        -   - -3.830179491169418
+            - 4.1404816519818866e-09
+            - -6.198042079574861e-11
+    - !<PoseData>
+        poseName: Ankle_R_Front_60
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKAnkle_R.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: 1.0471975511965976
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - 0.500000002747596
+            - 0.8660254021981133
+        poseTranslation:
+        -   - -3.830179491169418
+            - 4.1404816519818866e-09
+            - -6.198042079574861e-11
+    - !<PoseData>
+        poseName: Ankle_R_Back_60
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKAnkle_R.rotate
+                value:
+                    x: 0.0
+                    y: 0.0
+                    z: -1.0471975511965976
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.0
+            - -0.49999999725240346
+            - 0.8660254053707642
+        poseTranslation:
+        -   - -3.830179491169418
+            - 4.1404816519818866e-09
+            - -6.198042079574861e-11
+    - !<PoseData>
+        poseName: Ankle_R_Inner_60
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKAnkle_R.rotate
+                value:
+                    x: 0.0
+                    y: 1.0471975511965976
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - 0.4999999999667194
+            - 0.0
+            - 0.8660254038036532
+        poseTranslation:
+        -   - -3.830179491169418
+            - 4.1404816519818866e-09
+            - -6.198042079574861e-11
+    - !<PoseData>
+        poseName: Ankle_R_Outer_60
+        poseType: 1
+        controllerData:
+        -   - !<ControlData>
+                name: FKAnkle_R.rotate
+                value:
+                    x: 0.0
+                    y: -1.0471975511965976
+                    z: 0.0
+                type: 8
+        isEnabled: true
+        poseFalloff: 1.0
+        isIndependent: false
+        poseRotationFalloff: 180.0
+        poseTranslationFalloff: 0.0010000000474974513
+        poseRotation:
+        -   - 0.0
+            - -0.5000000000332803
+            - 0.0
+            - 0.8660254037652243
+        poseTranslation:
+        -   - -3.830179491169418
+            - 4.1404816519818866e-09
+            - -6.198042079574861e-11
+    regularization: 0.0
+    outputSmoothing: 0.0
+    interpolation: 0
+    allowNegativeWeights: true
+    enableRotation: true
+    enableTranslation: false
