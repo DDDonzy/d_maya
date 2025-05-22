@@ -116,7 +116,7 @@ class CurveData(yaml.YAMLObject):
     """
     yaml_tag = 'CurveData'
     transformName: str = "transformName"
-    curveShapeDataList: list[CurveShapeData] = field(default_factory=list)
+    curveShapeDataList: list = field(default_factory=list)
 
     def __post_init__(self):
         if self.transformName:

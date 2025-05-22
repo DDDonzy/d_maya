@@ -5,7 +5,6 @@ from UTILS.create.assetCallback import AssetCallback
 import yaml
 from dataclasses import dataclass
 
-
 @dataclass
 class PoseControllerDataItem(yaml.YAMLObject):
     yaml_tag = 'ControlData'
@@ -309,36 +308,32 @@ def create_bsByPSD(bs: str, psd_node_list: list = None):
             om.MGlobal.displayError("No poseInterpolator node selected.")
             return
 
-    out_attr_list = []
-    pose_name_list = []
+
     for psd_node in psd_node_list:
+        pas_prefix = psd_node.replace("_poseInterpolator", "")
+        
         out_index = cmds.poseInterpolator(psd_node, q=1, i=1)
-        out_attr_list += [f"{psd_node}.output[{i}]" for i in out_index]
-        pose_name = cmds.poseInterpolator(psd_node, q=1, pn=1)
-        prefix = psd_node.replace("_poseInterpolator", "")
-        pose_name_list += []
-        for n in pose_name:
-            if prefix not in n:
-                pose_name_list.append(f"__{prefix}_{n}__")
-            else:
-                pose_name_list.append(n)
-    for i, x in enumerate(out_attr_list):
-        attr = x
-        name = pose_name_list[i]
-        if not cmds.objExists(f"{bs}.{name}"):
-            bs_wAttr = add_bsTarget(bs, name)
-            if "Default" in name:
-                cmds.setAttr(f"{bs}.{name}", l=1)
+        targetOutAttr_list = [f"{psd_node}.output[{i}]" for i in out_index]
+        targetName_list = cmds.poseInterpolator(psd_node, q=1, pn=1)
+        
+        
+        if not cmds.objExists(f"{bs}.__{pas_prefix}__"):
+            add_bsTarget(bs, f"__{pas_prefix}__")
+        for idx,name in enumerate(targetName_list):
+            if "neutral" in name or "Neutral" in name:
                 continue
-            cmds.setDrivenKeyframe(bs_wAttr, cd=attr, driverValue=0, v=0, inTangentType="linear", outTangentType="linear")
-            cmds.setDrivenKeyframe(bs_wAttr, cd=attr, driverValue=1, v=1, inTangentType="linear", outTangentType="linear")
             
-        if "Default" in name:
-            cmds.setAttr(f"{bs}.{name}", l=1)
-            continue
-        else:
-            cmds.setDrivenKeyframe(f"{bs}.{name}", cd=attr, driverValue=0, v=0, inTangentType="linear", outTangentType="linear")
-            cmds.setDrivenKeyframe(f"{bs}.{name}", cd=attr, driverValue=1, v=1, inTangentType="linear", outTangentType="linear")
+            outAttr = targetOutAttr_list[idx]
+            
+            if not cmds.objExists(f"{bs}.{name}"):
+                add_bsTarget(bs, name)
+                
+            cmds.setDrivenKeyframe(f"{bs}.{name}", cd=outAttr, driverValue=0, v=0, inTangentType="linear", outTangentType="linear")
+            cmds.setDrivenKeyframe(f"{bs}.{name}", cd=outAttr, driverValue=1, v=1, inTangentType="linear", outTangentType="linear")
+            
+        
+        
+        
 
 
 
@@ -371,6 +366,6 @@ def create_fingerTarget(bs):
 
 # import_proxyTransformData()
 # export_poseInterpolatorData(cmds.ls(sl=1))
-# import_poseInterpolator_data()
+# import_poseInterpolatorData()
 # create_bsByPSD("blendShape1")
 # create_finger_bs("blendShape1")
