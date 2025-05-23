@@ -5,9 +5,10 @@ from UTILS.create.assetCallback import AssetCallback
 import yaml
 from dataclasses import dataclass
 
+
 @dataclass
 class PoseControllerDataItem(yaml.YAMLObject):
-    yaml_tag = 'ControlData'
+    yaml_tag = 'ControllerDataItem'
     name: str
     value: dict
     type: int
@@ -15,7 +16,7 @@ class PoseControllerDataItem(yaml.YAMLObject):
 
 @dataclass
 class DriverData(yaml.YAMLObject):
-    yaml_tag = 'DriverData'
+    yaml_tag = 'Driver'
 
     driverObject: str
     driverTwistAxis: int
@@ -25,18 +26,18 @@ class DriverData(yaml.YAMLObject):
 
 @dataclass
 class PoseData(yaml.YAMLObject):
-    yaml_tag = 'PoseData'
+    yaml_tag = 'Pose'
 
     poseName: str
-    poseType: int
-    controllerData: list
     isEnabled: bool
+    poseType: int
     poseFalloff: float
     isIndependent: bool
     poseRotationFalloff: float
     poseTranslationFalloff: float
     poseRotation: list
     poseTranslation: list
+    controllerData: list
 
     def postValueChange(self):
         if self.poseFalloff < 0.001:
@@ -49,94 +50,91 @@ class PoseData(yaml.YAMLObject):
 
 @dataclass
 class PoseInterpolatorData(yaml.YAMLObject):
-    yaml_tag = 'PoseInterpolatorData'
+    yaml_tag = 'PoseInterpolator'
 
     name: str
-    driver: list
-    pose: list
     regularization: float
     outputSmoothing: float
     interpolation: int
     allowNegativeWeights: bool
     enableRotation: bool
     enableTranslation: bool
+    driver: list
+    pose: list
 
 
-def load_dataByNode(node_name):
-    controls_obj_list = []
+def get_psdData(psd):
+    # utils info
+    psd_driver = cmds.poseInterpolator(psd, q=1, d=1) or []
+    psd_poseIdx = cmds.poseInterpolator(psd, q=1, i=1)
+    psd_poseName = cmds.poseInterpolator(psd, q=1, pn=1)
+    psd_poseInfo = zip(psd_poseIdx, psd_poseName)
+
     # get interpolator data
-    regularization = cmds.getAttr(f"{node_name}.regularization")
-    outputSmoothing = cmds.getAttr(f"{node_name}.outputSmoothing")
-    interpolation = cmds.getAttr(f"{node_name}.interpolation")
-    allowNegativeWeights = cmds.getAttr(f"{node_name}.allowNegativeWeights")
-    enableRotation = cmds.getAttr(f"{node_name}.enableRotation")
-    enableTranslation = cmds.getAttr(f"{node_name}.enableTranslation")
+    regularization = cmds.getAttr(f"{psd}.regularization")
+    outputSmoothing = cmds.getAttr(f"{psd}.outputSmoothing")
+    interpolation = cmds.getAttr(f"{psd}.interpolation")
+    allowNegativeWeights = cmds.getAttr(f"{psd}.allowNegativeWeights")
+    enableRotation = cmds.getAttr(f"{psd}.enableRotation")
+    enableTranslation = cmds.getAttr(f"{psd}.enableTranslation")
+
     # get driver data
-    driver_data = []
-    for pose_idx, driver in enumerate(cmds.poseInterpolator(node_name, q=1, d=1)):
-        driverObject = driver
-        driverTwistAxis = cmds.getAttr(f"{node_name}.driver[{pose_idx}].driverTwistAxis")
-        driverEulerTwist = cmds.getAttr(f"{node_name}.driver[{pose_idx}].driverEulerTwist")
-        driverController = cmds.listConnections(f"{node_name}.driver[{pose_idx}].driverController", p=1, d=0)
-        if not driverController:
-            driverController = []
-        controls_obj_list += driverController
-        driver_data.append(DriverData(driverObject,
-                                      driverTwistAxis,
-                                      driverEulerTwist,
-                                      driverController))
-    controls_obj_list = [x.split(".")[0] for x in list(set(controls_obj_list))]
+    driverData = []
+    for driverIdx, driver in enumerate(psd_driver):
+        _driverData = DriverData(driver,
+                                 cmds.getAttr(f"{psd}.driver[{driverIdx}].driverTwistAxis"),
+                                 cmds.getAttr(f"{psd}.driver[{driverIdx}].driverEulerTwist"),
+                                 cmds.listConnections(f"{psd}.driver[{driverIdx}].driverController", p=1, d=0) or [])
+        driverData.append(_driverData)
 
     # get pose data
-    pose_data = []
-    pose_name_list = cmds.poseInterpolator(node_name, q=1, pn=1)
-    pose_index_list = cmds.poseInterpolator(node_name, q=1, i=1)
-    for i, poseName in enumerate(pose_name_list):
-        # pose
-        pose_idx = pose_index_list[i]
+    poseData = []
+    for poseIdx, poseName in psd_poseInfo:
+        # pose transform data, (rotation and translation)
         poseRotation_list = []
         poseTranslation_list = []
-        # pose driver data
-        for dr_i, dr_obj in enumerate(cmds.poseInterpolator(node_name, q=1, d=1)):
-            poseRotation_list.append(cmds.getAttr(f"{node_name}.pose[{pose_idx}].poseRotation[{dr_i}]"))
-            poseTranslation_list.append(cmds.getAttr(f"{node_name}.pose[{pose_idx}].poseTranslation[{dr_i}]"))
+        for driverIdx, driver in enumerate(psd_driver):
+            poseRotation_list.append(cmds.getAttr(f"{psd}.pose[{poseIdx}].poseRotation[{driverIdx}]"))
+            poseTranslation_list.append(cmds.getAttr(f"{psd}.pose[{poseIdx}].poseTranslation[{driverIdx}]"))
+
         # controls data
-        ctl_data = []
-        for ctl in cmds.ls(f"{node_name}.pose[{pose_idx}].poseControllerData[*]"):
-            item_data = []
-            for item in cmds.ls(f"{ctl}.poseControllerDataItem[*]"):
-                item_name = cmds.getAttr(f"{item}.poseControllerDataItemName")
-                item_type = cmds.getAttr(f"{item}.poseControllerDataItemType")
-                item_value = cmds.getAttr(f"{item}.poseControllerDataItemValue")
-                if item_type == 8:
-                    item_value = {"x": item_value[0][0], "y": item_value[0][1], "z": item_value[0][2]}
-                data = PoseControllerDataItem(name=item_name,
-                                              type=item_type,
-                                              value=item_value)
-                item_data.append(data)
-            ctl_data.append(item_data)
+        controllersData = []
+        for controllerAttr in cmds.ls(f"{psd}.pose[{poseIdx}].poseControllerData[*]"):
+            _controllerData = []
+            for itemAttr in cmds.ls(f"{controllerAttr}.poseControllerDataItem[*]"):
+                item_name = cmds.getAttr(f"{itemAttr}.poseControllerDataItemName")
+                item_type = cmds.getAttr(f"{itemAttr}.poseControllerDataItemType")
+                item_value = cmds.getAttr(f"{itemAttr}.poseControllerDataItemValue")
+                itemData = PoseControllerDataItem(name=item_name,
+                                                  type=item_type,
+                                                  value=list(item_value[0]) if isinstance(item_value, list) else item_value)
+                _controllerData.append(itemData)
+            controllersData.append(_controllerData)
+
         # pose attr
-        poseType = cmds.getAttr(f"{node_name}.pose[{pose_idx}].poseType")
-        isEnabled = cmds.getAttr(f"{node_name}.pose[{pose_idx}].isEnabled")
-        poseFalloff = cmds.getAttr(f"{node_name}.pose[{pose_idx}].poseFalloff")
-        isIndependent = cmds.getAttr(f"{node_name}.pose[{pose_idx}].isIndependent")
-        poseRotationFalloff = cmds.getAttr(f"{node_name}.pose[{pose_idx}].poseRotationFalloff")
-        poseTranslationFalloff = cmds.getAttr(f"{node_name}.pose[{pose_idx}].poseTranslationFalloff")
-        pose_i = PoseData(poseName=poseName,
-                          poseRotation=poseRotation_list,
-                          poseTranslation=poseTranslation_list,
-                          poseType=poseType,
-                          isEnabled=isEnabled,
-                          poseFalloff=poseFalloff,
-                          isIndependent=isIndependent,
-                          poseRotationFalloff=poseRotationFalloff,
-                          poseTranslationFalloff=poseTranslationFalloff,
-                          controllerData=ctl_data)
-        pose_i.postValueChange()
-        pose_data.append(pose_i)
-    return PoseInterpolatorData(name=node_name,
-                                driver=driver_data,
-                                pose=pose_data,
+        poseType = cmds.getAttr(f"{psd}.pose[{poseIdx}].poseType")
+        isEnabled = cmds.getAttr(f"{psd}.pose[{poseIdx}].isEnabled")
+        poseFalloff = cmds.getAttr(f"{psd}.pose[{poseIdx}].poseFalloff")
+        isIndependent = cmds.getAttr(f"{psd}.pose[{poseIdx}].isIndependent")
+        poseRotationFalloff = cmds.getAttr(f"{psd}.pose[{poseIdx}].poseRotationFalloff")
+        poseTranslationFalloff = cmds.getAttr(f"{psd}.pose[{poseIdx}].poseTranslationFalloff")
+
+        _poseData = PoseData(poseName=poseName,
+                             poseRotation=poseRotation_list,
+                             poseTranslation=poseTranslation_list,
+                             poseType=poseType,
+                             isEnabled=isEnabled,
+                             poseFalloff=poseFalloff,
+                             isIndependent=isIndependent,
+                             poseRotationFalloff=poseRotationFalloff,
+                             poseTranslationFalloff=poseTranslationFalloff,
+                             controllerData=controllersData)
+        _poseData.postValueChange()
+        poseData.append(_poseData)
+
+    return PoseInterpolatorData(name=psd,
+                                driver=driverData,
+                                pose=poseData,
                                 regularization=regularization,
                                 outputSmoothing=outputSmoothing,
                                 interpolation=interpolation,
@@ -145,57 +143,69 @@ def load_dataByNode(node_name):
                                 enableTranslation=enableTranslation)
 
 
-def create_nodeByData(data: PoseInterpolatorData):
-    controls_obj_list = []
-
-    # set driver data
-    driver_obj_list = [x.driverObject for x in data.driver]
-    node_name = cmds.poseInterpolator(driver_obj_list, d=1, name=data.name)[0]
-    for i, x in enumerate(data.driver):
-        cmds.setAttr(f"{node_name}.driver[{i}].driverTwistAxis", x.driverTwistAxis)
-        cmds.setAttr(f"{node_name}.driver[{i}].driverEulerTwist", x.driverEulerTwist)
-        for c_i, c in enumerate(x.driverController):
-            cmds.connectAttr(c, f"{node_name}.driver[{i}].driverController[{c_i}]")
-            control_object = c.split(".")[0]
-            if control_object not in controls_obj_list:
-                controls_obj_list.append(control_object)
+def create_psd(data: PoseInterpolatorData):
+    # create psd
+    psd_name = cmds.poseInterpolator([x.driverObject for x in data.driver], d=1, name=data.name)[0]
+    # controls_obj_list = []
 
     # set interpolator data
-    cmds.setAttr(f"{node_name}.regularization", data.regularization)
-    cmds.setAttr(f"{node_name}.outputSmoothing", data.outputSmoothing)
-    cmds.setAttr(f"{node_name}.interpolation", data.interpolation)
-    cmds.setAttr(f"{node_name}.allowNegativeWeights", data.allowNegativeWeights)
-    cmds.setAttr(f"{node_name}.enableRotation", data.enableRotation)
-    cmds.setAttr(f"{node_name}.enableTranslation", data.enableTranslation)
+    cmds.setAttr(f"{psd_name}.regularization", data.regularization)
+    cmds.setAttr(f"{psd_name}.outputSmoothing", data.outputSmoothing)
+    cmds.setAttr(f"{psd_name}.interpolation", data.interpolation)
+    cmds.setAttr(f"{psd_name}.allowNegativeWeights", data.allowNegativeWeights)
+    cmds.setAttr(f"{psd_name}.enableRotation", data.enableRotation)
+    cmds.setAttr(f"{psd_name}.enableTranslation", data.enableTranslation)
 
-    # add pose
-    for i, pose in enumerate(data.pose):
-        cmds.poseInterpolator(node_name, e=1, ap=pose.poseName)
-        # pose driver data
-        for dr_i, dr_obj in enumerate(cmds.poseInterpolator(node_name, q=1, d=1)):
-            cmds.setAttr(f"{node_name}.pose[{i}].poseRotation[{dr_i}]", pose.poseRotation[dr_i], type="doubleArray")
-            cmds.setAttr(f"{node_name}.pose[{i}].poseTranslation[{dr_i}]", pose.poseTranslation[dr_i], type="doubleArray")
+    # set driver and controller object
+    for driver_idx, driver in enumerate(data.driver):
+        cmds.setAttr(f"{psd_name}.driver[{driver_idx}].driverTwistAxis", driver.driverTwistAxis)
+        cmds.setAttr(f"{psd_name}.driver[{driver_idx}].driverEulerTwist", driver.driverEulerTwist)
+        for controllerIdx, controllerData in enumerate(driver.driverController):
+            if cmds.objExists(controllerData):
+                cmds.connectAttr(controllerData, f"{psd_name}.driver[{driver_idx}].driverController[{controllerIdx}]")
+            else:
+                om.MGlobal.displayWarning("Driver controller not exists.")
 
-        # pose controller data
-        pose_attr = f"{node_name}.pose[{i}]"  # psd.pose[*]
-        if pose.controllerData:
-            for c_i, ctl in enumerate(pose.controllerData):
-                ctl_attr = f"{pose_attr}.poseControllerData[{c_i}]"
-                for i_i, item in enumerate(ctl):
-                    item_attr = f"{ctl_attr}.poseControllerDataItem[{i_i}]"
-                    cmds.setAttr(f"{item_attr}.poseControllerDataItemName", item.name, type='string')
-                    cmds.setAttr(f"{item_attr}.poseControllerDataItemType", item.type)
-                    if item.type == 8:
-                        cmds.setAttr(f"{item_attr}.poseControllerDataItemValue", *item.value.values(), type="double3")
-                    else:
-                        cmds.setAttr(f"{item_attr}.poseControllerDataItemValue", item.value)
+    # set pose data
+    for pose_idx, pose in enumerate(data.pose):
+        # add pose
+        cmds.poseInterpolator(psd_name, e=1, ap=pose.poseName)
         # pose attr
-        cmds.setAttr(f"{node_name}.pose[{i}].poseType", pose.poseType)
-        cmds.setAttr(f"{node_name}.pose[{i}].isEnabled", pose.isEnabled)
-        cmds.setAttr(f"{node_name}.pose[{i}].poseFalloff", pose.poseFalloff)
-        cmds.setAttr(f"{node_name}.pose[{i}].isIndependent", pose.isIndependent)
-        cmds.setAttr(f"{node_name}.pose[{i}].poseRotationFalloff", pose.poseRotationFalloff)
-        cmds.setAttr(f"{node_name}.pose[{i}].poseTranslationFalloff", pose.poseTranslationFalloff)
+        cmds.setAttr(f"{psd_name}.pose[{pose_idx}].poseType", pose.poseType)
+        cmds.setAttr(f"{psd_name}.pose[{pose_idx}].isEnabled", pose.isEnabled)
+        cmds.setAttr(f"{psd_name}.pose[{pose_idx}].poseFalloff", pose.poseFalloff)
+        cmds.setAttr(f"{psd_name}.pose[{pose_idx}].isIndependent", pose.isIndependent)
+        cmds.setAttr(f"{psd_name}.pose[{pose_idx}].poseRotationFalloff", pose.poseRotationFalloff)
+        cmds.setAttr(f"{psd_name}.pose[{pose_idx}].poseTranslationFalloff", pose.poseTranslationFalloff)
+
+        # set pose transform data
+        for t_idx, t in enumerate(pose.poseTranslation):
+            cmds.setAttr(f"{psd_name}.pose[{pose_idx}].poseTranslation[{t_idx}]", t, type="doubleArray")
+        for r_idx, r in enumerate(pose.poseRotation):
+            cmds.setAttr(f"{psd_name}.pose[{pose_idx}].poseRotation[{r_idx}]", r, type="doubleArray")
+
+        # set pose controller data
+        # .pose[*]
+        poseAttr = f"{psd_name}.pose[{pose_idx}]"
+        if pose.controllerData:
+            for controllerIdx, controllerData in enumerate(pose.controllerData):
+                # .pose[*].poseControllerData[*]
+                controllerAttr = f"{poseAttr}.poseControllerData[{controllerIdx}]"
+                for itemIdx, itemData in enumerate(controllerData):
+                    # .pose[*].poseControllerData[*].poseControllerDataItem[*]
+                    itemAttr = f"{controllerAttr}.poseControllerDataItem[{itemIdx}]"
+                    # set poseControllerDataItemName
+                    if itemData.name and cmds.objExists(itemData.name):
+                        cmds.setAttr(f"{itemAttr}.poseControllerDataItemName", itemData.name, type='string')
+                    # set poseControllerDataItemType
+                    if itemData.type:
+                        cmds.setAttr(f"{itemAttr}.poseControllerDataItemType", itemData.type)
+                    # set poseControllerDataItemValue
+                    if itemData.value:
+                        if isinstance(itemData.value, list) or isinstance(itemData.value, tuple):
+                            cmds.setAttr(f"{itemAttr}.poseControllerDataItemValue", *itemData.value, type="double3")
+                        else:
+                            cmds.setAttr(f"{itemAttr}.poseControllerDataItemValue", itemData.value)
 
 
 def import_proxyTransformData():
@@ -223,7 +233,7 @@ def import_proxyTransformData():
                     create_proxyTransform(x[i]["Joint"], x[i]["Parent"], i)
 
 
-def export_poseInterpolatorData(node=None):
+def export_psd(node=None):
     """
     export poseInterpolator's data as file
     Args:
@@ -237,7 +247,7 @@ def export_poseInterpolatorData(node=None):
 
     data_list = []
     for i in node:
-        data_list.append(load_dataByNode(i))
+        data_list.append(get_psdData(i))
     path = cmds.fileDialog2(dialogStyle=2, caption="Export poseInterpolator data", fileFilter="YAML file(*.yaml)")
     if not path:
         return
@@ -246,7 +256,7 @@ def export_poseInterpolatorData(node=None):
         yaml.dump(data_list, f, sort_keys=False, indent=4, width=80)
 
 
-def import_poseInterpolatorData():
+def import_psd():
     """
     import poseInterpolator node from files.
     """
@@ -257,7 +267,7 @@ def import_poseInterpolatorData():
     with open(path, "r") as f:
         data_list = yaml.unsafe_load(f)
         for data in data_list:
-            create_nodeByData(data)
+            create_psd(data)
 
 
 def add_bsTarget(bs: str, name: str):
@@ -293,7 +303,7 @@ def del_bsTargetData(bs: str, index: int):
     cmds.setAttr(f"{bs}.it[0].itg[{index}].iti[6000].ict", *[1, "vtx[0]"], type="componentList")
 
 
-def create_bsByPSD(bs: str, psd_node_list: list = None):
+def create_bsTargetByPsd(bs: str, psd_node_list: list = None):
     """
     create blendShape target by poseInterpolator's pose output
     if psd_node_list is None, will be get poseInterpolator from selections list
@@ -308,33 +318,26 @@ def create_bsByPSD(bs: str, psd_node_list: list = None):
             om.MGlobal.displayError("No poseInterpolator node selected.")
             return
 
-
     for psd_node in psd_node_list:
         pas_prefix = psd_node.replace("_poseInterpolator", "")
-        
+
         out_index = cmds.poseInterpolator(psd_node, q=1, i=1)
         targetOutAttr_list = [f"{psd_node}.output[{i}]" for i in out_index]
         targetName_list = cmds.poseInterpolator(psd_node, q=1, pn=1)
-        
-        
+
         if not cmds.objExists(f"{bs}.__{pas_prefix}__"):
             add_bsTarget(bs, f"__{pas_prefix}__")
-        for idx,name in enumerate(targetName_list):
+        for idx, name in enumerate(targetName_list):
             if "neutral" in name or "Neutral" in name:
                 continue
-            
+
             outAttr = targetOutAttr_list[idx]
-            
+
             if not cmds.objExists(f"{bs}.{name}"):
                 add_bsTarget(bs, name)
-                
+
             cmds.setDrivenKeyframe(f"{bs}.{name}", cd=outAttr, driverValue=0, v=0, inTangentType="linear", outTangentType="linear")
             cmds.setDrivenKeyframe(f"{bs}.{name}", cd=outAttr, driverValue=1, v=1, inTangentType="linear", outTangentType="linear")
-            
-        
-        
-        
-
 
 
 @dataclass
@@ -346,7 +349,7 @@ class FingerTargetData(yaml.YAMLObject):
     DriverMax: float = 0
 
 
-def create_fingerTarget(bs):
+def create_fingerBsTarget(bsNode):
     path = cmds.fileDialog2(dialogStyle=2, caption="Load finger blendShape data", fileFilter="YAML file(*.yaml)", fileMode=1)
     if not path:
         return
@@ -354,7 +357,7 @@ def create_fingerTarget(bs):
     with open(path, "r") as f:
         data_list = yaml.unsafe_load(f)
         for x in data_list:
-            attr = add_bsTarget(bs, x.TargetName)
+            attr = add_bsTarget(bsNode, x.TargetName)
             if x.DriverAttr:
                 cmds.setDrivenKeyframe(attr, cd=x.DriverAttr,
                                        driverValue=x.DriverMin, v=0,
@@ -365,7 +368,7 @@ def create_fingerTarget(bs):
 
 
 # import_proxyTransformData()
-# export_poseInterpolatorData(cmds.ls(sl=1))
-# import_poseInterpolatorData()
-# create_bsByPSD("blendShape1")
-# create_finger_bs("blendShape1")
+# export_psd(cmds.ls(sl=1))
+# import_psd()
+# create_bsTargetByPsd("blendShape1")
+# create_fingerBsTarget("blendShape1")

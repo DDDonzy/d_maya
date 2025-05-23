@@ -1,25 +1,23 @@
-- !<PoseInterpolatorData>
+- !<PoseInterpolator>
     name: Head_M_poseInterpolator
+    regularization: 0.0
+    outputSmoothing: 0.0
+    interpolation: 1
+    allowNegativeWeights: false
+    enableRotation: true
+    enableTranslation: false
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: Head_M
         driverTwistAxis: 0
         driverEulerTwist: false
         driverController:
         - FKHead_M.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: neutral
+        isEnabled: true
         poseType: 0
-        controllerData:
-        -   - !<ControlData>
-                name: FKHead_M.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
-        isEnabled: true
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -33,18 +31,18 @@
         -   - 0.5183571632368693
             - 2.220446049250313e-15
             - -1.743386177216023e-16
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKHead_M.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralSwing
-        poseType: 1
-        controllerData:
-        -   - !<ControlData>
-                name: FKHead_M.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -58,18 +56,18 @@
         -   - 0.5183571632368693
             - 2.220446049250313e-15
             - -1.743386177216023e-16
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKHead_M.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralTwist
-        poseType: 2
-        controllerData:
-        -   - !<ControlData>
-                name: FKHead_M.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 2
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -83,25 +81,18 @@
         -   - 0.5183571632368693
             - 2.220446049250313e-15
             - -1.743386177216023e-16
-    - !<PoseData>
-        poseName: Head_M_Front_60
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKHead_M.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 1.0471975511965976
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
-                name: FKHead_M.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 1.0471975511965976
-                type: 8
+    - !<Pose>
+        poseName: Head_M_Front_60
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -115,18 +106,25 @@
         -   - 0.5183571632368693
             - 2.220446049250313e-15
             - -1.743386177216023e-16
-    - !<PoseData>
-        poseName: Head_M_Back_60
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKHead_M.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -1.0471975511965976
+                - 0.0
+                - 0.0
+                - 1.0471975511965976
                 type: 8
+        -   - !<ControllerDataItem>
+                name: FKHead_M.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 1.0471975511965976
+                type: 8
+    - !<Pose>
+        poseName: Head_M_Back_60
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -140,18 +138,18 @@
         -   - 0.5183571632368693
             - 2.220446049250313e-15
             - -1.743386177216023e-16
-    - !<PoseData>
-        poseName: Head_M_Side_L_60
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKHead_M.rotate
                 value:
-                    x: 0.0
-                    y: -1.0471975511965976
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - -1.0471975511965976
                 type: 8
+    - !<Pose>
+        poseName: Head_M_Side_L_60
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -165,18 +163,18 @@
         -   - 0.5183571632368693
             - 2.220446049250313e-15
             - -1.743386177216023e-16
-    - !<PoseData>
-        poseName: Head_M_Side_R_60
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKHead_M.rotate
                 value:
-                    x: 0.0
-                    y: 1.0471975511965976
-                    z: 0.0
+                - 0.0
+                - -1.0471975511965976
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Head_M_Side_R_60
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -190,34 +188,34 @@
         -   - 0.5183571632368693
             - 2.220446049250313e-15
             - -1.743386177216023e-16
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKHead_M.rotate
+                value:
+                - 0.0
+                - 1.0471975511965976
+                - 0.0
+                type: 8
+- !<PoseInterpolator>
+    name: Neck_M_poseInterpolator
     regularization: 0.0
     outputSmoothing: 0.0
-    interpolation: 0
-    allowNegativeWeights: true
+    interpolation: 1
+    allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
-    name: Neck_M_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: Neck_M
         driverTwistAxis: 0
         driverEulerTwist: false
         driverController:
         - FKNeck_M.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: neutral
+        isEnabled: true
         poseType: 0
-        controllerData:
-        -   - !<ControlData>
-                name: FKNeck_M.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
-        isEnabled: true
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -231,18 +229,18 @@
         -   - 1.1676556525613577
             - 3.1086244689504383e-15
             - 4.608265026153594e-15
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKNeck_M.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralSwing
-        poseType: 1
-        controllerData:
-        -   - !<ControlData>
-                name: FKNeck_M.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -256,18 +254,18 @@
         -   - 1.1676556525613577
             - 3.1086244689504383e-15
             - 4.608265026153594e-15
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKNeck_M.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralTwist
-        poseType: 2
-        controllerData:
-        -   - !<ControlData>
-                name: FKNeck_M.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 2
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -281,18 +279,18 @@
         -   - 1.1676556525613577
             - 3.1086244689504383e-15
             - 4.608265026153594e-15
-    - !<PoseData>
-        poseName: Neck_M_Front_60
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKNeck_M.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 1.0471975511965976
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Neck_M_Front_60
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -306,18 +304,18 @@
         -   - 1.1676556525613577
             - 3.1086244689504383e-15
             - 4.608265026153594e-15
-    - !<PoseData>
-        poseName: Neck_M_Back_60
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKNeck_M.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -1.0471975511965976
+                - 0.0
+                - 0.0
+                - 1.0471975511965976
                 type: 8
+    - !<Pose>
+        poseName: Neck_M_Back_60
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -331,18 +329,18 @@
         -   - 1.1676556525613577
             - 3.1086244689504383e-15
             - 4.608265026153594e-15
-    - !<PoseData>
-        poseName: Neck_M_Side_L_60
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKNeck_M.rotate
                 value:
-                    x: 0.0
-                    y: -1.0471975511965976
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - -1.0471975511965976
                 type: 8
+    - !<Pose>
+        poseName: Neck_M_Side_L_60
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -356,18 +354,18 @@
         -   - 1.1676556525613577
             - 3.1086244689504383e-15
             - 4.608265026153594e-15
-    - !<PoseData>
-        poseName: Neck_M_Side_R_60
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKNeck_M.rotate
                 value:
-                    x: 0.0
-                    y: 1.0471975511965976
-                    z: 0.0
+                - 0.0
+                - -1.0471975511965976
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Neck_M_Side_R_60
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -381,34 +379,34 @@
         -   - 1.1676556525613577
             - 3.1086244689504383e-15
             - 4.608265026153594e-15
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKNeck_M.rotate
+                value:
+                - 0.0
+                - 1.0471975511965976
+                - 0.0
+                type: 8
+- !<PoseInterpolator>
+    name: Scapula_L_poseInterpolator
     regularization: 0.0
     outputSmoothing: 0.0
-    interpolation: 0
-    allowNegativeWeights: true
+    interpolation: 1
+    allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
-    name: Scapula_L_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: Scapula_L
         driverTwistAxis: 0
         driverEulerTwist: false
         driverController:
         - FKScapula_L.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: neutral
+        isEnabled: true
         poseType: 0
-        controllerData:
-        -   - !<ControlData>
-                name: FKScapula_L.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
-        isEnabled: true
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -422,18 +420,18 @@
         -   - 0.7642009376443113
             - 0.2752891437952245
             - 0.43653594851735433
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKScapula_L.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralSwing
-        poseType: 1
-        controllerData:
-        -   - !<ControlData>
-                name: FKScapula_L.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -447,18 +445,18 @@
         -   - 0.7642009376443113
             - 0.2752891437952245
             - 0.43653594851735433
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKScapula_L.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralTwist
-        poseType: 2
-        controllerData:
-        -   - !<ControlData>
-                name: FKScapula_L.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 2
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -472,18 +470,18 @@
         -   - 0.7642009376443113
             - 0.2752891437952245
             - 0.43653594851735433
-    - !<PoseData>
-        poseName: Scapula_L_Up_60
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKScapula_L.rotate
                 value:
-                    x: 0.0
-                    y: -1.0471975511965976
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Scapula_L_Up_60
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -497,18 +495,18 @@
         -   - 0.7642009376443113
             - 0.2752891437952245
             - 0.43653594851735433
-    - !<PoseData>
-        poseName: Scapula_L_Down_30
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKScapula_L.rotate
                 value:
-                    x: 0.0
-                    y: 0.5235987755982988
-                    z: 0.0
+                - 0.0
+                - -1.0471975511965976
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Scapula_L_Down_30
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -522,18 +520,18 @@
         -   - 0.7642009376443113
             - 0.2752891437952245
             - 0.43653594851735433
-    - !<PoseData>
-        poseName: Scapula_L_Front_60
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKScapula_L.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 1.0471975511965976
+                - 0.0
+                - 0.5235987755982988
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Scapula_L_Front_60
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -547,18 +545,18 @@
         -   - 0.7642009376443113
             - 0.2752891437952245
             - 0.43653594851735433
-    - !<PoseData>
-        poseName: Scapula_L_Back_60
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKScapula_L.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -1.0471975511965976
+                - 0.0
+                - 0.0
+                - 1.0471975511965976
                 type: 8
+    - !<Pose>
+        poseName: Scapula_L_Back_60
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -572,34 +570,34 @@
         -   - 0.7642009376443113
             - 0.2752891437952245
             - 0.43653594851735433
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKScapula_L.rotate
+                value:
+                - 0.0
+                - 0.0
+                - -1.0471975511965976
+                type: 8
+- !<PoseInterpolator>
+    name: Shoulder_L_poseInterpolator
     regularization: 0.0
     outputSmoothing: 0.0
-    interpolation: 0
-    allowNegativeWeights: true
+    interpolation: 1
+    allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
-    name: Shoulder_L_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: Shoulder_L
         driverTwistAxis: 0
         driverEulerTwist: false
         driverController:
         - FKShoulder_L.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: neutral
+        isEnabled: true
         poseType: 0
-        controllerData:
-        -   - !<ControlData>
-                name: FKShoulder_L.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
-        isEnabled: true
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -613,18 +611,18 @@
         -   - -1.0925408230395597
             - 3.2412961203931445e-13
             - 4.618527782440651e-14
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKShoulder_L.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralSwing
-        poseType: 1
-        controllerData:
-        -   - !<ControlData>
-                name: FKShoulder_L.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -638,18 +636,18 @@
         -   - -1.0925408230395597
             - 3.2412961203931445e-13
             - 4.618527782440651e-14
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKShoulder_L.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralTwist
-        poseType: 2
-        controllerData:
-        -   - !<ControlData>
-                name: FKShoulder_L.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 2
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -663,18 +661,18 @@
         -   - -1.0925408230395597
             - 3.2412961203931445e-13
             - 4.618527782440651e-14
-    - !<PoseData>
-        poseName: Shoulder_L_Up_90
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKShoulder_L.rotate
                 value:
-                    x: 0.0
-                    y: -1.5707963267948966
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Shoulder_L_Up_90
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -688,18 +686,18 @@
         -   - -1.0925408230395597
             - 3.2412961203931445e-13
             - 4.618527782440651e-14
-    - !<PoseData>
-        poseName: Shoulder_L_Down_90
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKShoulder_L.rotate
                 value:
-                    x: 0.0
-                    y: 1.5707963267948966
-                    z: 0.0
+                - 0.0
+                - -1.5707963267948966
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Shoulder_L_Down_90
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -713,18 +711,18 @@
         -   - -1.0925408230395597
             - 3.2412961203931445e-13
             - 4.618527782440651e-14
-    - !<PoseData>
-        poseName: Shoulder_L_Front_90
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKShoulder_L.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 1.5707963267948966
+                - 0.0
+                - 1.5707963267948966
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Shoulder_L_Front_90
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -738,18 +736,18 @@
         -   - -1.0925408230395597
             - 3.2412961203931445e-13
             - 4.618527782440651e-14
-    - !<PoseData>
-        poseName: Shoulder_L_Back_90
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKShoulder_L.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -1.5707963267948966
+                - 0.0
+                - 0.0
+                - 1.5707963267948966
                 type: 8
+    - !<Pose>
+        poseName: Shoulder_L_Back_90
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -763,34 +761,34 @@
         -   - -1.0925408230395597
             - 3.2412961203931445e-13
             - 4.618527782440651e-14
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKShoulder_L.rotate
+                value:
+                - 0.0
+                - 0.0
+                - -1.5707963267948966
+                type: 8
+- !<PoseInterpolator>
+    name: Elbow_L_poseInterpolator
     regularization: 0.0
     outputSmoothing: 0.0
     interpolation: 0
-    allowNegativeWeights: true
+    allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
-    name: Elbow_L_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: Elbow_L
         driverTwistAxis: 0
         driverEulerTwist: false
         driverController:
         - FKElbow_L.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: neutral
+        isEnabled: true
         poseType: 0
-        controllerData:
-        -   - !<ControlData>
-                name: FKElbow_L.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
-        isEnabled: true
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -804,18 +802,18 @@
         -   - -0.8714173014256126
             - 6.800116025829084e-16
             - 1.9539925233402755e-14
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKElbow_L.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralSwing
-        poseType: 1
-        controllerData:
-        -   - !<ControlData>
-                name: FKElbow_L.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -829,18 +827,18 @@
         -   - -0.8714173014256126
             - 6.800116025829084e-16
             - 1.9539925233402755e-14
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKElbow_L.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralTwist
-        poseType: 2
-        controllerData:
-        -   - !<ControlData>
-                name: FKElbow_L.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 2
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -854,18 +852,18 @@
         -   - -0.8714173014256126
             - 6.800116025829084e-16
             - 1.9539925233402755e-14
-    - !<PoseData>
-        poseName: Elbow_L_Swing_140
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKElbow_L.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 2.443460952792061
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Elbow_L_Swing_140
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -879,34 +877,34 @@
         -   - -0.8714173014256126
             - 6.800116025829084e-16
             - 1.9539925233402755e-14
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKElbow_L.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 2.443460952792061
+                type: 8
+- !<PoseInterpolator>
+    name: Wrist_L_poseInterpolator
     regularization: 0.0
     outputSmoothing: 0.0
-    interpolation: 0
-    allowNegativeWeights: true
+    interpolation: 1
+    allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
-    name: Wrist_L_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: Wrist_L
         driverTwistAxis: 0
         driverEulerTwist: false
         driverController:
         - FKWrist_L.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: neutral
+        isEnabled: true
         poseType: 0
-        controllerData:
-        -   - !<ControlData>
-                name: FKWrist_L.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
-        isEnabled: true
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -920,18 +918,18 @@
         -   - -0.7608678258752031
             - -7.771561172376096e-16
             - -1.8474111129762605e-13
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKWrist_L.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralSwing
-        poseType: 1
-        controllerData:
-        -   - !<ControlData>
-                name: FKWrist_L.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -945,18 +943,18 @@
         -   - -0.7608678258752031
             - -7.771561172376096e-16
             - -1.8474111129762605e-13
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKWrist_L.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralTwist
-        poseType: 2
-        controllerData:
-        -   - !<ControlData>
-                name: FKWrist_L.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 2
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -970,18 +968,18 @@
         -   - -0.7608678258752031
             - -7.771561172376096e-16
             - -1.8474111129762605e-13
-    - !<PoseData>
-        poseName: Wrist_L_Up_90
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKWrist_L.rotate
                 value:
-                    x: 0.0
-                    y: -1.5707963267948966
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Wrist_L_Up_90
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -995,18 +993,18 @@
         -   - -0.7608678258752031
             - -7.771561172376096e-16
             - -1.8474111129762605e-13
-    - !<PoseData>
-        poseName: Wrist_L_Down_90
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKWrist_L.rotate
                 value:
-                    x: 0.0
-                    y: 1.5707963267948966
-                    z: 0.0
+                - 0.0
+                - -1.5707963267948966
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Wrist_L_Down_90
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1020,18 +1018,18 @@
         -   - -0.7608678258752031
             - -7.771561172376096e-16
             - -1.8474111129762605e-13
-    - !<PoseData>
-        poseName: Wrist_L_Front_90
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKWrist_L.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 1.5707963267948966
+                - 0.0
+                - 1.5707963267948966
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Wrist_L_Front_90
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1045,18 +1043,18 @@
         -   - -0.7608678258752031
             - -7.771561172376096e-16
             - -1.8474111129762605e-13
-    - !<PoseData>
-        poseName: Wrist_L_Back_90
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKWrist_L.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -1.5707963267948966
+                - 0.0
+                - 0.0
+                - 1.5707963267948966
                 type: 8
+    - !<Pose>
+        poseName: Wrist_L_Back_90
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1070,34 +1068,34 @@
         -   - -0.7608678258752031
             - -7.771561172376096e-16
             - -1.8474111129762605e-13
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKWrist_L.rotate
+                value:
+                - 0.0
+                - 0.0
+                - -1.5707963267948966
+                type: 8
+- !<PoseInterpolator>
+    name: Hip_L_poseInterpolator
     regularization: 0.0
     outputSmoothing: 0.0
-    interpolation: 0
-    allowNegativeWeights: true
+    interpolation: 1
+    allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
-    name: Hip_L_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: Hip_L
         driverTwistAxis: 0
         driverEulerTwist: false
         driverController:
         - FKHip_L.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: neutral
+        isEnabled: true
         poseType: 0
-        controllerData:
-        -   - !<ControlData>
-                name: FKHip_L.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
-        isEnabled: true
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1111,18 +1109,18 @@
         -   - -0.1996894468079322
             - -0.08224022199751779
             - 0.8196866071477906
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKHip_L.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralSwing
-        poseType: 1
-        controllerData:
-        -   - !<ControlData>
-                name: FKHip_L.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1136,18 +1134,18 @@
         -   - -0.1996894468079322
             - -0.08224022199751779
             - 0.8196866071477906
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKHip_L.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralTwist
-        poseType: 2
-        controllerData:
-        -   - !<ControlData>
-                name: FKHip_L.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 2
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1161,18 +1159,18 @@
         -   - -0.1996894468079322
             - -0.08224022199751779
             - 0.8196866071477906
-    - !<PoseData>
-        poseName: Hip_L_Front_120
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKHip_L.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 2.0943951023931953
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Hip_L_Front_120
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1186,18 +1184,18 @@
         -   - -0.19968944680793044
             - -0.08224022199751757
             - 0.8196866071477906
-    - !<PoseData>
-        poseName: Hip_L_Back_70
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKHip_L.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -1.2217304763960306
+                - 0.0
+                - 0.0
+                - 2.0943951023931953
                 type: 8
+    - !<Pose>
+        poseName: Hip_L_Back_70
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1211,18 +1209,18 @@
         -   - -0.19968944680793044
             - -0.08224022199751757
             - 0.8196866071477906
-    - !<PoseData>
-        poseName: Hip_L_Outer_90
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKHip_L.rotate
                 value:
-                    x: 0.0
-                    y: -1.5707963267948966
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - -1.2217304763960306
                 type: 8
+    - !<Pose>
+        poseName: Hip_L_Outer_90
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1236,18 +1234,18 @@
         -   - -0.19968944680793044
             - -0.08224022199751757
             - 0.8196866071477906
-    - !<PoseData>
-        poseName: Hip_L_Inner_90
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKHip_L.rotate
                 value:
-                    x: 0.0
-                    y: 1.5707963267948966
-                    z: 0.0
+                - 0.0
+                - -1.5707963267948966
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Hip_L_Inner_90
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1261,34 +1259,34 @@
         -   - -0.19968944680793044
             - -0.08224022199751757
             - 0.8196866071477906
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKHip_L.rotate
+                value:
+                - 0.0
+                - 1.5707963267948966
+                - 0.0
+                type: 8
+- !<PoseInterpolator>
+    name: Knee_L_poseInterpolator
     regularization: 0.0
     outputSmoothing: 0.0
     interpolation: 0
-    allowNegativeWeights: true
+    allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
-    name: Knee_L_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: Knee_L
         driverTwistAxis: 0
         driverEulerTwist: false
         driverController:
         - FKKnee_L.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: neutral
+        isEnabled: true
         poseType: 0
-        controllerData:
-        -   - !<ControlData>
-                name: FKKnee_L.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
-        isEnabled: true
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1302,18 +1300,18 @@
         -   - -1.6580414772030831
             - 9.741839942511987e-07
             - -1.7902124227475724e-11
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKKnee_L.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralSwing
-        poseType: 1
-        controllerData:
-        -   - !<ControlData>
-                name: FKKnee_L.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1327,18 +1325,18 @@
         -   - -1.6580414772030831
             - 9.741839942511987e-07
             - -1.7902124227475724e-11
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKKnee_L.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralTwist
-        poseType: 2
-        controllerData:
-        -   - !<ControlData>
-                name: FKKnee_L.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 2
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1352,18 +1350,18 @@
         -   - -1.6580414772030831
             - 9.741839942511987e-07
             - -1.7902124227475724e-11
-    - !<PoseData>
-        poseName: Knee_L_Swing_140
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKKnee_L.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -2.443460952792061
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Knee_L_Swing_140
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1377,34 +1375,34 @@
         -   - -1.6580415451890254
             - 1.792364034969296e-09
             - -1.790234627208065e-11
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKKnee_L.rotate
+                value:
+                - 0.0
+                - 0.0
+                - -2.443460952792061
+                type: 8
+- !<PoseInterpolator>
+    name: Ankle_L_poseInterpolator
     regularization: 0.0
     outputSmoothing: 0.0
-    interpolation: 0
-    allowNegativeWeights: true
+    interpolation: 1
+    allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
-    name: Ankle_L_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: Ankle_L
         driverTwistAxis: 0
         driverEulerTwist: false
         driverController:
         - FKAnkle_L.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: neutral
+        isEnabled: true
         poseType: 0
-        controllerData:
-        -   - !<ControlData>
-                name: FKAnkle_L.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
-        isEnabled: true
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1418,18 +1416,18 @@
         -   - -3.830179452896117
             - 1.8512968935624485e-14
             - -6.198153101877324e-11
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKAnkle_L.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralSwing
-        poseType: 1
-        controllerData:
-        -   - !<ControlData>
-                name: FKAnkle_L.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1443,18 +1441,18 @@
         -   - -3.830179452896117
             - 1.8512968935624485e-14
             - -6.198153101877324e-11
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKAnkle_L.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralTwist
-        poseType: 2
-        controllerData:
-        -   - !<ControlData>
-                name: FKAnkle_L.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 2
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1468,18 +1466,18 @@
         -   - -3.830179452896117
             - 1.8512968935624485e-14
             - -6.198153101877324e-11
-    - !<PoseData>
-        poseName: Ankle_L_Front_60
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKAnkle_L.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 1.0471975511965976
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Ankle_L_Front_60
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1493,18 +1491,18 @@
         -   - -3.830179491169418
             - 4.1404816519818866e-09
             - -6.198042079574861e-11
-    - !<PoseData>
-        poseName: Ankle_L_Back_60
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKAnkle_L.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -1.0471975511965976
+                - 0.0
+                - 0.0
+                - 1.0471975511965976
                 type: 8
+    - !<Pose>
+        poseName: Ankle_L_Back_60
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1518,18 +1516,18 @@
         -   - -3.830179491169418
             - 4.1404816519818866e-09
             - -6.198042079574861e-11
-    - !<PoseData>
-        poseName: Ankle_L_Inner_60
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKAnkle_L.rotate
                 value:
-                    x: 0.0
-                    y: 1.0471975511965976
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - -1.0471975511965976
                 type: 8
+    - !<Pose>
+        poseName: Ankle_L_Inner_60
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1543,18 +1541,18 @@
         -   - -3.830179491169418
             - 4.1404816519818866e-09
             - -6.198042079574861e-11
-    - !<PoseData>
-        poseName: Ankle_L_Outer_60
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKAnkle_L.rotate
                 value:
-                    x: 0.0
-                    y: -1.0471975511965976
-                    z: 0.0
+                - 0.0
+                - 1.0471975511965976
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Ankle_L_Outer_60
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1568,34 +1566,34 @@
         -   - -3.830179491169418
             - 4.1404816519818866e-09
             - -6.198042079574861e-11
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKAnkle_L.rotate
+                value:
+                - 0.0
+                - -1.0471975511965976
+                - 0.0
+                type: 8
+- !<PoseInterpolator>
+    name: Scapula_R_poseInterpolator
     regularization: 0.0
     outputSmoothing: 0.0
-    interpolation: 0
-    allowNegativeWeights: true
+    interpolation: 1
+    allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
-    name: Scapula_R_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: Scapula_R
         driverTwistAxis: 0
         driverEulerTwist: false
         driverController:
         - FKScapula_R.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: neutral
+        isEnabled: true
         poseType: 0
-        controllerData:
-        -   - !<ControlData>
-                name: FKScapula_R.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
-        isEnabled: true
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1609,18 +1607,18 @@
         -   - 0.7642009376443077
             - 0.27528914379522496
             - -0.43653594851735034
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKScapula_R.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralSwing
-        poseType: 1
-        controllerData:
-        -   - !<ControlData>
-                name: FKScapula_R.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1634,18 +1632,18 @@
         -   - 0.7642009376443077
             - 0.27528914379522496
             - -0.43653594851735034
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKScapula_R.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralTwist
-        poseType: 2
-        controllerData:
-        -   - !<ControlData>
-                name: FKScapula_R.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 2
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1659,18 +1657,18 @@
         -   - 0.7642009376443077
             - 0.27528914379522496
             - -0.43653594851735034
-    - !<PoseData>
-        poseName: Scapula_R_Up_60
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKScapula_R.rotate
                 value:
-                    x: 0.0
-                    y: -1.0471975511965976
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Scapula_R_Up_60
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1684,18 +1682,18 @@
         -   - 0.7642009376443113
             - 0.2752891437952245
             - 0.43653594851735433
-    - !<PoseData>
-        poseName: Scapula_R_Down_30
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKScapula_R.rotate
                 value:
-                    x: 0.0
-                    y: 0.5235987755982988
-                    z: 0.0
+                - 0.0
+                - -1.0471975511965976
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Scapula_R_Down_30
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1709,18 +1707,18 @@
         -   - 0.7642009376443113
             - 0.2752891437952245
             - 0.43653594851735433
-    - !<PoseData>
-        poseName: Scapula_R_Front_60
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKScapula_R.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 1.0471975511965976
+                - 0.0
+                - 0.5235987755982988
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Scapula_R_Front_60
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1734,18 +1732,18 @@
         -   - 0.7642009376443113
             - 0.2752891437952245
             - 0.43653594851735433
-    - !<PoseData>
-        poseName: Scapula_R_Back_60
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKScapula_R.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -1.0471975511965976
+                - 0.0
+                - 0.0
+                - 1.0471975511965976
                 type: 8
+    - !<Pose>
+        poseName: Scapula_R_Back_60
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1759,34 +1757,34 @@
         -   - 0.7642009376443113
             - 0.2752891437952245
             - 0.43653594851735433
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKScapula_R.rotate
+                value:
+                - 0.0
+                - 0.0
+                - -1.0471975511965976
+                type: 8
+- !<PoseInterpolator>
+    name: Shoulder_R_poseInterpolator
     regularization: 0.0
     outputSmoothing: 0.0
-    interpolation: 0
-    allowNegativeWeights: true
+    interpolation: 1
+    allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
-    name: Shoulder_R_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: Shoulder_R
         driverTwistAxis: 0
         driverEulerTwist: false
         driverController:
         - FKShoulder_R.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: neutral
+        isEnabled: true
         poseType: 0
-        controllerData:
-        -   - !<ControlData>
-                name: FKShoulder_R.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
-        isEnabled: true
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1800,18 +1798,18 @@
         -   - 1.0925408230395597
             - 2.353672812205332e-14
             - -4.085620730620576e-14
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKShoulder_R.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralSwing
-        poseType: 1
-        controllerData:
-        -   - !<ControlData>
-                name: FKShoulder_R.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1825,18 +1823,18 @@
         -   - 1.0925408230395597
             - 2.353672812205332e-14
             - -4.085620730620576e-14
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKShoulder_R.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralTwist
-        poseType: 2
-        controllerData:
-        -   - !<ControlData>
-                name: FKShoulder_R.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 2
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1850,18 +1848,18 @@
         -   - 1.0925408230395597
             - 2.353672812205332e-14
             - -4.085620730620576e-14
-    - !<PoseData>
-        poseName: Shoulder_R_Up_90
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKShoulder_R.rotate
                 value:
-                    x: 0.0
-                    y: -1.5707963267948966
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Shoulder_R_Up_90
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1875,18 +1873,18 @@
         -   - -1.0925408230395597
             - 3.2412961203931445e-13
             - 4.618527782440651e-14
-    - !<PoseData>
-        poseName: Shoulder_R_Down_90
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKShoulder_R.rotate
                 value:
-                    x: 0.0
-                    y: 1.5707963267948966
-                    z: 0.0
+                - 0.0
+                - -1.5707963267948966
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Shoulder_R_Down_90
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1900,18 +1898,18 @@
         -   - -1.0925408230395597
             - 3.2412961203931445e-13
             - 4.618527782440651e-14
-    - !<PoseData>
-        poseName: Shoulder_R_Front_90
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKShoulder_R.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 1.5707963267948966
+                - 0.0
+                - 1.5707963267948966
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Shoulder_R_Front_90
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1925,18 +1923,18 @@
         -   - -1.0925408230395597
             - 3.2412961203931445e-13
             - 4.618527782440651e-14
-    - !<PoseData>
-        poseName: Shoulder_R_Back_90
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKShoulder_R.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -1.5707963267948966
+                - 0.0
+                - 0.0
+                - 1.5707963267948966
                 type: 8
+    - !<Pose>
+        poseName: Shoulder_R_Back_90
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1950,34 +1948,34 @@
         -   - -1.0925408230395597
             - 3.2412961203931445e-13
             - 4.618527782440651e-14
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKShoulder_R.rotate
+                value:
+                - 0.0
+                - 0.0
+                - -1.5707963267948966
+                type: 8
+- !<PoseInterpolator>
+    name: Elbow_R_poseInterpolator
     regularization: 0.0
     outputSmoothing: 0.0
     interpolation: 0
-    allowNegativeWeights: true
+    allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
-    name: Elbow_R_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: Elbow_R
         driverTwistAxis: 0
         driverEulerTwist: false
         driverController:
         - FKElbow_R.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: neutral
+        isEnabled: true
         poseType: 0
-        controllerData:
-        -   - !<ControlData>
-                name: FKElbow_R.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
-        isEnabled: true
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -1991,18 +1989,18 @@
         -   - 0.8714173014256135
             - 6.938893903907228e-17
             - -2.3092638912203256e-14
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKElbow_R.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralSwing
-        poseType: 1
-        controllerData:
-        -   - !<ControlData>
-                name: FKElbow_R.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -2016,18 +2014,18 @@
         -   - 0.8714173014256135
             - 6.938893903907228e-17
             - -2.3092638912203256e-14
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKElbow_R.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralTwist
-        poseType: 2
-        controllerData:
-        -   - !<ControlData>
-                name: FKElbow_R.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 2
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -2041,18 +2039,18 @@
         -   - 0.8714173014256135
             - 6.938893903907228e-17
             - -2.3092638912203256e-14
-    - !<PoseData>
-        poseName: Elbow_R_Swing_140
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKElbow_R.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 2.443460952792061
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Elbow_R_Swing_140
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -2066,34 +2064,34 @@
         -   - -0.8714173014256126
             - 6.800116025829084e-16
             - 1.9539925233402755e-14
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKElbow_R.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 2.443460952792061
+                type: 8
+- !<PoseInterpolator>
+    name: Wrist_R_poseInterpolator
     regularization: 0.0
     outputSmoothing: 0.0
-    interpolation: 0
-    allowNegativeWeights: true
+    interpolation: 1
+    allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
-    name: Wrist_R_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: Wrist_R
         driverTwistAxis: 0
         driverEulerTwist: false
         driverController:
         - FKWrist_R.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: neutral
+        isEnabled: true
         poseType: 0
-        controllerData:
-        -   - !<ControlData>
-                name: FKWrist_R.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
-        isEnabled: true
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -2107,18 +2105,18 @@
         -   - 0.7608678258752049
             - 1.1102230246251565e-15
             - 1.9539925233402755e-13
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKWrist_R.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralSwing
-        poseType: 1
-        controllerData:
-        -   - !<ControlData>
-                name: FKWrist_R.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -2132,18 +2130,18 @@
         -   - 0.7608678258752049
             - 1.1102230246251565e-15
             - 1.9539925233402755e-13
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKWrist_R.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralTwist
-        poseType: 2
-        controllerData:
-        -   - !<ControlData>
-                name: FKWrist_R.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 2
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -2157,18 +2155,18 @@
         -   - 0.7608678258752049
             - 1.1102230246251565e-15
             - 1.9539925233402755e-13
-    - !<PoseData>
-        poseName: Wrist_R_Up_90
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKWrist_R.rotate
                 value:
-                    x: 0.0
-                    y: -1.5707963267948966
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Wrist_R_Up_90
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -2182,18 +2180,18 @@
         -   - -0.7608678258752031
             - -7.771561172376096e-16
             - -1.8474111129762605e-13
-    - !<PoseData>
-        poseName: Wrist_R_Down_90
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKWrist_R.rotate
                 value:
-                    x: 0.0
-                    y: 1.5707963267948966
-                    z: 0.0
+                - 0.0
+                - -1.5707963267948966
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Wrist_R_Down_90
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -2207,18 +2205,18 @@
         -   - -0.7608678258752031
             - -7.771561172376096e-16
             - -1.8474111129762605e-13
-    - !<PoseData>
-        poseName: Wrist_R_Front_90
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKWrist_R.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 1.5707963267948966
+                - 0.0
+                - 1.5707963267948966
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Wrist_R_Front_90
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -2232,18 +2230,18 @@
         -   - -0.7608678258752031
             - -7.771561172376096e-16
             - -1.8474111129762605e-13
-    - !<PoseData>
-        poseName: Wrist_R_Back_90
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKWrist_R.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -1.5707963267948966
+                - 0.0
+                - 0.0
+                - 1.5707963267948966
                 type: 8
+    - !<Pose>
+        poseName: Wrist_R_Back_90
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -2257,34 +2255,34 @@
         -   - -0.7608678258752031
             - -7.771561172376096e-16
             - -1.8474111129762605e-13
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKWrist_R.rotate
+                value:
+                - 0.0
+                - 0.0
+                - -1.5707963267948966
+                type: 8
+- !<PoseInterpolator>
+    name: Hip_R_poseInterpolator
     regularization: 0.0
     outputSmoothing: 0.0
-    interpolation: 0
-    allowNegativeWeights: true
+    interpolation: 1
+    allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
-    name: Hip_R_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: Hip_R
         driverTwistAxis: 0
         driverEulerTwist: false
         driverController:
         - FKHip_R.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: neutral
+        isEnabled: true
         poseType: 0
-        controllerData:
-        -   - !<ControlData>
-                name: FKHip_R.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
-        isEnabled: true
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -2298,18 +2296,18 @@
         -   - -0.199689446807934
             - -0.08224022199751757
             - -0.8196866071477913
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKHip_R.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralSwing
-        poseType: 1
-        controllerData:
-        -   - !<ControlData>
-                name: FKHip_R.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -2323,18 +2321,18 @@
         -   - -0.199689446807934
             - -0.08224022199751757
             - -0.8196866071477913
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKHip_R.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralTwist
-        poseType: 2
-        controllerData:
-        -   - !<ControlData>
-                name: FKHip_R.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 2
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -2348,18 +2346,18 @@
         -   - -0.199689446807934
             - -0.08224022199751757
             - -0.8196866071477913
-    - !<PoseData>
-        poseName: Hip_R_Front_120
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKHip_R.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 2.0943951023931953
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Hip_R_Front_120
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -2373,18 +2371,18 @@
         -   - -0.19968944680793044
             - -0.08224022199751757
             - 0.8196866071477906
-    - !<PoseData>
-        poseName: Hip_R_Back_70
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKHip_R.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -1.2217304763960306
+                - 0.0
+                - 0.0
+                - 2.0943951023931953
                 type: 8
+    - !<Pose>
+        poseName: Hip_R_Back_70
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -2398,18 +2396,18 @@
         -   - -0.19968944680793044
             - -0.08224022199751757
             - 0.8196866071477906
-    - !<PoseData>
-        poseName: Hip_R_Outer_90
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKHip_R.rotate
                 value:
-                    x: 0.0
-                    y: -1.5707963267948966
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - -1.2217304763960306
                 type: 8
+    - !<Pose>
+        poseName: Hip_R_Outer_90
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -2423,18 +2421,18 @@
         -   - -0.19968944680793044
             - -0.08224022199751757
             - 0.8196866071477906
-    - !<PoseData>
-        poseName: Hip_R_Inner_90
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKHip_R.rotate
                 value:
-                    x: 0.0
-                    y: 1.5707963267948966
-                    z: 0.0
+                - 0.0
+                - -1.5707963267948966
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Hip_R_Inner_90
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -2448,34 +2446,34 @@
         -   - -0.19968944680793044
             - -0.08224022199751757
             - 0.8196866071477906
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKHip_R.rotate
+                value:
+                - 0.0
+                - 1.5707963267948966
+                - 0.0
+                type: 8
+- !<PoseInterpolator>
+    name: Knee_R_poseInterpolator
     regularization: 0.0
     outputSmoothing: 0.0
     interpolation: 0
-    allowNegativeWeights: true
+    allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
-    name: Knee_R_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: Knee_R
         driverTwistAxis: 0
         driverEulerTwist: false
         driverController:
         - FKKnee_R.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: neutral
+        isEnabled: true
         poseType: 0
-        controllerData:
-        -   - !<ControlData>
-                name: FKKnee_R.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
-        isEnabled: true
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -2489,18 +2487,18 @@
         -   - 1.6580414772030831
             - -9.738700681438672e-07
             - 5.773159728050814e-15
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKKnee_R.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralSwing
-        poseType: 1
-        controllerData:
-        -   - !<ControlData>
-                name: FKKnee_R.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -2514,18 +2512,18 @@
         -   - 1.6580414772030831
             - -9.738700681438672e-07
             - 5.773159728050814e-15
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKKnee_R.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralTwist
-        poseType: 2
-        controllerData:
-        -   - !<ControlData>
-                name: FKKnee_R.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 2
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -2539,18 +2537,18 @@
         -   - 1.6580414772030831
             - -9.738700681438672e-07
             - 5.773159728050814e-15
-    - !<PoseData>
-        poseName: Knee_R_Swing_140
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKKnee_R.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -2.443460952792061
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Knee_R_Swing_140
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -2564,34 +2562,34 @@
         -   - -1.6580415451890254
             - 1.792364034969296e-09
             - -1.790234627208065e-11
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKKnee_R.rotate
+                value:
+                - 0.0
+                - 0.0
+                - -2.443460952792061
+                type: 8
+- !<PoseInterpolator>
+    name: Ankle_R_poseInterpolator
     regularization: 0.0
     outputSmoothing: 0.0
-    interpolation: 0
-    allowNegativeWeights: true
+    interpolation: 1
+    allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
-    name: Ankle_R_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: Ankle_R
         driverTwistAxis: 0
         driverEulerTwist: false
         driverController:
         - FKAnkle_R.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: neutral
+        isEnabled: true
         poseType: 0
-        controllerData:
-        -   - !<ControlData>
-                name: FKAnkle_R.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
-        isEnabled: true
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -2605,18 +2603,18 @@
         -   - 3.830179452896119
             - 3.877453913503359e-14
             - 2.119859843219274e-11
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKAnkle_R.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralSwing
-        poseType: 1
-        controllerData:
-        -   - !<ControlData>
-                name: FKAnkle_R.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -2630,18 +2628,18 @@
         -   - 3.830179452896119
             - 3.877453913503359e-14
             - 2.119859843219274e-11
-    - !<PoseData>
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKAnkle_R.rotate
+                value:
+                - 0.0
+                - 0.0
+                - 0.0
+                type: 8
+    - !<Pose>
         poseName: neutralTwist
-        poseType: 2
-        controllerData:
-        -   - !<ControlData>
-                name: FKAnkle_R.rotate
-                value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
-                type: 8
         isEnabled: true
+        poseType: 2
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -2655,18 +2653,18 @@
         -   - 3.830179452896119
             - 3.877453913503359e-14
             - 2.119859843219274e-11
-    - !<PoseData>
-        poseName: Ankle_R_Front_60
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKAnkle_R.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 1.0471975511965976
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Ankle_R_Front_60
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -2680,18 +2678,18 @@
         -   - -3.830179491169418
             - 4.1404816519818866e-09
             - -6.198042079574861e-11
-    - !<PoseData>
-        poseName: Ankle_R_Back_60
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKAnkle_R.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -1.0471975511965976
+                - 0.0
+                - 0.0
+                - 1.0471975511965976
                 type: 8
+    - !<Pose>
+        poseName: Ankle_R_Back_60
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -2705,18 +2703,18 @@
         -   - -3.830179491169418
             - 4.1404816519818866e-09
             - -6.198042079574861e-11
-    - !<PoseData>
-        poseName: Ankle_R_Inner_60
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKAnkle_R.rotate
                 value:
-                    x: 0.0
-                    y: 1.0471975511965976
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - -1.0471975511965976
                 type: 8
+    - !<Pose>
+        poseName: Ankle_R_Inner_60
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -2730,18 +2728,18 @@
         -   - -3.830179491169418
             - 4.1404816519818866e-09
             - -6.198042079574861e-11
-    - !<PoseData>
-        poseName: Ankle_R_Outer_60
-        poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: FKAnkle_R.rotate
                 value:
-                    x: 0.0
-                    y: -1.0471975511965976
-                    z: 0.0
+                - 0.0
+                - 1.0471975511965976
+                - 0.0
                 type: 8
+    - !<Pose>
+        poseName: Ankle_R_Outer_60
         isEnabled: true
+        poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
@@ -2755,9 +2753,11 @@
         -   - -3.830179491169418
             - 4.1404816519818866e-09
             - -6.198042079574861e-11
-    regularization: 0.0
-    outputSmoothing: 0.0
-    interpolation: 0
-    allowNegativeWeights: true
-    enableRotation: true
-    enableTranslation: false
+        controllerData:
+        -   - !<ControllerDataItem>
+                name: FKAnkle_R.rotate
+                value:
+                - 0.0
+                - -1.0471975511965976
+                - 0.0
+                type: 8
