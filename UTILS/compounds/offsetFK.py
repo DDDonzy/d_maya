@@ -47,3 +47,7 @@ class offsetFK(CreateBase):
             # matrix to trs
             cmds.connectAttr(f"{node_multMatrix}.matrixSum",
                              node_decom.inputMatrix)
+            
+if __name__ == "__main__":
+    offsetFK(controllerList=["ctrl1", "ctrl2"],
+             offsetList=["offset1", "offset2"])
