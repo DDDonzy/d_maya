@@ -24,15 +24,15 @@ def show_UI():
     global ui
     ui = build_ui(uiFile)
 
-    workSpaceControlName = "{}_workSpaceControl".format(ui.objectName())
-    if cmds.workspaceControl(workSpaceControlName, q=1, ex=1):
-        cmds.deleteUI(workSpaceControlName)
+workSpaceControlName = "{}_workSpaceControl".format(ui.objectName())
+if cmds.workspaceControl(workSpaceControlName, q=1, ex=1):
+    cmds.deleteUI(workSpaceControlName)
 
-    setup_ui_logic()
+setup_ui_logic()
 
-    dock_windows = cmds.workspaceControl(workSpaceControlName, retain=True, label=ui.windowTitle())
-    dock_layout = cmds.paneLayout(configuration='single', p=dock_windows)
-    cmds.control(ui.objectName(), e=True, p=dock_layout)
+dock_windows = cmds.workspaceControl(workSpaceControlName, retain=True, label=ui.windowTitle())
+dock_layout = cmds.paneLayout(configuration='single', p=dock_windows)
+cmds.control(ui.objectName(), e=True, p=dock_layout)
 
 
 def setup_ui_logic():
