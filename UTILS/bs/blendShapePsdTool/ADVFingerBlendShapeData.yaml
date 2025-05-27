@@ -1,0 +1,160 @@
+- !<FingerTargetData>
+    TargetName: __Finger_L__
+    DriverAttr: null
+    DriverMin: 0
+    DriverMax: 0
+- !<FingerTargetData>
+    TargetName: ThumbFinger1_L
+    DriverAttr: ThumbFinger1_L.rotateY
+    DriverMin: 0
+    DriverMax: 90
+- !<FingerTargetData>
+    TargetName: ThumbFinger2_L
+    DriverAttr: ThumbFinger2_L.rotateY
+    DriverMin: 0
+    DriverMax: 90
+- !<FingerTargetData>
+    TargetName: ThumbFinger3_L
+    DriverAttr: ThumbFinger3_L.rotateY
+    DriverMin: 0
+    DriverMax: 90
+- !<FingerTargetData>
+    TargetName: IndexFinger1_L
+    DriverAttr: IndexFinger1_L.rotateY
+    DriverMin: 0
+    DriverMax: 90
+- !<FingerTargetData>
+    TargetName: IndexFinger2_L
+    DriverAttr: IndexFinger2_L.rotateY
+    DriverMin: 0
+    DriverMax: 90
+- !<FingerTargetData>
+    TargetName: IndexFinger3_L
+    DriverAttr: IndexFinger3_L.rotateY
+    DriverMin: 0
+    DriverMax: 90
+- !<FingerTargetData>
+    TargetName: MiddleFinger1_L
+    DriverAttr: MiddleFinger1_L.rotateY
+    DriverMin: 0
+    DriverMax: 90
+- !<FingerTargetData>
+    TargetName: MiddleFinger2_L
+    DriverAttr: MiddleFinger2_L.rotateY
+    DriverMin: 0
+    DriverMax: 90
+- !<FingerTargetData>
+    TargetName: MiddleFinger3_L
+    DriverAttr: MiddleFinger3_L.rotateY
+    DriverMin: 0
+    DriverMax: 90
+- !<FingerTargetData>
+    TargetName: RingFinger1_L
+    DriverAttr: RingFinger1_L.rotateY
+    DriverMin: 0
+    DriverMax: 90
+- !<FingerTargetData>
+    TargetName: RingFinger2_L
+    DriverAttr: RingFinger2_L.rotateY
+    DriverMin: 0
+    DriverMax: 90
+- !<FingerTargetData>
+    TargetName: RingFinger3_L
+    DriverAttr: RingFinger3_L.rotateY
+    DriverMin: 0
+    DriverMax: 90
+- !<FingerTargetData>
+    TargetName: PinkyFinger1_L
+    DriverAttr: PinkyFinger1_L.rotateY
+    DriverMin: 0
+    DriverMax: 90
+- !<FingerTargetData>
+    TargetName: PinkyFinger2_L
+    DriverAttr: PinkyFinger2_L.rotateY
+    DriverMin: 0
+    DriverMax: 90
+- !<FingerTargetData>
+    TargetName: PinkyFinger3_L
+    DriverAttr: PinkyFinger3_L.rotateY
+    DriverMin: 0
+    DriverMax: 90
+- !<FingerTargetData>
+    TargetName: __Finger_R__
+    DriverAttr: null
+    DriverMin: 0
+    DriverMax: 0
+- !<FingerTargetData>
+    TargetName: ThumbFinger1_R
+    DriverAttr: ThumbFinger1_R.rotateY
+    DriverMin: 0
+    DriverMax: 90
+- !<FingerTargetData>
+    TargetName: ThumbFinger2_R
+    DriverAttr: ThumbFinger2_R.rotateY
+    DriverMin: 0
+    DriverMax: 90
+- !<FingerTargetData>
+    TargetName: ThumbFinger3_R
+    DriverAttr: ThumbFinger3_R.rotateY
+    DriverMin: 0
+    DriverMax: 90
+- !<FingerTargetData>
+    TargetName: IndexFinger1_R
+    DriverAttr: IndexFinger1_R.rotateY
+    DriverMin: 0
+    DriverMax: 90
+- !<FingerTargetData>
+    TargetName: IndexFinger2_R
+    DriverAttr: IndexFinger2_R.rotateY
+    DriverMin: 0
+    DriverMax: 90
+- !<FingerTargetData>
+    TargetName: IndexFinger3_R
+    DriverAttr: IndexFinger3_R.rotateY
+    DriverMin: 0
+    DriverMax: 90
+- !<FingerTargetData>
+    TargetName: MiddleFinger1_R
+    DriverAttr: MiddleFinger1_R.rotateY
+    DriverMin: 0
+    DriverMax: 90
+- !<FingerTargetData>
+    TargetName: MiddleFinger2_R
+    DriverAttr: MiddleFinger2_R.rotateY
+    DriverMin: 0
+    DriverMax: 90
+- !<FingerTargetData>
+    TargetName: MiddleFinger3_R
+    DriverAttr: MiddleFinger3_R.rotateY
+    DriverMin: 0
+    DriverMax: 90
+- !<FingerTargetData>
+    TargetName: RingFinger1_R
+    DriverAttr: RingFinger1_R.rotateY
+    DriverMin: 0
+    DriverMax: 90
+- !<FingerTargetData>
+    TargetName: RingFinger2_R
+    DriverAttr: RingFinger2_R.rotateY
+    DriverMin: 0
+    DriverMax: 90
+- !<FingerTargetData>
+    TargetName: RingFinger3_R
+    DriverAttr: RingFinger3_R.rotateY
+    DriverMin: 0
+    DriverMax: 90
+- !<FingerTargetData>
+    TargetName: PinkyFinger1_R
+    DriverAttr: PinkyFinger1_R.rotateY
+    DriverMin: 0
+    DriverMax: 90
+- !<FingerTargetData>
+    TargetName: PinkyFinger2_R
+    DriverAttr: PinkyFinger2_R.rotateY
+    DriverMin: 0
+    DriverMax: 90
+- !<FingerTargetData>
+    TargetName: PinkyFinger3_R
+    DriverAttr: PinkyFinger3_R.rotateY
+    DriverMin: 0
+    DriverMax: 90

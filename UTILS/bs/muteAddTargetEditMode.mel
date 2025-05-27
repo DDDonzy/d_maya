@@ -1,0 +1,172 @@
+// ===========================================================================
+// Copyright 2023 Autodesk, Inc. All rights reserved.
+//
+// Use of this software is subject to the terms of the Autodesk license
+// agreement provided at the time of installation or download, or which
+// otherwise accompanies this software in either electronic or hard copy form.
+// ===========================================================================
+global proc int[] doBlendShapeAddTarget(
+	string	$bs, 
+	int		$top,
+	int		$targetType,
+	string	$transformName,
+	int 	$editOn,
+	int		$resetWeight,
+	string	$targetShapes[]
+	)
+//
+//  Description:
+//		Add a target with/without selection
+//
+//  Input Arguments:
+//		$bs				- Blend shape name;
+//		$top			- If check topology;
+//		$targetType		- 1 for automatic;
+//						  2 for object space;
+//						  3 for tangent space;
+//						  4 for transform space;
+//		$transformName	- Joint name (used for transform space target);
+//		$editOn		 	- If the added target is Edit on 
+//		$resetWeight	- If reset the target weight to 0.0 after added
+//		$targetShapes	- Mesh shapes to be added as target
+// 
+//  Return Value:
+//		Newly added target indexes.
+//
+{	
+	// Donzy Add
+	$editOn = 0;
+	int $result[];
+	//Get base meshes
+	string $baseMeshes[]=`blendShape -q -g $bs`;
+	
+	//Get max target Id
+	int $maxTargetId = `blendShape -q -wc $bs`;
+	if ($maxTargetId > 0) {
+		int $multiTargetId = bsMultiIndexForTarget($bs,$maxTargetId-1);
+		if (-1 != $multiTargetId) {
+			$maxTargetId = $multiTargetId+1;
+		}
+	}
+	
+	string $typePara = "";
+	int $newTargetType = $targetType;
+	if ($newTargetType == 1) //Automatic
+	{
+		string $attrOrderString = $bs + ".deformationOrder";
+		if(`getAttr $attrOrderString` == 1)
+			$newTargetType = 3; //If a blendShape using post-deformation ordering, add tangent space target; otherwise use object space
+		else
+			$newTargetType = 2;
+	}
+	if ($newTargetType == 3) //tangent space
+		$typePara = " -tangentSpace";
+	if ($newTargetType == 4) //transform space
+	{
+		if(`objExists $transformName` == 0)
+		{
+			error( (uiRes("m_doBlendShapeAddTarget.kInvalidTransformName")) );
+			return $result;
+		}
+		$typePara = " -transform " + $transformName;
+	}
+	
+	string $topPara = "off";
+	if ($top == 1)
+	{
+		$topPara = "on";
+	}
+
+	int $resetDeltaAfterAdded = 1;
+	if (size($targetShapes) > 0)
+	{
+		// Physical target shapes are presented
+		string $targetMeshes[];
+		for ($i = 0; $i < size($targetShapes); ++ $i)
+		{
+			if (blendShapeCanAddAsTarget($targetShapes[$i]))
+				 $targetMeshes = stringArrayCatenate($targetMeshes, {$targetShapes[$i]});
+		}
+		if(size($targetMeshes) == 0)
+		{
+			return $result; // No valid target meshes
+		}
+		string $diffMeshes[] = stringArrayRemove($baseMeshes, $targetMeshes);
+		if(size($diffMeshes) != 0)
+		{
+			if ($editOn)
+			{
+				$cmd = "sculptTarget -e -target -1 " + $bs;
+				evalEcho $cmd;
+			}
+			// non-base meshes are fed
+			for ($ii = 0, $jj = 0; $ii < size($diffMeshes); ++ $ii, ++$jj)
+			{
+				// Try to add target for selected non-base meshes one by one
+				if ($jj == size($baseMeshes))
+				{
+					++ $maxTargetId; $jj = 0;
+				}
+				string $longName = longNameOf($baseMeshes[$jj]);
+				float $weight= 1.0;
+				if ($resetWeight)
+					$weight = 0.0;
+					
+				$cmd = "blendShape -e -tc " + $topPara + " -t " + $longName + " " + $maxTargetId + " " + $diffMeshes[$ii] + " 1 -w " + $maxTargetId + " " + $weight + " " + $typePara + " " +$bs;
+				evalEcho $cmd;
+				if(intArrayFind($maxTargetId, 0, $result) == -1)
+					intArrayInsertAtIndex(size($result),$result,$maxTargetId);
+				if ($newTargetType == 3 || $newTargetType == 4) // For tangent/transform target, break connection
+				{
+					string $destPlug = $bs + ".inputTarget[" + $jj + "].inputTargetGroup[" + $maxTargetId + "].inputTargetItem[6000].inputGeomTarget";
+					string $sourcePlug = `connectionInfo -sfd $destPlug`;
+					disconnectAttr $sourcePlug $destPlug;
+				}
+			}
+			if ($editOn)
+			{
+				$cmd = "sculptTarget -e -target " + $maxTargetId + " " + $bs;
+				evalDeferred $cmd;
+			}
+			return $result;
+		} 
+		else
+		{
+			// Only base meshes are fed
+			$resetDeltaAfterAdded = 0;
+			$baseMeshes = $targetMeshes; //Only copy selected base meshes then add target
+		}
+	}
+	if ($editOn)
+	{
+		$cmd = "sculptTarget -e -target -1 " + $bs;
+		evalEcho $cmd;
+	}
+	// No physical target meshes, create target shapes with delta only 
+	for ($i = 0; $i < size($baseMeshes); ++ $i)
+	{
+		string $longName = longNameOf($baseMeshes[$i]);
+		string $copyMesh[] = `duplicate $longName`;
+		
+		float $weight= 1.0;
+		if ($resetWeight)
+			$weight = 0.0;	
+		$cmd = "blendShape -e -tc " + $topPara + " -t " + $longName + " " + $maxTargetId + " " + $copyMesh[0] + " 1 -w " + $maxTargetId + " " + $weight + " " + $typePara + " " + $bs;
+		evalEcho $cmd;
+		$result = {$maxTargetId};
+		delete $copyMesh[0];		
+		if($resetDeltaAfterAdded)
+		{
+			$cmd = "blendShape -e -rtd " + $i + " " + $maxTargetId + " " + $bs; 
+			evalEcho $cmd;
+		}
+	}
+	if ($editOn && blendShapeTargetIsVisible($bs, $maxTargetId))
+	{
+		$cmd = "sculptTarget -e -target " + $maxTargetId + " " + $bs;
+		evalEcho $cmd;
+	}
+	
+	return $result;
+}
+

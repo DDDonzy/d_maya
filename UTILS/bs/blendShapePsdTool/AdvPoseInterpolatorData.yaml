@@ -90,110 +90,103 @@
                 - 0.0
                 type: 8
     - !<Pose>
-        poseName: Head_M_Front_60
+        poseName: Head_M_Front_35
         isEnabled: true
         poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
-        poseTranslationFalloff: 0.0010000000474974513
+        poseTranslationFalloff: 0.001
         poseRotation:
         -   - 0.0
             - 0.0
-            - 0.49999999999999983
-            - 0.8660254037844387
+            - 0.3007057995042731
+            - 0.9537169507482269
         poseTranslation:
-        -   - 0.5183571632368693
-            - 2.220446049250313e-15
-            - -1.743386177216023e-16
+        -   - 6.070142943603855
+            - -1.4210854715202004e-14
+            - 1.9034429222726382e-14
         controllerData:
         -   - !<ControllerDataItem>
                 name: FKHead_M.rotate
                 value:
                 - 0.0
                 - 0.0
-                - 1.0471975511965976
-                type: 8
-        -   - !<ControllerDataItem>
-                name: FKHead_M.rotate
-                value:
-                - 0.0
-                - 0.0
-                - 1.0471975511965976
+                - 0.6108652381980153
                 type: 8
     - !<Pose>
-        poseName: Head_M_Back_60
+        poseName: Head_M_Back_55
         isEnabled: true
         poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
-        poseTranslationFalloff: 0.0010000000474974513
+        poseTranslationFalloff: 0.001
         poseRotation:
         -   - 0.0
             - 0.0
-            - -0.5
-            - 0.8660254037844386
+            - -0.4617486132350338
+            - 0.8870108331782217
         poseTranslation:
-        -   - 0.5183571632368693
-            - 2.220446049250313e-15
-            - -1.743386177216023e-16
+        -   - 6.070142943603855
+            - -1.4210854715202004e-14
+            - 1.9034429222726382e-14
         controllerData:
         -   - !<ControllerDataItem>
                 name: FKHead_M.rotate
                 value:
                 - 0.0
                 - 0.0
-                - -1.0471975511965976
+                - -0.9599310885968813
                 type: 8
     - !<Pose>
-        poseName: Head_M_Side_L_60
+        poseName: Head_M_Side_L_40
         isEnabled: true
         poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
-        poseTranslationFalloff: 0.0010000000474974513
+        poseTranslationFalloff: 0.001
         poseRotation:
         -   - 0.0
-            - -0.49999999999999983
+            - -0.3420201433256686
             - 0.0
-            - 0.8660254037844387
+            - 0.9396926207859084
         poseTranslation:
-        -   - 0.5183571632368693
-            - 2.220446049250313e-15
-            - -1.743386177216023e-16
+        -   - 6.070142943603855
+            - -1.4210854715202004e-14
+            - 1.9034429222726382e-14
         controllerData:
         -   - !<ControllerDataItem>
                 name: FKHead_M.rotate
                 value:
                 - 0.0
-                - -1.0471975511965976
+                - -0.6981317007977318
                 - 0.0
                 type: 8
     - !<Pose>
-        poseName: Head_M_Side_R_60
+        poseName: Head_M_Side_R_40
         isEnabled: true
         poseType: 1
         poseFalloff: 1.0
         isIndependent: false
         poseRotationFalloff: 180.0
-        poseTranslationFalloff: 0.0010000000474974513
+        poseTranslationFalloff: 0.001
         poseRotation:
         -   - 0.0
-            - 0.49999999999999983
+            - 0.3420201433256689
             - 0.0
-            - 0.8660254037844387
+            - 0.9396926207859083
         poseTranslation:
-        -   - 0.5183571632368693
-            - 2.220446049250313e-15
-            - -1.743386177216023e-16
+        -   - 6.070142943603855
+            - -1.4210854715202004e-14
+            - 1.9034429222726382e-14
         controllerData:
         -   - !<ControllerDataItem>
                 name: FKHead_M.rotate
                 value:
                 - 0.0
-                - 1.0471975511965976
+                - 0.6981317007977318
                 - 0.0
                 type: 8
 - !<PoseInterpolator>
