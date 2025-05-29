@@ -352,7 +352,7 @@ def remap_target(source_bsNode="", source_bsTarget=[],
 
 
 # 自动翻转目标体到另一边
-def autoFlipPose(blendShapeNode, replaceString=("L_", "R_")):
+def autoFlipPose(blendShapeNode, replaceString=("_L", "_R")):
     bsTarget = cmds.channelBox("mainChannelBox", q=1, sha=1)
     data = get_bsData(blendShapeNode)
     if not bsTarget:

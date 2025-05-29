@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import UTILS.apiundo as apiundo
 
 
+
 @dataclass
 class BlendShapeData:
     node: str
@@ -66,5 +67,5 @@ def flipTarget():
 
 
 if __name__ == "__main__":
-    # mayaInvertAddTarget()
-    flipTarget()
+    mayaInvertAddTarget()
+    # flipTarget()
