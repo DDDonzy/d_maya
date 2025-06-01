@@ -28,7 +28,6 @@ workSpaceControlName = "{}_workSpaceControl".format(ui.objectName())
 if cmds.workspaceControl(workSpaceControlName, q=1, ex=1):
     cmds.deleteUI(workSpaceControlName)
 
-setup_ui_logic()
 
 dock_windows = cmds.workspaceControl(workSpaceControlName, retain=True, label=ui.windowTitle())
 dock_layout = cmds.paneLayout(configuration='single', p=dock_windows)

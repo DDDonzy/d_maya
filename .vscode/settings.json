@@ -2,8 +2,7 @@
     "files.exclude": {
         "**/node_modules": true,
         "yaml": true,
-        "loguru":true,
-        ".vscode":true
+        "loguru": true,
     },
     "cSpell.words": [
         "Brrow",
