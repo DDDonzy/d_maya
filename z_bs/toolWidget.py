@@ -25,6 +25,7 @@ ui_path = current_dir / "_addUI.ui"
 ui_path = str(ui_path.resolve())
 
 
+print(ui_path)
 ui, base = loadUiType(ui_path)
 
 
@@ -46,6 +47,9 @@ class ShapeToolsWidget(base, ui):
         self.filterLineEditWidget: QtWidgets.QWidget
         self.filterComboBox: QtWidgets.QComboBox
         self.meshLabel: QtWidgets.QLabel
+
+        self.addonWidget: QtWidgets.QWidget
+        self.filterWidget: QtWidgets.QWidget
 
         self.setupUi()
 
@@ -73,19 +77,18 @@ class ShapeToolsWidget(base, ui):
     def updateBaseMeshLabel(self):
 
         text = "None"
+        target = bs.targetData()
+        target.getDataFromShapeEditor()
 
-        bsName = mel.eval("getBlendShapeForAddTarget")
-        if bsName:
-            geos = cmds.blendShape(bsName, q=True, g=1) or []
-            if not geos:
-                self.meshLabel.setText(text)
-                return
-
-            geoTransform = cmds.listRelatives(geos[0], p=1) or []
-            if geoTransform:
-                text = geoTransform[0]
+        if target.baseMesh:
+            if cmds.objExists(target.baseMesh):
+                text = cmds.listRelatives(target.baseMesh, parent=1)[0]
 
         self.meshLabel.setText(text)
+        if text == "None":
+            self.meshLabel.setStyleSheet("")  # 不设置颜色
+        else:
+            self.meshLabel.setStyleSheet("color: #7ab5bf;")  # 红色
 
     def filterChanged(self):
         nodeText = self.filterComboBox.currentText().strip()
@@ -100,23 +103,17 @@ class ShapeToolsWidget(base, ui):
         self.filterComboBox.clear()
         self.filterComboBox.addItem("None")
 
-        geos = []
         blendShapes = []
-        try:
-            iter_sel = om.MItSelectionList(om.MGlobal.getActiveSelectionList())
-            for i in iter_sel:
-                mesh_dag: om.MDagPath = i.getDagPath()
-                if mesh_dag.hasFn(om.MFn.kShape):
-                    name = mesh_dag.partialPathName()
-                    geos.append(name)
-                    blendShapes.extend(get_history(name, type="blendShape"))
-        except RuntimeError:
-            pass
+
+        sel = cmds.ls(sl=1)
+        for obj in sel:
+            blendShapes.extend(get_history(obj, type="blendShape"))
 
         treeviewSelectedBSD = mel.eval("getShapeEditorTreeviewSelection 1")
         if treeviewSelectedBSD:
             blendShapes.extend(treeviewSelectedBSD)
 
+        blendShapes = set(blendShapes)  # 去重
         if not blendShapes:
             showMessage("No blendShape node found in the selected in scene or shapeEdit.")
             return
@@ -125,23 +122,42 @@ class ShapeToolsWidget(base, ui):
         self.filterComboBox.setCurrentIndex(1)
 
     def loadTarget(self):
-        text = self.filterLineEdit.text()
-        baseText = text
-        targetList = mel.eval("getShapeEditorTreeviewSelection 14")
-        if not targetList:
-            self.filterLineEdit.setText("")
-            return
-
         text = "&"
+        targetList = mel.eval("getShapeEditorTreeviewSelection 14")
         targetNamelist = []
+        if not targetList:
+            targetNamelist = self.getNoZeroWeightTargets()
+            if not targetNamelist:
+                self.filterLineEdit.setText("")
+                return
+
         for target in targetList:
             if "." in target:
                 split = target.split(".")
                 print(f"{split[0]}.w[{split[-1]}]")
                 targetName = cmds.aliasAttr(f"{split[0]}.w[{split[-1]}]", q=1)
                 targetNamelist.append(targetName)
+
         text = text.join(targetNamelist)
         self.filterLineEdit.setText(text)
+
+    def getNoZeroWeightTargets(self):
+        """
+        Get all targets with non-zero weight from the selected blendShape node.
+        """
+        target = bs.targetData()
+        target.getDataFromShapeEditor()
+
+        if target.node is None:
+            return []
+        if not cmds.objExists(target.node):
+            return []
+
+        targetNames = cmds.listAttr(f"{target.node}.w", multi=True)
+        for name in targetNames:
+            if cmds.getAttr(f"{target.node}.{name}") == 0:
+                targetNames.remove(name)
+        return targetNames
 
     def addSculpt(self):
         """

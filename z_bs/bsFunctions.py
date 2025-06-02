@@ -53,6 +53,8 @@ class targetData:
 
     @property
     def baseMesh(self):
+        if not self.node:
+            return None
         if cmds.objExists(self.node):
             geos = cmds.blendShape(self.node, q=1, g=1)
             if geos:
