@@ -1,52 +1,38 @@
 from maya.api import OpenMaya as om
 import maya.cmds as cmds
 from dataclasses import dataclass
-import UTILS.apiundo as apiundo
+import apiundo as apiundo
 
-from maya import cmds, mel
 
 
 @dataclass
-class ShapeLasterSelectedData:
-    node: str = "None"
+class BlendShapeData:
+    node: str
     targetIdx: int = -1
     inbetweenIdx: int = 6000
-    weight: float = 0.0
+    attr: str = ""
 
     def __post_init__(self):
-        bsNameData = mel.eval("getShapeEditorTreeviewSelection 11")
-        targetData = mel.eval("getShapeEditorTreeviewSelection 14")
-        inbetweenData = mel.eval("getShapeEditorTreeviewSelection 16")
-        lastSelectedData = mel.eval("getShapeEditorTreeviewSelection 20")
-        if lastSelectedData:
-            lastSelectedData = lastSelectedData[0]
-
-        if lastSelectedData in inbetweenData:
-            data = lastSelectedData.split(".")
-            self.node = data[0]
-            self.targetIdx = data[1]
-            self.inbetweenIdx = data[-1]
-            self.weight = cmds.getAttr(f"{self.node}.w[{self.targetIdx}]")
-            return
-
-        if lastSelectedData in targetData:
-            data = lastSelectedData.split(".")
-            self.node = data[0]
-            self.targetIdx = data[-1]
-            self.weight = cmds.getAttr(f"{self.node}.w[{self.targetIdx}]")
-            return
-        if lastSelectedData in bsNameData:
-            data = lastSelectedData.split(".")
-            self.node = data[0]
-            return
-
-    @property
-    def attr(self):
-        return f"{self.node}.inputTarget[0].inputTargetGroup[{self.targetIdx}].inputTargetItem[{self.inbetweenIdx}]"
+        self.attr = f"{self.node}.inputTarget[0].inputTargetGroup[{self.targetIdx}].inputTargetItem[{self.inbetweenIdx}]"
 
 
 def get_blendshape_attr(panel_name="shapePanel1"):
-    pass
+    """获取Shape Editor当前选中项的BlendShape属性路径"""
+    try:
+        str_info = cmds.shapeEditor(panel_name, q=True, ls=True)
+        if not str_info:
+            return None
+        info_list = str_info.replace("/", "").split(".")
+        node = info_list[0]
+        if len(info_list) == 1:
+            return BlendShapeData(node)
+        elif len(info_list) == 2:
+            return BlendShapeData(node, int(info_list[1]))
+        else:
+            return BlendShapeData(node, int(info_list[1]), int(info_list[2]))
+
+    except:
+        return None
 
 
 def mayaInvertAddTarget():

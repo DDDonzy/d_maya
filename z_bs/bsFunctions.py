@@ -67,7 +67,12 @@ def sculptTarget(targetData: targetData = None, message=True):
     sculptTargetIndex = f"{inputTarget}.sculptTargetIndex"
     sculptTargetTweaks = f"{inputTarget}.sculptTargetTweaks.vertex[0]"
     sculptInbetweenWeight = f"{inputTarget}.sculptInbetweenWeight"
+    cmds.sculptTarget(targetData.node, e=1, target=targetData.targetIdx, ibw=(targetData.inbetweenIdx-5000)/1000)
 
+    """
+    有bug，先用系统自带的，多个bs开启情况效果不对
+    用系统自带的挺好，就是没办法隐藏 inViewMessage 如果可以隐藏，就不需要后面自己再写方法了。
+    
     if cmds.getAttr(sculptTargetIndex) != -1:
         cmds.setAttr(sculptTargetIndex, -1)
         for _ in cmds.listConnections(sculptTargetTweaks, d=1, p=1) or []:
@@ -80,6 +85,7 @@ def sculptTarget(targetData: targetData = None, message=True):
         cmds.setAttr(sculptInbetweenWeight, (targetData.inbetweenIdx-5000)/1000)
         if message:
             showMessage("Sculpt target mode enabled.")
+    """
 
 
 def resetTargetDelta(targetData: targetData = None):
@@ -124,9 +130,9 @@ def add_sculptGeo(sculptGeo, targetData: targetData = None, addInbetween=True):
         raise RuntimeError(f"Base mesh {targetData.baseMesh} does not exist.")
 
     mSel = om.MGlobal.getSelectionListByName(sculptGeo)
-    mSel.add(targetData.baseMesh)
     sculptFnMesh = om.MFnMesh(mSel.getDagPath(0))
-    baseFnMesh = om.MFnMesh(mSel.getDagPath(1))
+    mSel = om.MGlobal.getSelectionListByName(targetData.baseMesh)
+    baseFnMesh = om.MFnMesh(mSel.getDagPath(0))
 
     bakeSourcePoints = baseFnMesh.getPoints(om.MSpace.kObject)
     sculptPoints = sculptFnMesh.getPoints(om.MSpace.kObject)

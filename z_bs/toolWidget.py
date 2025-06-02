@@ -3,7 +3,7 @@ import z_bs.toolFunctions as tools
 import z_bs.treeViewFunction as tf
 from z_bs.showMessage import showMessage
 from z_bs.getHistory import *
-from z_bs.bsFunctions import *
+import z_bs.bsFunctions as bs
 
 from PySide2 import QtWidgets, QtCore
 from PySide2.QtUiTools import loadUiType
@@ -15,6 +15,7 @@ from functools import partial
 from maya import cmds, mel
 from maya.api import OpenMaya as om
 reload(tf)
+reload(bs)
 
 
 # ui_path = r"E:\d_maya\z_bs\_addUI.ui"
@@ -39,6 +40,7 @@ class ShapeToolsWidget(base, ui):
         self.addSculptButton: QtWidgets.QPushButton
 
         self.deleteSculptCheckBox: QtWidgets.QCheckBox
+        self.addInbetweenCheckBox: QtWidgets.QCheckBox
 
         self.filterLineEdit: QtWidgets.QLineEdit
         self.filterLineEditWidget: QtWidgets.QWidget
@@ -46,6 +48,9 @@ class ShapeToolsWidget(base, ui):
         self.meshLabel: QtWidgets.QLabel
 
         self.setupUi()
+
+        if self.treeView:
+            self.treeView.viewport().installEventFilter(self)
 
         # self.treeView.setParent(self)
 
@@ -142,7 +147,7 @@ class ShapeToolsWidget(base, ui):
         """
         Add a sculpt to the selected blendShape node.
         """
-        target = targetData()
+        target = bs.targetData()
         target.getDataFromShapeEditor()
         if target.targetIdx < 0:
             showMessage("No target selected in shape editor.")
@@ -161,8 +166,41 @@ class ShapeToolsWidget(base, ui):
         if not cmds.objectType(shape, isa="mesh"):
             showMessage("Selected object is not a mesh.")
 
-        add_sculptGeo(sculptGeo=shape, targetData=target, addInbetween=True)
+        bs.add_sculptGeo(sculptGeo=shape, targetData=target, addInbetween=self.addInbetweenCheckBox.isChecked())
 
         if not self.deleteSculptCheckBox.isChecked():
             cmds.delete(sculptGeo)
         showMessage("Add sculpt target successfully.")
+
+    def autoSetWeight(self):
+        """
+        Automatically set the weight of the selected target.
+        """
+        target = bs.targetData()
+        target.getDataFromShapeEditor()
+        if target.targetIdx < 0:
+            return
+
+        weightAttr = f"{target.node}.w[{target.targetIdx}]"
+
+        v = 0
+        if target.inbetweenIdx == 6000:
+            w = cmds.getAttr(weightAttr)
+            if w >= 0.5:
+                v = 0
+            else:
+                v = 1
+        else:
+            v = (target.inbetweenIdx - 5000) / 1000
+
+        cmds.setAttr(weightAttr, v)
+        showMessage(f"Set {target.node}.w[{target.targetIdx}] to {v} .")
+
+    def eventFilter(self, obj, event):
+        if obj == self.treeView.viewport() and event.type() == QtCore.QEvent.MouseButtonRelease:
+            if event.button() == QtCore.Qt.MiddleButton:
+                index = self.treeView.indexAt(event.pos())
+                if index.isValid():
+                    self.autoSetWeight()
+                return True
+        return super().eventFilter(obj, event)
