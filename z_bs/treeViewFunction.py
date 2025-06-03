@@ -3,18 +3,19 @@ from enum import Enum
 from PySide2.QtWidgets import QTreeView, QLabel
 from PySide2.QtCore import QModelIndex
 
-from maya import cmds,mel
+from maya import cmds, mel
+
 
 def getCurrentSelectedData():
     info = mel.eval("getShapeEditorTreeviewSelection 20")
-    
+
 
 class SelectedItemType(Enum):
     blendShape_node = 1
     blendShape_group = 2
     blendShape_target = 3
-    blendShape_target_group = 4
-    blendShape_target_inbetween = 5
+    blendShape_targetGroup = 4
+    blendShape_targetInbetween = 5
 
 
 class TreeViewIterator:
@@ -126,15 +127,12 @@ def treeView_filter(tree_view: QTreeView, filter_str: str = "", filter_type: Sel
     for index, item, item_type in filterable_items:
         should_show = False
 
-        # 根据filter_type决定过滤逻辑
-        if filter_type is None:
-            # 默认行为：非组类型才参与文本匹配
-            if item_type != SelectedItemType.blendShape_group:
-                text = get_treeViewItemText(tree_view, index)
-                match = _match_pattern(text, filter_str)
-                match_b = any([_match_pattern(text, f_str) for f_str in filter_world_list])
-                if text and (match or match_b):
-                    should_show = True
+        if filter_type == SelectedItemType.blendShape_node:
+            # 指定类型过滤：直接进行文本匹配
+            text = get_treeViewItemText(tree_view, index)
+            if text.strip() == filter_str.strip():
+                should_show = True
+
         else:
             # 指定类型过滤：直接进行文本匹配
             text = get_treeViewItemText(tree_view, index)

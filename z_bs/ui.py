@@ -2,12 +2,14 @@ from z_bs.getMayaWidget import getMayaMainWindow, getMayaWidget
 import z_bs.toolWidget as toolUI
 
 
+
 from maya import cmds
 from PySide2 import QtWidgets, QtCore
 
 
 from importlib import reload
 reload(toolUI)
+
 
 
 def getMayaPanelName(panelType):
@@ -71,6 +73,7 @@ def openShapeEditor():
         x.hide()
     coreWidget.hide()
     v_splitter.setSizes([1000, 1000,1])
+    
 
     cmds.evalDeferred(lambda: shapeEditorWidget.show())
     return shapeEditorWidget, toolWidget

@@ -28,7 +28,7 @@ print(ui_path)
 ui, base = loadUiType(ui_path)
 
 # TODO maya treeview 选中后，不太好清空选择项，尤其是页面满了的时候，考虑一下点击已经选择的item，清空选择项。
-# TODO 添加一个一键展开所有，一键收起所有的功能。可以考虑再header name 这一栏目，点一下收起所有，再点一下展开所有。
+
 
 class ShapeToolsWidget(base, ui):
     def __init__(self, treeView: QtWidgets.QTreeView = None):
@@ -51,11 +51,14 @@ class ShapeToolsWidget(base, ui):
 
         self.addonWidget: QtWidgets.QWidget
         self.filterWidget: QtWidgets.QWidget
+        self.expandButton = QtWidgets.QPushButton
 
         self.setupUi()
 
         if self.treeView:
             self.treeView.viewport().installEventFilter(self)
+            self.addHeaderButton()
+            self.autoExpandOrCollapse()
 
         # self.treeView.setParent(self)
 
@@ -74,6 +77,7 @@ class ShapeToolsWidget(base, ui):
         self.addSculptButton.clicked.connect(self.addSculpt)
 
         self.treeView.selectionModel().selectionChanged.connect(self.updateBaseMeshLabel)
+        self.meshLabel.installEventFilter(self)
 
     def updateBaseMeshLabel(self):
 
@@ -86,10 +90,7 @@ class ShapeToolsWidget(base, ui):
                 text = cmds.listRelatives(target.baseMesh, parent=1)[0]
 
         self.meshLabel.setText(text)
-        if text == "None":
-            self.meshLabel.setStyleSheet("")  # 不设置颜色
-        else:
-            self.meshLabel.setStyleSheet("color: #7ab5bf;")  # 红色
+
 
     def filterChanged(self):
         nodeText = self.filterComboBox.currentText().strip()
@@ -101,7 +102,7 @@ class ShapeToolsWidget(base, ui):
         tf.treeView_filter(self.treeView, nodeText, tf.SelectedItemType(1))
 
     def loadBlendShape(self):
-        # TODO bs节点过滤，不要判断名字是否包含，直接使用 == 不如 bs1，bs11，bs12，bs13 加载bs1 的时候，后面的全部会被显示出来。
+
         self.filterComboBox.clear()
         self.filterComboBox.addItem("None")
 
@@ -139,7 +140,6 @@ class ShapeToolsWidget(base, ui):
         for target in targetList:
             if "." in target:
                 split = target.split(".")
-                print(f"{split[0]}.w[{split[-1]}]")
                 targetName = cmds.aliasAttr(f"{split[0]}.w[{split[-1]}]", q=1)
                 targetNamelist.append(targetName)
 
@@ -234,4 +234,86 @@ class ShapeToolsWidget(base, ui):
                 if index.isValid():
                     self.autoSetWeight()
                 return True
+        
+        if obj == self.meshLabel and event.type() == QtCore.QEvent.MouseButtonPress:
+            self.selectBaseMesh()
+
+            return True
         return super().eventFilter(obj, event)
+
+    def addHeaderButton(self):
+        header = self.treeView.header()
+        self.expandButton.setParent(header)
+        self.expandButton.setFixedHeight(header.height() - 2)
+        self.expandButton.setFixedWidth(header.height() - 2)
+        self.expandButton.clicked.connect(self.autoExpandOrCollapse)
+        self.updateHeaderButtonPos()
+        header.sectionResized.connect(self.updateHeaderButtonPos)
+        header.sectionMoved.connect(self.updateHeaderButtonPos)
+        header.geometriesChanged.connect(self.updateHeaderButtonPos)
+
+    def updateHeaderButtonPos(self):
+        header = self.treeView.header()
+        section = 0  # 你想放按钮的列号
+        x = header.sectionPosition(section)
+        y = 0
+        h = header.height()
+        # 按钮放在该列header的左侧
+        self.expandButton.move(x + 2, y + (h - self.expandButton.height()) // 2)
+    
+    def selectBaseMesh(self):
+        mesh = self.meshLabel.text()
+        if mesh == "None":
+            return
+        else:
+            if cmds.objExists(mesh):
+                cmds.select(mesh)
+            else:
+                showMessage(f"{mesh} does not exist in the scene.")
+
+    def autoExpandOrCollapse(self):
+        # self.treeView.expandAll()
+        # self.treeView.collapseAll()
+
+        bsNodeItems = []
+        isExpand = []
+        model = self.treeView.model()
+        for _, index in tf.TreeViewIterator(self.treeView):
+            item = model.itemFromIndex(index)
+            if not item:
+                continue
+            item_data = item.data()
+            if not item_data:
+                continue
+            # 默认展开 blendShape_group
+            if tf.SelectedItemType(item_data) == tf.SelectedItemType.blendShape_group:
+                self.treeView.expand(item.index())
+            # blendShape_node 添加到列表中，进行后续判断是否展开
+            if tf.SelectedItemType(item_data) == tf.SelectedItemType.blendShape_node:
+                bsNodeItems.append((item, item.index()))
+                isExpand.append(self.treeView.isExpanded(item.index()))
+            # 默认不展开 inbetween
+            if tf.SelectedItemType(item_data) == tf.SelectedItemType.blendShape_target:
+                self.treeView.collapse(item.index())
+            # 默认展开 target group
+            if tf.SelectedItemType(item_data) == tf.SelectedItemType.blendShape_targetGroup:
+                self.treeView.expand(item.index())
+            
+        if any(isExpand):
+            for item, index in bsNodeItems:
+                self.treeView.collapse(index)
+                
+        
+        else:
+            # 如果没有展开任何blendShape_node，则展开所有选择的以及父层级
+            # 获取当前选择的所有index
+            selected_indexes = self.treeView.selectedIndexes()
+            for index in selected_indexes:
+                self.treeView.expand(index)
+                # 向上递归展开所有父节点
+                parent = index.parent()
+                while parent.isValid():
+                    self.treeView.expand(parent)
+                    parent = parent.parent()
+                # 展开当前选中项
+                self.treeView.expand(index)
