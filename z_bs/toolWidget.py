@@ -3,6 +3,8 @@ import z_bs.treeViewFunction as tf
 from z_bs.showMessage import showMessage
 from z_bs.getHistory import *
 import z_bs.bsFunctions as bs
+import z_bs.uiLoader as uiLoader
+from z_bs import _debugUI
 
 from PySide2 import QtWidgets, QtCore
 from PySide2.QtUiTools import loadUiType
@@ -17,22 +19,31 @@ reload(tf)
 reload(bs)
 
 
-# ui_path = r"E:\d_maya\z_bs\_addUI.ui"
+ui_path = r"E:\d_maya\z_bs\_addUI.ui"
 
-current_dir = Path(__file__).parent
-ui_path = current_dir / "_addUI.ui"
-ui_path = str(ui_path.resolve())
+# current_dir = Path(__file__).parent
+# ui_path = current_dir / "_addUI.ui"
+# ui_path = str(ui_path.resolve())
 
 
 print(ui_path)
-ui, base = loadUiType(ui_path)
-
+uiBase = uiLoader.uiFileLoader(ui_path)
 # TODO maya treeview 选中后，不太好清空选择项，尤其是页面满了的时候，考虑一下点击已经选择的item，清空选择项。
 
 
-class ShapeToolsWidget(base, ui):
+def getMayaPanelName(panelType):
+    panels = cmds.getPanel(type=panelType)
+    return [f"{panel}Window" for panel in panels]
+
+
+def getShapeEditorWidgets():
+    panelNames = getMayaPanelName("shapePanel")
+    return [getMayaWidget(panelName) for panelName in panelNames]
+
+
+class ShapeToolsWidget(uiBase):
     def __init__(self, treeView: QtWidgets.QTreeView = None):
-        super().__init__(getMayaMainWindow())
+        super().__init__()  # getMayaMainWindow()
         self.treeView = treeView
 
         """complete variables."""
@@ -51,20 +62,67 @@ class ShapeToolsWidget(base, ui):
 
         self.addonWidget: QtWidgets.QWidget
         self.filterWidget: QtWidgets.QWidget
-        self.expandButton = QtWidgets.QPushButton
+        self.expandButton: QtWidgets.QPushButton
 
+        self.openShapeEditor()
         self.setupUi()
 
-        if self.treeView:
-            self.treeView.viewport().installEventFilter(self)
-            self.addHeaderButton()
-            self.autoExpandOrCollapse()
+    def closeShapeEditor(self):
+        shapeEditorNames = getMayaPanelName("shapePanel")
+        for shapeEditor in shapeEditorNames:
+            if cmds.window(shapeEditor, ex=1):
+                cmds.deleteUI(shapeEditor)
 
-        # self.treeView.setParent(self)
+    def openShapeEditor(self):
+        self.closeShapeEditor()
+        cmds.ShapeEditor()
+        # cmds.refresh(f=1)
+
+        shapeEditorWidgets = getShapeEditorWidgets()  # get all Shape Editor widgets
+        if not shapeEditorWidgets:
+            raise RuntimeError("Shape Editor widget not found.")
+
+        """
+        获取 maya 自带 ui 控件
+        """
+        shapeEditorWidget = shapeEditorWidgets[0]  # get the first Shape Editor widget
+        # shapeEditorWidget.hide()
+        shapeEditorMenuBar = shapeEditorWidget.findChild(QtWidgets.QMenuBar)
+        shapeEditorPanel = shapeEditorMenuBar.parent()
+        for x in shapeEditorPanel.children():
+            if isinstance(x, QtWidgets.QWidget) and x != shapeEditorMenuBar:
+                x.hide()
+        self.setParent(shapeEditorPanel)
+
+        mayaTreeView = shapeEditorWidget.findChild(QtWidgets.QTreeView)
+        # treeView_parent = mayaTreeView.parent()
+
+        coreWidget: QtWidgets.QWidget = mayaTreeView.parent().parent().parent()
+
+        """
+        替换控件
+        """
+        parentLayout = self.baseTreeViewWidget.layout()
+        parentLayout.addWidget(mayaTreeView)
+        self.treeView = self.baseTreeViewWidget.findChild(QtWidgets.QTreeView)
+        self.treeView.setParent(self.baseTreeViewWidget)
+
+        reParentList = coreWidget.children()
+        reParentDone = []
+        for item in reParentList:
+            if not item.findChild(QtWidgets.QTreeView):
+                if isinstance(item, QtWidgets.QPushButton):
+                    item.setParent(self.bsAddWidget)
+                    self.bsAddWidget.layout().addWidget(item)
+                    reParentDone.append(item)
+        for x in reParentDone[3:]:
+            x.hide()
+        coreWidget.hide()
+        #
+        debug_tool = _debugUI.WidgetDebugTool(shapeEditorWidget)
+        debug_tool.show()
 
     def setupUi(self):
-        super().setupUi(self)
-
         """先清除所有shapeEditorManager的过滤器，避免文件自带的过滤器影响"""
         for manager in cmds.ls(type="shapeEditorManager"):
             cmds.setAttr(f"{manager}.filterString", "", type="string")
@@ -76,8 +134,13 @@ class ShapeToolsWidget(base, ui):
         self.filterComboBox.currentTextChanged.connect(self.updateBaseMeshLabel)
         self.addSculptButton.clicked.connect(self.addSculpt)
 
-        self.treeView.selectionModel().selectionChanged.connect(self.updateBaseMeshLabel)
         self.meshLabel.installEventFilter(self)
+
+        if self.treeView:
+            self.treeView.viewport().installEventFilter(self)
+            self.addHeaderButton()
+            self.autoExpandOrCollapse()
+            self.treeView.selectionModel().selectionChanged.connect(self.updateBaseMeshLabel)
 
     def updateBaseMeshLabel(self):
 
@@ -90,7 +153,6 @@ class ShapeToolsWidget(base, ui):
                 text = cmds.listRelatives(target.baseMesh, parent=1)[0]
 
         self.meshLabel.setText(text)
-
 
     def filterChanged(self):
         nodeText = self.filterComboBox.currentText().strip()
@@ -228,13 +290,14 @@ class ShapeToolsWidget(base, ui):
         """鼠标哦中键点击事件过滤器，用于自动设置权重"""
         # TODO 需要考虑清空选择项目，是否用这种方式比较好？
         # 再考虑下一下，goToPose 用什么快捷键，以及实现方式。
-        if obj == self.treeView.viewport() and event.type() == QtCore.QEvent.MouseButtonRelease:
-            if event.button() == QtCore.Qt.MiddleButton:
-                index = self.treeView.indexAt(event.pos())
-                if index.isValid():
-                    self.autoSetWeight()
-                return True
-        
+        if self.treeView:
+            if obj == self.treeView.viewport() and event.type() == QtCore.QEvent.MouseButtonRelease:
+                if event.button() == QtCore.Qt.MiddleButton:
+                    index = self.treeView.indexAt(event.pos())
+                    if index.isValid():
+                        self.autoSetWeight()
+                    return True
+
         if obj == self.meshLabel and event.type() == QtCore.QEvent.MouseButtonPress:
             self.selectBaseMesh()
 
@@ -260,7 +323,7 @@ class ShapeToolsWidget(base, ui):
         h = header.height()
         # 按钮放在该列header的左侧
         self.expandButton.move(x + 2, y + (h - self.expandButton.height()) // 2)
-    
+
     def selectBaseMesh(self):
         mesh = self.meshLabel.text()
         if mesh == "None":
@@ -298,12 +361,11 @@ class ShapeToolsWidget(base, ui):
             # 默认展开 target group
             if tf.SelectedItemType(item_data) == tf.SelectedItemType.blendShape_targetGroup:
                 self.treeView.expand(item.index())
-            
+
         if any(isExpand):
             for item, index in bsNodeItems:
                 self.treeView.collapse(index)
-                
-        
+
         else:
             # 如果没有展开任何blendShape_node，则展开所有选择的以及父层级
             # 获取当前选择的所有index

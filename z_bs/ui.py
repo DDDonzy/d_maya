@@ -32,51 +32,10 @@ def openShapeEditor():
     if not shapeEditorWidgets:
         raise RuntimeError("Shape Editor widget not found.")
 
-    """
-    获取 maya 自带 ui 控件
-    """
-    shapeEditorWidget = shapeEditorWidgets[0]  # get the first Shape Editor widget
-    shapeEditorWidget.hide()
-
-    treeView = shapeEditorWidget.findChild(QtWidgets.QTreeView)
-    treeView_parent = treeView.parent()
-    coreWidget: QtWidgets.QWidget = treeView.parent().parent().parent()
-
-    # header = treeView.header()
-    # # header.setSectionHidden(4, True)
-    # model = treeView.model()
-
-    """
-    创建 ui 文件的控件
-    """
-    toolWidget = toolUI.ShapeToolsWidget(treeView)
-
-    # """重写组合maya ui 和 qt新ui"""
-    toolWidget.addonWidget.layout().addWidget(treeView)
-    toolWidget.addonWidget.setParent(treeView_parent)
-    v_splitter = treeView_parent.parent().parent().parent()
-    toolWidget.addonWidget.setParent(v_splitter)
-    toolWidget.setParent(v_splitter)
-    
 
 
-    treeView = shapeEditorWidget.findChild(QtWidgets.QTreeView)
-    reParentList = coreWidget.children()
-    reParentDone = []
-    for item in reParentList:
-        if not item.findChild(QtWidgets.QTreeView):
-            if isinstance(item, QtWidgets.QPushButton):
-                item.setParent(toolWidget.bsAddWidget)
-                toolWidget.bsAddWidget.layout().addWidget(item)
-                reParentDone.append(item)
-    for x in reParentDone[3:]:
-        x.hide()
-    coreWidget.hide()
-    v_splitter.setSizes([1000, 1000,1])
-    
 
-    cmds.evalDeferred(lambda: shapeEditorWidget.show())
-    return shapeEditorWidget, toolWidget
+    return shapeEditorWidgets[0]
 
 
 def closeShapeEditor():
