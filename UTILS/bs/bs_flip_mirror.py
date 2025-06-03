@@ -246,8 +246,8 @@ def createProxWrap(*args, **kwargs):
 
     cmds.setAttr(wrapNode + ".wrapMode", wrapMode)
     cmds.setAttr(wrapNode + ".falloffScale", falloffScale)
-    cmds.setAttr(wrapNode + ".smoothInfluences", 3)
-    cmds.setAttr(wrapNode + ".smoothNormals", 3)
+    cmds.setAttr(wrapNode + ".smoothInfluences", 0)
+    cmds.setAttr(wrapNode + ".smoothNormals", 0)
 
     cmds.deformableShape(influence, cog=1)
     inf_orig = cmds.deformableShape(influence, cog=1)[0]

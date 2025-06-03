@@ -1,5 +1,4 @@
 from z_bs.getMayaWidget import getMayaMainWindow, getMayaWidget
-import z_bs.toolFunctions as tools
 import z_bs.treeViewFunction as tf
 from z_bs.showMessage import showMessage
 from z_bs.getHistory import *
@@ -28,6 +27,8 @@ ui_path = str(ui_path.resolve())
 print(ui_path)
 ui, base = loadUiType(ui_path)
 
+# TODO maya treeview 选中后，不太好清空选择项，尤其是页面满了的时候，考虑一下点击已经选择的item，清空选择项。
+# TODO 添加一个一键展开所有，一键收起所有的功能。可以考虑再header name 这一栏目，点一下收起所有，再点一下展开所有。
 
 class ShapeToolsWidget(base, ui):
     def __init__(self, treeView: QtWidgets.QTreeView = None):
@@ -100,6 +101,7 @@ class ShapeToolsWidget(base, ui):
         tf.treeView_filter(self.treeView, nodeText, tf.SelectedItemType(1))
 
     def loadBlendShape(self):
+        # TODO bs节点过滤，不要判断名字是否包含，直接使用 == 不如 bs1，bs11，bs12，bs13 加载bs1 的时候，后面的全部会被显示出来。
         self.filterComboBox.clear()
         self.filterComboBox.addItem("None")
 
@@ -122,6 +124,9 @@ class ShapeToolsWidget(base, ui):
         self.filterComboBox.setCurrentIndex(1)
 
     def loadTarget(self):
+        # TODO  考虑添加 bsTargetGroup 支持
+        # TODO  自动加载有权重的target，不太好使，必须选择 bs节点才行。考虑优化一下，
+        baseText = self.filterLineEdit.text()
         text = "&"
         targetList = mel.eval("getShapeEditorTreeviewSelection 14")
         targetNamelist = []
@@ -139,6 +144,8 @@ class ShapeToolsWidget(base, ui):
                 targetNamelist.append(targetName)
 
         text = text.join(targetNamelist)
+        if baseText == text:
+            text = ""
         self.filterLineEdit.setText(text)
 
     def getNoZeroWeightTargets(self):
@@ -153,13 +160,18 @@ class ShapeToolsWidget(base, ui):
         if not cmds.objExists(target.node):
             return []
 
-        targetNames = cmds.listAttr(f"{target.node}.w", multi=True)
-        for name in targetNames:
-            if cmds.getAttr(f"{target.node}.{name}") == 0:
-                targetNames.remove(name)
+        targetNames = []
+        tolerance = 1e-5
+        for name in cmds.listAttr(f"{target.node}.w", multi=True):
+            w = cmds.getAttr(f"{target.node}.{name}")
+            if abs(w) > tolerance:
+                targetNames.append(name)
         return targetNames
 
     def addSculpt(self):
+        # TODO  有bug！不添加inbetween的时候，假设当前bs权重为0.5，添加sculpt结果和maya自带的editSculpt不一致。
+        #       问题可能在于 这里使用的是cmds.sculptTarget，toolModify文件中使用的方法可这里不一样，找一找啥原因？
+        #       也有可能是 bs.inputTarget.sculptWeights 的问题，可能maya自带的editSculpt会自动设置这个值。
         """
         Add a sculpt to the selected blendShape node.
         """
@@ -213,6 +225,9 @@ class ShapeToolsWidget(base, ui):
         showMessage(f"Set {target.node}.w[{target.targetIdx}] to {v} .")
 
     def eventFilter(self, obj, event):
+        """鼠标哦中键点击事件过滤器，用于自动设置权重"""
+        # TODO 需要考虑清空选择项目，是否用这种方式比较好？
+        # 再考虑下一下，goToPose 用什么快捷键，以及实现方式。
         if obj == self.treeView.viewport() and event.type() == QtCore.QEvent.MouseButtonRelease:
             if event.button() == QtCore.Qt.MiddleButton:
                 index = self.treeView.indexAt(event.pos())

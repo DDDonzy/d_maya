@@ -1,5 +1,3 @@
-
-
 import maya.cmds as cmds
 import maya.OpenMaya as om
 import itertools
@@ -25,7 +23,7 @@ def dslCorrectiveShape(skinGeo=None,
     #print defaultPointArray
     ###################################
     xSculp = cmds.xform(sculptGeo + '.pnts[*]', q=True, os=True, t=True)
-    sculptPts = zip(xSculp[0::3], xSculp[1::3], xSculp[2::3])
+    sculptPts = list(zip(xSculp[0::3], xSculp[1::3], xSculp[2::3]))
     #####################################
     iTg = '%s.inputTarget[0]' %blendShapeNode
     iTgGr = '.inputTargetGroup[%s]' %correctiveGroup
@@ -41,7 +39,7 @@ def dslCorrectiveShape(skinGeo=None,
     cmds.setAttr(con, type='componentList',*vtxList )
     cmds.setAttr(gatherInfoFrom, type='pointArray', *defaultPointArray)
     xSkin = cmds.xform(skinGeo + '.pnts[*]', q=True, os=True, t=True)
-    skinPts = zip(xSkin[0::3], xSkin[1::3], xSkin[2::3])
+    skinPts = list(zip(xSkin[0::3], xSkin[1::3], xSkin[2::3]))
     offsetPointArray = []
     offsetPointArray.append([numVtx] + [(1,0,0,1)] * numVtx)
     offsetPointArray.append([numVtx] + [(0,1,0,1)] * numVtx)
@@ -54,7 +52,7 @@ def dslCorrectiveShape(skinGeo=None,
     for pArray in offsetPointArray:
         cmds.setAttr(gatherInfoFrom, type='pointArray', *pArray)
         tmpXform = cmds.xform(skinGeo + '.pnts[*]', q=True, os=True, t=True)
-        unityDeltaXYZ.append(zip(tmpXform[0::3], tmpXform[1::3], tmpXform[2::3]))
+        unityDeltaXYZ.append(list(zip(tmpXform[0::3], tmpXform[1::3], tmpXform[2::3])))
         eval('unitDelta' + axis[offsetPointArray.index(pArray)]).append(unityDeltaXYZ[offsetPointArray.index(pArray)])
     if not keepSculpt:
         cmds.delete(sculptGeo)

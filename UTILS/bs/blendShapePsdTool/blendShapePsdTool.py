@@ -63,6 +63,15 @@ class PoseInterpolatorData(yaml.YAMLObject):
     pose: list
 
 
+@dataclass
+class FingerTargetData(yaml.YAMLObject):
+    yaml_tag = "FingerTargetData"
+    TargetName: str
+    DriverAttr: str = None
+    DriverMin: float = 0
+    DriverMax: float = 0
+
+
 def get_psdData(psd):
     # utils info
     psd_driver = cmds.poseInterpolator(psd, q=1, d=1) or []
@@ -338,15 +347,6 @@ def create_bsTargetByPsd(bs: str, psd_node_list: list = None):
 
             cmds.setDrivenKeyframe(f"{bs}.{name}", cd=outAttr, driverValue=0, v=0, inTangentType="linear", outTangentType="linear")
             cmds.setDrivenKeyframe(f"{bs}.{name}", cd=outAttr, driverValue=1, v=1, inTangentType="linear", outTangentType="linear")
-
-
-@dataclass
-class FingerTargetData(yaml.YAMLObject):
-    yaml_tag = "FingerTargetData"
-    TargetName: str
-    DriverAttr: str = None
-    DriverMin: float = 0
-    DriverMax: float = 0
 
 
 def create_fingerBsTarget(bsNode):
