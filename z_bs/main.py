@@ -1,4 +1,4 @@
-import z_bs.toolWidget as bsUI
+import z_bs.ui as bsUI
 from z_bs import _debugUI
 from importlib import reload
 reload(bsUI)
