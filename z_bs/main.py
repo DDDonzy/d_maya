@@ -1,4 +1,11 @@
-import z_bs.ui as bsUI
+import z_bs.toolWidget as bsUI
+from z_bs import _debugUI
 from importlib import reload
 reload(bsUI)
-widget, toolWidget = bsUI.openShapeEditor()
+
+
+ui = bsUI.ShapeToolsWidget()
+ui.show()
+
+# debugUI=  _debugUI.WidgetDebugTool(ui)
+# debugUI.show()

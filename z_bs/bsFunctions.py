@@ -63,31 +63,36 @@ class targetData:
             return None
 
 
-def sculptTarget(targetData: targetData = None, message=True):
+def sculptTarget(targetData: targetData = None, message=False):
+    """ 
+    Maya 自带bs 是有Invert逆矩阵的属性的 bs.it[0].deformMatrix
+    需要 开启 bs.it[0].deformMatrixModified 才能刷新。
+    it.[0].sculptInbetweenWeight 属性需要注意，这个属性代表 inbetween 的位置，和bs.w的权重无关
+    """
     tweak = f"{targetData.baseMesh}.tweakLocation"
     inputTarget = f"{targetData.node}.inputTarget[0]"
     sculptTargetIndex = f"{inputTarget}.sculptTargetIndex"
     sculptTargetTweaks = f"{inputTarget}.sculptTargetTweaks.vertex[0]"
     sculptInbetweenWeight = f"{inputTarget}.sculptInbetweenWeight"
-    cmds.sculptTarget(targetData.node, e=1, target=targetData.targetIdx, ibw=(targetData.inbetweenIdx-5000)/1000)
-
-    """
-    有bug，先用系统自带的，多个bs开启情况效果不对
-    用系统自带的挺好，就是没办法隐藏 inViewMessage 如果可以隐藏，就不需要后面自己再写方法了。
     
+    
+
     if cmds.getAttr(sculptTargetIndex) != -1:
         cmds.setAttr(sculptTargetIndex, -1)
         for _ in cmds.listConnections(sculptTargetTweaks, d=1, p=1) or []:
             cmds.disconnectAttr(sculptTargetTweaks, _)
+        cmds.setAttr(f"{targetData.node}.it[0].deformMatrixModified", False)
+        cmds.setAttr(sculptInbetweenWeight, 1)
         if message:
             showMessage("Sculpt target mode disabled.")
     else:
         cmds.connectAttr(sculptTargetTweaks, tweak, f=1)
         cmds.setAttr(sculptTargetIndex, targetData.targetIdx)
-        cmds.setAttr(sculptInbetweenWeight, (targetData.inbetweenIdx-5000)/1000)
+        
+        cmds.setAttr(sculptInbetweenWeight, round((targetData.inbetweenIdx-5000)/1000, 3))
+        cmds.setAttr(f"{targetData.node}.it[0].deformMatrixModified", True)
         if message:
             showMessage("Sculpt target mode enabled.")
-    """
 
 
 def resetTargetDelta(targetData: targetData = None):
@@ -125,10 +130,13 @@ def add_targetInbetween(bs: str, targetIdx, inbetweenIdx, name: str = "IB"):
 
 def add_sculptGeo(sculptGeo, targetData: targetData = None, addInbetween=True):
     if not cmds.objExists(sculptGeo):
+        showMessage("Please select a sculpt geometry.")
         raise RuntimeError(f"Object {sculptGeo} does not exist.")
     if not cmds.objExists(targetData.attr):
+        showMessage("Please select a blendShape target in the Shape Editor.")
         raise RuntimeError(f"{targetData.attr} does not exist.")
     if not cmds.objExists(targetData.baseMesh):
+        showMessage("Please select a blendShape target in the Shape Editor.")
         raise RuntimeError(f"Base mesh {targetData.baseMesh} does not exist.")
 
     mSel = om.MGlobal.getSelectionListByName(sculptGeo)
@@ -143,9 +151,6 @@ def add_sculptGeo(sculptGeo, targetData: targetData = None, addInbetween=True):
         inbetweenIdx = round(targetData.weight * 1000 + 5000, 3)
         inbetweenAttr = add_targetInbetween(targetData.node, targetData.targetIdx, inbetweenIdx)
         targetData.inbetweenIdx = inbetweenIdx
-    else:
-        cmds.setAttr(f"{targetData.node}.it[0].itg[{targetData.targetIdx}].iti[{targetData.inbetweenIdx}].ipt", *[1, (0, 0, 0, 1)], type="pointArray")
-        cmds.setAttr(f"{targetData.node}.it[0].itg[{targetData.targetIdx}].iti[{targetData.inbetweenIdx}].ict", *[1, "vtx[0]"], type="componentList")
 
     sculptTarget(targetData, message=False)
     baseFnMesh.setPoints(sculptPoints)
@@ -153,4 +158,4 @@ def add_sculptGeo(sculptGeo, targetData: targetData = None, addInbetween=True):
 
 
 if __name__ == "__main__":
-    add_sculptGeo(cmds.ls(sl=1)[0], targetData())
+    add_sculptGeo(cmds.ls(sl=1)[0], targetData(), 0)

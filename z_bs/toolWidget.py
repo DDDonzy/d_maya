@@ -19,15 +19,14 @@ reload(tf)
 reload(bs)
 
 
-ui_path = r"E:\d_maya\z_bs\_addUI.ui"
+# ui_path = r"E:\d_maya\z_bs\_addUI.ui"
 
-# current_dir = Path(__file__).parent
-# ui_path = current_dir / "_addUI.ui"
-# ui_path = str(ui_path.resolve())
-
-
+current_dir = Path(__file__).parent
+ui_path = current_dir / "_addUI.ui"
+ui_path = str(ui_path.resolve())
 print(ui_path)
 uiBase = uiLoader.uiFileLoader(ui_path)
+
 # TODO maya treeview 选中后，不太好清空选择项，尤其是页面满了的时候，考虑一下点击已经选择的item，清空选择项。
 
 
@@ -42,9 +41,8 @@ def getShapeEditorWidgets():
 
 
 class ShapeToolsWidget(uiBase):
-    def __init__(self, treeView: QtWidgets.QTreeView = None):
-        super().__init__()  # getMayaMainWindow()
-        self.treeView = treeView
+    def __init__(self):
+        super().__init__()
 
         """complete variables."""
         self.meshLabel: QtWidgets.QLabel
@@ -63,6 +61,10 @@ class ShapeToolsWidget(uiBase):
         self.addonWidget: QtWidgets.QWidget
         self.filterWidget: QtWidgets.QWidget
         self.expandButton: QtWidgets.QPushButton
+        self.proximityWrapRadioButton: QtWidgets.QRadioButton
+        self.wrapRadioButton: QtWidgets.QRadioButton
+        self.proximityWrapPag: QtWidgets.QScrollArea
+        self.wrapPag: QtWidgets.QScrollArea
 
         self.openShapeEditor()
         self.setupUi()
@@ -89,13 +91,14 @@ class ShapeToolsWidget(uiBase):
         # shapeEditorWidget.hide()
         shapeEditorMenuBar = shapeEditorWidget.findChild(QtWidgets.QMenuBar)
         shapeEditorPanel = shapeEditorMenuBar.parent()
+        # hide all other widgets in the shape editor panel except the menu bar
         for x in shapeEditorPanel.children():
             if isinstance(x, QtWidgets.QWidget) and x != shapeEditorMenuBar:
                 x.hide()
+        # parent the shape editor widget to the main window
         self.setParent(shapeEditorPanel)
-
+        # get maya tree view
         mayaTreeView = shapeEditorWidget.findChild(QtWidgets.QTreeView)
-        # treeView_parent = mayaTreeView.parent()
 
         coreWidget: QtWidgets.QWidget = mayaTreeView.parent().parent().parent()
 
@@ -119,8 +122,8 @@ class ShapeToolsWidget(uiBase):
             x.hide()
         coreWidget.hide()
         #
-        debug_tool = _debugUI.WidgetDebugTool(shapeEditorWidget)
-        debug_tool.show()
+        # debug_tool = _debugUI.WidgetDebugTool(shapeEditorWidget)
+        # debug_tool.show()
 
     def setupUi(self):
         """先清除所有shapeEditorManager的过滤器，避免文件自带的过滤器影响"""
@@ -135,6 +138,9 @@ class ShapeToolsWidget(uiBase):
         self.addSculptButton.clicked.connect(self.addSculpt)
 
         self.meshLabel.installEventFilter(self)
+        self.proximityWrapRadioButton.toggled.connect(self.wrapAttrsPagVis)
+        
+        self.wrapAttrsPagVis()
 
         if self.treeView:
             self.treeView.viewport().installEventFilter(self)
@@ -379,3 +385,18 @@ class ShapeToolsWidget(uiBase):
                     parent = parent.parent()
                 # 展开当前选中项
                 self.treeView.expand(index)
+
+    def wrapAttrsPagVis(self):
+        """
+        切换 proximityWrap 的页面可见性
+        """
+        
+        self.proximityWrapPag.setVisible(self.proximityWrapRadioButton.isChecked())
+        self.wrapPag.setVisible(self.wrapRadioButton.isChecked())
+
+
+
+#
+if __name__ == "__main__":
+    bsUI = ShapeToolsWidget()
+    bsUI.show()
