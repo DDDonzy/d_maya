@@ -1,5 +1,5 @@
 import z_bs.ui as bsUI
-from z_bs import _debugUI
+from z_bs._tools import _debugUI
 from importlib import reload
 reload(bsUI)
 

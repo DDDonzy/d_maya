@@ -13,21 +13,20 @@ from importlib import reload
 from maya import cmds, mel
 from maya.api import OpenMaya as om
 
-from z_bs.icon import qrc as x
+from z_bs.icon import _qrc
 
 reload(tf)
 reload(bs)
 
 
-# ui_path = r"E:\d_maya\z_bs\_addUI.ui"
+# ui_path = r"E:\d_maya\z_bs\ui.ui"
 
 current_dir = Path(__file__).parent
-ui_path = current_dir / "_addUI.ui"
+ui_path = current_dir / "ui.ui"
 ui_path = str(ui_path.resolve())
 print(ui_path)
 uiBase = _uiLoader.uiFileLoader(ui_path)
 
-# TODO maya treeview 选中后，不太好清空选择项，尤其是页面满了的时候，考虑一下点击已经选择的item，清空选择项。
 
 
 def getMayaPanelName(panelType):

@@ -1,0 +1,16 @@
+<RCC>
+  <qresource prefix="icon">
+    <file>addBookmarks.svg</file>
+    <file>addBookmarks_hover.svg</file>
+    <file>addBookmarks_pressed.svg</file>
+    <file>bookmarks.svg</file>
+    <file>bookmarks_hover.svg</file>
+    <file>bookmarks_pressed.svg</file>
+    <file>expand.svg</file>
+    <file>expand_hover.svg</file>
+    <file>expand_pressed.svg</file>
+    <file>search.svg</file>
+    <file>search_hover.svg</file>
+    <file>search_pressed.svg</file>
+  </qresource>
+</RCC>

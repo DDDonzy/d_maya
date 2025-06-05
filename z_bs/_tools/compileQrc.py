@@ -4,11 +4,11 @@ import sys
 
 pyside2_rcc = r"C:\Program Files\Autodesk\Maya2024\bin\pyside2-rcc.exe"
 
-source_qrc = r"E:\d_maya\z_bs\icon\source.qrc"
+source_qrc = r"T:\d_maya\z_bs\icon\_qrc.qrc"
 
 
 dir = Path(source_qrc).parent
-out_qrcPy = dir / "qrc.py"
+out_qrcPy = dir / "_qrc.py"
 out_qrcPy = str(out_qrcPy.resolve())
 
 
@@ -20,12 +20,7 @@ def compile_resources():
     print("Resource compilation finished!")
 
 
-def run_app():
-    """Run the application"""
-    print("Launching application...")
-    subprocess.run([sys.executable, "main.py"])
 
 
 if __name__ == "__main__":
     compile_resources()
-    run_app()

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>786</width>
-    <height>879</height>
+    <width>485</width>
+    <height>736</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -237,19 +237,25 @@ QLabel:hover {
                <string notr="true">QPushButton {
     border: none;
     background: transparent;
-    icon: url(:teAdd.svg);
+    icon: url(:/icon/expand.svg);
 }
 
 QPushButton:hover {
-
-	border: 1px solid #cfcfcf;
-	icon: url(:teAdd_Hover.svg);
+    border: 1px solid #cfcfcf;
+    icon: url(:/icon/expand_hover.svg);
 }
 
-</string>
+QPushButton:pressed { 
+    border: 1px solid #cfcfcf;
+    icon: url(:/icon/expand_pressed.svg);
+ }</string>
               </property>
               <property name="text">
                <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="icon/_qrc.qrc">
+                <normaloff>:/icon/expand.svg</normaloff>:/icon/expand.svg</iconset>
               </property>
              </widget>
             </item>
@@ -302,49 +308,6 @@ QPushButton:hover {
              <number>0</number>
             </property>
             <item>
-             <widget class="QPushButton" name="pushButton_4">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>32</width>
-                <height>32</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>32</width>
-                <height>32</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">QPushButton {
-    border: none;
-    background: transparent;
-    icon: url(:selectByObject.png);
-}
-
-QPushButton:hover {
-	icon: url(:selectByObject.png);
-}
-</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="iconSize">
-               <size>
-                <width>35</width>
-                <height>35</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-            <item>
              <widget class="QComboBox" name="filterComboBox">
               <property name="minimumSize">
                <size>
@@ -378,11 +341,6 @@ QPushButton:hover {
               <property name="editable">
                <bool>false</bool>
               </property>
-              <item>
-               <property name="text">
-                <string>None</string>
-               </property>
-              </item>
              </widget>
             </item>
             <item>
@@ -409,25 +367,28 @@ QPushButton:hover {
                <string notr="true">QPushButton {
     border: none;
     background: transparent;
-    icon: url(:teAdd.svg);
+    icon: url(:/icon/search.svg);
 }
 
 QPushButton:hover {
-	icon: url(:teAdd_Hover.svg);
+    icon: url(:/icon/search_hover.svg);
 }
-</string>
+
+QPushButton:pressed { 
+    icon: url(:/icon/search_pressed.svg);
+ }</string>
               </property>
               <property name="text">
                <string/>
               </property>
               <property name="icon">
-               <iconset theme=":teAdd.svg">
-                <normaloff>.</normaloff>.</iconset>
+               <iconset resource="icon/_qrc.qrc">
+                <normaloff>:/icon/search.svg</normaloff>:/icon/search.svg</iconset>
               </property>
               <property name="iconSize">
                <size>
-                <width>35</width>
-                <height>35</height>
+                <width>32</width>
+                <height>32</height>
                </size>
               </property>
              </widget>
@@ -459,34 +420,6 @@ QPushButton:hover {
             <property name="bottomMargin">
              <number>0</number>
             </property>
-            <item>
-             <widget class="QWidget" name="widget_2" native="true">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>32</width>
-                <height>32</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>32</width>
-                <height>32</height>
-               </size>
-              </property>
-              <property name="sizeIncrement">
-               <size>
-                <width>32</width>
-                <height>32</height>
-               </size>
-              </property>
-             </widget>
-            </item>
             <item>
              <widget class="QLineEdit" name="filterLineEdit">
               <property name="minimumSize">
@@ -521,25 +454,28 @@ QPushButton:hover {
                <string notr="true">QPushButton {
     border: none;
     background: transparent;
-    icon: url(:teAdd.svg);
+    icon: url(:/icon/search.svg);
 }
 
 QPushButton:hover {
-	icon: url(:teAdd_Hover.svg);
+    icon: url(:/icon/search_hover.svg);
 }
-</string>
+
+QPushButton:pressed { 
+    icon: url(:/icon/search_pressed.svg);
+ }</string>
               </property>
               <property name="text">
                <string/>
               </property>
               <property name="icon">
-               <iconset theme=":teAdd.svg">
-                <normaloff>.</normaloff>.</iconset>
+               <iconset resource="icon/_qrc.qrc">
+                <normaloff>:/icon/search.svg</normaloff>:/icon/search.svg</iconset>
               </property>
               <property name="iconSize">
                <size>
-                <width>35</width>
-                <height>35</height>
+                <width>32</width>
+                <height>32</height>
                </size>
               </property>
              </widget>
@@ -1050,43 +986,6 @@ QPushButton:pressed {
                     <number>7</number>
                    </property>
                    <item>
-                    <widget class="QPushButton" name="pushButton_7">
-                     <property name="minimumSize">
-                      <size>
-                       <width>32</width>
-                       <height>32</height>
-                      </size>
-                     </property>
-                     <property name="maximumSize">
-                      <size>
-                       <width>32</width>
-                       <height>32</height>
-                      </size>
-                     </property>
-                     <property name="styleSheet">
-                      <string notr="true">QPushButton {
-    border: none;
-    background: transparent;
-    icon: url(:teAdd.svg);
-}
-
-QPushButton:hover {
-	icon: url(:teAdd_Hover.svg);
-}
-</string>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="iconSize">
-                      <size>
-                       <width>35</width>
-                       <height>35</height>
-                      </size>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
                     <widget class="QLineEdit" name="lineEdit_6">
                      <property name="text">
                       <string/>
@@ -1109,6 +1008,50 @@ QPushButton:hover {
                        <string>None</string>
                       </property>
                      </item>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="pushButton_7">
+                     <property name="minimumSize">
+                      <size>
+                       <width>32</width>
+                       <height>32</height>
+                      </size>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>32</width>
+                       <height>32</height>
+                      </size>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">QPushButton {
+    border: none;
+    background: transparent;
+    icon: url(:/icon/search.svg);
+}
+
+QPushButton:hover {
+    icon: url(:/icon/search_hover.svg);
+}
+
+QPushButton:pressed { 
+    icon: url(:/icon/search_pressed.svg);
+ }</string>
+                     </property>
+                     <property name="text">
+                      <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="icon/_qrc.qrc">
+                       <normaloff>:/icon/search.svg</normaloff>:/icon/search.svg</iconset>
+                     </property>
+                     <property name="iconSize">
+                      <size>
+                       <width>32</width>
+                       <height>32</height>
+                      </size>
+                     </property>
                     </widget>
                    </item>
                   </layout>
@@ -1158,6 +1101,31 @@ QPushButton:hover {
                     <number>7</number>
                    </property>
                    <item>
+                    <widget class="QLineEdit" name="lineEdit">
+                     <property name="text">
+                      <string/>
+                     </property>
+                     <property name="placeholderText">
+                      <string>Target Mesh</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QComboBox" name="comboBox">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <item>
+                      <property name="text">
+                       <string>New</string>
+                      </property>
+                     </item>
+                    </widget>
+                   </item>
+                   <item>
                     <widget class="QPushButton" name="pushButton">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1181,48 +1149,30 @@ QPushButton:hover {
                       <string notr="true">QPushButton {
     border: none;
     background: transparent;
-    icon: url(:teAdd.svg);
+    icon: url(:/icon/search.svg);
 }
 
 QPushButton:hover {
-	icon: url(:teAdd_Hover.svg);
+    icon: url(:/icon/search_hover.svg);
 }
-</string>
+
+QPushButton:pressed { 
+    icon: url(:/icon/search_pressed.svg);
+ }</string>
                      </property>
                      <property name="text">
                       <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="icon/_qrc.qrc">
+                       <normaloff>:/icon/search.svg</normaloff>:/icon/search.svg</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
-                       <width>35</width>
-                       <height>35</height>
+                       <width>32</width>
+                       <height>32</height>
                       </size>
                      </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLineEdit" name="lineEdit">
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="placeholderText">
-                      <string>Target Mesh</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QComboBox" name="comboBox">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <item>
-                      <property name="text">
-                       <string>New</string>
-                      </property>
-                     </item>
                     </widget>
                    </item>
                   </layout>
@@ -1271,6 +1221,9 @@ QPushButton:hover {
                    <property name="spacing">
                     <number>7</number>
                    </property>
+                   <property name="topMargin">
+                    <number>5</number>
+                   </property>
                    <item>
                     <widget class="QPushButton" name="addSetsButton">
                      <property name="sizePolicy">
@@ -1295,19 +1248,23 @@ QPushButton:hover {
                       <string notr="true">QPushButton {
     border: none;
     background: transparent;
+    icon: url(:/icon/addBookmarks.svg);
 }
 
 QPushButton:hover {
-	border: 1px solid #cfcfcf;
+    icon: url(:/icon/addBookmarks_hover.svg);
 }
-</string>
+
+QPushButton:pressed { 
+    icon: url(:/icon/addBookmarks_pressed.svg);
+ }</string>
                      </property>
                      <property name="text">
                       <string/>
                      </property>
                      <property name="icon">
-                      <iconset resource="icon/source.qrc">
-                       <normaloff>:/icon/sets.svg</normaloff>:/icon/sets.svg</iconset>
+                      <iconset resource="icon/_qrc.qrc">
+                       <normaloff>:/icon/addBookmarks.svg</normaloff>:/icon/addBookmarks.svg</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -1339,11 +1296,61 @@ QPushButton:hover {
                        <number>0</number>
                       </property>
                       <property name="rightMargin">
-                       <number>0</number>
+                       <number>10</number>
                       </property>
                       <property name="bottomMargin">
                        <number>0</number>
                       </property>
+                      <item>
+                       <widget class="QPushButton" name="setsButtonTemplate">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="minimumSize">
+                         <size>
+                          <width>24</width>
+                          <height>24</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>24</width>
+                          <height>24</height>
+                         </size>
+                        </property>
+                        <property name="styleSheet">
+                         <string notr="true">QPushButton {
+    border: none;
+    background: transparent;
+    icon: url(:/icon/bookmarks.svg);
+}
+
+QPushButton:hover {
+    icon: url(:/icon/bookmarks_hover.svg);
+}
+
+QPushButton:pressed { 
+    icon: url(:/icon/bookmarks_pressed.svg);
+ }</string>
+                        </property>
+                        <property name="text">
+                         <string/>
+                        </property>
+                        <property name="icon">
+                         <iconset resource="icon/_qrc.qrc">
+                          <normaloff>:/icon/bookmarks.svg</normaloff>:/icon/bookmarks.svg</iconset>
+                        </property>
+                        <property name="iconSize">
+                         <size>
+                          <width>24</width>
+                          <height>24</height>
+                         </size>
+                        </property>
+                       </widget>
+                      </item>
                      </layout>
                     </widget>
                    </item>
@@ -1409,8 +1416,8 @@ QPushButton:hover {
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>497</width>
-                <height>224</height>
+                <width>454</width>
+                <height>167</height>
                </rect>
               </property>
               <property name="sizePolicy">
@@ -2530,7 +2537,7 @@ QPushButton:pressed {
   </layout>
  </widget>
  <resources>
-  <include location="icon/source.qrc"/>
+  <include location="icon/_qrc.qrc"/>
  </resources>
  <connections/>
 </ui>

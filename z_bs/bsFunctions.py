@@ -1,6 +1,6 @@
 import maya.cmds as cmds
 from dataclasses import dataclass
-import z_bs.apiundo as apiundo
+import z_bs.utils.apiundo as apiundo
 
 from maya import cmds, mel
 from maya.api import OpenMaya as om
@@ -63,19 +63,40 @@ class targetData:
             return None
 
 
-def sculptTarget(targetData: targetData = None, message=False):
-    """ 
-    Maya 自带bs 是有Invert逆矩阵的属性的 bs.it[0].deformMatrix
-    需要 开启 bs.it[0].deformMatrixModified 才能刷新。
-    it.[0].sculptInbetweenWeight 属性需要注意，这个属性代表 inbetween 的位置，和bs.w的权重无关
+def sculptTarget(targetData: targetData, message=False):
     """
+    # Turn on/off the target sculpt mode.
+
+    When you turn it on:
+        - bsNode.it[0].sculptTargetTweaks.vertex[0] -> baseMesh.tweakLocation
+        - bsNode.it[0].sculptTargetIndex = targetIdx  (-1 = off)
+        - bsNode.it[0].sculptInbetweenWeight = inbetweenValue  (0.0 to 1.0)
+        - bsNode.it[0].deformMatrixModified = True (to update bs.it[0].deformMatrix)
+        
+    When you turn it off:
+        - bsNode.it[0].sculptTargetTweaks.vertex[0] // baseMesh.tweakLocation
+        - bsNode.it[0].sculptTargetIndex = -1
+        - bsNode.it[0].deformMatrixModified = False
+        - bsNode.it[0].sculptInbetweenWeight = 1
+
+    Args:
+        targetData (targetData): Data about the blendShape node, target index, inbetween index, etc.
+        message (bool, optional): If True, show a message in Maya UI when mode is turned on or off. Default is False.
+
+    Maya Notes:
+        - The blendShape node has a 'deformMatrix' attribute for each target.
+        - You must set 'deformMatrixModified' to True to update the sculpt target.
+        - 'sculptInbetweenWeight' is the inbetween position, not the blendShape weight.
+
+    Example:
+        sculptTarget(targetData_instance, message=True)
+    """
+
     tweak = f"{targetData.baseMesh}.tweakLocation"
     inputTarget = f"{targetData.node}.inputTarget[0]"
     sculptTargetIndex = f"{inputTarget}.sculptTargetIndex"
     sculptTargetTweaks = f"{inputTarget}.sculptTargetTweaks.vertex[0]"
     sculptInbetweenWeight = f"{inputTarget}.sculptInbetweenWeight"
-    
-    
 
     if cmds.getAttr(sculptTargetIndex) != -1:
         cmds.setAttr(sculptTargetIndex, -1)
@@ -88,7 +109,7 @@ def sculptTarget(targetData: targetData = None, message=False):
     else:
         cmds.connectAttr(sculptTargetTweaks, tweak, f=1)
         cmds.setAttr(sculptTargetIndex, targetData.targetIdx)
-        
+
         cmds.setAttr(sculptInbetweenWeight, round((targetData.inbetweenIdx-5000)/1000, 3))
         cmds.setAttr(f"{targetData.node}.it[0].deformMatrixModified", True)
         if message:
@@ -101,7 +122,15 @@ def resetTargetDelta(targetData: targetData = None):
     cmds.blendShape(targetData.node, e=1, rtd=[0, targetData.targetIdx], ibi=targetData.inbetweenIdx)
 
 
-def add_target(bs: str, name: str):
+def add_target(bs: str, name: str) -> str:
+    """
+    # Add a new target to the blendShape
+    Args:
+        bs (str): The name of the blendShape node.
+        name (str): The name of the new target to be added.
+    Returns:
+        str: The full attribute path of the new target. eg: "blendShape1.w[0]"
+    """
 
     w_mi = cmds.getAttr(f"{bs}.w", mi=1)
     i = w_mi[-1]+1 if w_mi else 0
@@ -118,7 +147,18 @@ def add_target(bs: str, name: str):
     return f"{bs}.{name}"
 
 
-def add_targetInbetween(bs: str, targetIdx, inbetweenIdx, name: str = "IB"):
+def add_targetInbetween(bs: str, targetIdx: int, inbetweenIdx: int, name: str = "IB") -> str:
+    """
+    # Add inbetween to the blendShape's target
+    Args:
+        bs (str): The name of the blendShape node.
+        targetIdx (int): The index of the target to which the inbetween will be added.
+        inbetweenIdx (int): The index of the inbetween to be added, should be between 0 and 1000.
+        name (str): The name of the inbetween. Defaults to "IB".
+
+    Returns:
+        str: The full attribute path of the inbetween target. eg: "blendShape1.it[0].itg[0].iti[6000]"
+    """
     if float(inbetweenIdx) < 1.0:
         targetIdx = int(1000 * round(inbetweenIdx, 3)+5000)
     else:
