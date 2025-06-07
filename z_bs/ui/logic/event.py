@@ -1,5 +1,5 @@
 from PySide2 import QtWidgets, QtCore
-import z_bs.ui.treeViewFunction as tf
+import z_bs.ui.logic.treeViewFunction as tf
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -37,7 +37,7 @@ class EventHandler:
         """处理鼠标中键点击自动设置权重的事件"""
         if obj == self.ui.treeView.viewport():  # treeView event filter
             # auto set weight on middle mouse button click
-            if event.type() == QtCore.QEvent.MouseButtonPress:
+            if event.type() == QtCore.QEvent.MouseButtonPress or event.type() == QtCore.QEvent.MouseButtonDblClick:
                 if event.button() == QtCore.Qt.MiddleButton:
                     index = self.ui.treeView.indexAt(event.pos())
                     if index.isValid():

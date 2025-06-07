@@ -6,8 +6,7 @@ from maya import cmds, mel
 from maya.api import OpenMaya as om
 
 from z_bs.ui.showMessage import showMessage
-
-
+from z_bs.ui.logic.treeViewSelection import *
 
 
 @dataclass
@@ -16,17 +15,14 @@ class TargetData:
     targetIdx: int = -1
     inbetweenIdx: int = 6000
     weight: float = 0.0
-
-    def __post_init__(self):
-        if self.node and self.targetIdx >= 0:
-            return
-        self.getDataFromShapeEditor()
+    postDeformersMode: int = 0
+    targetName: str = ''
 
     def getDataFromShapeEditor(self):
-        bsNameData = mel.eval("getShapeEditorTreeviewSelection 11")
-        targetData = mel.eval("getShapeEditorTreeviewSelection 14")
-        inbetweenData = mel.eval("getShapeEditorTreeviewSelection 16")
-        lastSelectedData = mel.eval("getShapeEditorTreeviewSelection 20")
+        bsNameData = get_selectionBlendShape()
+        targetData = get_selectionTarget()
+        inbetweenData = get_selectionInbetween()
+        lastSelectedData = get_lastSelection()
         if lastSelectedData:
             lastSelectedData = lastSelectedData[0]
 
@@ -36,18 +32,21 @@ class TargetData:
             self.targetIdx = int(data[1])
             self.inbetweenIdx = int(data[-1])
             self.weight = round(cmds.getAttr(f"{self.node}.w[{self.targetIdx}]"), 3)
-            return self
 
         if lastSelectedData in targetData:
             data = lastSelectedData.split(".")
             self.node = data[0]
             self.targetIdx = int(data[-1])
             self.weight = round(cmds.getAttr(f"{self.node}.w[{self.targetIdx}]"), 3)
-            return self
+            self.targetName = cmds.aliasAttr(f"{self.node}.w[{self.targetIdx}]", q=1)
+
         if lastSelectedData in bsNameData:
             data = lastSelectedData.split(".")
             self.node = data[0]
-            return self
+
+        if self.targetIdx >= 0:
+            self.postDeformersMode = cmds.getAttr(f"{self.node}.it[0].itg[{self.targetIdx}].postDeformersMode")
+
         return self
 
     @property
@@ -64,6 +63,63 @@ class TargetData:
                 return geos[0]
         else:
             return None
+
+
+def get_targetDataList(blendShapeNode):
+    """
+    Get blendShape node data (updated version)
+
+    Args:
+        blendShapeNode (str): BlendShape node name
+
+    Returns:
+        list: List of TargetData objects
+    """
+    targetNameList = cmds.listAttr(f'{blendShapeNode}.weight', m=True) or []
+    targetIndexList = cmds.getAttr(f'{blendShapeNode}.weight', mi=True) or []
+    data_list = []
+    for targetIdx in targetIndexList:
+        item_list = cmds.getAttr(f"{blendShapeNode}.it[0].itg[{targetIdx}].iti", mi=1) or []
+        postDeformersMode = cmds.getAttr(f"{blendShapeNode}.it[0].itg[{targetIdx}].postDeformersMode")
+        for item in item_list:
+            data = TargetData(blendShapeNode,
+                              targetIdx,
+                              item,
+                              (item-5000)/1000,
+                              postDeformersMode,
+                              cmds.aliasAttr(f"{blendShapeNode}.w[{targetIdx}]", q=1))
+            data_list.append(data)
+    return data_list
+
+
+def get_bsBaseGeometry(bsNode):
+    """
+    Get the base geometry of blendShape node
+
+    Args:
+        bsNode (str): BlendShape node name
+
+    Returns:
+        tuple: (geometry transform, geometry shape)
+    """
+    geometryShape = cmds.blendShape(bsNode, q=1, g=1)[0]
+    geometry = cmds.listRelatives(geometryShape, p=1)[0]
+    return geometry, geometryShape
+
+
+def create_blendShapeNode(objectName, name="New_Blendshapes"):
+    """
+    Create a new blendShape node
+
+    Args:
+        objectName (str): Target object name
+        name (str): BlendShape node name
+
+    Returns:
+        str: Created blendShape node name
+    """
+    bsNode = cmds.blendShape(objectName, name=name)[0]
+    return bsNode
 
 
 def sculptTarget(targetData: TargetData, message=False):
@@ -100,7 +156,6 @@ def sculptTarget(targetData: TargetData, message=False):
     sculptTargetIndex = f"{inputTarget}.sculptTargetIndex"
     sculptTargetTweaks = f"{inputTarget}.sculptTargetTweaks.vertex[0]"
     sculptInbetweenWeight = f"{inputTarget}.sculptInbetweenWeight"
-    
 
     if cmds.getAttr(sculptTargetIndex) != -1:
         cmds.setAttr(sculptTargetIndex, -1)
@@ -152,7 +207,7 @@ def add_target(bs: str, name: str) -> str:
     cmds.aliasAttr(name, f"{bs}.w[{i}]")
     cmds.setAttr(f"{bs}.it[0].itg[{i}].iti[6000].ipt", *[1, (0, 0, 0, 1)], type="pointArray")
     cmds.setAttr(f"{bs}.it[0].itg[{i}].iti[6000].ict", *[1, "vtx[0]"], type="componentList")
-    return f"{bs}.{name}"
+    return f"{bs}.{name}", i
 
 
 def add_targetInbetween(bs: str, targetIdx: int, inbetweenIdx: int, name: str = "IB") -> str:
@@ -176,7 +231,6 @@ def add_targetInbetween(bs: str, targetIdx: int, inbetweenIdx: int, name: str = 
     return f"{bs}.it[0].itg[{targetIdx}].iti[{targetIdx}]"
 
 
-
 def add_sculptGeo(sculptGeo, targetData: TargetData = None, addInbetween=True):
     if not cmds.objExists(sculptGeo):
         raise RuntimeError(f"Object {sculptGeo} does not exist.")
@@ -196,7 +250,11 @@ def add_sculptGeo(sculptGeo, targetData: TargetData = None, addInbetween=True):
         inbetweenIdx = int(round(targetData.weight * 1000 + 5000, 3))
         targetData.inbetweenIdx = inbetweenIdx
         add_targetInbetween(targetData.node, targetData.targetIdx, targetData.inbetweenIdx)
+    else:
+        inbetweenIdx = 6000
+        targetData.inbetweenIdx = inbetweenIdx
 
+    print(targetData)
     baseData = copy_delta(targetData)
 
     def doit():
@@ -219,8 +277,8 @@ def add_sculptGeo(sculptGeo, targetData: TargetData = None, addInbetween=True):
         ict_plug.setMObject(baseData[0])
         ipt_plug.setMObject(baseData[1])
 
-    apiundo.commit(undo, doit)
     doit()
+    apiundo.commit(undo, doit)
 
 
 def copy_delta(targetData: TargetData):
@@ -263,4 +321,4 @@ def pasted_delta(targetData: TargetData, data):
 
 
 if __name__ == "__main__":
-    add_sculptGeo(cmds.ls(sl=1)[0], TargetData(), 0)
+    add_sculptGeo(cmds.ls(sl=1)[0], TargetData().getDataFromShapeEditor(), 0)

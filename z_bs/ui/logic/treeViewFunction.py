@@ -3,12 +3,6 @@ from enum import Enum
 from PySide2.QtWidgets import QTreeView, QLabel
 from PySide2.QtCore import QModelIndex
 
-from maya import cmds, mel
-
-
-def getCurrentSelectedData():
-    info = mel.eval("getShapeEditorTreeviewSelection 20")
-
 
 class SelectedItemType(Enum):
     blendShape_node = 1

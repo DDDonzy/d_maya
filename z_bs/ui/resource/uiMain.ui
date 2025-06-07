@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>978</width>
-    <height>1185</height>
+    <width>670</width>
+    <height>874</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -585,7 +585,7 @@ QPushButton:pressed {
         <bool>true</bool>
        </property>
        <attribute name="title">
-        <string>Modify</string>
+        <string>Sculpt</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
@@ -941,6 +941,21 @@ QPushButton:pressed {
               </sizepolicy>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_7">
+              <property name="spacing">
+               <number>0</number>
+              </property>
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
               <item>
                <widget class="QGroupBox" name="groupBox">
                 <property name="sizePolicy">
@@ -983,7 +998,7 @@ QPushButton:pressed {
                     <number>7</number>
                    </property>
                    <item>
-                    <widget class="QLineEdit" name="transferLineEdit">
+                    <widget class="QLineEdit" name="transferMeshLineEdit">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                        <horstretch>1</horstretch>
@@ -1072,49 +1087,10 @@ QPushButton:pressed {
                    </item>
                   </layout>
                  </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QGroupBox" name="groupBox_4">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-                  <horstretch>25</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="title">
-                 <string/>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-                <property name="checkable">
-                 <bool>false</bool>
-                </property>
-                <layout class="QVBoxLayout" name="verticalLayout_13">
-                 <property name="spacing">
-                  <number>4</number>
-                 </property>
-                 <property name="leftMargin">
-                  <number>5</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>1</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>5</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>5</number>
-                 </property>
                  <item>
                   <layout class="QHBoxLayout" name="horizontalLayout_13">
                    <property name="spacing">
-                    <number>7</number>
+                    <number>20</number>
                    </property>
                    <property name="topMargin">
                     <number>5</number>
@@ -1184,6 +1160,9 @@ QPushButton:pressed {
                       </size>
                      </property>
                      <layout class="QHBoxLayout" name="horizontalLayout_14">
+                      <property name="spacing">
+                       <number>30</number>
+                      </property>
                       <property name="leftMargin">
                        <number>20</number>
                       </property>
@@ -1310,8 +1289,8 @@ QPushButton:pressed {
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>-59</y>
-                <width>495</width>
+                <y>-69</y>
+                <width>377</width>
                 <height>236</height>
                </rect>
               </property>
@@ -1457,7 +1436,7 @@ QPushButton:pressed {
                                  </size>
                                 </property>
                                 <property name="text">
-                                 <string>Smooth Influences</string>
+                                 <string>Falloff Mode</string>
                                 </property>
                                 <property name="alignment">
                                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1465,9 +1444,9 @@ QPushButton:pressed {
                                </widget>
                               </item>
                               <item>
-                               <widget class="DragLineEdit" name="lineEdit_36">
+                               <widget class="QComboBox" name="wrapModeComboBox">
                                 <property name="sizePolicy">
-                                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                                   <horstretch>75</horstretch>
                                   <verstretch>0</verstretch>
                                  </sizepolicy>
@@ -1478,24 +1457,33 @@ QPushButton:pressed {
                                   <height>0</height>
                                  </size>
                                 </property>
-                                <property name="maximumSize">
-                                 <size>
-                                  <width>16777215</width>
-                                  <height>16777215</height>
-                                 </size>
+                                <property name="font">
+                                 <font>
+                                  <weight>75</weight>
+                                  <bold>true</bold>
+                                  <stylestrategy>PreferDefault</stylestrategy>
+                                  <kerning>true</kerning>
+                                 </font>
                                 </property>
-                                <property name="inputMask">
-                                 <string/>
-                                </property>
-                                <property name="text">
-                                 <string>5</string>
-                                </property>
-                                <property name="echoMode">
-                                 <enum>QLineEdit::Normal</enum>
-                                </property>
-                                <property name="dragEnabled">
+                                <property name="mouseTracking">
                                  <bool>false</bool>
                                 </property>
+                                <property name="currentIndex">
+                                 <number>1</number>
+                                </property>
+                                <property name="modelColumn">
+                                 <number>0</number>
+                                </property>
+                                <item>
+                                 <property name="text">
+                                  <string>Volume</string>
+                                 </property>
+                                </item>
+                                <item>
+                                 <property name="text">
+                                  <string>Surface</string>
+                                 </property>
+                                </item>
                                </widget>
                               </item>
                              </layout>
@@ -1534,7 +1522,7 @@ QPushButton:pressed {
                                  </size>
                                 </property>
                                 <property name="text">
-                                 <string>Smooth Normals</string>
+                                 <string>Exclusive Bind</string>
                                 </property>
                                 <property name="alignment">
                                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1542,7 +1530,7 @@ QPushButton:pressed {
                                </widget>
                               </item>
                               <item>
-                               <widget class="DragLineEdit" name="lineEdit_37">
+                               <widget class="DragLineEdit" name="wrapExclusiveBindLineEdit">
                                 <property name="sizePolicy">
                                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                                   <horstretch>75</horstretch>
@@ -1561,11 +1549,22 @@ QPushButton:pressed {
                                   <height>16777215</height>
                                  </size>
                                 </property>
+                                <property name="font">
+                                 <font>
+                                  <weight>75</weight>
+                                  <bold>true</bold>
+                                  <stylestrategy>PreferDefault</stylestrategy>
+                                  <kerning>true</kerning>
+                                 </font>
+                                </property>
+                                <property name="mouseTracking">
+                                 <bool>false</bool>
+                                </property>
                                 <property name="inputMask">
                                  <string/>
                                 </property>
                                 <property name="text">
-                                 <string>5</string>
+                                 <string>0</string>
                                 </property>
                                 <property name="echoMode">
                                  <enum>QLineEdit::Normal</enum>
@@ -1608,7 +1607,7 @@ QPushButton:pressed {
                                  </size>
                                 </property>
                                 <property name="text">
-                                 <string>Falloff Scale</string>
+                                 <string>Auto Weight Threshold</string>
                                 </property>
                                 <property name="alignment">
                                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1616,7 +1615,7 @@ QPushButton:pressed {
                                </widget>
                               </item>
                               <item>
-                               <widget class="DragLineEdit" name="lineEdit_12">
+                               <widget class="DragLineEdit" name="warpAutoWeightThresholdLineEdit">
                                 <property name="sizePolicy">
                                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                                   <horstretch>75</horstretch>
@@ -1635,11 +1634,22 @@ QPushButton:pressed {
                                   <height>16777215</height>
                                  </size>
                                 </property>
+                                <property name="font">
+                                 <font>
+                                  <weight>75</weight>
+                                  <bold>true</bold>
+                                  <stylestrategy>PreferDefault</stylestrategy>
+                                  <kerning>true</kerning>
+                                 </font>
+                                </property>
+                                <property name="mouseTracking">
+                                 <bool>false</bool>
+                                </property>
                                 <property name="inputMask">
                                  <string/>
                                 </property>
                                 <property name="text">
-                                 <string>5</string>
+                                 <string>1</string>
                                 </property>
                                 <property name="echoMode">
                                  <enum>QLineEdit::Normal</enum>
@@ -1682,7 +1692,7 @@ QPushButton:pressed {
                                  </size>
                                 </property>
                                 <property name="text">
-                                 <string>Dropoff Rate Scale</string>
+                                 <string>Weight Threshold</string>
                                 </property>
                                 <property name="alignment">
                                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1690,7 +1700,7 @@ QPushButton:pressed {
                                </widget>
                               </item>
                               <item>
-                               <widget class="DragLineEdit" name="lineEdit_39">
+                               <widget class="DragLineEdit" name="wrapWeightThresholdLineEdit">
                                 <property name="sizePolicy">
                                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                                   <horstretch>75</horstretch>
@@ -1709,11 +1719,107 @@ QPushButton:pressed {
                                   <height>16777215</height>
                                  </size>
                                 </property>
+                                <property name="font">
+                                 <font>
+                                  <weight>75</weight>
+                                  <bold>true</bold>
+                                  <stylestrategy>PreferDefault</stylestrategy>
+                                  <kerning>true</kerning>
+                                 </font>
+                                </property>
+                                <property name="mouseTracking">
+                                 <bool>false</bool>
+                                </property>
                                 <property name="inputMask">
                                  <string/>
                                 </property>
                                 <property name="text">
-                                 <string>5</string>
+                                 <string>0</string>
+                                </property>
+                                <property name="echoMode">
+                                 <enum>QLineEdit::Normal</enum>
+                                </property>
+                               </widget>
+                              </item>
+                             </layout>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QWidget" name="horizontalWidget_46" native="true">
+                             <layout class="QHBoxLayout" name="horizontalLayout_60">
+                              <property name="spacing">
+                               <number>10</number>
+                              </property>
+                              <property name="leftMargin">
+                               <number>0</number>
+                              </property>
+                              <property name="topMargin">
+                               <number>0</number>
+                              </property>
+                              <property name="rightMargin">
+                               <number>0</number>
+                              </property>
+                              <property name="bottomMargin">
+                               <number>0</number>
+                              </property>
+                              <item>
+                               <widget class="QLabel" name="label_40">
+                                <property name="sizePolicy">
+                                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                                  <horstretch>50</horstretch>
+                                  <verstretch>0</verstretch>
+                                 </sizepolicy>
+                                </property>
+                                <property name="minimumSize">
+                                 <size>
+                                  <width>80</width>
+                                  <height>0</height>
+                                 </size>
+                                </property>
+                                <property name="text">
+                                 <string>Max Distance</string>
+                                </property>
+                                <property name="alignment">
+                                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                </property>
+                               </widget>
+                              </item>
+                              <item>
+                               <widget class="DragLineEdit" name="wrapMaxDistanceLineEdit">
+                                <property name="sizePolicy">
+                                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                                  <horstretch>75</horstretch>
+                                  <verstretch>0</verstretch>
+                                 </sizepolicy>
+                                </property>
+                                <property name="minimumSize">
+                                 <size>
+                                  <width>50</width>
+                                  <height>0</height>
+                                 </size>
+                                </property>
+                                <property name="maximumSize">
+                                 <size>
+                                  <width>16777215</width>
+                                  <height>16777215</height>
+                                 </size>
+                                </property>
+                                <property name="font">
+                                 <font>
+                                  <weight>75</weight>
+                                  <bold>true</bold>
+                                  <stylestrategy>PreferDefault</stylestrategy>
+                                  <kerning>true</kerning>
+                                 </font>
+                                </property>
+                                <property name="mouseTracking">
+                                 <bool>false</bool>
+                                </property>
+                                <property name="inputMask">
+                                 <string/>
+                                </property>
+                                <property name="text">
+                                 <string>1</string>
                                 </property>
                                 <property name="echoMode">
                                  <enum>QLineEdit::Normal</enum>
@@ -1773,7 +1879,7 @@ QPushButton:pressed {
                                </widget>
                               </item>
                               <item>
-                               <widget class="QComboBox" name="comboBox_5">
+                               <widget class="QComboBox" name="proximityModeComboBox">
                                 <property name="sizePolicy">
                                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                                   <horstretch>75</horstretch>
@@ -1785,6 +1891,17 @@ QPushButton:pressed {
                                   <width>50</width>
                                   <height>0</height>
                                  </size>
+                                </property>
+                                <property name="font">
+                                 <font>
+                                  <weight>75</weight>
+                                  <bold>true</bold>
+                                  <stylestrategy>PreferDefault</stylestrategy>
+                                  <kerning>true</kerning>
+                                 </font>
+                                </property>
+                                <property name="mouseTracking">
+                                 <bool>false</bool>
                                 </property>
                                 <property name="currentIndex">
                                  <number>1</number>
@@ -1845,7 +1962,7 @@ QPushButton:pressed {
                                </widget>
                               </item>
                               <item>
-                               <widget class="DragLineEdit" name="lineEdit_32">
+                               <widget class="DragLineEdit" name="smoothInfluencesLineEdit">
                                 <property name="sizePolicy">
                                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                                   <horstretch>75</horstretch>
@@ -1863,6 +1980,17 @@ QPushButton:pressed {
                                   <width>16777215</width>
                                   <height>16777215</height>
                                  </size>
+                                </property>
+                                <property name="font">
+                                 <font>
+                                  <weight>75</weight>
+                                  <bold>true</bold>
+                                  <stylestrategy>PreferDefault</stylestrategy>
+                                  <kerning>true</kerning>
+                                 </font>
+                                </property>
+                                <property name="mouseTracking">
+                                 <bool>false</bool>
                                 </property>
                                 <property name="inputMask">
                                  <string/>
@@ -1919,7 +2047,7 @@ QPushButton:pressed {
                                </widget>
                               </item>
                               <item>
-                               <widget class="DragLineEdit" name="lineEdit_33">
+                               <widget class="DragLineEdit" name="smoothNormalLineEdit">
                                 <property name="sizePolicy">
                                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                                   <horstretch>75</horstretch>
@@ -1937,6 +2065,17 @@ QPushButton:pressed {
                                   <width>16777215</width>
                                   <height>16777215</height>
                                  </size>
+                                </property>
+                                <property name="font">
+                                 <font>
+                                  <weight>75</weight>
+                                  <bold>true</bold>
+                                  <stylestrategy>PreferDefault</stylestrategy>
+                                  <kerning>true</kerning>
+                                 </font>
+                                </property>
+                                <property name="mouseTracking">
+                                 <bool>false</bool>
                                 </property>
                                 <property name="inputMask">
                                  <string/>
@@ -1993,7 +2132,7 @@ QPushButton:pressed {
                                </widget>
                               </item>
                               <item>
-                               <widget class="DragLineEdit" name="lineEdit_11">
+                               <widget class="DragLineEdit" name="falloffScaleLineEdit">
                                 <property name="sizePolicy">
                                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                                   <horstretch>75</horstretch>
@@ -2012,11 +2151,22 @@ QPushButton:pressed {
                                   <height>16777215</height>
                                  </size>
                                 </property>
+                                <property name="font">
+                                 <font>
+                                  <weight>75</weight>
+                                  <bold>true</bold>
+                                  <stylestrategy>PreferDefault</stylestrategy>
+                                  <kerning>true</kerning>
+                                 </font>
+                                </property>
+                                <property name="mouseTracking">
+                                 <bool>false</bool>
+                                </property>
                                 <property name="inputMask">
                                  <string/>
                                 </property>
                                 <property name="text">
-                                 <string>5</string>
+                                 <string>10</string>
                                 </property>
                                 <property name="echoMode">
                                  <enum>QLineEdit::Normal</enum>
@@ -2067,7 +2217,7 @@ QPushButton:pressed {
                                </widget>
                               </item>
                               <item>
-                               <widget class="DragLineEdit" name="lineEdit_35">
+                               <widget class="DragLineEdit" name="dropoffScaleLineEdit">
                                 <property name="sizePolicy">
                                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                                   <horstretch>75</horstretch>
@@ -2086,11 +2236,22 @@ QPushButton:pressed {
                                   <height>16777215</height>
                                  </size>
                                 </property>
+                                <property name="font">
+                                 <font>
+                                  <weight>75</weight>
+                                  <bold>true</bold>
+                                  <stylestrategy>PreferDefault</stylestrategy>
+                                  <kerning>true</kerning>
+                                 </font>
+                                </property>
+                                <property name="mouseTracking">
+                                 <bool>false</bool>
+                                </property>
                                 <property name="inputMask">
                                  <string/>
                                 </property>
                                 <property name="text">
-                                 <string>5</string>
+                                 <string>0</string>
                                 </property>
                                 <property name="echoMode">
                                  <enum>QLineEdit::Normal</enum>
@@ -2166,7 +2327,7 @@ QPushButton:pressed {
             <number>6</number>
            </property>
            <item>
-            <widget class="QPushButton" name="pushButton_2">
+            <widget class="QPushButton" name="previewButton">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
                <horstretch>20</horstretch>
@@ -2206,7 +2367,7 @@ QPushButton:pressed {
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_3">
+            <widget class="QPushButton" name="transferButton">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
                <horstretch>80</horstretch>

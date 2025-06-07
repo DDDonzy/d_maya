@@ -1,19 +1,23 @@
 import maya.cmds as cmds
 from maya import mel
-import z_bs.core.bsFunctions as bs
 from z_bs.ui.showMessage import showMessage
 from z_bs.utils.getHistory import get_history, get_shape
 from PySide2 import QtWidgets, QtCore
-import z_bs.ui.treeViewFunction as tf
+import z_bs.ui.logic.treeViewFunction as tf
+from z_bs.core.wrap import createWrap, createProximityWrap
+from z_bs.ui.logic.treeViewSelection import *
+import z_bs.core.transferBlendShape as bsTransfer
+import z_bs.core.bsFunctions as bsFn
+
+
+import time
+import functools
+from functools import partial
 
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from z_bs.ui.uiMain import ShapeToolsWidget
-
-
-import time
-import functools
 
 
 def timeit(func):
@@ -53,8 +57,7 @@ class ActionHandler:
         blendShapeNames.extend(treeviewSelectedBSD)
 
         if not treeviewSelectedBSD:
-            lastSelectionData = bs.TargetData()
-            lastSelectionData.getDataFromShapeEditor()
+            lastSelectionData = bsFn.TargetData().getDataFromShapeEditor()
             if lastSelectionData.node:
                 blendShapeNames.append(lastSelectionData.node)
 
@@ -99,8 +102,7 @@ class ActionHandler:
         获取所有非零权重的目标
         Get all targets with non-zero weight from the selected blendShape node.
         """
-        target = bs.TargetData()
-        target.getDataFromShapeEditor()
+        target = bsFn.TargetData().getDataFromShapeEditor()
 
         if target.node is None:
             return []
@@ -120,8 +122,7 @@ class ActionHandler:
         添加雕刻到选择的 BlendShape 节点
         Add a sculpt to the selected blendShape node.
         """
-        target = bs.TargetData()
-        target.getDataFromShapeEditor()
+        target = bsFn.TargetData().getDataFromShapeEditor()
         if target.targetIdx < 0:
             showMessage("No target selected in shape editor.")
             return
@@ -139,8 +140,8 @@ class ActionHandler:
         if not cmds.objectType(shape, isa="mesh"):
             showMessage("Selected object is not a mesh.")
 
-        bs.add_sculptGeo(sculptGeo=shape, targetData=target,
-                         addInbetween=self.ui.addInbetweenCheckBox.isChecked())
+        bsFn.add_sculptGeo(sculptGeo=shape, targetData=target,
+                           addInbetween=self.ui.addInbetweenCheckBox.isChecked())
 
         if not self.ui.deleteSculptCheckBox.isChecked():
             cmds.delete(sculptGeo)
@@ -151,8 +152,7 @@ class ActionHandler:
         自动设置选择目标的权重
         Auto set the weight of the selected target.
         """
-        target = bs.TargetData()
-        target.getDataFromShapeEditor()
+        target = bsFn.TargetData().getDataFromShapeEditor()
 
         if target.targetIdx < 0:
             weightAttr = f"{target.node}.envelope"
@@ -176,8 +176,7 @@ class ActionHandler:
         """更新对象标签"""
         meshText = "None"
         bsText = "None"
-        target = bs.TargetData()
-        target.getDataFromShapeEditor()
+        target = bsFn.TargetData().getDataFromShapeEditor()
 
         if target.baseMesh:
             if cmds.objExists(target.baseMesh):
@@ -198,7 +197,6 @@ class ActionHandler:
         tf.treeView_filter(self.ui.treeView, targetText, tf.SelectedItemType(3))
         tf.treeView_filter(self.ui.treeView, nodeText, tf.SelectedItemType(2))
         tf.treeView_filter(self.ui.treeView, nodeText, tf.SelectedItemType(1))
-        print(f"filter changed: {nodeText}, {targetText}")
         # 过滤后清除选择项，避免选择项不在过滤后的列表中，导致误操作
         self.ui.treeView.selectionModel().clearSelection()
 
@@ -312,13 +310,13 @@ class ActionHandler:
         self.ui.dynamicButtonCount += 1
         btn = self.copy_QPushButton(self.ui.setsButtonTemplate)
         btn.installEventFilter(self.ui)
+        btn.sel_sets = self.get_treeviewSelectedList()
         self.ui.setsButtonWidget.layout().addWidget(btn)
 
         i = str(self.ui.dynamicButtonCount)
 
         def onButtonClicked():
-            showMessage(f"Dynamic Button {i} clicked.")
-
+            self.select_treeViewItems(btn.sel_sets)
         self.ui.dynamicButtonsDict[btn] = onButtonClicked
         btn.clicked.connect(self.ui.dynamicButtonsDict[btn])
 
@@ -329,20 +327,19 @@ class ActionHandler:
             button_to_delete.deleteLater()
             del self.ui.dynamicButtonsDict[button_to_delete]
 
-
     def copy_delta_cmd(self):
-        target = bs.TargetData().getDataFromShapeEditor()
+        target = bsFn.TargetData().getDataFromShapeEditor()
         if cmds.objExists(target.attr):
-            self.copyTempData = bs.copy_delta(target)
+            self.copyTempData = bsFn.copy_delta(target)
             showMessage(f"Copy {target.attr}")
         else:
             showMessage("Please select a blendShape target")
 
     def pasted_delta_cmd(self):
         if self.copyTempData:
-            target = bs.TargetData().getDataFromShapeEditor()
+            target = bsFn.TargetData().getDataFromShapeEditor()
             if cmds.objExists(target.attr):
-                bs.pasted_delta(target, self.copyTempData)
+                bsFn.pasted_delta(target, self.copyTempData)
                 showMessage(f"Pasted {target.attr}")
             else:
                 showMessage("Please select a blendShape target")
@@ -354,26 +351,158 @@ class ActionHandler:
         def _set():
             self.ui.transferComboBox.clear()
             self.ui.transferComboBox.addItems(bs)
-            self.ui.transferLineEdit.setText(mesh)
+            self.ui.transferMeshLineEdit.setText(mesh)
 
         sel = cmds.ls(sl=1)
         if not sel:
             _set()
+            showMessage("No mesh selected.")
             raise RuntimeError("No mesh selected.")
 
         mesh = sel[0]
         shapes = get_shape(mesh)
         if not shapes:
             _set()
+            showMessage("Selected object is not a mesh.")
             raise RuntimeError("Selected object is not a mesh.")
-        
+
         if not cmds.objectType(shapes[0], isa="mesh"):
+            showMessage("Selected object is not a mesh.")
             raise RuntimeError("Selected object is not a mesh.")
 
-        bs.extend(get_history(mesh, "blendShape"))  
+        bs.extend(get_history(mesh, "blendShape"))
         _set()
-
 
     def setBlendShapeManagerFilter(self, filter_str: str):
         for manager in cmds.ls(type="shapeEditorManager"):
             cmds.setAttr(f"{manager}.filterString", filter_str, type="string")
+
+    def getTransferData(self):
+        targetMesh = self.ui.transferMeshLineEdit.text()
+        if not targetMesh:
+            showMessage("Please input target mesh name")
+            raise RuntimeError("Please input target mesh name")
+        newBlendShape = None
+        if self.ui.transferComboBox.currentIndex() != 0:
+            newBlendShape = self.ui.transferComboBox.currentText()
+        if not cmds.objExists(targetMesh):
+            showMessage(f"Can not find {targetMesh}")
+            raise RuntimeError(f"Can not find {targetMesh}")
+        target = get_selectionTarget()
+        bs = get_selectionBlendShape()
+        if not bs and not target:
+            showMessage(f"Please select blendShape or targets in shapeEdit")
+            raise RuntimeError("Please select blendShape or targets in shapeEdit")
+        if bs and target:
+            showMessage(f"Please select blendShape or targets in shapeEdit, not both")
+            raise RuntimeError(f"Please select blendShape or targets in shapeEdit, not both")
+        if len(bs) > 1:
+            showMessage(f"Please select only one blendShape node in shapeEdit")
+            raise RuntimeError(f"Please select only one blendShape node in shapeEdit")
+
+        if target:
+            bs = target[0].split(".")[0]
+            idx_list = []
+            for i in target:
+                i_bs, idx = i.split(".")
+                idx_list.append(int(idx))
+                if i_bs != bs:
+                    showMessage(f"Please select targets from the same blendShape node")
+                    raise RuntimeError(f"Please select targets from the same blendShape node")
+            targetList = bsFn.get_targetDataList(bs)
+            transferList = []
+            for i in targetList:
+                if i.targetIdx in idx_list:
+                    transferList.append(i)
+
+            return {"blendShape": bs, "targetList": transferList, "targetMesh": targetMesh, "destinationBlendShape": newBlendShape}
+
+        if bs:
+            bs = bs[0]
+            transferList = bsFn.get_targetDataList(bs)
+            return {"blendShape": bs, "targetList": transferList, "targetMesh": targetMesh, "destinationBlendShape": newBlendShape}
+
+    def transfer(self):
+        data = self.getTransferData()
+        wrap = self.makeWrapFunctions()
+        bsTransfer.transferBlendShape(
+            sourceBlendShape=data["blendShape"],
+            targetDataList=data["targetList"],
+            destinationMesh=data["targetMesh"],
+            destinationBlendShape=data["destinationBlendShape"],
+            wrapFunction=wrap)
+
+    def preview(self):
+
+        wrap = self.makeWrapFunctions()
+
+    def makeWrapFunctions(self):
+
+        if self.ui.wrapRadioButton.isChecked():
+            mode = self.ui.wrapModeComboBox.currentIndex()
+            exclusiveBind = int(self.ui.wrapExclusiveBindLineEdit.text())
+            autoWeight = int(self.ui.warpAutoWeightThresholdLineEdit.text())
+            weightThreshold = float(self.ui.wrapWeightThresholdLineEdit.text())
+            maxDistance = float(self.ui.wrapMaxDistanceLineEdit.text())
+
+            return partial(createWrap,
+                           falloffMode=mode,
+                           exclusiveBind=exclusiveBind,
+                           autoWeightThreshold=autoWeight,
+                           weightThreshold=weightThreshold,
+                           maxDistance=maxDistance)
+
+        if self.ui.proximityWrapRadioButton.isChecked():
+            mode = self.ui.proximityModeComboBox.currentIndex()
+            smoothInfluences = int(self.ui.smoothInfluencesLineEdit.text())
+            smoothNormal = int(self.ui.smoothNormalLineEdit.text())
+            falloffScale = float(self.ui.falloffScaleLineEdit.text())
+            dropoffScale = float(self.ui.dropoffScaleLineEdit.text())
+
+            return partial(createProximityWrap,
+                           wrapMode=mode,
+                           smoothInfluences=smoothInfluences,
+                           smoothNormals=smoothNormal,
+                           falloffScale=falloffScale,
+                           dropoffRateScale=dropoffScale)
+
+    def get_treeviewSelectedList(self):
+        """
+        获取treeview当前所有选择的item（简化版）
+
+        Returns:
+            list: 包含选中项索引的列表
+        """
+        selected_items = []
+        selection_model = self.ui.treeView.selectionModel()
+
+        if not selection_model:
+            return selected_items
+
+        selected_indexes = selection_model.selectedIndexes()
+
+        for index in selected_indexes:
+            if index.isValid():
+                selected_items.append(index)
+
+        return selected_items
+
+    def select_treeViewItems(self, index_list):
+        """
+        根据索引列表选中treeview项目
+
+        Args:
+            index_list (list): 要选中的索引列表
+        """
+        selection_model = self.ui.treeView.selectionModel()
+
+        if not selection_model:
+            return
+
+        # 清除当前选择
+        selection_model.clearSelection()
+
+        # 选择指定的项目
+        for index in index_list:
+            if index.isValid():
+                selection_model.select(index, QtCore.QItemSelectionModel.Select | QtCore.QItemSelectionModel.Rows)

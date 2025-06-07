@@ -12,42 +12,51 @@ class DragLineEdit(QLineEdit):
         super().__init__(parent)
 
         # 默认配置
-        self._value_type = float  # 值类型，默认为float
-        self._min_val = 0  # 最小值
-        self._max_val = 20  # 最大值
-        self._radius = 3  # 圆角半径
-        self._border_width = 1  # 边框宽度
-        self._background_color = QColor(45, 45, 45)  # 背景颜色
-        self._fill_color = QColor(85, 85, 85)  # 填充颜色
+        self._value_type = float
+        self._min_val = None
+        self._max_val = None
+        self._radius = 3
+        self._border_width = 1
+        self._background_color = QColor(45, 45, 45)
+        self._fill_color = QColor(85, 85, 85)
 
         # 拖拽状态
-        self._is_dragging = False  # 是否正在拖拽
-        self._has_dragged = False  # 是否已经拖拽过
-        self._drag_start_pos = None  # 拖拽开始位置
-        self._drag_start_value = 0.0  # 拖拽开始时的值
-        self._normalized_value = 0.0  # 归一化值（0-1之间）
-        self._public_value = 0.0  # 公共值，外部访问的值
+        self._is_dragging = False
+        self._has_dragged = False
+        self._drag_start_pos = None
+        self._drag_start_value = 0.0
+        self._normalized_value = 0.0
+        self._public_value = 0.0
 
         self._init_ui()
 
     def _init_ui(self):
         """初始化UI设置"""
-        self.setReadOnly(True)  # 设置为只读模式
-        self.setCursor(Qt.PointingHandCursor)  # 设置鼠标指针为手型
-        self._update_stylesheet()  # 更新样式表
-        # self.setValue(0.0)  # 初始化值为0.0
+        self.setReadOnly(True)
+        self.setCursor(Qt.SizeHorCursor) # 已根据您之前的请求修改为水平光标
+        self._update_stylesheet()
 
     @property
     def _is_ranged(self):
-        """检查是否有有效范围"""
-        return (self._max_val is not None)\
-            and (self._min_val is not None)\
-            and (self._max_val > self._min_val)
-    # 配置API
+        """
+        【修改】检查是否有有效范围。
+        现在，只要设置了最大值或最小值中任何一个，就认为是有范围的。
+        并且，只有在两者都设置的情况下，才检查 max > min。
+        """
+        if self._min_val is not None and self._max_val is not None:
+            return self._max_val > self._min_val
+        # 只要有一个限制，就认为是有范围的
+        return self._min_val is not None or self._max_val is not None
 
+    # 配置API
     @Slot(float, float)
-    def set_range(self, min_val: float, max_val: float):
-        self._min_val, self._max_val = min_val, max_val
+    def set_range(self, min_val, max_val):
+        """
+        【修改】允许 min_val 或 max_val 为 None。
+        """
+        self._min_val = min_val
+        self._max_val = max_val
+        # 重新设置当前值，以确保它符合新的范围
         self.setValue(self.getValue())
         self.update()
 
@@ -90,14 +99,25 @@ class DragLineEdit(QLineEdit):
         except (ValueError, TypeError):
             return
 
-        if self._is_ranged:
-            new_value = max(self._min_val, min(self._max_val, new_value))
+        # --- 【核心修改】 ---
+        # 分别独立地检查和应用最小值和最大值限制
+        if self._min_val is not None:
+            new_value = max(self._min_val, new_value)
+        
+        if self._max_val is not None:
+            new_value = min(self._max_val, new_value)
+        # ---------------------
 
         if self._public_value != new_value:
             self._public_value = new_value
-            if self._is_ranged:
+            
+            # 归一化值的计算逻辑也需要更新
+            if self._min_val is not None and self._max_val is not None:
                 val_range = self._max_val - self._min_val
                 self._normalized_value = (new_value - self._min_val) / val_range if val_range > 0 else 0
+            else:
+                # 如果范围不完整，则进度条没有明确意义，可以不显示或显示为0
+                self._normalized_value = 0
 
             self._update_text()
             self.update()
@@ -117,10 +137,10 @@ class DragLineEdit(QLineEdit):
         self.setStyleSheet(f"""
             QLineEdit {{ 
                 background-color: transparent; 
-                color: white; 
+                color: rgb(200, 200, 200);
                 border: {self._border_width}px solid rgb({self._background_color.red()},{self._background_color.green()},{self._background_color.blue()},{self._background_color.alpha()}); 
                 border-radius: {self._radius}px; 
-                
+                padding-left: 10px;
             }}
         """)
 
@@ -129,16 +149,14 @@ class DragLineEdit(QLineEdit):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
 
-        # 创建圆角裁剪路径
         clip_path = QPainterPath()
         clip_path.addRoundedRect(self.rect(), self._radius, self._radius)
         painter.setClipPath(clip_path)
 
-        # 绘制背景
         painter.fillRect(self.rect(), self._background_color)
 
-        # 绘制进度条
-        if self._is_ranged and self.isReadOnly():
+        # 仅在同时具有min和max时才绘制进度条
+        if self._min_val is not None and self._max_val is not None and self.isReadOnly():
             fill_width = int(self.width() * self._normalized_value)
             fill_rect = self.rect()
             fill_rect.setWidth(fill_width)
@@ -148,14 +166,12 @@ class DragLineEdit(QLineEdit):
 
     # 事件处理
     def keyPressEvent(self, event: QKeyEvent):
-        # 处理回车键和Enter键
         if event.key() in (Qt.Key_Return, Qt.Key_Enter) and not self.isReadOnly():
             self.clearFocus()
             return
         super().keyPressEvent(event)
 
     def mousePressEvent(self, event: QMouseEvent):
-        # 处理鼠标左键按下事件
         if event.button() == Qt.LeftButton and self.isReadOnly():
             self._is_dragging = True
             self._has_dragged = False
@@ -166,21 +182,23 @@ class DragLineEdit(QLineEdit):
         super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event: QMouseEvent):
-        # 处理鼠标移动事件
         if self._is_dragging:
             self._has_dragged = True
             dx = event.pos().x() - self._drag_start_pos.x()
-
-            if self._is_ranged:
+            
+            # 对于无上限或无下限的拖拽，增量计算需要一个“灵敏度”
+            # 这里我们简化处理，假设拖拽整个控件宽度等于改变10个单位（如果类型是int）或1.0（如果类型是float）
+            sensitivity = 10.0 if self._value_type == int else 1.0
+            
+            # 如果有完整的范围，则按比例计算
+            if self._min_val is not None and self._max_val is not None:
                 val_range = self._max_val - self._min_val
                 delta_value = (dx / self.width()) * val_range
                 new_value = self._drag_start_value + delta_value
             else:
-                if self._drag_start_value == 0:
-                    new_value = (dx / self.width())
-                else:
-                    drag_percentage = dx / self.width()
-                    new_value = self._drag_start_value * (1.0 + drag_percentage)
+                # 否则，按灵敏度计算
+                delta_value = (dx / self.width()) * sensitivity
+                new_value = self._drag_start_value + delta_value
 
             self.setValue(new_value)
             event.accept()
@@ -208,7 +226,7 @@ class DragLineEdit(QLineEdit):
             self._update_text()
 
         self.setReadOnly(True)
-        self.setCursor(Qt.PointingHandCursor)
+        self.setCursor(Qt.SizeHorCursor) # 恢复水平光标
         self.update()
         super().focusOutEvent(event)
 
@@ -218,6 +236,7 @@ class DragLineEdit(QLineEdit):
                 QApplication.widgetAt(event.globalPos()) != self):
             self.clearFocus()
         return super().eventFilter(watched_obj, event)
+
 
 if __name__ == "__main__":
 

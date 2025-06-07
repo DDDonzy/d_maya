@@ -17,7 +17,7 @@ current_dir = Path(__file__).parent
 ui_path = current_dir / "resource" / "uiMain.ui"
 ui_path = str(ui_path.resolve())
 
-uiBase = uiLoader.uiFileLoader(ui_path,[DragLineEdit])
+uiBase = uiLoader.uiFileLoader(ui_path, [DragLineEdit])
 
 
 def getMayaPanelName(panelType):
@@ -43,10 +43,8 @@ class ShapeToolsWidget(uiBase):
         self.setsButtonTemplate: QtWidgets.QPushButton
         self.copyDeltaBtn: QtWidgets.QPushButton
         self.pastedDeltaBtn: QtWidgets.QPushButton
-
-        self.transferLoadBtn: QtWidgets.QPushButton
-        self.transferComboBox: QtWidgets.QComboBox
-        self.transferLineEdit: QtWidgets.QLineEdit
+        self.transferButton: QtWidgets.QPushButton
+        self.previewButton: QtWidgets.QPushButton
 
         self.deleteSculptCheckBox: QtWidgets.QCheckBox
         self.addInbetweenCheckBox: QtWidgets.QCheckBox
@@ -60,22 +58,38 @@ class ShapeToolsWidget(uiBase):
         self.addonWidget: QtWidgets.QWidget
         self.filterWidget: QtWidgets.QWidget
         self.expandButton: QtWidgets.QPushButton
-        self.proximityWrapRadioButton: QtWidgets.QRadioButton
-        self.wrapRadioButton: QtWidgets.QRadioButton
+
         self.proximityWrapPag: QtWidgets.QScrollArea
         self.wrapPag: QtWidgets.QScrollArea
         self.treeView: QtWidgets.QTreeWidget
+
+        self.transferLoadBtn: QtWidgets.QPushButton
+        self.transferComboBox: QtWidgets.QComboBox
+        self.transferMeshLineEdit: QtWidgets.QLineEdit
+        
+        self.wrapRadioButton: QtWidgets.QRadioButton
+        self.proximityWrapRadioButton: QtWidgets.QRadioButton
+
+        self.proximityModeComboBox: QtWidgets.QComboBox
+        self.smoothInfluencesLineEdit: DragLineEdit
+        self.smoothNormalLineEdit: DragLineEdit
+        self.falloffScaleLineEdit: DragLineEdit
+        self.dropoffScaleLineEdit: DragLineEdit
+
+        self.wrapModeComboBox: QtWidgets.QComboBox
+        self.wrapExclusiveBindLineEdit: DragLineEdit
+        self.warpAutoWeightThresholdLineEdit: DragLineEdit
+        self.wrapWeightThresholdLineEdit: DragLineEdit
+        self.wrapMaxDistanceLineEdit: DragLineEdit
 
         # 初始化事件处理器
         self.event_handler = EventHandler(self)
 
         # 初始化动作处理器
         self.action_handler = ActionHandler(self)
-        
-        
+
         self.openShapeEditor()
         self.setupUi()
-        
 
     def setupUi(self):
 
@@ -91,6 +105,8 @@ class ShapeToolsWidget(uiBase):
         self.pastedDeltaBtn.clicked.connect(UndoCallback(self.action_handler.pasted_delta_cmd))
         self.expandButton.clicked.connect(self.action_handler.tree_view_expand_or_collapse)
         self.transferLoadBtn.clicked.connect(self.action_handler.transfer_load)
+        self.transferButton.clicked.connect(UndoCallback(self.action_handler.transfer))
+        self.previewButton.clicked.connect(UndoCallback(self.action_handler.preview))
 
         self.treeView.selectionModel().selectionChanged.connect(self.action_handler.update_object_label)
 
@@ -98,11 +114,33 @@ class ShapeToolsWidget(uiBase):
         self.setsButtonTemplate.hide()
         self.action_handler.wrap_attrs_pag_vis()
         self.action_handler.tree_view_expand_or_collapse()
-        
 
         self.treeView.viewport().installEventFilter(self)
         self.meshLabel.installEventFilter(self)
         self.bsLabel.installEventFilter(self)
+
+        # attr line edit
+        # proximity wrap
+        self.smoothInfluencesLineEdit.set_range(0, 20)
+        self.smoothInfluencesLineEdit.set_value_type(int)
+        self.smoothInfluencesLineEdit.value = 0
+        self.smoothNormalLineEdit.set_range(0, 20)
+        self.smoothNormalLineEdit.set_value_type(int)
+        self.smoothNormalLineEdit.value = 0
+        self.falloffScaleLineEdit.set_range(0, None)
+        self.falloffScaleLineEdit.value = 10
+        self.dropoffScaleLineEdit.set_range(0, None)
+        # wrap
+        self.wrapExclusiveBindLineEdit.set_range(0, 1)
+        self.wrapExclusiveBindLineEdit.set_value_type(int)
+        self.wrapExclusiveBindLineEdit.value = 0
+        self.warpAutoWeightThresholdLineEdit.set_range(0, 1)
+        self.warpAutoWeightThresholdLineEdit.set_value_type(int)
+        self.warpAutoWeightThresholdLineEdit.value = 1
+        self.wrapWeightThresholdLineEdit.value = 0
+        self.wrapWeightThresholdLineEdit.set_range(0, 1)
+        self.wrapMaxDistanceLineEdit.value = 1
+        self.wrapMaxDistanceLineEdit.set_range(0, None)
 
     def closeShapeEditor(self):
         """ close shape editor if it is open """
@@ -113,7 +151,7 @@ class ShapeToolsWidget(uiBase):
 
     def openShapeEditor(self):
         self.closeShapeEditor()
-        self.action_handler.setBlendShapeManagerFilter("") 
+        self.action_handler.setBlendShapeManagerFilter("")
         cmds.ShapeEditor()
         # cmds.refresh(f=1)
 
@@ -135,7 +173,7 @@ class ShapeToolsWidget(uiBase):
         # parent the shape editor widget to the main window
         self.setParent(shapeEditorPanel)
         # get maya tree view
-        mayaTreeView:QtWidgets.QTreeView = shapeEditorWidget.findChild(QtWidgets.QTreeView)
+        mayaTreeView: QtWidgets.QTreeView = shapeEditorWidget.findChild(QtWidgets.QTreeView)
         mayaTreeView.hide()
         coreWidget: QtWidgets.QWidget = mayaTreeView.parent().parent().parent()
 
