@@ -6,7 +6,7 @@ from PySide2.QtCore import Qt, QAbstractItemModel, QModelIndex, QSize
 from PySide2.QtGui import QStandardItemModel, QStandardItem
 import maya.OpenMayaUI as omui
 import shiboken2
-from z_bs.getMayaWidget import getMayaWidget, getMayaMainWindow
+from z_bs.utils.getMayaWidget import getMayaWidget, getMayaMainWindow
 
 
 

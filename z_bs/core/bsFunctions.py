@@ -5,11 +5,13 @@ import z_bs.utils.apiundo as apiundo
 from maya import cmds, mel
 from maya.api import OpenMaya as om
 
-from z_bs.showMessage import showMessage
+from z_bs.ui.showMessage import showMessage
+
+
 
 
 @dataclass
-class targetData:
+class TargetData:
     node: str = None
     targetIdx: int = -1
     inbetweenIdx: int = 6000
@@ -34,18 +36,19 @@ class targetData:
             self.targetIdx = int(data[1])
             self.inbetweenIdx = int(data[-1])
             self.weight = round(cmds.getAttr(f"{self.node}.w[{self.targetIdx}]"), 3)
-            return
+            return self
 
         if lastSelectedData in targetData:
             data = lastSelectedData.split(".")
             self.node = data[0]
             self.targetIdx = int(data[-1])
             self.weight = round(cmds.getAttr(f"{self.node}.w[{self.targetIdx}]"), 3)
-            return
+            return self
         if lastSelectedData in bsNameData:
             data = lastSelectedData.split(".")
             self.node = data[0]
-            return
+            return self
+        return self
 
     @property
     def attr(self):
@@ -63,7 +66,7 @@ class targetData:
             return None
 
 
-def sculptTarget(targetData: targetData, message=False):
+def sculptTarget(targetData: TargetData, message=False):
     """
     # Turn on/off the target sculpt mode.
 
@@ -72,7 +75,7 @@ def sculptTarget(targetData: targetData, message=False):
         - bsNode.it[0].sculptTargetIndex = targetIdx  (-1 = off)
         - bsNode.it[0].sculptInbetweenWeight = inbetweenValue  (0.0 to 1.0)
         - bsNode.it[0].deformMatrixModified = True (to update bs.it[0].deformMatrix)
-        
+
     When you turn it off:
         - bsNode.it[0].sculptTargetTweaks.vertex[0] // baseMesh.tweakLocation
         - bsNode.it[0].sculptTargetIndex = -1
@@ -97,6 +100,7 @@ def sculptTarget(targetData: targetData, message=False):
     sculptTargetIndex = f"{inputTarget}.sculptTargetIndex"
     sculptTargetTweaks = f"{inputTarget}.sculptTargetTweaks.vertex[0]"
     sculptInbetweenWeight = f"{inputTarget}.sculptInbetweenWeight"
+    
 
     if cmds.getAttr(sculptTargetIndex) != -1:
         cmds.setAttr(sculptTargetIndex, -1)
@@ -106,7 +110,9 @@ def sculptTarget(targetData: targetData, message=False):
         cmds.setAttr(sculptInbetweenWeight, 1)
         if message:
             showMessage("Sculpt target mode disabled.")
-    else:
+        return
+    if cmds.objExists(targetData.attr):
+        print("yes")
         cmds.connectAttr(sculptTargetTweaks, tweak, f=1)
         cmds.setAttr(sculptTargetIndex, targetData.targetIdx)
 
@@ -114,9 +120,11 @@ def sculptTarget(targetData: targetData, message=False):
         cmds.setAttr(f"{targetData.node}.it[0].deformMatrixModified", True)
         if message:
             showMessage("Sculpt target mode enabled.")
+    else:
+        raise RuntimeError(f"Can not find {targetData.attr}!")
 
 
-def resetTargetDelta(targetData: targetData = None):
+def resetTargetDelta(targetData: TargetData = None):
     if not cmds.objExists(targetData.attr):
         raise RuntimeError(f"{targetData.attr} does not exist.")
     cmds.blendShape(targetData.node, e=1, rtd=[0, targetData.targetIdx], ibi=targetData.inbetweenIdx)
@@ -168,15 +176,13 @@ def add_targetInbetween(bs: str, targetIdx: int, inbetweenIdx: int, name: str = 
     return f"{bs}.it[0].itg[{targetIdx}].iti[{targetIdx}]"
 
 
-def add_sculptGeo(sculptGeo, targetData: targetData = None, addInbetween=True):
+
+def add_sculptGeo(sculptGeo, targetData: TargetData = None, addInbetween=True):
     if not cmds.objExists(sculptGeo):
-        showMessage("Please select a sculpt geometry.")
         raise RuntimeError(f"Object {sculptGeo} does not exist.")
     if not cmds.objExists(targetData.attr):
-        showMessage("Please select a blendShape target in the Shape Editor.")
         raise RuntimeError(f"{targetData.attr} does not exist.")
     if not cmds.objExists(targetData.baseMesh):
-        showMessage("Please select a blendShape target in the Shape Editor.")
         raise RuntimeError(f"Base mesh {targetData.baseMesh} does not exist.")
 
     mSel = om.MGlobal.getSelectionListByName(sculptGeo)
@@ -184,18 +190,77 @@ def add_sculptGeo(sculptGeo, targetData: targetData = None, addInbetween=True):
     mSel = om.MGlobal.getSelectionListByName(targetData.baseMesh)
     baseFnMesh = om.MFnMesh(mSel.getDagPath(0))
 
-    bakeSourcePoints = baseFnMesh.getPoints(om.MSpace.kObject)
     sculptPoints = sculptFnMesh.getPoints(om.MSpace.kObject)
 
     if addInbetween:
-        inbetweenIdx = round(targetData.weight * 1000 + 5000, 3)
-        inbetweenAttr = add_targetInbetween(targetData.node, targetData.targetIdx, inbetweenIdx)
+        inbetweenIdx = int(round(targetData.weight * 1000 + 5000, 3))
         targetData.inbetweenIdx = inbetweenIdx
+        add_targetInbetween(targetData.node, targetData.targetIdx, targetData.inbetweenIdx)
 
-    sculptTarget(targetData, message=False)
-    baseFnMesh.setPoints(sculptPoints)
-    sculptTarget(targetData, message=False)
+    baseData = copy_delta(targetData)
+
+    def doit():
+        try:
+            cmds.undoInfo(stateWithoutFlush=False)
+            sculptTarget(targetData, message=False)
+            baseFnMesh.setPoints(sculptPoints)
+            sculptTarget(targetData, message=False)
+        finally:
+            cmds.undoInfo(stateWithoutFlush=True)
+
+    def undo():
+        ict_attr = f"{targetData.attr}.inputComponentsTarget"
+        ipt_attr = f"{targetData.attr}.inputPointsTarget"
+        sel = om.MSelectionList()
+        sel.add(ict_attr)
+        sel.add(ipt_attr)
+        ict_plug: om.MPlug = sel.getPlug(0)
+        ipt_plug: om.MPlug = sel.getPlug(1)
+        ict_plug.setMObject(baseData[0])
+        ipt_plug.setMObject(baseData[1])
+
+    apiundo.commit(undo, doit)
+    doit()
+
+
+def copy_delta(targetData: TargetData):
+
+    ict = f"{targetData.attr}.inputComponentsTarget"
+    ipt = f"{targetData.attr}.inputPointsTarget"
+
+    sel = om.MSelectionList()
+    sel.add(ict)
+    sel.add(ipt)
+    ict_plug = sel.getPlug(0)
+    ipt_plug = sel.getPlug(1)
+
+    return (ict_plug.asMObject(), ipt_plug.asMObject())
+
+
+def pasted_delta(targetData: TargetData, data):
+    ict = f"{targetData.attr}.inputComponentsTarget"
+    ipt = f"{targetData.attr}.inputPointsTarget"
+
+    sel = om.MSelectionList()
+    sel.add(ict)
+    sel.add(ipt)
+    ict_plug: om.MPlug = sel.getPlug(0)
+    ipt_plug: om.MPlug = sel.getPlug(1)
+
+    base_ict = ict_plug.asMObject()
+    base_ipt = ipt_plug.asMObject()
+
+    def doit():
+        ict_plug.setMObject(data[0])
+        ipt_plug.setMObject(data[1])
+
+    def undo():
+        ict_plug.setMObject(base_ict)
+        ipt_plug.setMObject(base_ipt)
+
+    apiundo.commit(undo, doit)
+    doit()
 
 
 if __name__ == "__main__":
-    add_sculptGeo(cmds.ls(sl=1)[0], targetData(), 0)
+    add_sculptGeo(cmds.ls(sl=1)[0], TargetData(), 0)
