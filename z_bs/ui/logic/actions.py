@@ -55,7 +55,7 @@ class ActionHandler:
         blendShapeNames.extend(treeviewSelectedBSD)
 
         if not treeviewSelectedBSD:
-            lastSelectionData = getDataFromShapeEditor()
+            lastSelectionData = get_targetDataFromShapeEditor()
             if lastSelectionData.node:
                 blendShapeNames.append(lastSelectionData.node)
 
@@ -100,7 +100,7 @@ class ActionHandler:
         获取所有非零权重的目标
         Get all targets with non-zero weight from the selected blendShape node.
         """
-        target = getDataFromShapeEditor()
+        target = get_targetDataFromShapeEditor()
 
         if target.node is None:
             return []
@@ -120,7 +120,7 @@ class ActionHandler:
         添加雕刻到选择的 BlendShape 节点
         Add a sculpt to the selected blendShape node.
         """
-        target = getDataFromShapeEditor()
+        target = get_targetDataFromShapeEditor()
         if target.targetIdx < 0:
             showMessage("No target selected in shape editor.")
             return
@@ -150,7 +150,7 @@ class ActionHandler:
         自动设置选择目标的权重
         Auto set the weight of the selected target.
         """
-        target = getDataFromShapeEditor()
+        target = get_targetDataFromShapeEditor()
 
         if target.targetIdx < 0:
             weightAttr = f"{target.node}.envelope"
@@ -174,7 +174,7 @@ class ActionHandler:
         """更新对象标签"""
         meshText = "None"
         bsText = "None"
-        target = getDataFromShapeEditor()
+        target = get_targetDataFromShapeEditor()
 
         if target.baseMesh:
             if cmds.objExists(target.baseMesh):
@@ -326,7 +326,7 @@ class ActionHandler:
             del self.ui.dynamicButtonsDict[button_to_delete]
 
     def copy_delta_cmd(self):
-        target = getDataFromShapeEditor()
+        target = get_targetDataFromShapeEditor()
         if cmds.objExists(target.attr):
             self.copyTempData = bsFn.copy_delta(target)
             showMessage(f"Copy {target.attr}")
@@ -335,7 +335,7 @@ class ActionHandler:
 
     def pasted_delta_cmd(self):
         if self.copyTempData:
-            target = getDataFromShapeEditor()
+            target = get_targetDataFromShapeEditor()
             if cmds.objExists(target.attr):
                 bsFn.pasted_delta(target, self.copyTempData)
                 showMessage(f"Pasted {target.attr}")

@@ -1,10 +1,16 @@
 
 from dataclasses import dataclass
+
 import z_bs.utils.apiundo as apiundo
 from z_bs.utils.showMessage import showMessage
 
 from maya import cmds, mel
 from maya.api import OpenMaya as om
+
+from typing import List
+
+from z_bs.utils.mirrorEnv import MIRROR_BASE
+
 
 
 @dataclass
@@ -30,6 +36,30 @@ class TargetData:
                 return geos[0]
         else:
             return None
+
+    @property
+    def isNodeExists(self):
+        return cmds.objExists(self.node)
+
+    @property
+    def isTargetExists(self):
+        try:
+            multiIndices = cmds.getAttr(f"{self.node}.inputTarget[0].inputTargetGroup", mi=1)
+            if self.targetIdx in multiIndices:
+                return True
+        except:
+            return False
+        return False
+
+    @property
+    def isInbetweenExists(self):
+        try:
+            multiIndices = cmds.getAttr(f"{self.node}.inputTarget[0].inputTargetGroup[{self.targetIdx}].inputTargetItem", mi=1)
+            if self.inbetweenIdx in multiIndices:
+                return True
+        except:
+            return False
+        return False
 
 
 def get_targetDataList(blendShapeNode):
@@ -133,8 +163,7 @@ def sculptTarget(targetData: TargetData, message=False):
         if message:
             showMessage("Sculpt target mode disabled.")
         return
-    if cmds.objExists(targetData.attr):
-        print("yes")
+    if targetData.isInbetweenExists:
         cmds.connectAttr(sculptTargetTweaks, tweak, f=1)
         cmds.setAttr(sculptTargetIndex, targetData.targetIdx)
 
@@ -146,10 +175,26 @@ def sculptTarget(targetData: TargetData, message=False):
         raise RuntimeError(f"Can not find {targetData.attr}!")
 
 
-def resetTargetDelta(targetData: TargetData = None):
-    if not cmds.objExists(targetData.attr):
+def resetInbetweenDelta(targetData: TargetData = None, removeInbetween=True):
+    if not targetData.isInbetweenExists:
         raise RuntimeError(f"{targetData.attr} does not exist.")
-    cmds.blendShape(targetData.node, e=1, rtd=[0, targetData.targetIdx], ibi=targetData.inbetweenIdx)
+    if removeInbetween and targetData.inbetweenIdx != 6000:
+        cmds.removeMultiInstance(f"{targetData.node}.it[0].itg[{targetData.targetIdx}].iti[{targetData.inbetweenIdx}]")
+    else:
+        cmds.setAttr(f"{targetData.node}.it[0].itg[{targetData.targetIdx}].iti[{targetData.inbetweenIdx}].ipt", *[1, (0, 0, 0, 1)], type="pointArray")
+        cmds.setAttr(f"{targetData.node}.it[0].itg[{targetData.targetIdx}].iti[{targetData.inbetweenIdx}].ict", *[1, "vtx[0]"], type="componentList")
+
+
+def resetTargetDelta(targetData: TargetData = None, removeInbetween=True):
+    if not targetData.isInbetweenExists:
+        raise RuntimeError(f"{targetData.attr} does not exist.")
+
+    if removeInbetween:
+        inbetweenIdx = cmds.getAttr(f"{targetData.node}.it[0].itg[{targetData.targetIdx}].iti", mi=1)
+        for idx in inbetweenIdx:
+            cmds.removeMultiInstance(f"{targetData.node}.it[0].itg[{targetData.targetIdx}].iti[{idx}]")
+    cmds.setAttr(f"{targetData.node}.it[0].itg[{targetData.targetIdx}].iti[6000].ipt", *[1, (0, 0, 0, 1)], type="pointArray")
+    cmds.setAttr(f"{targetData.node}.it[0].itg[{targetData.targetIdx}].iti[6000].ict", *[1, "vtx[0]"], type="componentList")
 
 
 def add_target(bs: str, name: str) -> str:
@@ -201,7 +246,7 @@ def add_targetInbetween(bs: str, targetIdx: int, inbetweenIdx: int, name: str = 
 def add_sculptGeo(sculptGeo, targetData: TargetData = None, addInbetween=True):
     if not cmds.objExists(sculptGeo):
         raise RuntimeError(f"Object {sculptGeo} does not exist.")
-    if not cmds.objExists(targetData.attr):
+    if not targetData.isInbetweenExists:
         raise RuntimeError(f"{targetData.attr} does not exist.")
     if not cmds.objExists(targetData.baseMesh):
         raise RuntimeError(f"Base mesh {targetData.baseMesh} does not exist.")
@@ -221,7 +266,6 @@ def add_sculptGeo(sculptGeo, targetData: TargetData = None, addInbetween=True):
         inbetweenIdx = 6000
         targetData.inbetweenIdx = inbetweenIdx
 
-    print(targetData)
     baseData = copy_delta(targetData)
 
     def doit():
@@ -265,6 +309,8 @@ def copy_delta(targetData: TargetData):
 def pasted_delta(targetData: TargetData, data):
     ict = f"{targetData.attr}.inputComponentsTarget"
     ipt = f"{targetData.attr}.inputPointsTarget"
+    cmds.setAttr(ipt, *[1, (0, 0, 0, 1)], type="pointArray")
+    cmds.setAttr(ict, *[1, "vtx[0]"], type="componentList")
 
     sel = om.MSelectionList()
     sel.add(ict)
@@ -272,20 +318,80 @@ def pasted_delta(targetData: TargetData, data):
     ict_plug: om.MPlug = sel.getPlug(0)
     ipt_plug: om.MPlug = sel.getPlug(1)
 
-    base_ict = ict_plug.asMObject()
-    base_ipt = ipt_plug.asMObject()
-
-    def doit():
-        ict_plug.setMObject(data[0])
-        ipt_plug.setMObject(data[1])
-
-    def undo():
-        ict_plug.setMObject(base_ict)
-        ipt_plug.setMObject(base_ipt)
-
-    apiundo.commit(undo, doit)
-    doit()
+    ict_plug.setMObject(data[0])
+    ipt_plug.setMObject(data[1])
 
 
-if __name__ == "__main__":
-    add_sculptGeo(cmds.ls(sl=1)[0], TargetData(), 0)
+def flip_bsTarget(targetData: TargetData,
+                  axis="x",
+                  space=1):
+    if not cmds.objExists(targetData.node):
+        raise RuntimeError(f"Flip error: Can not find {targetData.node }.")
+    cmds.blendShape(targetData.node, e=1,
+                    flipTarget=(0, targetData.targetIdx),
+                    symmetryAxis=axis,
+                    symmetrySpace=space)
+    cmds.symmetricModelling(e=True, r=1)
+
+
+# mirrorDirection = 0    +X   --->   -X
+# mirrorDirection = 1    -X   --->   +X
+def mirror_bsTarget(targetData: TargetData,
+                    axis="x",
+                    mirrorDirection=0,
+                    space=1):
+    if not cmds.objExists(targetData.node):
+        raise RuntimeError(f"Mirror error: Can not find {targetData.node }.")
+    cmds.blendShape(targetData.node, e=1,
+                    mirrorTarget=(0, targetData.targetIdx),
+                    symmetryAxis=axis,
+                    mirrorDirection=mirrorDirection,
+                    symmetrySpace=space)
+    cmds.symmetricModelling(e=True, r=1)
+
+
+def flipCopy_targetData(sourceTargetData: TargetData,
+                        destinationTargetData: TargetData,
+                        axis='x',
+                        space=1):
+    sourceTargetData.node
+    sourceTargetData.targetIdx
+    resetTargetDelta(destinationTargetData, removeInbetween=True)
+    inbetweenIdx = cmds.getAttr(f"{sourceTargetData.node}.it[0].itg[{sourceTargetData.targetIdx}].iti", mi=1)
+    # print(f"----Flip - {sourceTargetData.targetName}")
+    for idx in inbetweenIdx:
+        sourceTargetData.inbetweenIdx = idx
+        destinationTargetData.inbetweenIdx = idx
+        str_a = f"{sourceTargetData.node} - [{sourceTargetData.targetName}]-[{sourceTargetData.inbetweenIdx}]"
+        str_b = f"{destinationTargetData.node} - [{destinationTargetData.targetName}]-[{destinationTargetData.inbetweenIdx}]"
+        # print(f"    {str_a}  ------>  {str_b}")
+        data = copy_delta(sourceTargetData)
+        pasted_delta(destinationTargetData, data)
+    flip_bsTarget(destinationTargetData, axis, space)
+
+
+def autoFlipCopy(blendShapeName, replaceStr=("L", "R")):
+    targetList: List[TargetData] = get_targetDataList(blendShapeName)
+    targetDict = {}
+    for x in targetList:
+        targetDict.update({x.targetName: x})
+    targetList = list(targetDict.keys())
+
+    mirrorFunction = MIRROR_BASE()
+    mirrorFunction.MIRROR_PAIRS = [replaceStr]
+    mirrorList = mirrorFunction.exchange(targetList)
+    doneList = []
+    for i, x in enumerate(targetList):
+        if x in doneList:
+            continue
+        doneList.append(targetList[i])
+        doneList.append(mirrorList[i])
+        if targetList[i] == mirrorList[i]:
+            print(f"{'Mirror:':<10} {x:<30}")
+            mirror_bsTarget(targetDict[x])
+        else:
+            print(f"{'FlipCopy:':<10} {x:-<30}> {mirrorList[i]:<30}")
+            flipCopy_targetData(targetDict[x], targetDict[mirrorList[i]], axis='x', space=1)
+
+
+autoFlipCopy("blendShape1")
