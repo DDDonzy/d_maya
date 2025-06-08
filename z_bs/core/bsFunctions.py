@@ -12,7 +12,6 @@ from typing import List
 from z_bs.utils.mirrorEnv import MIRROR_BASE
 
 
-
 @dataclass
 class TargetData:
     node: str = None
@@ -246,8 +245,8 @@ def add_targetInbetween(bs: str, targetIdx: int, inbetweenIdx: int, name: str = 
 def add_sculptGeo(sculptGeo, targetData: TargetData = None, addInbetween=True):
     if not cmds.objExists(sculptGeo):
         raise RuntimeError(f"Object {sculptGeo} does not exist.")
-    if not targetData.isInbetweenExists:
-        raise RuntimeError(f"{targetData.attr} does not exist.")
+    if not targetData.isTargetExists:
+        raise RuntimeError(f"{targetData.node}.{targetData.targetName} does not exist.")
     if not cmds.objExists(targetData.baseMesh):
         raise RuntimeError(f"Base mesh {targetData.baseMesh} does not exist.")
 
@@ -394,4 +393,12 @@ def autoFlipCopy(blendShapeName, replaceStr=("L", "R")):
             flipCopy_targetData(targetDict[x], targetDict[mirrorList[i]], axis='x', space=1)
 
 
-autoFlipCopy("blendShape1")
+def get_targetIndex(node, name):
+    nameList = cmds.listAttr(f'{node}.weight', m=True) or []
+    indexList = cmds.getAttr(f'{node}.weight', mi=True) or []
+    idx = indexList[nameList.index(name)]
+    return idx
+
+
+if __name__ == "__main__":
+    autoFlipCopy("blendShape1")
