@@ -1,6 +1,6 @@
 import re
 from enum import Enum
-from PySide2.QtWidgets import QTreeView, QLabel
+from PySide2.QtWidgets import QTreeView
 from PySide2.QtCore import QModelIndex
 
 

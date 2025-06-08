@@ -1,12 +1,10 @@
-import maya.cmds as cmds
+
 from dataclasses import dataclass
 import z_bs.utils.apiundo as apiundo
+from z_bs.utils.showMessage import showMessage
 
 from maya import cmds, mel
 from maya.api import OpenMaya as om
-
-from z_bs.ui.showMessage import showMessage
-from z_bs.ui.logic.treeViewSelection import *
 
 
 @dataclass
@@ -17,37 +15,6 @@ class TargetData:
     weight: float = 0.0
     postDeformersMode: int = 0
     targetName: str = ''
-
-    def getDataFromShapeEditor(self):
-        bsNameData = get_selectionBlendShape()
-        targetData = get_selectionTarget()
-        inbetweenData = get_selectionInbetween()
-        lastSelectedData = get_lastSelection()
-        if lastSelectedData:
-            lastSelectedData = lastSelectedData[0]
-
-        if lastSelectedData in inbetweenData:
-            data = lastSelectedData.split(".")
-            self.node = data[0]
-            self.targetIdx = int(data[1])
-            self.inbetweenIdx = int(data[-1])
-            self.weight = round(cmds.getAttr(f"{self.node}.w[{self.targetIdx}]"), 3)
-
-        if lastSelectedData in targetData:
-            data = lastSelectedData.split(".")
-            self.node = data[0]
-            self.targetIdx = int(data[-1])
-            self.weight = round(cmds.getAttr(f"{self.node}.w[{self.targetIdx}]"), 3)
-            self.targetName = cmds.aliasAttr(f"{self.node}.w[{self.targetIdx}]", q=1)
-
-        if lastSelectedData in bsNameData:
-            data = lastSelectedData.split(".")
-            self.node = data[0]
-
-        if self.targetIdx >= 0:
-            self.postDeformersMode = cmds.getAttr(f"{self.node}.it[0].itg[{self.targetIdx}].postDeformersMode")
-
-        return self
 
     @property
     def attr(self):
@@ -321,4 +288,4 @@ def pasted_delta(targetData: TargetData, data):
 
 
 if __name__ == "__main__":
-    add_sculptGeo(cmds.ls(sl=1)[0], TargetData().getDataFromShapeEditor(), 0)
+    add_sculptGeo(cmds.ls(sl=1)[0], TargetData(), 0)

@@ -1,23 +1,25 @@
-from z_bs.ui.resource import qrc
-from maya import cmds
-from z_bs.utils.getMayaWidget import getMayaWidget
 
-import z_bs.ui.uiLoader as uiLoader
-from z_bs.ui.logic.event import EventHandler
-from z_bs.ui.logic.actions import ActionHandler
+from pathlib import Path
 
 from PySide2 import QtWidgets, QtCore
 
-from pathlib import Path
 from z_bs.utils.undoCallback import UndoCallback
+from z_bs.utils.getMayaWidget import getMayaWidget
+
+from z_bs.ui.resource import qrc
+from z_bs.ui.uiLoader import uiFileLoader
 from z_bs.ui.widgets.dragLineEdit import DragLineEdit
+from z_bs.ui.logic.event import EventHandler
+from z_bs.ui.logic.actions import ActionHandler
+
+from maya import cmds
 
 
 current_dir = Path(__file__).parent
 ui_path = current_dir / "resource" / "uiMain.ui"
 ui_path = str(ui_path.resolve())
 
-uiBase = uiLoader.uiFileLoader(ui_path, [DragLineEdit])
+uiBase = uiFileLoader(ui_path, [DragLineEdit])
 
 
 def getMayaPanelName(panelType):

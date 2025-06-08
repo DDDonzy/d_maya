@@ -1,6 +1,5 @@
-import sys
 from PySide2.QtGui import QPainter, QColor, QPaintEvent, QPainterPath, QMouseEvent, QFocusEvent, QKeyEvent
-from PySide2.QtWidgets import QApplication, QLineEdit, QWidget, QVBoxLayout, QPushButton, QColorDialog, QLabel
+from PySide2.QtWidgets import QApplication, QLineEdit
 from PySide2.QtCore import Qt, Property, Slot, Signal, QEvent
 
 

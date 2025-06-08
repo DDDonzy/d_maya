@@ -1,5 +1,7 @@
+
+import z_bs.ui.logic.treeViewFunction as treeFn
+
 from PySide2 import QtWidgets, QtCore
-import z_bs.ui.logic.treeViewFunction as tf
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -20,7 +22,7 @@ class EventHandler:
                 if not index.isValid():
                     return False
                 try:
-                    iconLabel = tf.get_treeViewItemIconLabel(self.ui.treeView, index)
+                    iconLabel = treeFn.get_treeViewItemIconLabel(self.ui.treeView, index)
                     if not isinstance(iconLabel, QtWidgets.QLabel):
                         return False
                     label_top_left = iconLabel.mapToGlobal(QtCore.QPoint(0, 0))

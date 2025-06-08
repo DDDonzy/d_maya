@@ -1,27 +1,25 @@
-import maya.cmds as cmds
-from maya import mel
-from z_bs.ui.showMessage import showMessage
-from z_bs.utils.getHistory import get_history, get_shape
 from PySide2 import QtWidgets, QtCore
-import z_bs.ui.logic.treeViewFunction as tf
-from z_bs.core.wrap import createWrap, createProximityWrap
-from z_bs.ui.logic.treeViewSelection import *
-import z_bs.core.transferBlendShape as bsTransfer
-import z_bs.core.bsFunctions as bsFn
 
+import z_bs.core.bsFunctions as bsFn
+import z_bs.core.transferBlendShape as bsTransfer
+from z_bs.core.wrap import createWrap, createProximityWrap
+
+import z_bs.ui.logic.treeViewFunction as treeFn
+from z_bs.utils.showMessage import showMessage
+from z_bs.ui.logic.treeViewSelection import *
+from z_bs.utils.getHistory import get_history, get_shape
+
+from maya import mel, cmds
 
 import time
-import functools
-from functools import partial
-
-
+from functools import partial, wraps
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from z_bs.ui.uiMain import ShapeToolsWidget
 
 
 def timeit(func):
-    @functools.wraps(func)
+    @wraps(func)
     def wrapper(*args, **kwargs):
 
         start_time = time.perf_counter()
@@ -57,7 +55,7 @@ class ActionHandler:
         blendShapeNames.extend(treeviewSelectedBSD)
 
         if not treeviewSelectedBSD:
-            lastSelectionData = bsFn.TargetData().getDataFromShapeEditor()
+            lastSelectionData = getDataFromShapeEditor()
             if lastSelectionData.node:
                 blendShapeNames.append(lastSelectionData.node)
 
@@ -102,7 +100,7 @@ class ActionHandler:
         获取所有非零权重的目标
         Get all targets with non-zero weight from the selected blendShape node.
         """
-        target = bsFn.TargetData().getDataFromShapeEditor()
+        target = getDataFromShapeEditor()
 
         if target.node is None:
             return []
@@ -122,7 +120,7 @@ class ActionHandler:
         添加雕刻到选择的 BlendShape 节点
         Add a sculpt to the selected blendShape node.
         """
-        target = bsFn.TargetData().getDataFromShapeEditor()
+        target = getDataFromShapeEditor()
         if target.targetIdx < 0:
             showMessage("No target selected in shape editor.")
             return
@@ -152,7 +150,7 @@ class ActionHandler:
         自动设置选择目标的权重
         Auto set the weight of the selected target.
         """
-        target = bsFn.TargetData().getDataFromShapeEditor()
+        target = getDataFromShapeEditor()
 
         if target.targetIdx < 0:
             weightAttr = f"{target.node}.envelope"
@@ -176,7 +174,7 @@ class ActionHandler:
         """更新对象标签"""
         meshText = "None"
         bsText = "None"
-        target = bsFn.TargetData().getDataFromShapeEditor()
+        target = getDataFromShapeEditor()
 
         if target.baseMesh:
             if cmds.objExists(target.baseMesh):
@@ -194,9 +192,9 @@ class ActionHandler:
         if nodeText == "None":
             nodeText = ""
         targetText = self.ui.filterLineEdit.text().strip()
-        tf.treeView_filter(self.ui.treeView, targetText, tf.SelectedItemType(3))
-        tf.treeView_filter(self.ui.treeView, nodeText, tf.SelectedItemType(2))
-        tf.treeView_filter(self.ui.treeView, nodeText, tf.SelectedItemType(1))
+        treeFn.treeView_filter(self.ui.treeView, targetText, treeFn.SelectedItemType(3))
+        treeFn.treeView_filter(self.ui.treeView, nodeText, treeFn.SelectedItemType(2))
+        treeFn.treeView_filter(self.ui.treeView, nodeText, treeFn.SelectedItemType(1))
         # 过滤后清除选择项，避免选择项不在过滤后的列表中，导致误操作
         self.ui.treeView.selectionModel().clearSelection()
 
@@ -234,7 +232,7 @@ class ActionHandler:
         bsNodeItems = []
         isExpand = []
         model = self.ui.treeView.model()
-        for index in tf.TreeViewIterator(self.ui.treeView):
+        for index in treeFn.TreeViewIterator(self.ui.treeView):
             item = model.itemFromIndex(index)
             if not item:
                 continue
@@ -242,17 +240,17 @@ class ActionHandler:
             if not item_data:
                 continue
             # 默认展开 blendShape_group
-            if tf.SelectedItemType(item_data) == tf.SelectedItemType.blendShape_group:
+            if treeFn.SelectedItemType(item_data) == treeFn.SelectedItemType.blendShape_group:
                 self.ui.treeView.expand(item.index())
             # blendShape_node 添加到列表中，进行后续判断是否展开
-            if tf.SelectedItemType(item_data) == tf.SelectedItemType.blendShape_node:
+            if treeFn.SelectedItemType(item_data) == treeFn.SelectedItemType.blendShape_node:
                 bsNodeItems.append((item, item.index()))
                 isExpand.append(self.ui.treeView.isExpanded(item.index()))
             # 默认不展开 inbetween
-            if tf.SelectedItemType(item_data) == tf.SelectedItemType.blendShape_target:
+            if treeFn.SelectedItemType(item_data) == treeFn.SelectedItemType.blendShape_target:
                 self.ui.treeView.collapse(item.index())
             # 默认展开 target group
-            if tf.SelectedItemType(item_data) == tf.SelectedItemType.blendShape_targetGroup:
+            if treeFn.SelectedItemType(item_data) == treeFn.SelectedItemType.blendShape_targetGroup:
                 self.ui.treeView.expand(item.index())
 
         if any(isExpand):
@@ -328,7 +326,7 @@ class ActionHandler:
             del self.ui.dynamicButtonsDict[button_to_delete]
 
     def copy_delta_cmd(self):
-        target = bsFn.TargetData().getDataFromShapeEditor()
+        target = getDataFromShapeEditor()
         if cmds.objExists(target.attr):
             self.copyTempData = bsFn.copy_delta(target)
             showMessage(f"Copy {target.attr}")
@@ -337,7 +335,7 @@ class ActionHandler:
 
     def pasted_delta_cmd(self):
         if self.copyTempData:
-            target = bsFn.TargetData().getDataFromShapeEditor()
+            target = getDataFromShapeEditor()
             if cmds.objExists(target.attr):
                 bsFn.pasted_delta(target, self.copyTempData)
                 showMessage(f"Pasted {target.attr}")
