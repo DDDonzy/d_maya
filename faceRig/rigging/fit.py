@@ -1,7 +1,7 @@
 # !/usr/bin/python
 # -*- coding: utf-8 -*-
 import os
-import temp
+from .. import temp
 from pymel.core import *
 import maya.cmds as cmds
 

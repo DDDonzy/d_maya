@@ -1,6 +1,6 @@
 from imp import reload
 from pymel.core import *
-import rigTool as rigTool ; reload(rigTool)
+from . import rigTool
 def attachCtrls(mesh = '' , ctrlsList = []):
 	mesh = PyNode(mesh)
 	meshShape = mesh.getShapes()[0]

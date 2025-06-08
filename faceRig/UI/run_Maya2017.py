@@ -11,11 +11,11 @@ mayaMainWindow = wrapInstance(int(mayaMainWindowPtr), QWidget)
 
 
 from pymel.core import *
-from rigging.fit import *
-from rigging.rigTool import *
-from rigging.spherePath import *
-from rigging import rig
-reload(rig)
+from ..rigging.fit import *
+from ..rigging.rigTool import *
+from ..rigging.spherePath import *
+from ..rigging import rig
+
 
 import UI.mainProgress as mainProgress
 class Ui_RigTools(object):

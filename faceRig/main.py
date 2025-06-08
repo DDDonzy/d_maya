@@ -6,7 +6,7 @@ import os
 if os.path.dirname(__file__) not in sys.path:
     sys.path.append(os.path.dirname(__file__))
 
-import UI.run_Maya2017 as ui
+from .UI import run_Maya2017 as ui
 win = ui.Ui_RigTools()
 
 if __name__ == "__main__":

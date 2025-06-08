@@ -4,7 +4,7 @@ import json
 from imp import reload
 from maya import cmds
 import pymel.core as pm
-import UI.mainProgress as UI;reload(UI)
+from ..UI import mainProgress as UI
 
 
 def findBw(inputObj):

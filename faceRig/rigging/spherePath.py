@@ -3,10 +3,9 @@ from imp import reload
 from pymel.core import *
 import maya.cmds as cmds
 
-import matrixTool.matrixTool as matrix;
-from rigging.rigTool import addGroup
+from ..matrixTool import matrixTool as matrix
+from .rigTool import addGroup
 
-reload(matrix)
 
 
 class spherePath():

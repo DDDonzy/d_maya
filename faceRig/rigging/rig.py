@@ -4,14 +4,14 @@ import os
 import sys
 from imp import reload
 
-import temp
+from .. import temp
 import maya.mel
 from pymel.core import *
-import rigging.rigTool as rigTool; reload ( rigTool )
-import matrixTool.matrixTool as matrix ;reload(matrix)
+from . import rigTool
+from ..matrixTool import matrixTool as matrix
 import maya.cmds as cmds
-import rigging.spherePath as spherePath;reload(spherePath)
-import UI.mainProgress as UI; reload ( UI )
+from . import spherePath
+from ..UI import mainProgress as UI;
 class rig():
 	def __init__(self , faceGeo = [] , EyeBallGeo = [] , upperTeethGeo = [] , lowerTeethGeo = [] , tongueGeo = [] , otherGeo = []):
 		with UndoChunk():
