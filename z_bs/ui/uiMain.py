@@ -68,7 +68,7 @@ class ShapeToolsWidget(uiBase):
         self.transferLoadBtn: QtWidgets.QPushButton
         self.transferComboBox: QtWidgets.QComboBox
         self.transferMeshLineEdit: QtWidgets.QLineEdit
-        
+
         self.wrapRadioButton: QtWidgets.QRadioButton
         self.proximityWrapRadioButton: QtWidgets.QRadioButton
 
@@ -91,8 +91,10 @@ class ShapeToolsWidget(uiBase):
         self.action_handler = ActionHandler(self)
 
         self.openShapeEditor()
-        self.setupUi()
 
+        self.setupUi()
+        
+        self.action_handler.load_blendshape()
     def setupUi(self):
 
         #

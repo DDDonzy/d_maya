@@ -4,7 +4,7 @@ from z_bs._tools import _debugUI
 
 
 if __name__ == "__main__":
-
+    bsUI.ShapeToolsWidget().closeShapeEditor()
     ui = bsUI.ShapeToolsWidget()
     ui.show()
 

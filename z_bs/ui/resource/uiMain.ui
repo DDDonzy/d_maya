@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>670</width>
-    <height>874</height>
+    <width>569</width>
+    <height>827</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -569,7 +569,7 @@ QPushButton:pressed {
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <property name="tabsClosable">
        <bool>false</bool>
@@ -1289,7 +1289,7 @@ QPushButton:pressed {
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>-69</y>
+                <y>0</y>
                 <width>377</width>
                 <height>236</height>
                </rect>

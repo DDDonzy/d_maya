@@ -42,6 +42,7 @@ class ActionHandler:
     def __init__(self, ui):
         self.ui: ShapeToolsWidget = ui
         self.copyTempData = None
+        self.treeViewIsExpand = True
 
     def load_blendshape(self):
         """加载 BlendShape 节点"""
@@ -66,9 +67,11 @@ class ActionHandler:
             return
         self.ui.filterComboBox.clear()
         allStr = "&".join(blendShapeNames)
-        self.ui.filterComboBox.addItem(allStr)
+        if allStr not in blendShapeNames:
+            self.ui.filterComboBox.addItem(allStr)
         self.ui.filterComboBox.addItems(blendShapeNames)
         self.ui.filterComboBox.setCurrentIndex(0)
+        self.treeView_expand_all()
 
     def load_target(self):
         """加载目标"""
@@ -154,21 +157,22 @@ class ActionHandler:
 
         if target.targetIdx < 0:
             weightAttr = f"{target.node}.envelope"
+            weightsValue = [0, 1]
         else:
             weightAttr = f"{target.node}.w[{target.targetIdx}]"
+            iti_list = cmds.getAttr(f"{target.node}.it[0].itg[{target.targetIdx}].iti", mi=1)
+            weightsValue = [0] + [bsFn.inbetweenIndexToValue(x) for x in iti_list]
 
-        v = 0
-        if target.inbetweenIdx == 6000:
-            w = cmds.getAttr(weightAttr)
-            if w >= 0.5:
-                v = 0
+        w = round(cmds.getAttr(weightAttr), 3)
+        for x in weightsValue:
+            if x <= w:
+                if x == weightsValue[-1]:
+                    cmds.setAttr(weightAttr, weightsValue[0])
+                    break
+                continue
             else:
-                v = 1
-        else:
-            v = (target.inbetweenIdx - 5000) / 1000
-
-        cmds.setAttr(weightAttr, v)
-        showMessage(f"Set {target.node}.w[{target.targetIdx}] to {v} .")
+                cmds.setAttr(weightAttr, x)
+                break
 
     def update_object_label(self):
         """更新对象标签"""
@@ -226,11 +230,12 @@ class ActionHandler:
 
     def tree_view_expand_or_collapse(self):
         """树视图展开/折叠"""
-        # self.ui.treeView.expandAll()
-        # self.ui.treeView.collapseAll()
+        if self.treeViewIsExpand:
+            self.treeView_collapse_all()
+        else:
+            self.treeView_expand_all()
 
-        bsNodeItems = []
-        isExpand = []
+    def treeView_collapse_all(self):
         model = self.ui.treeView.model()
         for index in treeFn.TreeViewIterator(self.ui.treeView):
             item = model.itemFromIndex(index)
@@ -239,37 +244,26 @@ class ActionHandler:
             item_data = item.data()
             if not item_data:
                 continue
-            # 默认展开 blendShape_group
             if treeFn.SelectedItemType(item_data) == treeFn.SelectedItemType.blendShape_group:
-                self.ui.treeView.expand(item.index())
-            # blendShape_node 添加到列表中，进行后续判断是否展开
-            if treeFn.SelectedItemType(item_data) == treeFn.SelectedItemType.blendShape_node:
-                bsNodeItems.append((item, item.index()))
-                isExpand.append(self.ui.treeView.isExpanded(item.index()))
+                continue
+            self.ui.treeView.collapse(item.index())
+        self.treeViewIsExpand = False
+
+    def treeView_expand_all(self):
+        model = self.ui.treeView.model()
+        for index in treeFn.TreeViewIterator(self.ui.treeView):
+            item = model.itemFromIndex(index)
+            if not item:
+                continue
+            item_data = item.data()
+            if not item_data:
+                continue
             # 默认不展开 inbetween
             if treeFn.SelectedItemType(item_data) == treeFn.SelectedItemType.blendShape_target:
                 self.ui.treeView.collapse(item.index())
-            # 默认展开 target group
-            if treeFn.SelectedItemType(item_data) == treeFn.SelectedItemType.blendShape_targetGroup:
-                self.ui.treeView.expand(item.index())
-
-        if any(isExpand):
-            for item, index in bsNodeItems:
-                self.ui.treeView.collapse(index)
-
-        else:
-            # 如果没有展开任何blendShape_node，则展开所有选择的以及父层级
-            # 获取当前选择的所有index
-            selected_indexes = self.ui.treeView.selectedIndexes()
-            for index in selected_indexes:
-                self.ui.treeView.expand(index)
-                # 向上递归展开所有父节点
-                parent = index.parent()
-                while parent.isValid():
-                    self.ui.treeView.expand(parent)
-                    parent = parent.parent()
-                # 展开当前选中项
-                self.ui.treeView.expand(index)
+                continue
+            self.ui.treeView.expand(item.index())
+        self.treeViewIsExpand = True
 
     def wrap_attrs_pag_vis(self):
         """

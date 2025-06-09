@@ -399,6 +399,15 @@ def get_targetIndex(node, name):
     idx = indexList[nameList.index(name)]
     return idx
 
+def inbetweenIndexToValue(inbetweenIdx):
+    """
+    Convert inbetween index to value.
+    Inbetween index is between 5000 and 6000, where 6000 is the default inbetween.
+    """
+    if inbetweenIdx < 5000 or inbetweenIdx > 6000:
+        raise ValueError("Inbetween index must be between 5000 and 6000.")
+    return (inbetweenIdx - 5000) / 1000.0
+
 
 if __name__ == "__main__":
     autoFlipCopy("blendShape1")
