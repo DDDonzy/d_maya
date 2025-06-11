@@ -3,11 +3,40 @@ import maya.api.OpenMayaUI as omui
 import maya.api.OpenMayaRender as omr
 import maya.cmds as cmds
 from enum import Enum
+import time
+from functools import partial, wraps
 
 
 class ButtonType(Enum):
     LeftButton = 64
     MiddleButton = 128
+
+
+def timeit(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+
+        start_time = time.perf_counter()
+
+        result = func(*args, **kwargs)
+
+        end_time = time.perf_counter()
+        duration = end_time - start_time
+
+        print(f"Function: '{func.__name__}' Runtimes: {duration:.6f} sec")
+
+        return result
+
+    return wrapper
+
+
+def debutEvent(event: omui.MEvent):
+    button = ButtonType(event.mouseButton())
+    pos = event.position
+    ctrl = event.isModifierControl()
+    shift = event.isModifierShift()
+    modify = event.isModifierKeyRelease()
+    print(button, pos, " - CTRL:", ctrl, " - SHIFT:", shift, f"--{modify}")
 
 
 def getActiveMesh() -> om.MFnMesh:
@@ -20,101 +49,105 @@ def getActiveMesh() -> om.MFnMesh:
         return None
 
 
+def getRaySourceAndDirection(event: omui.MEvent):
+    pos = event.position
+    x_pos, y_pos = pos[0], pos[1]
+
+    # 3. 获取当前激活的3D视图
+    view = omui.M3dView.active3dView()
+    if not view:
+        return None
+
+    # 4. 将2D屏幕坐标转换为3D射线
+    ray_source = om.MPoint()
+    ray_direction = om.MVector()
+    view.viewToWorld(x_pos, y_pos, ray_source, ray_direction)
+    return ray_source, ray_direction
+
+
+def get_normal_from_intersection(fnMesh: om.MFnMesh, intersection_result: tuple) -> om.MVector:
+
+    if not intersection_result:
+        return None
+
+    # intersection_result 元组的第三个元素 (索引为2) 就是被击中面片的ID
+    hit_face_index = intersection_result[2]
+
+    try:
+        # 使用面片ID来查询该面的法线
+        hit_normal = fnMesh.getPolygonNormal(hit_face_index, om.MSpace.kWorld)
+        return hit_normal
+    except Exception as e:
+        print(f"无法获取面法线 (Could not get face normal) for face {hit_face_index}: {e}")
+        return None
+
+
 class BlendShapeBrushContext(omui.MPxContext):
     kToolName = "customBlendShapeBrush"
 
     def __init__(self):
         omui.MPxContext.__init__(self)
+        self.mesh = None
+        self.intersection = None
         self.setTitleString("Custom BlendShape Brush")
         print(f"INIT: {BlendShapeBrushContext.kToolName}")
 
+    @timeit
     def toolOnSetup(self, event: omui.MEvent, *args, **kwargs):
-        fnMesh = getActiveMesh()
+        self.mesh = getActiveMesh()
+        self.intersection = self.mesh.autoUniformGridParams()
+        self.setCursor(omui.MCursor.kPencilCursor)
 
         print("Into brush.")
-        print(f"mesh:{fnMesh.fullPathName() if fnMesh else 'None'}")
+        print(f"mesh:{self.mesh.fullPathName() if self.mesh else 'None'}")
 
     def toolOffSetup(self):
+        self.mesh = None
+        self.intersection = None
+        self.setCursor(omui.MCursor.kDefaultCursor)
         print("Out of brush.")
 
     def doHold(self, event, drawMgr, context, *args, **kwargs):
         print("Hold the brush.")
 
-    def doPtrMoved(self, event, drawMgr:omr.MUIDrawManager, context):
+    @timeit
+    def doPtrMoved(self, event, drawMgr: omr.MUIDrawManager, context):
 
-        # 2. 开始绘制。所有 MUIDrawManager 的操作都应在此范围内
-        drawMgr.beginDrawable()
+        if not self.mesh or not self.intersection:
+            return
 
-        # 3. 设置绘制颜色
-        # drawMgr.setColor(self.brush_color)
+        ray_source, ray_direction = getRaySourceAndDirection(event)
+        if not ray_source or not ray_direction:
+            return
 
-        # 4. 绘制圆环
-        #    参数：圆心，法线，半径，是否填充
-        # drawMgr.circle(om.MPoint(0,0,0), om.MVector(0,0,1), 10, False)
-        drawMgr.circle2d(om.MPoint(event.position),100,100,True)
+        hit_info = self.mesh.closestIntersection(om.MFloatPoint(ray_source),       # 参数1: 射线源点
+                                                 om.MFloatVector(ray_direction),   # 参数2: 射线方向
+                                                 om.MSpace.kWorld,                 # 参数3: 所在空间
+                                                 100000,                           # 参数4: 最大距离
+                                                 False,                            # 参数5: 是否测试双方向
+                                                 accelParams=self.intersection)
+        if hit_info:
+            hit_position = om.MPoint(hit_info[0])  
+            hit_normal = self.mesh.getPolygonNormal(hit_info[2], om.MSpace.kWorld)
 
-        # 5. 结束绘制
-        drawMgr.endDrawable()
+            drawMgr.beginDrawable()
+            drawMgr.setColor(om.MColor((1.0, 0.0, 0.0))) 
+            drawMgr.circle(hit_position, hit_normal, 0.5, False)
+            drawMgr.setPointSize(10)
+            drawMgr.point(hit_position)
+            
+            drawMgr.endDrawable()
+        else:
+            pass
 
     def doPress(self, event: omui.MEvent, *args, **kwargs):
-        self.debutEvent(event)
-        hit_point = self.getHitPointOnMesh(event)
-        if hit_point:
-            # 创建一个定位器来显示撞击点
-            locator_name = "hitPoint_debug_locator"
-            if not cmds.objExists(locator_name):
-                locator_name = cmds.spaceLocator(name=locator_name)[0]
-            cmds.xform(locator_name, translation=(hit_point.x, hit_point.y, hit_point.z), worldSpace=True)
+        debutEvent(event)
 
     def doDrag(self, event, drawMgr, context, *args, **kwargs):
-        self.debutEvent(event)
+        debutEvent(event)
 
     def doRelease(self, event: omui.MEvent, *args, **kwargs):
-        self.debutEvent(event)
-
-    def debutEvent(self, event: omui.MEvent):
-        button = ButtonType(event.mouseButton())
-        pos = event.position
-        ctrl = event.isModifierControl()
-        shift = event.isModifierShift()
-        modify = event.isModifierKeyRelease()
-        print(button, pos, " - CTRL:", ctrl, " - SHIFT:", shift, f"--{modify}")
-
-    def getHitPointOnMesh(self, event: omui.MEvent) -> om.MPoint:
-
-        # 1. 获取目标网格
-        fnMesh = getActiveMesh()
-        if not fnMesh:
-            return None
-
-        # 2. 从事件中获取2D屏幕坐标
-        pos = event.position
-        x_pos, y_pos = pos[0], pos[1]
-
-        # 3. 获取当前激活的3D视图
-        view = omui.M3dView.active3dView()
-        if not view:
-            return None
-
-        # 4. 将2D屏幕坐标转换为3D射线
-        ray_source = om.MPoint()
-        ray_direction = om.MVector()
-        view.viewToWorld(x_pos, y_pos, ray_source, ray_direction)
-
-        # 5. 在世界空间中执行射线-网格相交测试
-        intersection_result = fnMesh.closestIntersection(
-            om.MFloatPoint(ray_source),       # 参数1: 射线源点
-            om.MFloatVector(ray_direction),   # 参数2: 射线方向
-            om.MSpace.kWorld,                 # 参数3: 所在空间
-            100000,                         # 参数4: 最大距离
-            False                             # 参数5: 是否测试双方向
-        )
-        if intersection_result:
-            print(intersection_result)
-            hit_point = intersection_result[0]
-            return om.MPoint(hit_point)
-
-        return None
+        debutEvent(event)
 
 
 class BlendShapeBrushContextCmd(omui.MPxContextCommand):
