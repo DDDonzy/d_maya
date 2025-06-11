@@ -3,7 +3,7 @@ from pathlib import Path
 import maya.cmds as cmds
 import PySide2.QtWidgets as QtWidgets
 
-PLUGIN_PATH = r"T:\d_maya\z_api\brushPlugin.py"
+PLUGIN_PATH = r"E:\d_maya\z_api\brushPlugin.py"
 PLUGIN_NAME = Path(PLUGIN_PATH).stem
 
 
@@ -36,6 +36,7 @@ def initScene():
 
 if __name__ == "__main__":
     initScene()
+    cmds.polySphere()
     reload_plugin()
     
     cmds.setToolTo(cmds.customBlendShapeBrush())

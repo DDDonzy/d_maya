@@ -82,6 +82,26 @@ def get_normal_from_intersection(fnMesh: om.MFnMesh, intersection_result: tuple)
         return None
 
 
+def get_vertices_in_radius(fnMesh: om.MFnMesh, hit_point: om.MPoint, radius: float) -> list[int]:
+    nearby_vertex_indices = []
+    radius_squared = radius * radius  # Use squared distance for efficiency
+
+    # Create a vertex iterator from the mesh's DAG path to ensure world space calculations.
+    vertex_iterator = om.MItMeshVertex(fnMesh.dagPath())
+
+    while not vertex_iterator.isDone():
+        # Get the world space position of the current vertex.
+        vertex_position = vertex_iterator.position(om.MSpace.kWorld)
+        distance = vertex_position.distanceTo(hit_point)
+        # Check if the squared distance is within the squared radius.
+        if distance*distance <= radius_squared:
+            nearby_vertex_indices.append(vertex_iterator.index())
+
+        vertex_iterator.next()
+
+    return nearby_vertex_indices
+
+
 class BlendShapeBrushContext(omui.MPxContext):
     kToolName = "customBlendShapeBrush"
 
@@ -89,6 +109,8 @@ class BlendShapeBrushContext(omui.MPxContext):
         omui.MPxContext.__init__(self)
         self.mesh = None
         self.intersection = None
+        self.radius = 1
+
         self.setTitleString("Custom BlendShape Brush")
         print(f"INIT: {BlendShapeBrushContext.kToolName}")
 
@@ -127,18 +149,34 @@ class BlendShapeBrushContext(omui.MPxContext):
                                                  False,                            # 参数5: 是否测试双方向
                                                  accelParams=self.intersection)
         if hit_info:
-            hit_position = om.MPoint(hit_info[0])  
-            hit_normal = self.mesh.getPolygonNormal(hit_info[2], om.MSpace.kWorld)
+            self.drawCircle(drawMgr, hit_info)
 
-            drawMgr.beginDrawable()
-            drawMgr.setColor(om.MColor((1.0, 0.0, 0.0))) 
-            drawMgr.circle(hit_position, hit_normal, 0.5, False)
-            drawMgr.setPointSize(10)
-            drawMgr.point(hit_position)
-            
-            drawMgr.endDrawable()
+            vtx = get_vertices_in_radius(self.mesh, om.MPoint(hit_info[0]), radius=self.radius)
+            pos:om.MPointArray = om.MPointArray()
+            for i in vtx:
+                pos.append(self.mesh.getPoint(i))
+            self.drawPoint(drawMgr, pos)
+
         else:
             pass
+
+    def drawCircle(self, drawMgr: omr.MUIDrawManager, hit_info):
+        hit_position = om.MPoint(hit_info[0])
+        hit_normal = self.mesh.getPolygonNormal(hit_info[2], om.MSpace.kWorld)
+        drawMgr.beginDrawable()
+        drawMgr.setColor(om.MColor((1.0, 0.0, 0.0)))
+        drawMgr.circle(hit_position, hit_normal, self.radius, False)
+        drawMgr.setPointSize(10)
+        drawMgr.point(hit_position)
+        drawMgr.endDrawable()
+
+    def drawPoint(self, drawMgr: omr.MUIDrawManager, positionArray: om.MPointArray):
+        drawMgr.beginDrawable()
+        drawMgr.setColor(om.MColor((0.2, 0.2, 1.0)))
+        for x in positionArray:
+            drawMgr.setPointSize(5)
+            drawMgr.point(x)
+        drawMgr.endDrawable()
 
     def doPress(self, event: omui.MEvent, *args, **kwargs):
         debutEvent(event)
