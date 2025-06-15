@@ -1,5 +1,6 @@
 
 from dataclasses import dataclass
+from functools import partial
 
 import z_bs.utils.apiundo as apiundo
 from z_bs.utils.showMessage import showMessage
@@ -361,24 +362,32 @@ def flipCopy_targetData(sourceTargetData: TargetData,
     for idx in inbetweenIdx:
         sourceTargetData.inbetweenIdx = idx
         destinationTargetData.inbetweenIdx = idx
-        str_a = f"{sourceTargetData.node} - [{sourceTargetData.targetName}]-[{sourceTargetData.inbetweenIdx}]"
-        str_b = f"{destinationTargetData.node} - [{destinationTargetData.targetName}]-[{destinationTargetData.inbetweenIdx}]"
-        # print(f"    {str_a}  ------>  {str_b}")
         data = copy_delta(sourceTargetData)
         pasted_delta(destinationTargetData, data)
     flip_bsTarget(destinationTargetData, axis, space)
 
 
-def autoFlipCopy(blendShapeName, replaceStr=("L", "R")):
-    targetList: List[TargetData] = get_targetDataList(blendShapeName)
+def autoFlipCopy(blendShapeName, targetList=[], replaceStr=("L", "R"), axis="x", direction="+", mirror=False):
+
+    mirrorFunction = partial(mirror_bsTarget,
+                             axis=axis,
+                             mirrorDirection=direction,
+                             space=1)
+    flipFunction = partial(flipCopy_targetData,
+                           axis=axis,
+                           space=1)
+
+    if not targetList:
+        targetList: List[TargetData] = get_targetDataList(blendShapeName)
+
     targetDict = {}
     for x in targetList:
         targetDict.update({x.targetName: x})
     targetList = list(targetDict.keys())
 
-    mirrorFunction = MIRROR_BASE()
-    mirrorFunction.MIRROR_PAIRS = [replaceStr]
-    mirrorList = mirrorFunction.exchange(targetList)
+    mirrorBase = MIRROR_BASE()
+    mirrorBase.MIRROR_PAIRS = [replaceStr]
+    mirrorList = mirrorBase.exchange(targetList)
     doneList = []
     for i, x in enumerate(targetList):
         if x in doneList:
@@ -386,11 +395,19 @@ def autoFlipCopy(blendShapeName, replaceStr=("L", "R")):
         doneList.append(targetList[i])
         doneList.append(mirrorList[i])
         if targetList[i] == mirrorList[i]:
-            print(f"{'Mirror:':<10} {x:<30}")
-            mirror_bsTarget(targetDict[x])
+            if mirror:
+                print(f"{'Mirror:':<10} {x:<30}")
+                mirrorFunction(targetDict[x])
+            else:
+                print(f"{'Continue:':<10} {x:<30}")
+                continue
         else:
             print(f"{'FlipCopy:':<10} {x:-<30}> {mirrorList[i]:<30}")
-            flipCopy_targetData(targetDict[x], targetDict[mirrorList[i]], axis='x', space=1)
+            if mirrorList[i] in targetDict.keys():
+                flipFunction(targetDict[x], targetDict[mirrorList[i]])
+            else:
+                print(f"Warning: {mirrorList[i]} not found in targetDict, skipping flip copy.")
+                continue
 
 
 def get_targetIndex(node, name):
@@ -398,6 +415,7 @@ def get_targetIndex(node, name):
     indexList = cmds.getAttr(f'{node}.weight', mi=True) or []
     idx = indexList[nameList.index(name)]
     return idx
+
 
 def inbetweenIndexToValue(inbetweenIdx):
     """
