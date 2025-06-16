@@ -41,7 +41,8 @@ class ActionHandler:
 
     def __init__(self, ui):
         self.ui: ShapeToolsWidget = ui
-        self.copyTempData = None
+        self.transferPreviewObject = None
+        self.copyDeltaDataTemp = None
         self.treeViewIsExpand = True
 
     def load_blendshape(self):
@@ -56,7 +57,7 @@ class ActionHandler:
         blendShapeNames.extend(treeviewSelectedBSD)
 
         if not treeviewSelectedBSD:
-            lastSelectionData = get_targetDataFromShapeEditor()
+            lastSelectionData = get_lasterSelectedData()
             if lastSelectionData.node:
                 blendShapeNames.append(lastSelectionData.node)
 
@@ -103,7 +104,7 @@ class ActionHandler:
         获取所有非零权重的目标
         Get all targets with non-zero weight from the selected blendShape node.
         """
-        target = get_targetDataFromShapeEditor()
+        target = get_lasterSelectedData()
 
         if target.node is None:
             return []
@@ -111,7 +112,7 @@ class ActionHandler:
             return []
 
         targetNames = []
-        tolerance = 1e-5
+        tolerance = 1e-3
         for name in cmds.listAttr(f"{target.node}.w", multi=True):
             w = cmds.getAttr(f"{target.node}.{name}")
             if abs(w) > tolerance:
@@ -123,7 +124,7 @@ class ActionHandler:
         添加雕刻到选择的 BlendShape 节点
         Add a sculpt to the selected blendShape node.
         """
-        target = get_targetDataFromShapeEditor()
+        target = get_lasterSelectedData()
         if target.targetIdx < 0:
             showMessage("No target selected in shape editor.")
             return
@@ -153,7 +154,7 @@ class ActionHandler:
         自动设置选择目标的权重
         Auto set the weight of the selected target.
         """
-        target = get_targetDataFromShapeEditor()
+        target = get_lasterSelectedData()
 
         if target.targetIdx < 0:
             weightAttr = f"{target.node}.envelope"
@@ -178,7 +179,7 @@ class ActionHandler:
         """更新对象标签"""
         meshText = "None"
         bsText = "None"
-        target = get_targetDataFromShapeEditor()
+        target = get_lasterSelectedData()
 
         if target.baseMesh:
             if cmds.objExists(target.baseMesh):
@@ -320,18 +321,18 @@ class ActionHandler:
             del self.ui.dynamicButtonsDict[button_to_delete]
 
     def copy_delta_cmd(self):
-        target = get_targetDataFromShapeEditor()
+        target = get_lasterSelectedData()
         if cmds.objExists(target.attr):
-            self.copyTempData = bsFn.copy_delta(target)
+            self.copyDeltaDataTemp = bsFn.copy_delta(target)
             showMessage(f"Copy {target.attr}")
         else:
             showMessage("Please select a blendShape target")
 
     def pasted_delta_cmd(self):
-        if self.copyTempData:
-            target = get_targetDataFromShapeEditor()
+        if self.copyDeltaDataTemp:
+            target = get_lasterSelectedData()
             if cmds.objExists(target.attr):
-                bsFn.pasted_delta(target, self.copyTempData)
+                bsFn.pasted_delta(target, self.copyDeltaDataTemp)
                 showMessage(f"Pasted {target.attr}")
             else:
                 showMessage("Please select a blendShape target")
@@ -417,16 +418,29 @@ class ActionHandler:
     def transfer(self):
         data = self.getTransferData()
         wrap = self.makeWrapFunctions()
-        bsTransfer.transferBlendShape(
-            sourceBlendShape=data["blendShape"],
-            targetDataList=data["targetList"],
-            destinationMesh=data["targetMesh"],
-            destinationBlendShape=data["destinationBlendShape"],
-            wrapFunction=wrap)
+        bsTransfer.transferBlendShape(sourceBlendShape=data["blendShape"],
+                                      targetDataList=data["targetList"],
+                                      destinationMesh=data["targetMesh"],
+                                      destinationBlendShape=data["destinationBlendShape"],
+                                      wrapFunction=wrap)
 
     def preview(self):
+        if self.transferPreviewObject:
+            try:
+                cmds.delete(self.transferPreviewObject)
+                self.transferPreviewObject = None
+                return
+            except:
+                pass
 
+        data = self.getTransferData()
         wrap = self.makeWrapFunctions()
+        self.transferPreviewObject = bsTransfer.transferBlendShape(sourceBlendShape=data["blendShape"],
+                                                                   targetDataList=data["targetList"],
+                                                                   destinationMesh=data["targetMesh"],
+                                                                   destinationBlendShape=data["destinationBlendShape"],
+                                                                   wrapFunction=wrap,
+                                                                   preview=True)
 
     def makeWrapFunctions(self):
 
@@ -498,3 +512,98 @@ class ActionHandler:
         for index in index_list:
             if index.isValid():
                 selection_model.select(index, QtCore.QItemSelectionModel.Select | QtCore.QItemSelectionModel.Rows)
+
+    def mirror_bsTarget(self):
+        """
+        镜像 BlendShape 目标
+        Mirror the selected BlendShape target.
+        """
+        target = get_selectionTarget()
+        bs = get_selectionBlendShape()
+        if not bs and not target:
+            showMessage(f"Please select blendShape or targets in shapeEdit")
+            raise RuntimeError("Please select blendShape or targets in shapeEdit")
+        if bs and target:
+            showMessage(f"Please select blendShape or targets in shapeEdit, not both")
+            raise RuntimeError(f"Please select blendShape or targets in shapeEdit, not both")
+        if len(bs) > 1:
+            showMessage(f"Please select only one blendShape node in shapeEdit")
+            raise RuntimeError(f"Please select only one blendShape node in shapeEdit")
+
+        if target:
+            bs = target[0].split(".")[0]
+            idx_list = []
+            for i in target:
+                i_bs, idx = i.split(".")
+                idx_list.append(int(idx))
+                if i_bs != bs:
+                    showMessage(f"Please select targets from the same blendShape node")
+                    raise RuntimeError(f"Please select targets from the same blendShape node")
+
+            targetList = bsFn.get_targetDataList(bs)
+            transferList = []
+            for i in targetList:
+                if i.targetIdx in idx_list:
+                    transferList.append(i)
+        elif bs:
+            bs = bs[0]
+            targetList = bsFn.get_targetDataList(bs)
+
+        axis = ["x", "y", "z"][self.ui.mirrorAxisComboBox.currentIndex()]
+        direction = self.ui.mirrorDirectionComboBox.currentIndex()
+
+        targetDict = {}
+        for x in targetList:
+            targetDict.update({x.targetName: x})
+        targetList = list(targetDict.values())
+
+        for target in targetList:
+            bsFn.mirror_bsTarget(target, axis=axis, mirrorDirection=direction)
+            print(f"Mirror: {target.targetName} successfully.")
+
+    def flip_bsTarget(self, autoMirror=False):
+        """
+        翻转 BlendShape 目标
+        Flip the selected BlendShape target.
+        """
+        target = get_selectionTarget()
+        bs = get_selectionBlendShape()
+        if not bs and not target:
+            showMessage(f"Please select blendShape or targets in shapeEdit")
+            raise RuntimeError("Please select blendShape or targets in shapeEdit")
+        if bs and target:
+            showMessage(f"Please select blendShape or targets in shapeEdit, not both")
+            raise RuntimeError(f"Please select blendShape or targets in shapeEdit, not both")
+        if len(bs) > 1:
+            showMessage(f"Please select only one blendShape node in shapeEdit")
+            raise RuntimeError(f"Please select only one blendShape node in shapeEdit")
+
+        if target:
+            bs = target[0].split(".")[0]
+            idx_list = []
+            for i in target:
+                i_bs, idx = i.split(".")
+                idx_list.append(int(idx))
+                if i_bs != bs:
+                    showMessage(f"Please select targets from the same blendShape node")
+                    raise RuntimeError(f"Please select targets from the same blendShape node")
+
+            targetList = bsFn.get_targetDataList(bs)
+            transferList = []
+            for i in targetList:
+                if i.targetIdx in idx_list:
+                    transferList.append(i)
+        elif bs:
+            bs = bs[0]
+            targetList = bsFn.get_targetDataList(bs)
+
+        targetDict = {}
+        for x in targetList:
+            targetDict.update({x.targetName: x})
+        targetList = list(targetDict.values())
+
+        axis = ["x", "y", "z"][self.ui.mirrorAxisComboBox.currentIndex()]
+        direction = self.ui.mirrorDirectionComboBox.currentIndex()
+        matchStr = self.ui.mirrorTableView.get_active_mirror_data()
+
+        bsFn.autoFlipCopy(targetList[0].node, targetList, matchStr, axis, direction, autoMirror)

@@ -48,7 +48,6 @@ def createWrap(*args, **kwargs):
     cmds.setAttr(wrapNode + '.maxDistance', maxDistance)
     cmds.setAttr(wrapNode + '.exclusiveBind', exclusiveBind)
     cmds.setAttr(wrapNode + '.autoWeightThreshold', autoWeightThreshold)
-    print(wrapNode, falloffMode)
     cmds.setAttr(wrapNode + '.falloffMode', falloffMode)
     cmds.connectAttr(surface + '.worldMatrix[0]', wrapNode + '.geomMatrix')
 
@@ -133,8 +132,6 @@ def createProximityWrap(*args, **kwargs):
     else:
         inf_orig = inf_orig[0]
 
-    print(inf_orig)
-    print(shapes)
     cmds.connectAttr(f"{inf_orig}.outMesh", f"{wrapNode}.drivers[0].driverBindGeometry")
     cmds.connectAttr(f"{shapes}.worldMesh[0]", f"{wrapNode}.drivers[0].driverGeometry")
 

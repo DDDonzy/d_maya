@@ -26,7 +26,8 @@ pre_configured_wrap2 = partial(createWrap,
 
 def transferBlendShape(sourceBlendShape="", targetDataList: List[TargetData] = [],
                        destinationMesh="", destinationBlendShape=None,
-                       wrapFunction=pre_configured_wrap):
+                       wrapFunction=pre_configured_wrap,
+                       preview=False):
     """
     Transfer blendShape targets between different topology models using wrap
 
@@ -39,6 +40,12 @@ def transferBlendShape(sourceBlendShape="", targetDataList: List[TargetData] = [
     """
     # get source geometry
     source_geometry, newTargetName = get_bsBaseGeometry(sourceBlendShape)
+    # do wrap
+    wrapMesh = duplicate_mesh(destinationMesh, "TRANSFER_MESH")
+    wrapNode, wrapBase = wrapFunction(source_geometry, wrapMesh)
+    if preview:
+        return wrapNode, wrapBase, wrapMesh
+
     # get target data, if not targetDataList:
     if not targetDataList:
         targetDataList = get_targetDataList(sourceBlendShape)
@@ -47,12 +54,8 @@ def transferBlendShape(sourceBlendShape="", targetDataList: List[TargetData] = [
         destinationBlendShape = create_blendShapeNode(objectName=destinationMesh, name="transferBlendShape")
     elif not cmds.objExists(destinationBlendShape):
         destinationBlendShape = create_blendShapeNode(objectName=destinationMesh, name="transferBlendShape")
-    # do wrap
-    wrapMesh = duplicate_mesh(destinationMesh, "TRANSFER_MESH")
-    wrapNode, wrapBase = wrapFunction(source_geometry, wrapMesh)
-    
-    # transfer source and target data
 
+    # transfer source and target data
     transferTargetDict: Dict[str, List[TargetData]] = {}
     sourceTargetDict: Dict[str, List[TargetData]] = {}
     """
@@ -113,7 +116,7 @@ def transferBlendShape(sourceBlendShape="", targetDataList: List[TargetData] = [
         for i, _ in enumerate(transferTargetDict[name]):
             source_ib = sourceTargetDict[name][i]
             transfer_ib = transferTargetDict[name][i]
-            
+
             cmds.setAttr(f"{source_ib.node}.weight[{source_ib.targetIdx}]", source_ib.weight)
             cmds.setAttr(f"{transfer_ib.node}.weight[{transfer_ib.targetIdx}]", transfer_ib.weight)
             print(f"Transfer: [{source_ib.targetName}] - {source_ib.node}.w[{source_ib.targetIdx}]-[{source_ib.inbetweenIdx}] to {transfer_ib.node}")
@@ -125,4 +128,4 @@ def transferBlendShape(sourceBlendShape="", targetDataList: List[TargetData] = [
             cmds.connectAttr(weight_sourceConnect[0], f"{source.node}.weight[{source.targetIdx}]")
             cmds.connectAttr(weight_sourceConnect[0], f"{transfer.node}.weight[{transfer.targetIdx}]")
     # delete wrap
-    cmds.delete(wrapMesh, wrapBase)
+    cmds.delete(wrapNode, wrapMesh, wrapBase)

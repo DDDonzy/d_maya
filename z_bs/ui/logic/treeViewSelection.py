@@ -1,5 +1,6 @@
 from maya import cmds, mel
-from z_bs.core.bsFunctions import TargetData
+from z_bs.core.bsFunctions import TargetData, get_targetDataList
+from typing import List
 
 
 def get_lastSelection():
@@ -18,9 +19,9 @@ def get_selectionInbetween():
     return mel.eval("getShapeEditorTreeviewSelection 16")
 
 
-def get_targetDataFromShapeEditor():
+def get_lasterSelectedData() -> List[TargetData]:
     targetData: TargetData = TargetData()
-    
+
     bsNameSelected = get_selectionBlendShape()
     targetSelected = get_selectionTarget()
     inbetweenSelected = get_selectionInbetween()
@@ -41,7 +42,7 @@ def get_targetDataFromShapeEditor():
         targetData.targetIdx = int(data[-1])
         targetData.weight = round(cmds.getAttr(f"{targetData.node}.w[{targetData.targetIdx}]"), 3)
         targetData.targetName = cmds.aliasAttr(f"{targetData.node}.w[{targetData.targetIdx}]", q=1)
-    
+
     if lastSelectedSelected in bsNameSelected:
         data = lastSelectedSelected.split(".")
         targetData.node = data[0]
