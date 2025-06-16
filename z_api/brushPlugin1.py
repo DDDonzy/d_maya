@@ -34,21 +34,13 @@ def timeit(func):
 
 
 def debutEvent(event: omui.MEvent):
-    """
-    一个用于诊断和打印 MEvent 对象所有可用方法的函数。
-    """
-    print("="*50)
-    print(f"Inspecting '{type(event).__name__}' object methods and attributes:")
-    print("="*50)
+    button = ButtonType(event.mouseButton())
+    pos = event.position
+    ctrl = event.isModifierControl()
+    shift = event.isModifierShift()
+    modify = event.isModifierKeyRelease()
+    print(button, pos, " - CTRL:", ctrl, " - SHIFT:", shift, f"--{modify}")
 
-    # 打印出所有非魔术方法
-    for item in sorted(dir(event)):
-        if not item.startswith('__'):
-            print(item)
-
-    print("="*50)
-    print("--- 诊断结束，请将上面的列表回复给我 ---")
-    print("="*50)
 
 def getActiveMesh() -> om.MFnMesh:
     mSel: om.MSelectionList = om.MGlobal.getActiveSelectionList()
