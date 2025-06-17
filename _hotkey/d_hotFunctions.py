@@ -63,3 +63,11 @@ MATRIX_CONSTRAINT_CMD = lambda *args, **kwargs: matrixConstraint()
 UV_PIN_CONSTRAINT_CMD = lambda *args, **kwargs: uvPin()
 
 
+def toggleJointOption():
+    panel = cmds.getPanel(withFocus=True)
+    if cmds.getPanel(typeOf=panel) == 'modelPanel':
+        is_visible = cmds.modelEditor(panel, query=True, joints=True)
+        cmds.modelEditor(panel, edit=True, joints=(not is_visible))
+
+
+TOGGLE_JOINT_OPTION_CMD = lambda *args, **kwargs: toggleJointOption()
