@@ -1,4 +1,4 @@
-from UTILS.compounds import *
+from UTILS.compounds import matrixConstraint
 from maya import cmds
 a = {'Root_M': 'pelvis',
      'HipPart1_L': 'thigh_twist_01_l',
@@ -105,9 +105,9 @@ for k, v in a.items():
         con = matrixConstraint(mo=0)
         cmds.select(con.inputOffsetMatrix)
         offsetMatrix = [-1.0, 0.0, 0.0, 0.0,
-                        0.0, 0.0, 1.0, 0.0,
-                        0.0, 1.0, 0.0, 0.0,
-                        0.0, 0.0, 0.0, 1.0]
-
+                         0.0, 0.0, 1.0, 0.0,
+                         0.0, 1.0, 0.0, 0.0,
+                         0.0, 0.0, 0.0, 1.0,
+                         ]
         cmds.getAttr(con.inputOffsetMatrix)
         cmds.setAttr(con.inputOffsetMatrix,)

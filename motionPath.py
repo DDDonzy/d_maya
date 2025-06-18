@@ -21,7 +21,6 @@ class CurveData(om.MFnNurbsCurve):
 
         # 创建 NURBS 曲线数据对象
         self.data = om.MFnNurbsCurveData().create()
-        # 生成节点向量
         self._knots = self.generateKnots(controlPoints, degree)
         # 创建 NURBS 曲线
         # 注意：传入的节点向量需要去掉首尾重复的节点
@@ -158,13 +157,21 @@ def addRelativesTwist(control, parentControl, axis='X', suffixName=""):
     """
     Add relatives twist attribute to the control.
     """
-    cmds.addAttr(control, longName=f"relativesTwist", attributeType="double", defaultValue=0, keyable=False)
-    cmds.addAttr(control, longName=f"twist", attributeType="double", defaultValue=0, keyable=False)
+    cmds.addAttr(control, longName="relativesTwist", attributeType="double", defaultValue=0, keyable=False)
+    cmds.addAttr(control, longName="twist", attributeType="double", defaultValue=0, keyable=False)
     node_multMatrix = cmds.createNode("multMatrix", name=f"{suffixName}_multMatrix", ss=1)
     node_inverseMatrix = cmds.createNode("inverseMatrix", name=f"{suffixName}_inverseRelativesMatrix", ss=1)
     cmds.connectAttr(f"{node_inverseMatrix}.outputMatrix", f"{node_multMatrix}.matrixIn[1]")
-    cmds.connectAttr(f"{parentControl}.worldMatrix[0]", f"{node_inverseMatrix}.inputMatrix")
-    cmds.connectAttr(f"{control}.worldMatrix[0]", f"{node_multMatrix}.matrixIn[0]")
+    pick_control = cmds.createNode("pickMatrix", name=f"{suffixName}_{control}_pickMatrix", ss=1)
+    pick_parentControl = cmds.createNode("pickMatrix", name=f"{suffixName}_{parentControl}_pickMatrix", ss=1)
+    cmds.connectAttr(f"{parentControl}.worldMatrix[0]", f"{pick_parentControl}.inputMatrix")
+    cmds.connectAttr(f"{control}.worldMatrix[0]", f"{pick_control}.inputMatrix")
+    cmds.setAttr(f"{pick_control}.useScale", 0)
+    cmds.setAttr(f"{pick_parentControl}.useScale", 0)
+    cmds.setAttr(f"{pick_control}.useShear",0)
+    cmds.setAttr(f"{pick_parentControl}.useShear",0)
+    cmds.connectAttr(f"{pick_parentControl}.outputMatrix", f"{node_inverseMatrix}.inputMatrix")
+    cmds.connectAttr(f"{pick_control}.outputMatrix", f"{node_multMatrix}.matrixIn[0]")
     quat_to_euler = cmds.createNode("quatToEuler", name=f"{suffixName}_quatToEuler", ss=1)
     decom_matrix = cmds.createNode("decomposeMatrix", name=f"{suffixName}_decomposeMatrix", ss=1)
     cmds.connectAttr(f"{node_multMatrix}.matrixSum", f"{decom_matrix}.inputMatrix")
@@ -222,8 +229,8 @@ def curveIK(controls: List[str],
     for idx, _ in enumerate(controls):
         control = controls[idx]
         if idx == 0:
-            cmds.addAttr(iter_laster_control, longName=f"relativesTwist", attributeType="double", defaultValue=0, keyable=False)
-            cmds.addAttr(iter_laster_control, longName=f"twist", attributeType="double", defaultValue=0, keyable=False)
+            cmds.addAttr(iter_laster_control, longName="relativesTwist", attributeType="double", defaultValue=0, keyable=False)
+            cmds.addAttr(iter_laster_control, longName="twist", attributeType="double", defaultValue=0, keyable=False)
         addRelativesTwist(control, iter_laster_control, axis=axis, suffixName=suffixName)
         iter_laster_control = control
 
@@ -331,6 +338,15 @@ def curveIK(controls: List[str],
         cmds.connectAttr(f"{motionPath}.rotate", f"{compose_matrix}.inputRotate")
         cmds.setAttr(f"{compose_matrix}.inputRotateOrder", 0)  # XYZ
         weights_list = cvData.get_tWeights(uValue)
+        # twist
+        compose_matrix_twist = cmds.createNode("composeMatrix", name=f"{suffixName}_composeMatrix_twist_{idx}", ss=1)
+        blend_twist = cmds.createNode("blendWeighted", name=f"{suffixName}_blendWeighted_{idx}_twist")
+        for idx, w in enumerate(weights_list):
+            control = controls[idx]
+            cmds.setAttr(f"{blend_twist}.weight[{idx}]", w)
+            cmds.connectAttr(f"{control}.twist", f"{blend_twist}.input[{idx}]")
+        cmds.connectAttr(f"{blend_twist}.output", f"{compose_matrix_twist}.inputRotate{axis}")
+        cmds.setAttr(f"{compose_matrix_twist}.inputRotateOrder", 0)  # XYZ
         # scale
         for attr in "XYZ":
             blend_scale = cmds.createNode("blendWeighted", name=f"{suffixName}_blendWeighted_{idx}_scale{attr}")
@@ -338,17 +354,7 @@ def curveIK(controls: List[str],
                 control = controls[idx]
                 cmds.setAttr(f"{blend_scale}.weight[{idx}]", w)
                 cmds.connectAttr(f"{control}.scale{attr}", f"{blend_scale}.input[{idx}]")
-            cmds.connectAttr(f"{blend_scale}.output", f"{compose_matrix}.inputScale{attr}")
-        # twist
-        blend_twist = cmds.createNode("blendWeighted", name=f"{suffixName}_blendWeighted_{idx}_twist")
-        for idx, w in enumerate(weights_list):
-            control = controls[idx]
-            cmds.setAttr(f"{blend_twist}.weight[{idx}]", w)
-            cmds.connectAttr(f"{control}.twist", f"{blend_twist}.input[{idx}]")
-
-        compose_matrix_twist = cmds.createNode("composeMatrix", name=f"{suffixName}_composeMatrix_twist_{idx}", ss=1)
-        cmds.connectAttr(f"{blend_twist}.output", f"{compose_matrix_twist}.inputRotate{axis}")
-        cmds.setAttr(f"{compose_matrix_twist}.inputRotateOrder", 0)  # XYZ
+            cmds.connectAttr(f"{blend_scale}.output", f"{compose_matrix_twist}.inputScale{attr}")
 
         mult_matrix = cmds.createNode("multMatrix", name=f"{suffixName}_multMatrix_{idx}", ss=1)
         cmds.connectAttr(f"{compose_matrix}.outputMatrix", f"{mult_matrix}.matrixIn[1]")
@@ -394,3 +400,6 @@ if __name__ == "__main__":
     # driver curve
     for x in controls:
         cmds.connectAttr(f"{x}.translate", f"{cvShape}.controlPoints[{controls.index(x)}]")
+
+
+a:int = 1
