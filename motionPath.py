@@ -24,13 +24,15 @@ class CurveData(om.MFnNurbsCurve):
         self._knots = self.generateKnots(controlPoints, degree)
         # 创建 NURBS 曲线
         # 注意：传入的节点向量需要去掉首尾重复的节点
-        self.create(controlPoints,
-                    self._knots[1:-1],  # 去掉首尾重复节点
-                    degree,
-                    om.MFnNurbsCurve.kOpen,  # 开放型曲线
-                    False,  # 不是理性曲线
-                    True,   # 三维曲线
-                    self.data)
+        self.create(
+            controlPoints,
+            self._knots[1:-1],  # 去掉首尾重复节点
+            degree,
+            om.MFnNurbsCurve.kOpen,  # 开放型曲线
+            False,  # 不是理性曲线
+            True,  # 三维曲线
+            self.data,
+        )
 
     def build(self):
         """
@@ -39,13 +41,15 @@ class CurveData(om.MFnNurbsCurve):
         """
         cv = cmds.createNode("transform", name="bSplineCurve")
         sel: om.MSelectionList = om.MGlobal.getSelectionListByName(cv)
-        self.create(self.cvPositions(om.MFn.kWorld),  # 获取世界坐标系下的控制点
-                    self.knots(),    # 当前节点向量
-                    self.degree,     # 当前度数
-                    self.form,       # 当前形式（开放/封闭）
-                    False,
-                    True,
-                    sel.getDependNode(0))
+        self.create(
+            self.cvPositions(om.MFn.kWorld),  # 获取世界坐标系下的控制点
+            self.knots(),  # 当前节点向量
+            self.degree,  # 当前度数
+            self.form,  # 当前形式（开放/封闭）
+            False,
+            True,
+            sel.getDependNode(0),
+        )
         for x in cmds.listRelatives(cv, shapes=1) or []:
             cmds.rename(x, f"{cv}Shape")
         return cv
@@ -127,7 +131,7 @@ class CurveData(om.MFnNurbsCurve):
         Note:
             使用 Cox-de Boor 递归公式：
             - 当 d=0 时，N_{i,0}(t) = 1 if t_i <= t < t_{i+1}, else 0
-            - 当 d>0 时，N_{i,d}(t) = (t-t_i)/(t_{i+d}-t_i) * N_{i,d-1}(t) + 
+            - 当 d>0 时，N_{i,d}(t) = (t-t_i)/(t_{i+d}-t_i) * N_{i,d-1}(t) +
                                      (t_{i+d+1}-t)/(t_{i+d+1}-t_{i+1}) * N_{i+1,d-1}(t)
         """
         knots = self._knots
@@ -145,55 +149,47 @@ class CurveData(om.MFnNurbsCurve):
             denom2 = knots[i + d + 1] - knots[i + 1]
 
             # 第一项：避免除零错误
-            term1 = 0.0 if denom1 == 0.0 else (t - knots[i]) / denom1 * self.basisFunction(i, t, d-1)
+            term1 = 0.0 if denom1 == 0.0 else (t - knots[i]) / denom1 * self.basisFunction(i, t, d - 1)
 
             # 第二项：避免除零错误
-            term2 = 0.0 if denom2 == 0.0 else (knots[i + d + 1] - t) / denom2 * self.basisFunction(i + 1, t, d-1)
+            term2 = 0.0 if denom2 == 0.0 else (knots[i + d + 1] - t) / denom2 * self.basisFunction(i + 1, t, d - 1)
 
             return term1 + term2
 
 
-def addRelativesTwist(control, parentControl, axis='X', suffixName=""):
+def addRelativesTwist(control, parentControl, axis="X", suffixName=""):
     """
     Add relatives twist attribute to the control.
     """
     cmds.addAttr(control, longName="relativesTwist", attributeType="double", defaultValue=0, keyable=False)
     cmds.addAttr(control, longName="twist", attributeType="double", defaultValue=0, keyable=False)
+    # relative matrix
     node_multMatrix = cmds.createNode("multMatrix", name=f"{suffixName}_multMatrix", ss=1)
     node_inverseMatrix = cmds.createNode("inverseMatrix", name=f"{suffixName}_inverseRelativesMatrix", ss=1)
     cmds.connectAttr(f"{node_inverseMatrix}.outputMatrix", f"{node_multMatrix}.matrixIn[1]")
+    # skip scale
     pick_control = cmds.createNode("pickMatrix", name=f"{suffixName}_{control}_pickMatrix", ss=1)
     pick_parentControl = cmds.createNode("pickMatrix", name=f"{suffixName}_{parentControl}_pickMatrix", ss=1)
     cmds.connectAttr(f"{parentControl}.worldMatrix[0]", f"{pick_parentControl}.inputMatrix")
     cmds.connectAttr(f"{control}.worldMatrix[0]", f"{pick_control}.inputMatrix")
     cmds.setAttr(f"{pick_control}.useScale", 0)
     cmds.setAttr(f"{pick_parentControl}.useScale", 0)
-    cmds.setAttr(f"{pick_control}.useShear",0)
-    cmds.setAttr(f"{pick_parentControl}.useShear",0)
+    cmds.setAttr(f"{pick_control}.useShear", 0)
+    cmds.setAttr(f"{pick_parentControl}.useShear", 0)
     cmds.connectAttr(f"{pick_parentControl}.outputMatrix", f"{node_inverseMatrix}.inputMatrix")
     cmds.connectAttr(f"{pick_control}.outputMatrix", f"{node_multMatrix}.matrixIn[0]")
+    # cal twist
     quat_to_euler = cmds.createNode("quatToEuler", name=f"{suffixName}_quatToEuler", ss=1)
     decom_matrix = cmds.createNode("decomposeMatrix", name=f"{suffixName}_decomposeMatrix", ss=1)
     cmds.connectAttr(f"{node_multMatrix}.matrixSum", f"{decom_matrix}.inputMatrix")
     cmds.connectAttr(f"{control}.rotateOrder", f"{decom_matrix}.inputRotateOrder")
-    cmds.connectAttr(f'{control}.rotateOrder', f'{quat_to_euler}.inputRotateOrder')
+    cmds.connectAttr(f"{control}.rotateOrder", f"{quat_to_euler}.inputRotateOrder")
     cmds.connectAttr(f"{decom_matrix}.outputQuatW", f"{quat_to_euler}.inputQuatW")
     cmds.connectAttr(f"{decom_matrix}.outputQuat{axis}", f"{quat_to_euler}.inputQuat{axis}")
-    cmds.connectAttr(f"{quat_to_euler}.outputRotate{axis}", f"{control}.relativesTwist")
-    add = cmds.createNode("addDoubleLinear", name=f"{suffixName}_addTwist", ss=1)
-    cmds.connectAttr(f"{parentControl}.twist", f"{add}.input1")
-    cmds.connectAttr(f"{control}.relativesTwist", f"{add}.input2")
-    cmds.connectAttr(f"{add}.output", f"{control}.twist")
+    cmds.connectAttr(f"{quat_to_euler}.outputRotate{axis}", f"{control}.twist")
 
 
-def curveIK(controls: List[str],
-            secondsNum: int = 30,
-            curveDegree: int = 3,
-            frontAxis: int = 0,
-            upAxis: int = 1,
-            uniform: bool = False,
-            suffixName="curveIk",
-            use_offsetParentMatrix: bool = False):
+def curveIK(controls: List[str], secondsNum: int = 30, curveDegree: int = 3, frontAxis: int = 0, upAxis: int = 1, uniform: bool = False, suffixName="curveIk", use_offsetParentMatrix: bool = False):
     """
     创建一个基于曲线的IK系统，其中一系列的次级变换（输出物体）会跟随一条由控制器定义的曲线运动。
 
@@ -211,9 +207,8 @@ def curveIK(controls: List[str],
                                                  独立的平移、旋转和缩放属性上。默认为 False。
     """
 
-    axis = 'XYZ'[frontAxis]
+    axis = "XYZ"[frontAxis]
     upVector = [(1, 0, 0), (0, 1, 0), (0, 0, 1)][upAxis]
-
     seconds_list = []
     # build root
     root = cmds.createNode("transform", name=f"{suffixName}_upRoot")
@@ -231,7 +226,7 @@ def curveIK(controls: List[str],
         if idx == 0:
             cmds.addAttr(iter_laster_control, longName="relativesTwist", attributeType="double", defaultValue=0, keyable=False)
             cmds.addAttr(iter_laster_control, longName="twist", attributeType="double", defaultValue=0, keyable=False)
-        addRelativesTwist(control, iter_laster_control, axis=axis, suffixName=suffixName)
+        addRelativesTwist(control, root, axis=axis, suffixName=suffixName)
         iter_laster_control = control
 
     # build curve
@@ -274,10 +269,14 @@ def curveIK(controls: List[str],
     cmds.setAttr(f"{maxOffset_sub}.operation", 2)  # Subtract
     cmds.setAttr(f"{maxOffset_sub}.input1D[0]", 1.0)
     cmds.connectAttr(f"{maxOffset_divide}.outputX", f"{maxOffset_sub}.input1D[1]")
-    mult = cmds.createNode("multDoubleLinear", name=f"{suffixName}_maxOffsetMultiplier", ss=1, n="maxOffsetMultiplier")
-    cmds.connectAttr(f"{cvShape}.positionOffset", f"{mult}.input1")
-    cmds.connectAttr(f"{maxOffset_sub}.output1D", f"{mult}.input2")
-    cmds.connectAttr(f"{mult}.output", f"{cvShape}.outOffset")
+    # mult = cmds.createNode("multDoubleLinear", name=f"{suffixName}_maxOffsetMultiplier", ss=1)
+    # cmds.connectAttr(f"{cvShape}.positionOffset", f"{mult}.input1")
+    # cmds.connectAttr(f"{maxOffset_sub}.output1D", f"{mult}.input2")
+    # cmds.connectAttr(f"{mult}.output", f"{cvShape}.outOffset")
+    mult = cmds.createNode("multiplyDivide", name=f"{suffixName}_maxOffsetMultiplier", ss=1)
+    cmds.connectAttr(f"{cvShape}.positionOffset", f"{mult}.input1X")
+    cmds.connectAttr(f"{maxOffset_sub}.output1D", f"{mult}.input2X")
+    cmds.connectAttr(f"{mult}.outputX", f"{cvShape}.outOffset")
 
     cmds.setAttr(f"{cvShape}.baseLength", lock=True)
     cmds.setAttr(f"{cvShape}.currentLength", lock=True)
@@ -327,10 +326,14 @@ def curveIK(controls: List[str],
         cmds.connectAttr(f"{cvShape}.lengthScale", f"{divide}.input2X")
         cmds.setAttr(f"{divide}.operation", 2)
         # offset uValue
-        uValue_offset = cmds.createNode("addDoubleLinear", name=f"{suffixName}_offsetUValue_{idx}", ss=1)
-        cmds.connectAttr(f"{divide}.outputX", f"{uValue_offset}.input1")
-        cmds.connectAttr(f"{cvShape}.outOffset", f"{uValue_offset}.input2")
-        cmds.connectAttr(f"{uValue_offset}.output", f"{motionPath}.uValue")
+        uValue_offset = cmds.createNode("plusMinusAverage", name=f"{suffixName}_offsetUValue_{idx}", ss=1)
+        cmds.connectAttr(f"{divide}.outputX", f"{uValue_offset}.input1D[0]")
+        cmds.connectAttr(f"{cvShape}.outOffset", f"{uValue_offset}.input1D[1]")
+        # unit convert
+        unitConvert = cmds.createNode("unitConversion", name=f"{suffixName}_uValueUnitConversion{idx}")
+        cmds.connectAttr(f"{uValue_offset}.output1D", f"{unitConvert}.input")
+        cmds.setAttr(f"{unitConvert}.conversionFactor", 1.0)
+        cmds.connectAttr(f"{unitConvert}.output", f"{motionPath}.uValue")
 
         # compose matrix
         compose_matrix = cmds.createNode("composeMatrix", name=f"{suffixName}_composeMatrix_{idx}", ss=1)
@@ -348,13 +351,13 @@ def curveIK(controls: List[str],
         cmds.connectAttr(f"{blend_twist}.output", f"{compose_matrix_twist}.inputRotate{axis}")
         cmds.setAttr(f"{compose_matrix_twist}.inputRotateOrder", 0)  # XYZ
         # scale
-        for attr in "XYZ":
-            blend_scale = cmds.createNode("blendWeighted", name=f"{suffixName}_blendWeighted_{idx}_scale{attr}")
+        for _axis in "XYZ":
+            blend_scale = cmds.createNode("blendWeighted", name=f"{suffixName}_blendWeighted_{idx}_scale{_axis}")
             for idx, w in enumerate(weights_list):
                 control = controls[idx]
                 cmds.setAttr(f"{blend_scale}.weight[{idx}]", w)
-                cmds.connectAttr(f"{control}.scale{attr}", f"{blend_scale}.input[{idx}]")
-            cmds.connectAttr(f"{blend_scale}.output", f"{compose_matrix_twist}.inputScale{attr}")
+                cmds.connectAttr(f"{control}.scale{_axis}", f"{blend_scale}.input[{idx}]")
+            cmds.connectAttr(f"{blend_scale}.output", f"{compose_matrix_twist}.inputScale{_axis}")
 
         mult_matrix = cmds.createNode("multMatrix", name=f"{suffixName}_multMatrix_{idx}", ss=1)
         cmds.connectAttr(f"{compose_matrix}.outputMatrix", f"{mult_matrix}.matrixIn[1]")
@@ -376,21 +379,22 @@ def curveIK(controls: List[str],
 
 
 if __name__ == "__main__":
-
     controls = []
     for x in range(6):
         loc = cmds.spaceLocator(name=f"control_{x:02d}")[0]
         cmds.setAttr(f"{loc}.translate", x * 5, 0, 0)
         controls.append(loc)
 
-    root, transform_list, cvShape = curveIK(controls=controls,
-                                            secondsNum=15,
-                                            curveDegree=3,
-                                            frontAxis=0,
-                                            upAxis=1,
-                                            uniform=True,
-                                            use_offsetParentMatrix=False,
-                                            suffixName="curveIkTest")
+    root, transform_list, cvShape = curveIK(
+        controls=controls,
+        secondsNum=100,
+        curveDegree=3,
+        frontAxis=0,
+        upAxis=1,
+        uniform=True,
+        use_offsetParentMatrix=False,
+        suffixName="curveIkTest",
+    )
     for x in transform_list:
         cube = cmds.polyCube()
         cube_shape = cmds.listRelatives(cube, shapes=1)[0]
@@ -401,5 +405,3 @@ if __name__ == "__main__":
     for x in controls:
         cmds.connectAttr(f"{x}.translate", f"{cvShape}.controlPoints[{controls.index(x)}]")
 
-
-a:int = 1
