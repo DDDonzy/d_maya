@@ -1,4 +1,3 @@
-
 from dataclasses import dataclass
 from functools import partial
 
@@ -20,7 +19,7 @@ class TargetData:
     inbetweenIdx: int = 6000
     weight: float = 0.0
     postDeformersMode: int = 0
-    targetName: str = ''
+    targetName: str = ""
 
     @property
     def attr(self):
@@ -72,19 +71,14 @@ def get_targetDataList(blendShapeNode):
     Returns:
         list: List of TargetData objects
     """
-    targetNameList = cmds.listAttr(f'{blendShapeNode}.weight', m=True) or []
-    targetIndexList = cmds.getAttr(f'{blendShapeNode}.weight', mi=True) or []
+    targetNameList = cmds.listAttr(f"{blendShapeNode}.weight", m=True) or []
+    targetIndexList = cmds.getAttr(f"{blendShapeNode}.weight", mi=True) or []
     data_list = []
     for targetIdx in targetIndexList:
         item_list = cmds.getAttr(f"{blendShapeNode}.it[0].itg[{targetIdx}].iti", mi=1) or []
         postDeformersMode = cmds.getAttr(f"{blendShapeNode}.it[0].itg[{targetIdx}].postDeformersMode")
         for item in item_list:
-            data = TargetData(blendShapeNode,
-                              targetIdx,
-                              item,
-                              (item-5000)/1000,
-                              postDeformersMode,
-                              cmds.aliasAttr(f"{blendShapeNode}.w[{targetIdx}]", q=1))
+            data = TargetData(blendShapeNode, targetIdx, item, (item - 5000) / 1000, postDeformersMode, cmds.aliasAttr(f"{blendShapeNode}.w[{targetIdx}]", q=1))
             data_list.append(data)
     return data_list
 
@@ -115,7 +109,7 @@ def create_blendShapeNode(objectName, name="New_Blendshapes"):
     Returns:
         str: Created blendShape node name
     """
-    bsNode = cmds.blendShape(objectName, name=name)[0]
+    bsNode = cmds.blendShape(objectName, foc=1, name=name)[0]
     return bsNode
 
 
@@ -167,7 +161,7 @@ def sculptTarget(targetData: TargetData, message=False):
         cmds.connectAttr(sculptTargetTweaks, tweak, f=1)
         cmds.setAttr(sculptTargetIndex, targetData.targetIdx)
 
-        cmds.setAttr(sculptInbetweenWeight, round((targetData.inbetweenIdx-5000)/1000, 3))
+        cmds.setAttr(sculptInbetweenWeight, round((targetData.inbetweenIdx - 5000) / 1000, 3))
         cmds.setAttr(f"{targetData.node}.it[0].deformMatrixModified", True)
         if message:
             showMessage("Sculpt target mode enabled.")
@@ -208,7 +202,7 @@ def add_target(bs: str, name: str) -> str:
     """
 
     w_mi = cmds.getAttr(f"{bs}.w", mi=1)
-    i = w_mi[-1]+1 if w_mi else 0
+    i = w_mi[-1] + 1 if w_mi else 0
     cmds.setAttr(f"{bs}.w[{i}]", 0)
     if cmds.objExists(f"{bs}.{name}"):
         num = 0
@@ -235,7 +229,7 @@ def add_targetInbetween(bs: str, targetIdx: int, inbetweenIdx: int, name: str = 
         str: The full attribute path of the inbetween target. eg: "blendShape1.it[0].itg[0].iti[6000]"
     """
     if float(inbetweenIdx) < 1.0:
-        targetIdx = int(1000 * round(inbetweenIdx, 3)+5000)
+        targetIdx = int(1000 * round(inbetweenIdx, 3) + 5000)
     else:
         inbetweenIdx = int(inbetweenIdx)
     cmds.setAttr(f"{bs}.it[0].itg[{targetIdx}].iti[{inbetweenIdx}].ipt", *[1, (0, 0, 0, 1)], type="pointArray")
@@ -293,7 +287,6 @@ def add_sculptGeo(sculptGeo, targetData: TargetData = None, addInbetween=True):
 
 
 def copy_delta(targetData: TargetData):
-
     ict = f"{targetData.attr}.inputComponentsTarget"
     ipt = f"{targetData.attr}.inputPointsTarget"
 
@@ -322,38 +315,23 @@ def pasted_delta(targetData: TargetData, data):
     ipt_plug.setMObject(data[1])
 
 
-def flip_bsTarget(targetData: TargetData,
-                  axis="x",
-                  space=1):
+def flip_bsTarget(targetData: TargetData, axis="x", space=1):
     if not cmds.objExists(targetData.node):
-        raise RuntimeError(f"Flip error: Can not find {targetData.node }.")
-    cmds.blendShape(targetData.node, e=1,
-                    flipTarget=(0, targetData.targetIdx),
-                    symmetryAxis=axis,
-                    symmetrySpace=space)
+        raise RuntimeError(f"Flip error: Can not find {targetData.node}.")
+    cmds.blendShape(targetData.node, e=1, flipTarget=(0, targetData.targetIdx), symmetryAxis=axis, symmetrySpace=space)
     cmds.symmetricModelling(e=True, r=1)
 
 
 # mirrorDirection = 0    +X   --->   -X
 # mirrorDirection = 1    -X   --->   +X
-def mirror_bsTarget(targetData: TargetData,
-                    axis="x",
-                    mirrorDirection=0,
-                    space=1):
+def mirror_bsTarget(targetData: TargetData, axis="x", mirrorDirection=0, space=1):
     if not cmds.objExists(targetData.node):
-        raise RuntimeError(f"Mirror error: Can not find {targetData.node }.")
-    cmds.blendShape(targetData.node, e=1,
-                    mirrorTarget=(0, targetData.targetIdx),
-                    symmetryAxis=axis,
-                    mirrorDirection=mirrorDirection,
-                    symmetrySpace=space)
+        raise RuntimeError(f"Mirror error: Can not find {targetData.node}.")
+    cmds.blendShape(targetData.node, e=1, mirrorTarget=(0, targetData.targetIdx), symmetryAxis=axis, mirrorDirection=mirrorDirection, symmetrySpace=space)
     cmds.symmetricModelling(e=True, r=1)
 
 
-def flipCopy_targetData(sourceTargetData: TargetData,
-                        destinationTargetData: TargetData,
-                        axis='x',
-                        space=1):
+def flipCopy_targetData(sourceTargetData: TargetData, destinationTargetData: TargetData, axis="x", space=1):
     sourceTargetData.node
     sourceTargetData.targetIdx
     resetTargetDelta(destinationTargetData, removeInbetween=True)
@@ -368,22 +346,15 @@ def flipCopy_targetData(sourceTargetData: TargetData,
 
 
 def autoFlipCopy(blendShapeName, targetList=[], replaceStr=("L", "R"), axis="x", direction="+", mirror=False):
-
-    mirrorFunction = partial(mirror_bsTarget,
-                             axis=axis,
-                             mirrorDirection=direction,
-                             space=1)
-    flipFunction = partial(flipCopy_targetData,
-                           axis=axis,
-                           space=1)
+    mirrorFunction = partial(mirror_bsTarget, axis=axis, mirrorDirection=direction, space=1)
+    flipFunction = partial(flipCopy_targetData, axis=axis, space=1)
 
     bs_targetList: List[TargetData] = get_targetDataList(blendShapeName)
     bs_targetDict = {}
     for x in bs_targetList:
         bs_targetDict.update({x.targetName: x})
     bs_targetNames = list(bs_targetDict.keys())
-    
-    
+
     if not targetList:
         targetList: List[TargetData] = bs_targetList
 
@@ -418,8 +389,8 @@ def autoFlipCopy(blendShapeName, targetList=[], replaceStr=("L", "R"), axis="x",
 
 
 def get_targetIndex(node, name):
-    nameList = cmds.listAttr(f'{node}.weight', m=True) or []
-    indexList = cmds.getAttr(f'{node}.weight', mi=True) or []
+    nameList = cmds.listAttr(f"{node}.weight", m=True) or []
+    indexList = cmds.getAttr(f"{node}.weight", mi=True) or []
     idx = indexList[nameList.index(name)]
     return idx
 
