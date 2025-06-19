@@ -51,3 +51,33 @@ def get_lasterSelectedData() -> List[TargetData]:
         targetData.postDeformersMode = cmds.getAttr(f"{targetData.node}.it[0].itg[{targetData.targetIdx}].postDeformersMode")
 
     return targetData
+
+
+def get_selectionConvertToTargetData():
+    target = get_selectionTarget()
+    bs = get_selectionBlendShape()
+    if not bs and not target:
+        raise RuntimeError("Please select blendshape or targets in shapeEdit.")
+    if target and bs:
+        raise RuntimeError("Please select blendshape or targets in shapeEdit not both.")
+    if len(bs) > 1:
+        raise RuntimeError("Please select only one blendshape node in shapeEdit.")
+
+    if target:
+        _bs = target[0].split(".")[0]
+        idx_list = []
+        for i in target:
+            i_bs, idx = i.split(".")
+            idx_list.append(int(idx))
+            if i_bs != _bs:
+                raise RuntimeError("Please select targets from the same blendShape node")
+        _targetList = get_targetDataList(_bs)
+        targetList = []
+        for i in _targetList:
+            if i.targetIdx in idx_list:
+                targetList.append(i)
+    if bs:
+        bs = bs[0]
+        targetList = get_targetDataList(bs)
+
+    return targetList

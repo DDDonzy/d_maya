@@ -6,7 +6,7 @@ from z_bs.core.wrap import createWrap, createProximityWrap
 
 import z_bs.ui.logic.treeViewFunction as treeFn
 from z_bs.utils.showMessage import showMessage
-from z_bs.ui.logic.treeViewSelection import *
+from z_bs.ui.logic.treeViewSelection import get_lasterSelectedData, get_selectionBlendShape, get_selectionTarget, get_selectionConvertToTargetData
 from z_bs.utils.getHistory import get_history, get_shape
 
 from maya import mel, cmds
@@ -14,6 +14,7 @@ from maya import mel, cmds
 import time
 from functools import partial, wraps
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from z_bs.ui.uiMain import ShapeToolsWidget
 
@@ -21,7 +22,6 @@ if TYPE_CHECKING:
 def timeit(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-
         start_time = time.perf_counter()
 
         result = func(*args, **kwargs)
@@ -142,8 +142,7 @@ class ActionHandler:
         if not cmds.objectType(shape, isa="mesh"):
             showMessage("Selected object is not a mesh.")
 
-        bsFn.add_sculptGeo(sculptGeo=shape, targetData=target,
-                           addInbetween=self.ui.addInbetweenCheckBox.isChecked())
+        bsFn.add_sculptGeo(sculptGeo=shape, targetData=target, addInbetween=self.ui.addInbetweenCheckBox.isChecked())
 
         if not self.ui.deleteSculptCheckBox.isChecked():
             cmds.delete(sculptGeo)
@@ -310,6 +309,7 @@ class ActionHandler:
 
         def onButtonClicked():
             self.select_treeViewItems(btn.sel_sets)
+
         self.ui.dynamicButtonsDict[btn] = onButtonClicked
         btn.clicked.connect(self.ui.dynamicButtonsDict[btn])
 
@@ -384,14 +384,14 @@ class ActionHandler:
         target = get_selectionTarget()
         bs = get_selectionBlendShape()
         if not bs and not target:
-            showMessage(f"Please select blendShape or targets in shapeEdit")
+            showMessage("Please select blendShape or targets in shapeEdit")
             raise RuntimeError("Please select blendShape or targets in shapeEdit")
         if bs and target:
-            showMessage(f"Please select blendShape or targets in shapeEdit, not both")
-            raise RuntimeError(f"Please select blendShape or targets in shapeEdit, not both")
+            showMessage("Please select blendShape or targets in shapeEdit, not both")
+            raise RuntimeError("Please select blendShape or targets in shapeEdit, not both")
         if len(bs) > 1:
-            showMessage(f"Please select only one blendShape node in shapeEdit")
-            raise RuntimeError(f"Please select only one blendShape node in shapeEdit")
+            showMessage("Please select only one blendShape node in shapeEdit")
+            raise RuntimeError("Please select only one blendShape node in shapeEdit")
 
         if target:
             bs = target[0].split(".")[0]
@@ -400,8 +400,8 @@ class ActionHandler:
                 i_bs, idx = i.split(".")
                 idx_list.append(int(idx))
                 if i_bs != bs:
-                    showMessage(f"Please select targets from the same blendShape node")
-                    raise RuntimeError(f"Please select targets from the same blendShape node")
+                    showMessage("Please select targets from the same blendShape node")
+                    raise RuntimeError("Please select targets from the same blendShape node")
             targetList = bsFn.get_targetDataList(bs)
             transferList = []
             for i in targetList:
@@ -418,11 +418,7 @@ class ActionHandler:
     def transfer(self):
         data = self.getTransferData()
         wrap = self.makeWrapFunctions()
-        bsTransfer.transferBlendShape(sourceBlendShape=data["blendShape"],
-                                      targetDataList=data["targetList"],
-                                      destinationMesh=data["targetMesh"],
-                                      destinationBlendShape=data["destinationBlendShape"],
-                                      wrapFunction=wrap)
+        bsTransfer.transferBlendShape(sourceBlendShape=data["blendShape"], targetDataList=data["targetList"], destinationMesh=data["targetMesh"], destinationBlendShape=data["destinationBlendShape"], wrapFunction=wrap)
 
     def preview(self):
         if self.transferPreviewObject:
@@ -435,15 +431,9 @@ class ActionHandler:
 
         data = self.getTransferData()
         wrap = self.makeWrapFunctions()
-        self.transferPreviewObject = bsTransfer.transferBlendShape(sourceBlendShape=data["blendShape"],
-                                                                   targetDataList=data["targetList"],
-                                                                   destinationMesh=data["targetMesh"],
-                                                                   destinationBlendShape=data["destinationBlendShape"],
-                                                                   wrapFunction=wrap,
-                                                                   preview=True)
+        self.transferPreviewObject = bsTransfer.transferBlendShape(sourceBlendShape=data["blendShape"], targetDataList=data["targetList"], destinationMesh=data["targetMesh"], destinationBlendShape=data["destinationBlendShape"], wrapFunction=wrap, preview=True)
 
     def makeWrapFunctions(self):
-
         if self.ui.wrapRadioButton.isChecked():
             mode = self.ui.wrapModeComboBox.currentIndex()
             exclusiveBind = int(self.ui.wrapExclusiveBindLineEdit.text())
@@ -451,12 +441,7 @@ class ActionHandler:
             weightThreshold = float(self.ui.wrapWeightThresholdLineEdit.text())
             maxDistance = float(self.ui.wrapMaxDistanceLineEdit.text())
 
-            return partial(createWrap,
-                           falloffMode=mode,
-                           exclusiveBind=exclusiveBind,
-                           autoWeightThreshold=autoWeight,
-                           weightThreshold=weightThreshold,
-                           maxDistance=maxDistance)
+            return partial(createWrap, falloffMode=mode, exclusiveBind=exclusiveBind, autoWeightThreshold=autoWeight, weightThreshold=weightThreshold, maxDistance=maxDistance)
 
         if self.ui.proximityWrapRadioButton.isChecked():
             mode = self.ui.proximityModeComboBox.currentIndex()
@@ -465,12 +450,7 @@ class ActionHandler:
             falloffScale = float(self.ui.falloffScaleLineEdit.text())
             dropoffScale = float(self.ui.dropoffScaleLineEdit.text())
 
-            return partial(createProximityWrap,
-                           wrapMode=mode,
-                           smoothInfluences=smoothInfluences,
-                           smoothNormals=smoothNormal,
-                           falloffScale=falloffScale,
-                           dropoffRateScale=dropoffScale)
+            return partial(createProximityWrap, wrapMode=mode, smoothInfluences=smoothInfluences, smoothNormals=smoothNormal, falloffScale=falloffScale, dropoffRateScale=dropoffScale)
 
     def get_treeviewSelectedList(self):
         """
@@ -513,41 +493,13 @@ class ActionHandler:
             if index.isValid():
                 selection_model.select(index, QtCore.QItemSelectionModel.Select | QtCore.QItemSelectionModel.Rows)
 
+    @timeit
     def mirror_bsTarget(self):
         """
         镜像 BlendShape 目标
         Mirror the selected BlendShape target.
         """
-        target = get_selectionTarget()
-        bs = get_selectionBlendShape()
-        if not bs and not target:
-            showMessage(f"Please select blendShape or targets in shapeEdit")
-            raise RuntimeError("Please select blendShape or targets in shapeEdit")
-        if bs and target:
-            showMessage(f"Please select blendShape or targets in shapeEdit, not both")
-            raise RuntimeError(f"Please select blendShape or targets in shapeEdit, not both")
-        if len(bs) > 1:
-            showMessage(f"Please select only one blendShape node in shapeEdit")
-            raise RuntimeError(f"Please select only one blendShape node in shapeEdit")
-
-        if target:
-            bs = target[0].split(".")[0]
-            idx_list = []
-            for i in target:
-                i_bs, idx = i.split(".")
-                idx_list.append(int(idx))
-                if i_bs != bs:
-                    showMessage(f"Please select targets from the same blendShape node")
-                    raise RuntimeError(f"Please select targets from the same blendShape node")
-
-            targetList = bsFn.get_targetDataList(bs)
-            transferList = []
-            for i in targetList:
-                if i.targetIdx in idx_list:
-                    transferList.append(i)
-        elif bs:
-            bs = bs[0]
-            targetList = bsFn.get_targetDataList(bs)
+        targetList = get_selectionConvertToTargetData()
 
         axis = ["x", "y", "z"][self.ui.mirrorAxisComboBox.currentIndex()]
         direction = self.ui.mirrorDirectionComboBox.currentIndex()
@@ -558,44 +510,20 @@ class ActionHandler:
         targetList = list(targetDict.values())
 
         for target in targetList:
-            bsFn.mirror_bsTarget(target, axis=axis, mirrorDirection=direction)
+            bsFn.mirror_bsTarget(
+                target,
+                axis=axis,
+                mirrorDirection=direction,
+            )
             print(f"Mirror: {target.targetName} successfully.")
 
+    @timeit
     def flip_bsTarget(self, autoMirror=False):
         """
         翻转 BlendShape 目标
         Flip the selected BlendShape target.
         """
-        target = get_selectionTarget()
-        bs = get_selectionBlendShape()
-        if not bs and not target:
-            showMessage(f"Please select blendShape or targets in shapeEdit")
-            raise RuntimeError("Please select blendShape or targets in shapeEdit")
-        if bs and target:
-            showMessage(f"Please select blendShape or targets in shapeEdit, not both")
-            raise RuntimeError(f"Please select blendShape or targets in shapeEdit, not both")
-        if len(bs) > 1:
-            showMessage(f"Please select only one blendShape node in shapeEdit")
-            raise RuntimeError(f"Please select only one blendShape node in shapeEdit")
-
-        if target:
-            bs = target[0].split(".")[0]
-            idx_list = []
-            for i in target:
-                i_bs, idx = i.split(".")
-                idx_list.append(int(idx))
-                if i_bs != bs:
-                    showMessage(f"Please select targets from the same blendShape node")
-                    raise RuntimeError(f"Please select targets from the same blendShape node")
-
-            targetList = bsFn.get_targetDataList(bs)
-            transferList = []
-            for i in targetList:
-                if i.targetIdx in idx_list:
-                    transferList.append(i)
-        elif bs:
-            bs = bs[0]
-            targetList = bsFn.get_targetDataList(bs)
+        targetList = get_selectionConvertToTargetData()
 
         targetDict = {}
         for x in targetList:
@@ -605,5 +533,11 @@ class ActionHandler:
         axis = ["x", "y", "z"][self.ui.mirrorAxisComboBox.currentIndex()]
         direction = self.ui.mirrorDirectionComboBox.currentIndex()
         matchStr = self.ui.mirrorTableView.get_active_mirror_data()
-
-        bsFn.autoFlipCopy(targetList[0].node, targetList, matchStr, axis, direction, autoMirror)
+        bsFn.autoFlipCopy(
+            targetList[0].node,
+            targetList,
+            matchStr,
+            axis,
+            direction,
+            autoMirror,
+        )

@@ -377,8 +377,15 @@ def autoFlipCopy(blendShapeName, targetList=[], replaceStr=("L", "R"), axis="x",
                            axis=axis,
                            space=1)
 
+    bs_targetList: List[TargetData] = get_targetDataList(blendShapeName)
+    bs_targetDict = {}
+    for x in bs_targetList:
+        bs_targetDict.update({x.targetName: x})
+    bs_targetNames = list(bs_targetDict.keys())
+    
+    
     if not targetList:
-        targetList: List[TargetData] = get_targetDataList(blendShapeName)
+        targetList: List[TargetData] = bs_targetList
 
     targetDict = {}
     for x in targetList:
@@ -403,8 +410,8 @@ def autoFlipCopy(blendShapeName, targetList=[], replaceStr=("L", "R"), axis="x",
                 continue
         else:
             print(f"{'FlipCopy:':<10} {x:-<30}> {mirrorList[i]:<30}")
-            if mirrorList[i] in targetDict.keys():
-                flipFunction(targetDict[x], targetDict[mirrorList[i]])
+            if mirrorList[i] in bs_targetNames:
+                flipFunction(targetDict[x], bs_targetDict[mirrorList[i]])
             else:
                 print(f"Warning: {mirrorList[i]} not found in targetDict, skipping flip copy.")
                 continue

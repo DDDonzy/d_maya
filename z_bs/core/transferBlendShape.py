@@ -10,24 +10,25 @@ from typing import Dict, List
 
 
 # Pre-configured wrap function with default settings
-pre_configured_wrap = partial(createProximityWrap,
-                              wrapMode=1,
-                              falloffScale=50,
-                              smoothInfluences=0,
-                              smoothNormals=0)
+pre_configured_wrap = partial(
+    createProximityWrap,
+    wrapMode=1,
+    falloffScale=50,
+    smoothInfluences=0,
+    smoothNormals=0,
+)
 # Pre-configured wrap function with default settings
-pre_configured_wrap2 = partial(createWrap,
-                               falloffMode=1,
-                               maxDistance=1,
-                               weightThreshold=0,
-                               autoWeightThreshold=1,
-                               exclusiveBind=True)
+pre_configured_wrap2 = partial(
+    createWrap,
+    falloffMode=1,
+    maxDistance=1,
+    weightThreshold=0,
+    autoWeightThreshold=1,
+    exclusiveBind=True,
+)
 
 
-def transferBlendShape(sourceBlendShape="", targetDataList: List[TargetData] = [],
-                       destinationMesh="", destinationBlendShape=None,
-                       wrapFunction=pre_configured_wrap,
-                       preview=False):
+def transferBlendShape(sourceBlendShape="", targetDataList: List[TargetData] = [], destinationMesh="", destinationBlendShape=None, wrapFunction=pre_configured_wrap, preview=False):
     """
     Transfer blendShape targets between different topology models using wrap
 
@@ -50,10 +51,10 @@ def transferBlendShape(sourceBlendShape="", targetDataList: List[TargetData] = [
     if not targetDataList:
         targetDataList = get_targetDataList(sourceBlendShape)
     # if new_bsNode == None....  then create new blendshapes node
-    if destinationBlendShape is None:
+    if (destinationBlendShape is None) or (not cmds.objExists(destinationBlendShape)):
         destinationBlendShape = create_blendShapeNode(objectName=destinationMesh, name="transferBlendShape")
-    elif not cmds.objExists(destinationBlendShape):
-        destinationBlendShape = create_blendShapeNode(objectName=destinationMesh, name="transferBlendShape")
+        order = cmds.getAttr(f"{sourceBlendShape}.deformationOrder")
+        cmds.setAttr(f"{destinationBlendShape}.deformationOrder", order)
 
     # transfer source and target data
     transferTargetDict: Dict[str, List[TargetData]] = {}
@@ -76,12 +77,7 @@ def transferBlendShape(sourceBlendShape="", targetDataList: List[TargetData] = [
                 newTargetIdx = get_targetIndex(destinationBlendShape, name)
             except:
                 continue
-        newTargetData = TargetData(destinationBlendShape,
-                                   newTargetIdx,
-                                   sourceTargetData.inbetweenIdx,
-                                   sourceTargetData.weight,
-                                   sourceTargetData.postDeformersMode,
-                                   name)
+        newTargetData = TargetData(destinationBlendShape, newTargetIdx, sourceTargetData.inbetweenIdx, sourceTargetData.weight, sourceTargetData.postDeformersMode, name)
         if sourceTargetData.targetName not in sourceTargetDict.keys():
             sourceTargetDict[sourceTargetData.targetName] = [sourceTargetData]
         else:
@@ -127,5 +123,8 @@ def transferBlendShape(sourceBlendShape="", targetDataList: List[TargetData] = [
         if weight_sourceConnect:
             cmds.connectAttr(weight_sourceConnect[0], f"{source.node}.weight[{source.targetIdx}]")
             cmds.connectAttr(weight_sourceConnect[0], f"{transfer.node}.weight[{transfer.targetIdx}]")
+        if bake_weight:
+            cmds.setAttr(f"{source.node}.weight[{source.targetIdx}]", bake_weight)
+            cmds.setAttr(f"{transfer.node}.weight[{transfer.targetIdx}]", bake_weight)
     # delete wrap
     cmds.delete(wrapNode, wrapMesh, wrapBase)
