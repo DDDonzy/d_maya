@@ -404,4 +404,3 @@ if __name__ == "__main__":
     # driver curve
     for x in controls:
         cmds.connectAttr(f"{x}.translate", f"{cvShape}.controlPoints[{controls.index(x)}]")
-

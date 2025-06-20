@@ -107,8 +107,7 @@ def curveIK(
     frontVector = [om.MVector(1, 0, 0), om.MVector(0, 1, 0), om.MVector(0, 0, 1)][frontAxis]
 
     # build root
-    root = cmds.createNode("transform", name=f"{suffixName}_upRoot")
-    cmds.delete(cmds.parentConstraint(controls[0], root))
+    root = controls[0]
 
     # get controls objects positions to MPoint
     controls_mPoint = []
@@ -116,31 +115,31 @@ def curveIK(
         controls_mPoint.append(om.MPoint(cmds.xform(x, ws=1, q=1, t=1)))
 
     # controls twist
-    pickMatrix_root = cmds.createNode("pickMatrix", name=f"{suffixName}_{root}_pickMatrix", ss=1)
+    pickMatrix_root = cmds.createNode("pickMatrix", name=f"{suffixName}_root_pickMatrix", ss=1)
     cmds.setAttr(f"{pickMatrix_root}.useTranslate", 0)
     cmds.setAttr(f"{pickMatrix_root}.useScale", 0)
     cmds.setAttr(f"{pickMatrix_root}.useShear", 0)
-    cmds.connectAttr(f"{root}.worldMatrix[0]", f"{pickMatrix_root}.inputMatrix")
+    cmds.connectAttr(f"{root}.parentMatrix", f"{pickMatrix_root}.inputMatrix")
 
     pickMatrix_control_S_list = []
-    iter_pickMatrix_control_R = pickMatrix_root
+    iter_pickMatrix_control_Rotate = pickMatrix_root
     for idx, _ in enumerate(controls):
         control = controls[idx]
 
         cmds.addAttr(control, longName="twist", attributeType="double", defaultValue=0, keyable=False)
 
         # pick only rotate
-        pickMatrix_control_R = cmds.createNode("pickMatrix", name=f"{suffixName}_{control}_pickMatrix", ss=1)
-        cmds.connectAttr(f"{control}.worldMatrix[0]", f"{pickMatrix_control_R}.inputMatrix")
-        cmds.setAttr(f"{pickMatrix_control_R}.useTranslate", 0)
-        cmds.setAttr(f"{pickMatrix_control_R}.useScale", 0)
-        cmds.setAttr(f"{pickMatrix_control_R}.useShear", 0)
+        pickMatrix_control_Rotate = cmds.createNode("pickMatrix", name=f"{suffixName}_{control}_pickMatrix", ss=1)
+        cmds.connectAttr(f"{control}.worldMatrix[0]", f"{pickMatrix_control_Rotate}.inputMatrix")
+        cmds.setAttr(f"{pickMatrix_control_Rotate}.useTranslate", 0)
+        cmds.setAttr(f"{pickMatrix_control_Rotate}.useScale", 0)
+        cmds.setAttr(f"{pickMatrix_control_Rotate}.useShear", 0)
 
         # relative matrix
         node_multMatrix = cmds.createNode("multMatrix", name=f"{suffixName}_multMatrix", ss=1)
-        cmds.connectAttr(f"{pickMatrix_control_R}.outputMatrix", f"{node_multMatrix}.matrixIn[0]")
+        cmds.connectAttr(f"{pickMatrix_control_Rotate}.outputMatrix", f"{node_multMatrix}.matrixIn[0]")
         inverseMatrix = cmds.createNode("inverseMatrix", name=f"{suffixName}_multMatrix", ss=1)
-        cmds.connectAttr(f"{iter_pickMatrix_control_R}.outputMatrix", f"{inverseMatrix}.inputMatrix")
+        cmds.connectAttr(f"{iter_pickMatrix_control_Rotate}.outputMatrix", f"{inverseMatrix}.inputMatrix")
         cmds.connectAttr(f"{inverseMatrix}.outputMatrix", f"{node_multMatrix}.matrixIn[1]")
 
         # cal twist
@@ -165,7 +164,7 @@ def curveIK(
         cmds.setAttr(f"{pickMatrix_control_S}.useTranslate", 0)
         cmds.setAttr(f"{pickMatrix_control_S}.useRotate", 0)
         pickMatrix_control_S_list.append(pickMatrix_control_S)
-        iter_pickMatrix_control_R = pickMatrix_control_R
+        iter_pickMatrix_control_Rotate = pickMatrix_control_Rotate
 
     # build curve
     cvData: CurveData = CurveData(controls_mPoint, curveDegree)
@@ -173,7 +172,6 @@ def curveIK(
     cv = cmds.rename(cv, f"{suffixName}_curve")
     cvShape = cmds.listRelatives(cv, shapes=1)[0]
     cmds.setAttr(f"{cv}.inheritsTransform", 0)
-    cmds.parent(cv, root)
 
     # curve logic
     defaultLength = cvData.get_length_by_parameter(1.0)
@@ -280,18 +278,18 @@ def curveIK(
         # out mult matrix
         mult_matrix = cmds.createNode("multMatrix", name=f"{suffixName}_multMatrix_{idx}", ss=1)
 
-        # pos matrix
-        pos_matrix = cmds.createNode("composeMatrix", name=f"{suffixName}_composeMatrix_{idx}", ss=1)
-        cmds.connectAttr(f"{motionPath}.allCoordinates", f"{pos_matrix}.inputTranslate")
         # aim matrix
         compose_matrix = cmds.createNode("composeMatrix", name=f"{suffixName}_composeMatrix_{idx}", ss=1)
         cmds.connectAttr(f"{motionPath}.allCoordinates", f"{compose_matrix}.inputTranslate")
-        if iter_laster_aim_matrix is not None:
-            decom = cmds.createNode("decomposeMatrix", name=f"{suffixName}_decomposeMatrix_{idx}", ss=1)
+
+        if iter_laster_aim_matrix:
             # aim source
+            decom = cmds.createNode("decomposeMatrix", name=f"{suffixName}_decomposeMatrix_{idx}", ss=1)
             cmds.connectAttr(f"{iter_laster_aim_matrix}.outputMatrix", f"{decom}.inputMatrix")
             cmds.connectAttr(f"{decom}.outputRotate", f"{compose_matrix}.inputRotate")
             # aim target
+            pos_matrix = cmds.createNode("composeMatrix", name=f"{suffixName}_composeMatrix_{idx}", ss=1)
+            cmds.connectAttr(f"{motionPath}.allCoordinates", f"{pos_matrix}.inputTranslate")
             cmds.connectAttr(f"{pos_matrix}.outputMatrix", f"{iter_laster_aim_matrix}.primary.primaryTargetMatrix")
 
         aim_matrix = cmds.createNode("aimMatrix", name=f"{suffixName}_aimMatrix{idx}", ss=1)
@@ -337,12 +335,14 @@ def curveIK(
         cmds.addAttr(x, longName="positionOffset", attributeType="double", defaultValue=0, min=0, max=1, keyable=True, pxy=positionOffset_attr)
         cmds.addAttr(x, longName="contraction", attributeType="double", defaultValue=1.0, min=1e-6, keyable=True, pxy=contraction_attr)
 
-    return root, seconds_list, cvShape
+    return seconds_list, cv
 
 
 if __name__ == "__main__":
+    num = 100
+    controlsNum = 10
     controls = []
-    for x in range(10):
+    for x in range(controlsNum):
         jnt = cmds.createNode("joint", name=f"joint_{x:02d}")
         cmds.setAttr(f"{jnt}.translate", x * 5, 0, 0)
         controls.append(jnt)
@@ -351,9 +351,9 @@ if __name__ == "__main__":
             continue
         cmds.parent(controls[i], controls[i - 1])
 
-    root, transform_list, cvShape = curveIK(
+    transform_list, cv = curveIK(
         controls=controls,
-        secondsNum=20,
+        secondsNum=num,
         curveDegree=3,
         frontAxis=0,
         uniform=True,
@@ -367,4 +367,8 @@ if __name__ == "__main__":
         cmds.delete(cube)
     for i, x in enumerate(transform_list):
         cmds.setAttr(f"{x}.displayLocalAxis", 1)
-    cmds.skinCluster(cvShape, controls, tsb=1)
+
+    for x in controls:
+        decom = cmds.createNode("decomposeMatrix", name=f"{x}_decomposeMatrix", ss=1)
+        cmds.connectAttr(f"{x}.worldMatrix[0]", f"{decom}.inputMatrix")
+        cmds.connectAttr(f"{decom}.outputTranslate", f"{cv}.controlPoints[{controls.index(x)}]")
