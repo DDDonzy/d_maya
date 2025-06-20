@@ -84,6 +84,7 @@ def curveIK(
     frontAxis: int = 0,
     uniform: bool = False,
     suffixName: str = "curveIk",
+    secondsType: str = "transform",
     use_offsetParentMatrix: bool = False,
 ):
     """
@@ -98,6 +99,7 @@ def curveIK(
                                  If False, they will be distributed according to the curve parameterization, which may result in uneven distribution,
                                  and the 'stretch' attribute will be locked, the 'positionOffset' attribute will be set to 0, and both features will be disabled.
         suffixName (str, optional): Suffix string used for naming all newly created nodes. Defaults to "curveIk".
+        secondsType (str, optional): Type of the secondary transforms (output objects) to create. Can be "transform" or "joint". Defaults to "transform".
         use_offsetParentMatrix (bool, optional): If True, the final calculated matrix will be connected to the secondary transforms' (output objects')
                                                 'offsetParentMatrix' attribute, which is a more streamlined connection method. If False,
                                                 'decomposeMatrix' nodes will be used to connect to individual translate, rotate and scale attributes. Defaults to False.
@@ -106,7 +108,6 @@ def curveIK(
     axis = "XYZ"[frontAxis]
     frontVector = [om.MVector(1, 0, 0), om.MVector(0, 1, 0), om.MVector(0, 0, 1)][frontAxis]
 
-    # build root
     root = controls[0]
 
     # get controls objects positions to MPoint
@@ -173,16 +174,21 @@ def curveIK(
     cvShape = cmds.listRelatives(cv, shapes=1)[0]
     cmds.setAttr(f"{cv}.inheritsTransform", 0)
 
+    for x in controls:
+        decom = cmds.createNode("decomposeMatrix", name=f"{x}_decomposeMatrix", ss=1)
+        cmds.connectAttr(f"{x}.worldMatrix[0]", f"{decom}.inputMatrix")
+        cmds.connectAttr(f"{decom}.outputTranslate", f"{cvShape}.controlPoints[{controls.index(x)}]")
+
     # curve logic
     defaultLength = cvData.get_length_by_parameter(1.0)
     cmds.addAttr(cvShape, longName="stretch", attributeType="double", defaultValue=0, min=0, max=1, keyable=True)
     cmds.addAttr(cvShape, longName="positionOffset", attributeType="double", min=0, max=1, keyable=True)
-    cmds.addAttr(cvShape, longName="globalScale", attributeType="double", min=1e-6, keyable=False, defaultValue=1.0)
     cmds.addAttr(cvShape, longName="baseLength", attributeType="double", defaultValue=defaultLength, keyable=False)
     cmds.addAttr(cvShape, longName="currentLength", attributeType="double", defaultValue=defaultLength, keyable=False)
     cmds.addAttr(cvShape, longName="lengthScale", attributeType="double", defaultValue=1.0, keyable=False)
     cmds.addAttr(cvShape, longName="outOffset", attributeType="double", min=0, max=1, keyable=False)
     cmds.addAttr(cvShape, longName="contraction", attributeType="double", defaultValue=1.0, max=1, min=1e-6, keyable=True)
+    cmds.addAttr(cvShape, longName="globalScale", attributeType="double", min=1e-6, keyable=True, defaultValue=1.0)
 
     currentLength_attr = f"{cvShape}.currentLength"
     baseLength_attr = f"{cvShape}.baseLength"
@@ -250,7 +256,7 @@ def curveIK(
         # uValue data
         weights_list = cvData.get_weights_by_parameter(uValue)
         # build output transform
-        transform = cmds.createNode("transform", name=f"{suffixName}Output{idx}")
+        transform = cmds.createNode(secondsType, name=f"{suffixName}Output{idx}")
         seconds_list.append(transform)
         # Motion Path
         motionPath = cmds.createNode("motionPath", name=f"{suffixName}_motionPath_{idx}")
@@ -334,41 +340,34 @@ def curveIK(
         cmds.addAttr(x, longName="stretch", attributeType="double", defaultValue=0, min=0, max=1, keyable=True, pxy=stretch_attr)
         cmds.addAttr(x, longName="positionOffset", attributeType="double", defaultValue=0, min=0, max=1, keyable=True, pxy=positionOffset_attr)
         cmds.addAttr(x, longName="contraction", attributeType="double", defaultValue=1.0, min=1e-6, keyable=True, pxy=contraction_attr)
+    cmds.select(controls)
+    cmds.TagAsController()
 
     return seconds_list, cv
 
 
 if __name__ == "__main__":
-    num = 100
+    secondsNum = 50
     controlsNum = 10
+    curveDegree = 2
+
+    # build controls
     controls = []
     for x in range(controlsNum):
-        jnt = cmds.createNode("joint", name=f"joint_{x:02d}")
+        jnt = cmds.createNode("transform", name=f"joint_{x:02d}")
         cmds.setAttr(f"{jnt}.translate", x * 5, 0, 0)
         controls.append(jnt)
     for i, _ in enumerate(controls):
         if i == 0:
             continue
         cmds.parent(controls[i], controls[i - 1])
-
+    # build curve IK
     transform_list, cv = curveIK(
         controls=controls,
-        secondsNum=num,
-        curveDegree=3,
+        secondsNum=secondsNum,
+        curveDegree=curveDegree,
         frontAxis=0,
         uniform=True,
         use_offsetParentMatrix=False,
         suffixName="curveIkTest",
     )
-    for x in transform_list:
-        cube = cmds.polyCube()
-        cube_shape = cmds.listRelatives(cube, shapes=1)[0]
-        cmds.parent(cube_shape, x, r=1, s=1)
-        cmds.delete(cube)
-    for i, x in enumerate(transform_list):
-        cmds.setAttr(f"{x}.displayLocalAxis", 1)
-
-    for x in controls:
-        decom = cmds.createNode("decomposeMatrix", name=f"{x}_decomposeMatrix", ss=1)
-        cmds.connectAttr(f"{x}.worldMatrix[0]", f"{decom}.inputMatrix")
-        cmds.connectAttr(f"{decom}.outputTranslate", f"{cv}.controlPoints[{controls.index(x)}]")
