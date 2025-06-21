@@ -54,6 +54,10 @@ def get_lasterSelectedData() -> List[TargetData]:
 
 
 def get_selectionConvertToTargetData():
+    """
+    获取所有的选择项目，并且转换为 TargetData 列表。
+    如果选择的是 blendshape 节点，则获取所有的目标数据。
+    """
     target = get_selectionTarget()
     bs = get_selectionBlendShape()
     if not bs and not target:

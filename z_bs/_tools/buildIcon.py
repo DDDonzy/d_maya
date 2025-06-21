@@ -469,8 +469,8 @@ def set_svg_colors_directly_hsv(input_svg_path: str,
 
 # --- 主执行逻辑 ---
 if __name__ == '__main__':
-    source_icon_dir = r"T:\d_maya\z_bs\icon\source"  # 您的原始SVG图标目录
-    output_icon_dir = r"T:\d_maya\z_bs\icon"      # 您的最终输出目录
+    source_icon_dir = r"E:\d_maya\z_bs\ui\dev_icon\source"  # 您的原始SVG图标目录
+    output_icon_dir = r"E:\d_maya\z_bs\ui\dev_icon"      # 您的最终输出目录
 
     # 为修复后的、作为基础版本的SVG创建一个临时子目录
     # 这样做可以保持主输出目录的整洁，这些是中间文件

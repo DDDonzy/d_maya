@@ -53,8 +53,8 @@ class TreeViewIterator:
 
 
 def _match_pattern(text, pattern):
-    """ 
-    # Check if the text matches the pattern. 
+    """
+    # Check if the text matches the pattern.
 
     Example:
         _match_pattern("pCube1", "p*ube*") -> True
@@ -84,6 +84,33 @@ def get_treeViewItemIconLabel(tree_view: QTreeView, index: QModelIndex):
     except Exception as e:
         print(f"Error getting icon QLabel: {e}")
         return None
+
+
+def get_treeViewItemsInfo(treeView: QTreeView):
+    model = treeView.model()
+    if not model:
+        return
+
+    info = {
+        "bsNode": [],
+        "target": [],
+        "inbetween": [],
+    }
+
+    for idx in TreeViewIterator(treeView):
+        text = get_treeViewItemText(treeView, idx)
+        item = model.itemFromIndex(idx)
+        if not item:
+            continue
+        itemData = item.data()  # 1=bsNode, 2=bsGroup, 3=bsTarget, 4=bsTargetGroup, 5=bsTargetInbetween
+        if not itemData:
+            continue
+
+        if itemData == 1:
+            info["bsNode"].append(text)
+        elif itemData == 3:
+            info["target"].append(text)
+    return info
 
 
 def treeView_filter(treeView: QTreeView, filterStr: str = "", filterType: SelectedItemType = None):

@@ -4,7 +4,7 @@ import sys
 
 pyside2_rcc = r"C:\Program Files\Autodesk\Maya2024\bin\pyside2-rcc.exe"
 
-source_qrc = r"T:\d_maya\z_bs\icon\_qrc.qrc"
+source_qrc = r"E:\d_maya\z_bs\ui\dev_icon\_qrc.qrc"
 
 
 dir = Path(source_qrc).parent

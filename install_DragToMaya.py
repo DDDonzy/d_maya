@@ -7,14 +7,14 @@ from maya import cmds, mel
 path = os.path.dirname(__file__)
 if path not in sys.path:
     sys.path.append(path)
-    
-from _hotkey.d_hotkey import install_hotkey
+
+from _hotkey.d_hotkey import install_hotkey  # noqa: E402
 
 
 ENV_LIB = {
     "MAYA_NO_HOME": 1,
     "MAYA_NO_HOME_ICON": 1,
-    "MAYA_SKIP_BLOCK_CHECK": 1
+    "MAYA_SKIP_BLOCK_CHECK": 1,
 }
 
 
@@ -45,15 +45,15 @@ def get_mayaEnvFile():
 
 
 def modify_mayaEnvFile():
-    """Add path to maya usersetup.py """
+    """Add path to maya usersetup.py"""
     env_file = get_mayaEnvFile()
     try:
-        with open(env_file, 'r') as file:
+        with open(env_file, "r") as file:
             content = file.read()
     except:
         content = ""
 
-    with open(env_file, 'a') as file:
+    with open(env_file, "a") as file:
         for key, value in ENV_LIB.items():
             if key in content:
                 continue
@@ -71,12 +71,12 @@ def modify_mayaUserSetup():
     userSetup_path = os.path.join(userSetup_path, maya_version, "scripts", user_setup_file)
     userSetup_path = os.path.normpath(userSetup_path)
     try:
-        with open(userSetup_path, 'r') as file:
+        with open(userSetup_path, "r") as file:
             content = file.read()
     except:
         content = ""
 
-    with open(userSetup_path, 'a') as file:
+    with open(userSetup_path, "a") as file:
         additional_text = f"\nimport sys\nif r'{this_path}' not in sys.path:\n    sys.path.append(r'{this_path}')"
         if additional_text in content:
             return
@@ -86,7 +86,7 @@ def modify_mayaUserSetup():
 
 def show_message(msg):
     message = f"<hl> {msg} </hl>"
-    cmds.inViewMessage(amg=message, pos='botCenter', fade=True, fadeInTime=100, fadeStayTime=1000, fadeOutTime=100)
+    cmds.inViewMessage(amg=message, pos="botCenter", fade=True, fadeInTime=100, fadeStayTime=1000, fadeOutTime=100)
 
 
 def onMayaDroppedPythonFile(*args, **kwargs):

@@ -55,7 +55,7 @@ def transferBlendShape(sourceBlendShape="", targetDataList: List[TargetData] = [
         destinationBlendShape = create_blendShapeNode(objectName=destinationMesh, name="transferBlendShape")
         order = cmds.getAttr(f"{sourceBlendShape}.deformationOrder")
         cmds.setAttr(f"{destinationBlendShape}.deformationOrder", order)
-        print(order)
+
 
     # transfer source and target data
     transferTargetDict: Dict[str, List[TargetData]] = {}
