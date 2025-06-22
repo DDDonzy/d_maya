@@ -1,4 +1,3 @@
-
 from pathlib import Path
 
 from PySide2 import QtWidgets, QtCore, QtGui
@@ -35,7 +34,6 @@ def getShapeEditorWidgets():
 
 class ShapeToolsWidget(uiBase):
     def __init__(self):
-
         self.callback_ids = []
 
         super().__init__()
@@ -51,6 +49,7 @@ class ShapeToolsWidget(uiBase):
         self.pastedDeltaBtn: QtWidgets.QPushButton
         self.transferButton: QtWidgets.QPushButton
         self.previewButton: QtWidgets.QPushButton
+        self.resetDeltaBtn: QtWidgets.QPushButton
 
         self.deleteSculptCheckBox: QtWidgets.QCheckBox
         self.addInbetweenCheckBox: QtWidgets.QCheckBox
@@ -107,7 +106,6 @@ class ShapeToolsWidget(uiBase):
         self.action_handler.load_blendshape()
 
     def setupUi(self):
-
         #
         self.loadTargetButton.clicked.connect(self.action_handler.load_target)
         self.loadBsButton.clicked.connect(self.action_handler.load_blendshape)
@@ -125,6 +123,7 @@ class ShapeToolsWidget(uiBase):
         self.mirrorButton.clicked.connect(UndoCallback(self.action_handler.mirror_bsTarget))
         self.flipButton.clicked.connect(UndoCallback(self.action_handler.flip_bsTarget))
         self.mirrorAutoButton.clicked.connect(UndoCallback(self.action_handler.flip_bsTarget, autoMirror=True))
+        self.resetDeltaBtn.clicked.connect(UndoCallback(self.action_handler.resetDelta))
 
         self.treeView.selectionModel().selectionChanged.connect(self.action_handler.update_object_label)
 
@@ -167,7 +166,7 @@ class ShapeToolsWidget(uiBase):
         return super().eventFilter(obj, event)
 
     def closeShapeEditor(self):
-        """ close shape editor if it is open """
+        """close shape editor if it is open"""
         shapeEditorNames = getMayaPanelName("shapePanel")
         for shapeEditor in shapeEditorNames:
             if cmds.window(shapeEditor, ex=1):

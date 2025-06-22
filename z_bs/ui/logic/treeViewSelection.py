@@ -1,5 +1,5 @@
 from maya import cmds, mel
-from z_bs.core.bsFunctions import TargetData, get_targetDataList
+import z_bs.core.bsFunctions as fnBs
 from typing import List
 
 
@@ -19,8 +19,8 @@ def get_selectionInbetween():
     return mel.eval("getShapeEditorTreeviewSelection 16")
 
 
-def get_lasterSelectedData() -> List[TargetData]:
-    targetData: TargetData = TargetData()
+def get_lasterSelectedData() -> List[fnBs.TargetData]:
+    targetData: fnBs.TargetData = fnBs.TargetData()
 
     bsNameSelected = get_selectionBlendShape()
     targetSelected = get_selectionTarget()
@@ -75,13 +75,14 @@ def get_selectionConvertToTargetData():
             idx_list.append(int(idx))
             if i_bs != _bs:
                 raise RuntimeError("Please select targets from the same blendShape node")
-        _targetList = get_targetDataList(_bs)
+        _targetList = fnBs.get_targetDataList(_bs)
         targetList = []
         for i in _targetList:
             if i.targetIdx in idx_list:
                 targetList.append(i)
     if bs:
         bs = bs[0]
-        targetList = get_targetDataList(bs)
+        targetList = fnBs.get_targetDataList(bs)
 
     return targetList
+

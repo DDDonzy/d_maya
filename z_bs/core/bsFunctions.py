@@ -4,7 +4,7 @@ from functools import partial
 import z_bs.utils.apiundo as apiundo
 from z_bs.utils.showMessage import showMessage
 
-from maya import cmds, mel
+from maya import cmds
 from maya.api import OpenMaya as om
 
 from typing import List
@@ -170,6 +170,8 @@ def sculptTarget(targetData: TargetData, message=False):
 
 
 def resetInbetweenDelta(targetData: TargetData = None, removeInbetween=True):
+    print(targetData)
+    print(targetData.isInbetweenExists)
     if not targetData.isInbetweenExists:
         raise RuntimeError(f"{targetData.attr} does not exist.")
     if removeInbetween and targetData.inbetweenIdx != 6000:
@@ -395,7 +397,17 @@ def get_targetIndex(node, name):
     return idx
 
 
-def inbetweenIndexToValue(inbetweenIdx):
+def get_targetInbetween(node, targetIdx):
+    """
+    Get the inbetween index for a given target index.
+    """
+    if not cmds.objExists(node):
+        raise RuntimeError(f"Node {node} does not exist.")
+    inbetween = cmds.getAttr(f"{node}.it[0].itg[{targetIdx}].iti", mi=True) or []
+    return [TargetData(node, targetIdx, x) for x in inbetween]
+
+
+def convertInbetweenIndexToValue(inbetweenIdx):
     """
     Convert inbetween index to value.
     Inbetween index is between 5000 and 6000, where 6000 is the default inbetween.

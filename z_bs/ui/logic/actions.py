@@ -1,12 +1,12 @@
 from PySide2 import QtWidgets, QtCore
 
-import z_bs.core.bsFunctions as bsFn
+import z_bs.core.bsFunctions as fnBs
 import z_bs.core.transferBlendShape as bsTransfer
 from z_bs.core.wrap import createWrap, createProximityWrap
 
 import z_bs.ui.logic.treeViewFunction as treeFn
 from z_bs.utils.showMessage import showMessage
-from z_bs.ui.logic.treeViewSelection import get_lasterSelectedData, get_selectionBlendShape, get_selectionTarget, get_selectionConvertToTargetData
+from z_bs.ui.logic.treeViewSelection import get_lasterSelectedData, get_selectionBlendShape, get_selectionTarget, get_selectionConvertToTargetData, get_selectionInbetween
 from z_bs.utils.getHistory import get_history, get_shape
 
 from maya import mel, cmds
@@ -142,7 +142,7 @@ class ActionHandler:
         if not cmds.objectType(shape, isa="mesh"):
             showMessage("Selected object is not a mesh.")
 
-        bsFn.add_sculptGeo(sculptGeo=shape, targetData=target, addInbetween=self.ui.addInbetweenCheckBox.isChecked())
+        fnBs.add_sculptGeo(sculptGeo=shape, targetData=target, addInbetween=self.ui.addInbetweenCheckBox.isChecked())
 
         if not self.ui.deleteSculptCheckBox.isChecked():
             cmds.delete(sculptGeo)
@@ -161,7 +161,7 @@ class ActionHandler:
         else:
             weightAttr = f"{target.node}.w[{target.targetIdx}]"
             iti_list = cmds.getAttr(f"{target.node}.it[0].itg[{target.targetIdx}].iti", mi=1)
-            weightsValue = [0] + [bsFn.inbetweenIndexToValue(x) for x in iti_list]
+            weightsValue = [0] + [fnBs.convertInbetweenIndexToValue(x) for x in iti_list]
 
         w = round(cmds.getAttr(weightAttr), 3)
         for x in weightsValue:
@@ -305,8 +305,6 @@ class ActionHandler:
         btn.sel_sets = self.get_treeviewSelectedList()
         self.ui.setsButtonWidget.layout().addWidget(btn)
 
-        i = str(self.ui.dynamicButtonCount)
-
         def onButtonClicked():
             self.select_treeViewItems(btn.sel_sets)
 
@@ -323,7 +321,7 @@ class ActionHandler:
     def copy_delta_cmd(self):
         target = get_lasterSelectedData()
         if cmds.objExists(target.attr):
-            self.copyDeltaDataTemp = bsFn.copy_delta(target)
+            self.copyDeltaDataTemp = fnBs.copy_delta(target)
             showMessage(f"Copy {target.attr}")
         else:
             showMessage("Please select a blendShape target")
@@ -332,7 +330,7 @@ class ActionHandler:
         if self.copyDeltaDataTemp:
             target = get_lasterSelectedData()
             if cmds.objExists(target.attr):
-                bsFn.pasted_delta(target, self.copyDeltaDataTemp)
+                fnBs.pasted_delta(target, self.copyDeltaDataTemp)
                 showMessage(f"Pasted {target.attr}")
             else:
                 showMessage("Please select a blendShape target")
@@ -402,7 +400,7 @@ class ActionHandler:
                 if i_bs != bs:
                     showMessage("Please select targets from the same blendShape node")
                     raise RuntimeError("Please select targets from the same blendShape node")
-            targetList = bsFn.get_targetDataList(bs)
+            targetList = fnBs.get_targetDataList(bs)
             transferList = []
             for i in targetList:
                 if i.targetIdx in idx_list:
@@ -412,9 +410,10 @@ class ActionHandler:
 
         if bs:
             bs = bs[0]
-            transferList = bsFn.get_targetDataList(bs)
+            transferList = fnBs.get_targetDataList(bs)
             return {"blendShape": bs, "targetList": transferList, "targetMesh": targetMesh, "destinationBlendShape": newBlendShape}
 
+    @timeit
     def transfer(self):
         data = self.getTransferData()
         wrap = self.makeWrapFunctions()
@@ -510,7 +509,7 @@ class ActionHandler:
         targetList = list(targetDict.values())
 
         for target in targetList:
-            bsFn.mirror_bsTarget(
+            fnBs.mirror_bsTarget(
                 target,
                 axis=axis,
                 mirrorDirection=direction,
@@ -533,7 +532,7 @@ class ActionHandler:
         axis = ["x", "y", "z"][self.ui.mirrorAxisComboBox.currentIndex()]
         direction = self.ui.mirrorDirectionComboBox.currentIndex()
         matchStr = self.ui.mirrorTableView.get_active_mirror_data()
-        bsFn.autoFlipCopy(
+        fnBs.autoFlipCopy(
             targetList[0].node,
             targetList,
             matchStr,
@@ -541,3 +540,27 @@ class ActionHandler:
             direction,
             autoMirror,
         )
+
+    def resetDelta(self):
+        """
+        重置 BlendShape 目标的 Delta
+        Reset the Delta of the selected BlendShape target.
+        """
+
+        target = get_selectionTarget()  # ['M_Head_base_blendShape.1']
+        inbetween = get_selectionInbetween()  # ['M_Head_base_blendShape.1.5611']
+
+        output_inbetween = []
+        if not inbetween and not target:
+            raise RuntimeError("Please select targets or inbetween in shapeEdit.")
+        for t in target:
+            node, targetIdx = t.split(".")
+            output_inbetween.extend(fnBs.get_targetInbetween(node, int(targetIdx)))
+
+        for i in inbetween:
+            node, targetIdx, inbetweenIdx = i.split(".")
+            output_inbetween.append(fnBs.TargetData(node, int(targetIdx), int(inbetweenIdx)))
+
+        for i in output_inbetween:
+            fnBs.resetInbetweenDelta(i, False)
+            print(f"Reset {i.attr}")
