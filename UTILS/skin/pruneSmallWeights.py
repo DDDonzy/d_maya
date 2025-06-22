@@ -18,4 +18,4 @@ def prune_small_weights(skinClusterNode: str = None, pruneWeights: float = 0.001
 
 
 if __name__ == "__main__":
-    prune_small_weights(0.001)
+    prune_small_weights()

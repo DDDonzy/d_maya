@@ -1,4 +1,4 @@
-from UTILS.dag.iterHierarchy import iterHierarchy
+from UTILS.dag.iterHierarchy import IterHierarchy
 from maya import cmds
 
 
@@ -9,7 +9,7 @@ def selectHierarchy_cmd():
     sel = cmds.ls(sl=1, type="transform")
     obj_list = []
     for x in sel:
-        for name, dag in iterHierarchy(x, False):
+        for name, dag in IterHierarchy(x, False):
             obj_list.append(name)
 
     cmds.select(obj_list)

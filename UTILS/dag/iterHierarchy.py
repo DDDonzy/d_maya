@@ -1,7 +1,7 @@
 from maya.api import OpenMaya as om
 
 
-class iterHierarchy(object):
+class IterHierarchy(object):
     def __init__(self, rootDag, shape=True):
         # check input
         if isinstance(rootDag, om.MDagPath):
@@ -40,3 +40,9 @@ class iterHierarchy(object):
         name: str = current_dag.partialPathName()
         dag: om.MDagPath = current_dag
         return name, dag
+
+
+if __name__ == "__main__":
+    for x, dag in IterHierarchy("Rig"):
+        print(x)
+        print(dag)
