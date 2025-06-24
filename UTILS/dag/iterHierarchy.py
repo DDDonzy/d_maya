@@ -1,17 +1,18 @@
 from maya.api import OpenMaya as om
+from typing import Tuple
 
 
-class IterHierarchy(object):
-    def __init__(self, rootDag, shape=True):
+class IterHierarchy:
+    def __init__(self, root: str | om.MDagPath, skipShape=True):
         # check input
-        if isinstance(rootDag, om.MDagPath):
-            self.root_node = rootDag
-        elif isinstance(rootDag, str):
-            self.root_node = om.MSelectionList().add(rootDag).getDagPath(0)
+        if isinstance(root, om.MDagPath):
+            self.root_node: om.MDagPath = root
+        elif isinstance(root, str):
+            self.root_node: om.MDagPath = om.MSelectionList().add(root).getDagPath(0)
         else:
             raise Exception("Invalid root node, must be a string or MDagPath.")
 
-        self.shape = shape
+        self.skipShape = skipShape
 
         # result iterator list
         self._reset()
@@ -23,16 +24,16 @@ class IterHierarchy(object):
         self._reset()
         return self
 
-    def __next__(self):
+    def __next__(self) -> Tuple[str, om.MDagPath]:
         if not self.iterList:
             raise StopIteration("End of iteration.")
         # get the current node
         current_dag = self.iterList.pop()
         # get the children
-        children = []
+        children: om.MDagPath = []
         for x in range(current_dag.childCount()):
-            mObj = current_dag.child(x)
-            if (not mObj.hasFn(om.MFn.kTransform)) and (not self.shape):
+            mObj: om.MObject = current_dag.child(x)
+            if (not mObj.hasFn(om.MFn.kTransform)) and (not self.skipShape):
                 continue
             children.append(om.MDagPath.getAPathTo(mObj))
 
