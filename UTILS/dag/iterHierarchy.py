@@ -1,9 +1,9 @@
 from maya.api import OpenMaya as om
-from typing import Tuple
+from typing import Tuple, Union
 
 
 class IterHierarchy:
-    def __init__(self, root: str | om.MDagPath, skipShape=True):
+    def __init__(self, root: Union[str, om.MDagPath], skipShape=True):
         # check input
         if isinstance(root, om.MDagPath):
             self.root_node: om.MDagPath = root
