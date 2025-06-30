@@ -4,8 +4,8 @@ import UTILS.apiundo as apiundo
 from maya import cmds
 
 
-def update_orig(deformerMesh: str, targetMesh: str):
-    target_shape = get_shape(targetMesh)
+def update_orig(sourceMesh: str, deformerMesh: str):
+    target_shape = get_shape(sourceMesh)
     origs = get_orig(deformerMesh)
     if not (target_shape and origs):
         raise ValueError("Target mesh or original shape not found.")
@@ -36,7 +36,8 @@ def update_orig_cmd():
     targetMesh = sel[0]
     deformerMeshes = sel[1:]
     for mesh in deformerMeshes:
-        update_orig(mesh, targetMesh)
+        update_orig(targetMesh, mesh)
+
 
 if __name__ == "__main__":
     update_orig_cmd()

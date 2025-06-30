@@ -33,7 +33,7 @@ class IterHierarchy:
         children: om.MDagPath = []
         for x in range(current_dag.childCount()):
             mObj: om.MObject = current_dag.child(x)
-            if (not mObj.hasFn(om.MFn.kTransform)) and (not self.skipShape):
+            if (not mObj.hasFn(om.MFn.kTransform)) and self.skipShape:
                 continue
             children.append(om.MDagPath.getAPathTo(mObj))
 
