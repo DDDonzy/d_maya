@@ -17,12 +17,12 @@ def get_obj(obj=None, dag=False, plug=False):
         mSel = om.MSelectionList()
         try:
             mSel.add(obj)
-        except:
+        except:  # noqa: E722
             raise ValueError(f"Object {obj} not found.")
     else:
         mSel = om.MGlobal.getActiveSelectionList()
         if mSel.isEmpty():
-            raise ValueError(f"No object selected.")
+            raise ValueError("No object selected.")
 
     if plug:
         return mSel.getPlug(0)
@@ -91,6 +91,6 @@ def get_orig(obj=None):
         try:
             if cmds.getAttr(f"{x}.intermediateObject"):
                 all_orig.append(x)
-        except:
+        except:  # noqa: E722
             pass
     return all_orig

@@ -12,9 +12,9 @@ from UTILS.other.zeroPivot import zeroPivot
 from UTILS.transform import reset_transformObjectValue_cmd, alignTransform_cmd
 from UTILS.mirrorEnv import mirror_selected, MIRROR_CONFIG
 from Rainbow.rainbow_UI import rainbow_win
-from UTILS.skin.getSkinJoint import get_skinJoint_cmd
-from UTILS.skin.copyWeightsOneToN import copyWeightsOneToN_cmd
-from UTILS.skin.updateBindSkin import updateBindSkin_cmd
+from UTILS.deform.skin.getSkinJoint import get_skinJoint_cmd
+from UTILS.deform.skin.copyWeightsOneToN import copyWeightsOneToN_cmd
+from UTILS.deform.skin.updateBindSkin import updateBindSkin_cmd
 from UTILS.rename import showUI as renameShowUI
 from UTILS.scene.deleteBindPose import deleteBindPose
 from UTILS.scene.removeNamespace import removeNamespace

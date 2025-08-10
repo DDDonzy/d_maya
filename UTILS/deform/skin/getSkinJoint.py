@@ -1,5 +1,5 @@
 from maya import cmds
-from UTILS.getHistory import get_history
+from UTILS.dag.getHistory import get_history
 
 
 def get_skinJoint(obj_list=None):

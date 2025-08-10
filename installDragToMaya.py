@@ -8,8 +8,6 @@ path = os.path.dirname(__file__)
 if path not in sys.path:
     sys.path.append(path)
 
-from _hotkey.d_hotkey import install_hotkey  # noqa: E402
-
 
 ENV_LIB = {
     "MAYA_NO_HOME": 1,
@@ -25,7 +23,7 @@ def reloadALL(path=path):
         try:
             modules_path = sys.modules[modules_name].__file__
             common_path = os.path.commonpath([path, modules_path])
-        except:
+        except:  # noqa: E722
             continue
         if os.path.samefile(path, common_path):
             reload_list.append(sys.modules[modules_name])
@@ -50,7 +48,7 @@ def modify_mayaEnvFile():
     try:
         with open(env_file, "r") as file:
             content = file.read()
-    except:
+    except:  # noqa: E722
         content = ""
 
     with open(env_file, "a") as file:
@@ -73,7 +71,7 @@ def modify_mayaUserSetup():
     try:
         with open(userSetup_path, "r") as file:
             content = file.read()
-    except:
+    except:  # noqa: E722
         content = ""
 
     with open(userSetup_path, "a") as file:
@@ -91,8 +89,17 @@ def show_message(msg):
 
 def onMayaDroppedPythonFile(*args, **kwargs):
     """Dropped to maya functions"""
+    import installPackage  # noqa: E402
+    installPackage.install_package()
+
+
     modify_mayaEnvFile()
     modify_mayaUserSetup()
+
+
+    from _hotkey.d_hotkey import install_hotkey  # noqa: E402
     install_hotkey()
+
+
     reloadALL(path)
     show_message("Setup Done")

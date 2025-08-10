@@ -14,11 +14,11 @@ class MIRROR_BASE:
         return self.MIRROR_PAIRS[self._current_index % len(self.MIRROR_PAIRS)]
 
     @property
-    def l(self):
+    def l_str(self):
         return self.current_pair[0]
 
     @property
-    def r(self):
+    def r_str(self):
         return self.current_pair[1]
 
     def switch_mode(self):
@@ -49,8 +49,8 @@ class MIRROR_BASE:
         for n in name:
             org_cases = [s.isupper() for s in n]
 
-            l_upper = self.l.upper()
-            r_upper = self.r.upper()
+            l_upper = self.l_str.upper()
+            r_upper = self.r_str.upper()
             name_upper = n.upper()
             name_upper_split = name_upper.split("_")
 

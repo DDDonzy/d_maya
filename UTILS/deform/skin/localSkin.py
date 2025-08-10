@@ -1,4 +1,4 @@
-from UTILS.getHistory import get_history
+from UTILS.dag.getHistory import get_history
 from maya import cmds
 from UTILS.create.createBase import CreateBase
 from UTILS.apiundo import commit

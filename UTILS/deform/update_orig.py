@@ -1,4 +1,4 @@
-from UTILS.getHistory import get_orig, get_shape, get_obj
+from UTILS.dag.getHistory import get_orig, get_shape, get_obj
 from maya.api import OpenMaya as om
 import UTILS.apiundo as apiundo
 from maya import cmds
