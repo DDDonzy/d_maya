@@ -13,6 +13,7 @@ ENV_LIB = {
     "MAYA_NO_HOME": 1,
     "MAYA_NO_HOME_ICON": 1,
     "MAYA_SKIP_BLOCK_CHECK": 1,
+    "MAYA_NO_WARNING_FOR_MISSING_DEFAULT_RENDERER": 1,
 }
 
 
@@ -90,16 +91,15 @@ def show_message(msg):
 def onMayaDroppedPythonFile(*args, **kwargs):
     """Dropped to maya functions"""
     import installPackage  # noqa: E402
-    installPackage.install_package()
 
+    installPackage.install_package()
 
     modify_mayaEnvFile()
     modify_mayaUserSetup()
 
-
     from _hotkey.d_hotkey import install_hotkey  # noqa: E402
-    install_hotkey()
 
+    install_hotkey()
 
     reloadALL(path)
     show_message("Setup Done")

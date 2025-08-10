@@ -1,14 +1,12 @@
-from dataclasses import dataclass
+from typing import List
 from functools import partial
-
-import z_bs.utils.apiundo as apiundo
-from z_bs.utils.showMessage import showMessage
+from dataclasses import dataclass
 
 from maya import cmds
 from maya.api import OpenMaya as om
 
-from typing import List
-
+import z_bs.utils.apiundo as apiundo
+from z_bs.utils.showMessage import showMessage
 from z_bs.utils.mirrorEnv import MIRROR_BASE
 
 
@@ -46,7 +44,7 @@ class TargetData:
             multiIndices = cmds.getAttr(f"{self.node}.inputTarget[0].inputTargetGroup", mi=1)
             if self.targetIdx in multiIndices:
                 return True
-        except:
+        except Exception:
             return False
         return False
 
@@ -56,7 +54,7 @@ class TargetData:
             multiIndices = cmds.getAttr(f"{self.node}.inputTarget[0].inputTargetGroup[{self.targetIdx}].inputTargetItem", mi=1)
             if self.inbetweenIdx in multiIndices:
                 return True
-        except:
+        except Exception:
             return False
         return False
 
