@@ -1,6 +1,6 @@
-from maya import cmds
-import time
-from maya import mel
+from maya import cmds, mel
+
+from pathlib import Path
 
 # file
 fbx_path = r"C:\Users\ext.dxu\Downloads\2025.8.9\data\Idle + turn_11\Take_011_skeleton_0.fbx"
@@ -44,16 +44,24 @@ for clip in clip_list:
     export_list.append({
         "name": clip_name,
         "start": start_time,
-        "end": end_time,
+        "end": start_time + end_time,
     })
 
 
 def build_export_preset():
     node_name = "_ANIM_EXPORTER_"
 
+    current_file = Path(cmds.file(query=True, sceneName=True))
+    current_dir = current_file.parent
+    file_name = current_file.stem
+    fbx_dir = current_dir / "fbx"
+
     if cmds.objExists(node_name):
         cmds.delete(node_name)
 
+    for x in cmds.ls(type="gameFbxExporter"):
+        cmds.setAttr(f"{x}.ils", False)
+        cmds.setAttr(f"{x}.ilu", False)
     exporter_node = cmds.createNode("gameFbxExporter", name=node_name)
     cmds.setAttr(f"{exporter_node}.pn", node_name, type="string")
     cmds.setAttr(f"{exporter_node}.ils", True)
@@ -63,6 +71,8 @@ def build_export_preset():
     cmds.setAttr(f"{exporter_node}.ic", False)
     cmds.setAttr(f"{exporter_node}.ebm", True)
     cmds.setAttr(f"{exporter_node}.fv", "FBX201800", type="string")
+    cmds.setAttr(f"{exporter_node}.exp", fbx_dir, type="string")
+    cmds.setAttr(f"{exporter_node}.exf", file_name, type="string")
     return node_name
 
 
@@ -71,6 +81,10 @@ for i, clip in enumerate(export_list):
     cmds.setAttr(f"{exporter_node}.ac[{i}].acn", clip["name"], type="string")
     cmds.setAttr(f"{exporter_node}.ac[{i}].acs", clip["start"])
     cmds.setAttr(f"{exporter_node}.ac[{i}].ace", clip["end"])
+
+if cmds.window("gameExporterWindow", q=1, ex=1):
+    cmds.deleteUI("gameExporterWindow")
+mel.eval("gameFbxExporter")
 
 
 # rename clips
@@ -83,3 +97,12 @@ def rename_clips():
                 mel.eval(f"teRenameClip {clipid}")
         except Exception as e:
             print(f"Error renaming clip {x}: {e}")
+
+
+# mute
+for x in cmds.ls(sl=1):
+    try:
+        if cmds.objectType(x, isa="timeEditorClip"):
+            cmds.setAttr(f"{x}.clipMuted", not cmds.getAttr(f"{x}.clipMuted"))
+    except Exception as e:
+        print(f"Error muting clip {x}: {e}")
