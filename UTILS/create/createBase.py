@@ -67,12 +67,9 @@ class CreateBase():
         self._pre_create()
 
         if self.isBuildAsset:
-            with AssetCallback(name=RIG_ASSET_NAME, force=False, icon="character.svg"):
-                pass
             with AssetCallback(name=self.thisAssetName,
                                force=True,
                                icon=self.icon,
-                               parent=RIG_ASSET_NAME,
                                isBlackBox=self.isBlackBox,
                                isDagAsset=self.isDagAsset) as self.thisAssetName:
                 self.create()

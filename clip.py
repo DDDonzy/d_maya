@@ -106,3 +106,7 @@ for x in cmds.ls(sl=1):
             cmds.setAttr(f"{x}.clipMuted", not cmds.getAttr(f"{x}.clipMuted"))
     except Exception as e:
         print(f"Error muting clip {x}: {e}")
+
+
+
+
