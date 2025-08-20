@@ -149,9 +149,42 @@ def cal_pv(name="xxx"):
     return start, mid, end, loc_result
 
 
+def cal_main(pelvis, pelvis_ctl, main_ctl, frontAxis="Z", t=1, r=1):
+    with AssetCallback(name="cal_main", isDagAsset=True) as asset:
+        offset = get_relativesMatrix(
+            get_worldMatrix(pelvis_ctl),
+            get_worldMatrix(pelvis),
+        )
+        proxy_loc = cmds.spaceLocator(name="cal_main_pelvis_loc")[0]
+        pelvis_con = matrixConstraint(pelvis, proxy_loc)
+        cmds.setAttr(pelvis_con.inputOffsetMatrix, offset, type="matrix")
+        # pelvis ground
+        pelvis_ground_loc = cmds.spaceLocator(name="cal_main_pelvis_ground_loc")[0]
+        cmds.parentConstraint(proxy_loc, pelvis_ground_loc, mo=False, skipTranslate="y")[0]
+
+        pelvis_ground_aim_loc = cmds.spaceLocator(name="cal_main_pelvis_ground_aim_loc")[0]
+        aim_parentCon = cmds.parentConstraint(pelvis_ground_loc, pelvis_ground_aim_loc, mo=False, skipTranslate="y")[0]
+        cmds.setAttr(f"{aim_parentCon}.target[0].targetOffsetTranslate{frontAxis}", 100)
+
+        cmds.pointConstraint(pelvis_ground_loc, main_ctl, mo=0)
+        aimVector = {"X": [1, 0, 0], "Y": [0, 1, 0], "Z": [0, 0, 1]}
+        cmds.aimConstraint(pelvis_ground_aim_loc, main_ctl, aimVector=aimVector[frontAxis], worldUpType="scene", upVector=[0, 1, 0])
+
+        if not t:
+            cmds.setAttr(f"{main_ctl}.translate", 0, 0, 0)
+            cmds.mute(f"{main_ctl}.translate")
+        if not r:
+            cmds.setAttr(f"{main_ctl}.rotate", 0, 0, 0)
+            cmds.mute(f"{main_ctl}.rotate")
+
+    return asset
+
+
 def pre_bakeAnimations(
     target_namespace="TestCharacter_rig",
     source_namespace="Retarget_M_Blade_Stand_Idle",
+    main_t=True,
+    main_r=True,
 ):
     # pre
     with AssetCallback(name="bakeConstraint", isDagAsset=False) as asset:
@@ -171,7 +204,7 @@ def pre_bakeAnimations(
             )
             v["OFFSET"] = offset
 
-        # do constraints
+        # do fk constraints
         for k, v in bake_dict.items():
             control = f"{target_namespace}:{k}" if target_namespace else k
             source = f"{source_namespace}:{v['PARENT']}" if source_namespace else v["PARENT"]
@@ -204,17 +237,16 @@ def pre_bakeAnimations(
             cmds.parentConstraint(source_end, end, mo=False)
             cmds.pointConstraint(out, target_pv, mo=False)
 
-        bake_list = list(bake_pv_dict.keys()) + list(bake_dict.keys())
+        # constraint main
+        cal_main(f"{source_namespace}:pelvis", f"{target_namespace}:RootX_M", f"{target_namespace}:Main", frontAxis="Z", t=main_t, r=main_r)
+
+        bake_list = list(bake_pv_dict.keys()) + list(bake_dict.keys()) + ["Main"]
         bake_list = [f"{target_namespace}:{x}*" if target_namespace else x for x in bake_list]
 
     return asset, bake_list
 
 
-def bakeAnimations(target_namespace="TestCharacter_rig", source_namespace="Retarget_M_Blade_Stand_Idle", time=(0, 1000)):
-    asset, bake_list = pre_bakeAnimations(
-        target_namespace=target_namespace,
-        source_namespace=source_namespace,
-    )
+def bakeAnimations(bake_list, time=(0, 1000)):
     layers_before = set(cmds.ls(type="animLayer"))
 
     cmds.bakeResults(
@@ -242,7 +274,18 @@ def bakeAnimations(target_namespace="TestCharacter_rig", source_namespace="Retar
     for x in cmds.ls(type="animBlendNodeAdditiveDL"):
         cmds.setAttr(f"{x}.inputA", 0)
 
+
+if __name__ == "__main__":
+    asset, bake_list = pre_bakeAnimations(
+        target_namespace="TestCharacter_rig1",
+        source_namespace="Retarget_M_Blade_Stand_Run_F_Loop_",
+        main_t=True,
+        main_r=True,
+    )
+
+    bakeAnimations(
+        bake_list=bake_list,
+        time=(0, 1200),
+    )
+
     cmds.delete(asset)
-
-
-bakeAnimations()
