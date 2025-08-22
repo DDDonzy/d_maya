@@ -63,6 +63,7 @@ bake_dict = {
     "IKhybridSpine1_M": {"PARENT": "pelvis"},
     "IKhybridSpine3_M": {"PARENT": "spine_04"},
     "RootX_M": {"PARENT": "pelvis"},
+    "Fly": {"PARENT": "pelvis"},
 }
 
 
@@ -237,17 +238,19 @@ def pre_bakeAnimations(
             cmds.parentConstraint(source_end, end, mo=False)
             cmds.pointConstraint(out, target_pv, mo=False)
 
-        # constraint main
-        cal_main(f"{source_namespace}:pelvis", f"{target_namespace}:RootX_M", f"{target_namespace}:Main", frontAxis="Z", t=main_t, r=main_r)
-
-        bake_list = list(bake_pv_dict.keys()) + list(bake_dict.keys()) + ["Main"]
+        bake_list = list(bake_pv_dict.keys()) + list(bake_dict.keys())
         bake_list = [f"{target_namespace}:{x}*" if target_namespace else x for x in bake_list]
 
     return asset, bake_list
 
 
-def bakeAnimations(bake_list, time=(0, 1000)):
-    layers_before = set(cmds.ls(type="animLayer"))
+def bakeAnimations(target_namespace, source_namespace, time=(0, 1000)):
+    asset, bake_list = pre_bakeAnimations(
+        target_namespace=target_namespace,
+        source_namespace=source_namespace,
+        main_t=True,
+        main_r=True,
+    )
 
     cmds.bakeResults(
         bake_list,
@@ -255,37 +258,6 @@ def bakeAnimations(bake_list, time=(0, 1000)):
         t=time,
         sb=1,
         simulation=1,
-        bakeOnOverrideLayer=1,
-    )
-
-    layers_after = set(cmds.ls(type="animLayer"))
-    new_layer_set = layers_after - layers_before
-
-    if new_layer_set:
-        new_layer_default_name = new_layer_set.pop()
-        cmds.rename(new_layer_default_name, "MOCAP_ANIM_LAYER")
-
-    for x in cmds.ls(type="animBlendNodeAdditiveScale"):
-        cmds.setAttr(f"{x}.inputA", 1)
-
-    for x in cmds.ls(type="animBlendNodeAdditiveRotation"):
-        cmds.setAttr(f"{x}.inputA", *(0, 0, 0))
-
-    for x in cmds.ls(type="animBlendNodeAdditiveDL"):
-        cmds.setAttr(f"{x}.inputA", 0)
-
-
-if __name__ == "__main__":
-    asset, bake_list = pre_bakeAnimations(
-        target_namespace="TestCharacter_rig1",
-        source_namespace="Retarget_M_Blade_Stand_Run_F_Loop_",
-        main_t=True,
-        main_r=True,
-    )
-
-    bakeAnimations(
-        bake_list=bake_list,
-        time=(0, 1200),
     )
 
     cmds.delete(asset)
