@@ -3,34 +3,36 @@ from UTILS.ui.showMessage import showMessage
 
 CHANNELBOX_NAME = "mainChannelBox"
 
-TRANSLATE_ATTR = ["tx", "ty", "tz"]
-ROTATE_ATTR = ["rx", "ry", "rz"]
-SCALE_ATTR = ["sx", "sy", "sz",]
+TRANSLATE_ATTR = ["t", "tx", "ty", "tz"]
+ROTATE_ATTR = ["r", "rx", "ry", "rz"]
+SCALE_ATTR = ["s", "sx", "sy", "sz"]
 VIS_ATTR = ["v"]
-PIVOT_ATTR = ["rotatePivot",
-              "rotatePivotX",
-              "rotatePivotY",
-              "rotatePivotZ",
-              "rotatePivotTranslate",
-              "rotatePivotTranslateX",
-              "rotatePivotTranslateY",
-              "rotatePivotTranslateZ",
-              "scalePivot",
-              "scalePivotX",
-              "scalePivotY",
-              "scalePivotZ",
-              "scalePivotTranslate",
-              "scalePivotTranslateX",
-              "scalePivotTranslateY",
-              "scalePivotTranslateZ",
-              "transMinusRotatePivot",
-              "transMinusRotatePivotX",
-              "transMinusRotatePivotY",
-              "transMinusRotatePivotZ"]
+PIVOT_ATTR = [
+    "rotatePivot",
+    "rotatePivotX",
+    "rotatePivotY",
+    "rotatePivotZ",
+    "rotatePivotTranslate",
+    "rotatePivotTranslateX",
+    "rotatePivotTranslateY",
+    "rotatePivotTranslateZ",
+    "scalePivot",
+    "scalePivotX",
+    "scalePivotY",
+    "scalePivotZ",
+    "scalePivotTranslate",
+    "scalePivotTranslateX",
+    "scalePivotTranslateY",
+    "scalePivotTranslateZ",
+    "transMinusRotatePivot",
+    "transMinusRotatePivotX",
+    "transMinusRotatePivotY",
+    "transMinusRotatePivotZ",
+]
 
 
 def _getObjectFromSceneOrParameter(objList: list = []):
-    """ Get object from scene or parameter."""
+    """Get object from scene or parameter."""
     if isinstance(objList, str):
         objList = [objList]
     if not objList:
@@ -57,7 +59,7 @@ def lockAttr(obj: list = [], attr: list = []):
     if isinstance(obj, str):
         obj = [obj]
     obj = obj or _getSelectionFliteShapes() or []
-    attr = attr or cmds.channelBox(CHANNELBOX_NAME, q=1, sma=1) or TRANSLATE_ATTR+ROTATE_ATTR+SCALE_ATTR+VIS_ATTR
+    attr = attr or cmds.channelBox(CHANNELBOX_NAME, q=1, sma=1) or TRANSLATE_ATTR + ROTATE_ATTR + SCALE_ATTR + VIS_ATTR
 
     for x in obj:
         for a in attr:
@@ -110,15 +112,17 @@ def showJointOrient(objList: list = []):
     if isinstance(objList, str):
         objList = [objList]
     if not objList:
-        objList = cmds.ls(sl=1,type="joint")
+        objList = cmds.ls(sl=1, type="joint")
     if not objList:
         objList = cmds.ls(type="joint")
 
     # attr list
-    attr_list = ["jointOrientX",
-                 "jointOrientY",
-                 "jointOrientZ",
-                 "segmentScaleCompensate"]
+    attr_list = [
+        "jointOrientX",
+        "jointOrientY",
+        "jointOrientZ",
+        "segmentScaleCompensate",
+    ]
 
     jointList = []
     for obj in objList:

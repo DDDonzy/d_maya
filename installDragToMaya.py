@@ -47,18 +47,17 @@ def modify_mayaEnvFile():
     """Add path to maya usersetup.py"""
     env_file = get_mayaEnvFile()
     try:
-        with open(env_file, "r") as file:
+        with open(env_file, "a+") as file:
+            file.seek(0)
             content = file.read()
-    except:  # noqa: E722
-        content = ""
+            for key, value in ENV_LIB.items():
+                if key not in content:
+                    additional_text = f"\n{key} = {value};"
+                    file.write(additional_text)
 
-    with open(env_file, "a") as file:
-        for key, value in ENV_LIB.items():
-            if key in content:
-                continue
-            additional_text = f"\n{key} = {value};"
-            file.write(additional_text)
-    print(f"Modify: {env_file}")
+        print(f"Modify: {env_file}")
+    except Exception as e:
+        print(e)
 
 
 def modify_mayaUserSetup():
@@ -69,18 +68,17 @@ def modify_mayaUserSetup():
     maya_version = cmds.about(v=1)
     userSetup_path = os.path.join(userSetup_path, maya_version, "scripts", user_setup_file)
     userSetup_path = os.path.normpath(userSetup_path)
-    try:
-        with open(userSetup_path, "r") as file:
-            content = file.read()
-    except:  # noqa: E722
-        content = ""
 
-    with open(userSetup_path, "a") as file:
-        additional_text = f"\nimport sys\nif r'{this_path}' not in sys.path:\n    sys.path.append(r'{this_path}')"
-        if additional_text in content:
-            return
-        file.write(additional_text)
-        print(f"Modify: {userSetup_path}")
+    try:
+        with open(userSetup_path, "a+") as file:
+            file.seek(0)
+            content = file.read()
+            additional_text = f"\nimport sys\nif r'{this_path}' not in sys.path:\n    sys.path.append(r'{this_path}')"
+            if additional_text not in content:
+                file.write(additional_text)
+                print(f"Modify: {userSetup_path}")
+    except Exception as e:
+        print(e)
 
 
 def show_message(msg):

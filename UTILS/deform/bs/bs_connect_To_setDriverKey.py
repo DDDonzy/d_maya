@@ -13,4 +13,5 @@ def connect_to_sdk_cmd():
         cmds.setAttr(f"{animCurve}.preInfinity", 4)
         cmds.setAttr(f"{animCurve}.postInfinity", 4)
 
-# connect_to_sdk_cmd()
+if __name__ == "__main__":
+    connect_to_sdk_cmd()

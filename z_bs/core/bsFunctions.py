@@ -168,8 +168,6 @@ def sculptTarget(targetData: TargetData, message=False):
 
 
 def resetInbetweenDelta(targetData: TargetData = None, removeInbetween=True):
-    print(targetData)
-    print(targetData.isInbetweenExists)
     if not targetData.isInbetweenExists:
         raise RuntimeError(f"{targetData.attr} does not exist.")
     if removeInbetween and targetData.inbetweenIdx != 6000:
@@ -380,7 +378,7 @@ def autoFlipCopy(blendShapeName, targetList=[], replaceStr=("L", "R"), axis="x",
                 print(f"{'Continue:':<10} {x:<30}")
                 continue
         else:
-            print(f"{'FlipCopy:':<10} {x:-<30}> {mirrorList[i]:<30}")
+            print(f"{'FlipCopy:':<10} {x:-<30} >>> {mirrorList[i]:<30}")
             if mirrorList[i] in bs_targetNames:
                 flipFunction(targetDict[x], bs_targetDict[mirrorList[i]])
             else:
