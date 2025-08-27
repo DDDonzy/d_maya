@@ -1,6 +1,6 @@
 from maya import cmds
 from z_bs.utils.duplicateMesh import duplicate_mesh
-from z_bs.utils.getHistory import *
+from z_bs.utils.getHistory import get_shape, get_orig
 
 
 def createWrap(*args, **kwargs):
@@ -32,51 +32,51 @@ def createWrap(*args, **kwargs):
 
     influence = args[0]
     surface = args[1]
-    weightThreshold = kwargs.get('weightThreshold', 0.0)
-    maxDistance = kwargs.get('maxDistance', 1.0)
-    exclusiveBind = kwargs.get('exclusiveBind', True)
-    autoWeightThreshold = kwargs.get('autoWeightThreshold', True)
-    falloffMode = kwargs.get('falloffMode', 1)
+    weightThreshold = kwargs.get("weightThreshold", 0.0)
+    maxDistance = kwargs.get("maxDistance", 1.0)
+    exclusiveBind = kwargs.get("exclusiveBind", True)
+    autoWeightThreshold = kwargs.get("autoWeightThreshold", True)
+    falloffMode = kwargs.get("falloffMode", 1)
 
     shapes = get_shape(influence)
     if not shapes:
         raise RuntimeError(f"Can not find {influence} shape.")
     influenceShape = shapes[0]
 
-    wrapNode = cmds.deformer(surface, type='wrap')[0]
-    cmds.setAttr(wrapNode + '.weightThreshold', weightThreshold)
-    cmds.setAttr(wrapNode + '.maxDistance', maxDistance)
-    cmds.setAttr(wrapNode + '.exclusiveBind', exclusiveBind)
-    cmds.setAttr(wrapNode + '.autoWeightThreshold', autoWeightThreshold)
-    cmds.setAttr(wrapNode + '.falloffMode', falloffMode)
-    cmds.connectAttr(surface + '.worldMatrix[0]', wrapNode + '.geomMatrix')
+    wrapNode = cmds.deformer(surface, type="wrap")[0]
+    cmds.setAttr(wrapNode + ".weightThreshold", weightThreshold)
+    cmds.setAttr(wrapNode + ".maxDistance", maxDistance)
+    cmds.setAttr(wrapNode + ".exclusiveBind", exclusiveBind)
+    cmds.setAttr(wrapNode + ".autoWeightThreshold", autoWeightThreshold)
+    cmds.setAttr(wrapNode + ".falloffMode", falloffMode)
+    cmds.connectAttr(surface + ".worldMatrix[0]", wrapNode + ".geomMatrix")
 
-    base = duplicate_mesh(influence, name=influence + 'Base')
+    base = duplicate_mesh(influence, name=influence + "Base")
     baseShape = get_shape(base)[0]
     cmds.hide(base)
 
-    if not cmds.attributeQuery('dropoff', n=influence, exists=True):
-        cmds.addAttr(influence, sn='dr', ln='dropoff', dv=4.0, min=0.0, max=20.0)
-        cmds.setAttr(influence + '.dr', k=True)
-    if cmds.nodeType(influenceShape) == 'mesh':
-        if not cmds.attributeQuery('smoothness', n=influence, exists=True):
-            cmds.addAttr(influence, sn='smt', ln='smoothness', dv=0.0, min=0.0)
-            cmds.setAttr(influence + '.smt', k=True)
-        if not cmds.attributeQuery('inflType', n=influence, exists=True):
-            cmds.addAttr(influence, at='short', sn='ift', ln='inflType', dv=2, min=1, max=2)
-        cmds.connectAttr(influenceShape + '.worldMesh', wrapNode + '.driverPoints[0]')
-        cmds.connectAttr(baseShape + '.worldMesh', wrapNode + '.basePoints[0]')
-        cmds.connectAttr(influence + '.inflType', wrapNode + '.inflType[0]')
-        cmds.connectAttr(influence + '.smoothness', wrapNode + '.smoothness[0]')
+    if not cmds.attributeQuery("dropoff", n=influence, exists=True):
+        cmds.addAttr(influence, sn="dr", ln="dropoff", dv=4.0, min=0.0, max=20.0)
+        cmds.setAttr(influence + ".dr", k=True)
+    if cmds.nodeType(influenceShape) == "mesh":
+        if not cmds.attributeQuery("smoothness", n=influence, exists=True):
+            cmds.addAttr(influence, sn="smt", ln="smoothness", dv=0.0, min=0.0)
+            cmds.setAttr(influence + ".smt", k=True)
+        if not cmds.attributeQuery("inflType", n=influence, exists=True):
+            cmds.addAttr(influence, at="short", sn="ift", ln="inflType", dv=2, min=1, max=2)
+        cmds.connectAttr(influenceShape + ".worldMesh", wrapNode + ".driverPoints[0]")
+        cmds.connectAttr(baseShape + ".worldMesh", wrapNode + ".basePoints[0]")
+        cmds.connectAttr(influence + ".inflType", wrapNode + ".inflType[0]")
+        cmds.connectAttr(influence + ".smoothness", wrapNode + ".smoothness[0]")
 
-    if cmds.nodeType(influenceShape) == 'nurbsCurve' or cmds.nodeType(influenceShape) == 'nurbsSurface':
-        if not cmds.attributeQuery('wrapSamples', n=influence, exists=True):
-            cmds.addAttr(influence, at='short', sn='wsm', ln='wrapSamples', dv=10, min=1)
-            cmds.setAttr(influence + '.wsm', k=True)
-        cmds.connectAttr(influenceShape + '.ws', wrapNode + '.driverPoints[0]')
-        cmds.connectAttr(baseShape + '.ws', wrapNode + '.basePoints[0]')
-        cmds.connectAttr(influence + '.wsm', wrapNode + '.nurbsSamples[0]')
-    cmds.connectAttr(influence + '.dropoff', wrapNode + '.dropoff[0]')
+    if cmds.nodeType(influenceShape) == "nurbsCurve" or cmds.nodeType(influenceShape) == "nurbsSurface":
+        if not cmds.attributeQuery("wrapSamples", n=influence, exists=True):
+            cmds.addAttr(influence, at="short", sn="wsm", ln="wrapSamples", dv=10, min=1)
+            cmds.setAttr(influence + ".wsm", k=True)
+        cmds.connectAttr(influenceShape + ".ws", wrapNode + ".driverPoints[0]")
+        cmds.connectAttr(baseShape + ".ws", wrapNode + ".basePoints[0]")
+        cmds.connectAttr(influence + ".wsm", wrapNode + ".nurbsSamples[0]")
+    cmds.connectAttr(influence + ".dropoff", wrapNode + ".dropoff[0]")
     return wrapNode, base
 
 
@@ -111,9 +111,9 @@ def createProximityWrap(*args, **kwargs):
 
     shapes = get_shape(influence)[0]
 
-    wrapNode = cmds.deformer(surface, type='proximityWrap')[0]
+    wrapNode = cmds.deformer(surface, type="proximityWrap")[0]
 
-    wrapMode = kwargs.get('wrapMode', 1)
+    wrapMode = kwargs.get("wrapMode", 1)
     smoothInfluences = kwargs.get("smoothInfluences", 0)
     smoothNormals = kwargs.get("smoothNormals", 0)
     falloffScale = kwargs.get("falloffScale", 20)

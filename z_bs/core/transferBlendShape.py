@@ -41,10 +41,15 @@ def transferBlendShape(sourceBlendShape="", targetDataList: List[TargetData] = [
     """
     # get source geometry
     source_geometry, newTargetName = get_bsBaseGeometry(sourceBlendShape)
-    # do wrap
-    wrapMesh = duplicate_mesh(destinationMesh, "TRANSFER_MESH")
-    wrapNode, wrapBase = wrapFunction(source_geometry, wrapMesh)
-    if preview:
+    if isinstance(preview, list):
+        # get wrap data
+        wrapNode, wrapBase, wrapMesh = preview
+    else:
+        # do wrap
+        wrapMesh = duplicate_mesh(destinationMesh, "TRANSFER_MESH")
+        wrapNode, wrapBase = wrapFunction(source_geometry, wrapMesh)
+
+    if preview is True:
         return wrapNode, wrapBase, wrapMesh
 
     # get target data, if not targetDataList:
@@ -55,7 +60,6 @@ def transferBlendShape(sourceBlendShape="", targetDataList: List[TargetData] = [
         destinationBlendShape = create_blendShapeNode(objectName=destinationMesh, name="transferBlendShape")
         order = cmds.getAttr(f"{sourceBlendShape}.deformationOrder")
         cmds.setAttr(f"{destinationBlendShape}.deformationOrder", order)
-
 
     # transfer source and target data
     transferTargetDict: Dict[str, List[TargetData]] = {}
@@ -76,7 +80,8 @@ def transferBlendShape(sourceBlendShape="", targetDataList: List[TargetData] = [
         else:
             try:
                 newTargetIdx = get_targetIndex(destinationBlendShape, name)
-            except:
+            except Exception as e:
+                print(e)
                 continue
         newTargetData = TargetData(destinationBlendShape, newTargetIdx, sourceTargetData.inbetweenIdx, sourceTargetData.weight, sourceTargetData.postDeformersMode, name)
         if sourceTargetData.targetName not in sourceTargetDict.keys():

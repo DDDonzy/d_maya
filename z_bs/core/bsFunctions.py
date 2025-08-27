@@ -285,33 +285,27 @@ def add_sculptGeo(sculptGeo, targetData: TargetData = None, addInbetween=True):
 
 
 def copy_delta(targetData: TargetData):
-    ict = f"{targetData.attr}.inputComponentsTarget"
-    ipt = f"{targetData.attr}.inputPointsTarget"
+    iti = targetData.attr
 
     sel = om.MSelectionList()
-    sel.add(ict)
-    sel.add(ipt)
-    ict_plug = sel.getPlug(0)
-    ipt_plug = sel.getPlug(1)
+    sel.add(iti)
+    iti_plug: om.MPlug = sel.getPlug(0)
 
-    return (ict_plug.asMObject(), ipt_plug.asMObject())
+    return iti_plug.asMObject()
 
 
 def pasted_delta(targetData: TargetData, data):
-    ict = f"{targetData.attr}.inputComponentsTarget"
-    ipt = f"{targetData.attr}.inputPointsTarget"
-    cmds.setAttr(ipt, *[1, (0, 0, 0, 1)], type="pointArray")
-    cmds.setAttr(ict, *[1, "vtx[0]"], type="componentList")
-
+    iti = targetData.attr
     sel = om.MSelectionList()
-    sel.add(ict)
-    sel.add(ipt)
-    ict_plug: om.MPlug = sel.getPlug(0)
-    ipt_plug: om.MPlug = sel.getPlug(1)
-
-    ict_plug.setMObject(data[0])
-    ipt_plug.setMObject(data[1])
-
+    sel.add(iti)
+    iti_plug: om.MPlug = sel.getPlug(0)
+    baseData = iti_plug.asMObject()
+    def doit():
+        iti_plug.setMObject(data)
+    def undo():
+        iti_plug.setMObject(baseData)
+    doit()
+    print("pasted_delta")
 
 def flip_bsTarget(targetData: TargetData, axis="x", space=1):
     if not cmds.objExists(targetData.node):
