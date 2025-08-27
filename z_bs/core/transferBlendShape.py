@@ -1,11 +1,11 @@
 from maya import cmds
+
 from z_bs.core.wrap import createWrap, createProximityWrap
 from z_bs.core.bsFunctions import TargetData, add_target, add_sculptGeo, get_targetDataList, get_bsBaseGeometry, create_blendShapeNode, get_targetIndex
 from z_bs.utils.duplicateMesh import duplicate_mesh
-from functools import partial
-# Query which model the blendShape node belongs to
+from z_bs.utils.assetCallback import AssetCallback
 
-# Define target blendShape data structure
+from functools import partial
 from typing import Dict, List
 
 
@@ -28,6 +28,22 @@ pre_configured_wrap2 = partial(
 )
 
 
+def assign_default_material(object_name):
+    default_sg = "initialShadingGroup"
+
+    if not cmds.objExists(object_name):
+        cmds.warning(f"Can not find '{object_name}'")
+        return
+
+    if not cmds.objExists(default_sg):
+        cmds.warning(f"Can not find '{default_sg}'")
+
+    try:
+        cmds.sets(object_name, edit=True, forceElement=default_sg)
+    except Exception as e:
+        cmds.warning(f"ERROR: Assign materials '{object_name}'\n{e}")
+
+
 def transferBlendShape(sourceBlendShape="", targetDataList: List[TargetData] = [], destinationMesh="", destinationBlendShape=None, wrapFunction=pre_configured_wrap, preview=False):
     """
     Transfer blendShape targets between different topology models using wrap
@@ -38,19 +54,24 @@ def transferBlendShape(sourceBlendShape="", targetDataList: List[TargetData] = [
         destinationMesh (str): Destination mesh name
         destinationBlendShape (str, optional): Destination blendShape node name
         wrapFunction (function): Wrap function to use for transfer
+        preview (bool or list): If True, only create wrap and return wrap data. If list, use provided wrap data [wrapNode, wrapBase, wrapMesh]
     """
     # get source geometry
     source_geometry, newTargetName = get_bsBaseGeometry(sourceBlendShape)
     if isinstance(preview, list):
         # get wrap data
-        wrapNode, wrapBase, wrapMesh = preview
+        asset, wrapMesh = preview
     else:
-        # do wrap
-        wrapMesh = duplicate_mesh(destinationMesh, "TRANSFER_MESH")
-        wrapNode, wrapBase = wrapFunction(source_geometry, wrapMesh)
+        if cmds.objExists("TRANSFER_DATA"):
+            cmds.delete("TRANSFER_DATA")
+        with AssetCallback(name="TRANSFER_DATA") as asset:
+            # do wrap
+            wrapMesh = duplicate_mesh(destinationMesh, "TRANSFER_MESH")
+            cmds.container(asset, e=1, addNode=[wrapMesh] + cmds.listRelatives(wrapMesh, children=True, shapes=True))
+            wrapNode, wrapBase = wrapFunction(source_geometry, wrapMesh)
 
     if preview is True:
-        return wrapNode, wrapBase, wrapMesh
+        return asset, wrapMesh
 
     # get target data, if not targetDataList:
     if not targetDataList:
@@ -133,4 +154,4 @@ def transferBlendShape(sourceBlendShape="", targetDataList: List[TargetData] = [
             cmds.setAttr(f"{source.node}.weight[{source.targetIdx}]", bake_weight)
             cmds.setAttr(f"{transfer.node}.weight[{transfer.targetIdx}]", bake_weight)
     # delete wrap
-    cmds.delete(wrapNode, wrapMesh, wrapBase)
+    cmds.delete(asset)

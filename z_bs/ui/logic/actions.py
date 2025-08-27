@@ -6,7 +6,7 @@ from z_bs.core.wrap import createWrap, createProximityWrap
 
 import z_bs.ui.logic.treeViewFunction as treeFn
 from z_bs.utils.showMessage import showMessage
-from z_bs.ui.logic.treeViewSelection import get_lasterSelectedTargetData, get_selectionBlendShape, get_selectionTarget, get_selectionTargetData, get_selectionInbetween
+from z_bs.ui.logic.treeViewSelection import get_lasterSelectedTargetData, get_selectionBlendShape, get_selectionTarget, get_selectionTargetData, get_selectionInbetween, get_selectionInbetweenData
 from z_bs.utils.getHistory import get_history, get_shape
 
 from maya import mel, cmds
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 
 def MSG_ERROR(action, msg):
-    showTime = 3000
+    showTime = 2000
     color = "#FF0000"
     message = f"""<font color={color}>{action}</font>
     <i>{msg}</i>"""
@@ -29,7 +29,7 @@ def MSG_ERROR(action, msg):
 
 
 def MSG_INFO(action, msg):
-    showTime = 3000
+    showTime = 2000
     color = "#00D900"
     message = f"""<font color={color}>{action}</font>
     <i>{msg}</i>"""
@@ -340,7 +340,7 @@ class ActionHandler:
         target = get_lasterSelectedTargetData()
         if cmds.objExists(target.attr):
             self.copyDeltaDataTemp = fnBs.copy_delta(target)
-            MSG_INFO("Copy", target.attr)
+            MSG_INFO("Copy", target)
         else:
             MSG_ERROR("ERROR", "Please select a blendShape target.")
             raise RuntimeError("Please select a blendShape target.")
@@ -348,11 +348,14 @@ class ActionHandler:
     def pasted_delta_cmd(self):
         if self.copyDeltaDataTemp:
             try:
-                targets = get_selectionTargetData()
+                targets = get_selectionTargetData(iterTargetInbetween=False)
+                inbetweens = get_selectionInbetweenData()
+                # print(targets)
+                # print(inbetweens)
             except Exception as e:
-                MSG_ERROR("ERROR", "Please select targets in shapeEdit.")
+                MSG_ERROR("ERROR", "Please select targets in shapeEditor.")
                 raise Exception(e)
-            for target in targets:
+            for target in targets + inbetweens:
                 if cmds.objExists(target.attr):
                     fnBs.pasted_delta(target, self.copyDeltaDataTemp)
                     MSG_INFO("Paste", target.attr)
@@ -442,7 +445,10 @@ class ActionHandler:
     def transfer(self):
         data = self.getTransferData()
         wrap = self.makeWrapFunctions()
-        bsTransfer.transferBlendShape(sourceBlendShape=data["blendShape"], targetDataList=data["targetList"], destinationMesh=data["targetMesh"], destinationBlendShape=data["destinationBlendShape"], wrapFunction=wrap)
+        preview = False
+        if cmds.objExists("TRANSFER_DATA") and cmds.objExists("TRANSFER_MESH"):
+            preview = ["TRANSFER_DATA", "TRANSFER_MESH"]
+        bsTransfer.transferBlendShape(sourceBlendShape=data["blendShape"], targetDataList=data["targetList"], destinationMesh=data["targetMesh"], destinationBlendShape=data["destinationBlendShape"], wrapFunction=wrap, preview=preview)
 
     def preview(self):
         if self.transferPreviewObject:

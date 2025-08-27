@@ -393,11 +393,13 @@ def get_targetInbetween(node, targetIdx):
     return [TargetData(node, targetIdx, x) for x in inbetween]
 
 
-def convertInbetweenIndexToValue(inbetweenIdx):
+def convertInbetweenIndexToValue(inbetweenIdx: int):
     """
     Convert inbetween index to value.
     Inbetween index is between 5000 and 6000, where 6000 is the default inbetween.
     """
+    if not isinstance(inbetweenIdx, int):
+        raise TypeError("Inbetween index must be an integer.")
     if inbetweenIdx < 5000 or inbetweenIdx > 6000:
         raise ValueError("Inbetween index must be between 5000 and 6000.")
     return (inbetweenIdx - 5000) / 1000.0

@@ -8,7 +8,7 @@ def showMessage(msg, time=1000):
     if MUTE_MESSAGE:
         return
     message = f"{msg}"
-    cmds.inViewMessage(amg=message, pos='botRight', fade=True, fadeInTime=100, fadeStayTime=time, fadeOutTime=100)
+    cmds.inViewMessage(amg=message, pos='botRight', fade=True, fadeInTime=200, fadeStayTime=time, fadeOutTime=200)
 
 
 def muteMessage(mute: bool):

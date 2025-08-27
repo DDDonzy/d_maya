@@ -8,15 +8,15 @@ def get_lastSelection():
 
 
 def get_selectionBlendShape():
-    return mel.eval("getShapeEditorTreeviewSelection 11")
+    return mel.eval("getShapeEditorTreeviewSelection 1")
 
 
 def get_selectionTarget():
-    return mel.eval("getShapeEditorTreeviewSelection 14")
+    return mel.eval("getShapeEditorTreeviewSelection 4")
 
 
 def get_selectionInbetween():
-    return mel.eval("getShapeEditorTreeviewSelection 16")
+    return mel.eval("getShapeEditorTreeviewSelection 6")
 
 
 def get_lasterSelectedTargetData() -> List[fnBs.TargetData]:
@@ -26,6 +26,7 @@ def get_lasterSelectedTargetData() -> List[fnBs.TargetData]:
     targetSelected = get_selectionTarget()
     inbetweenSelected = get_selectionInbetween()
     lastSelectedSelected = get_lastSelection()
+
     if lastSelectedSelected:
         lastSelectedSelected = lastSelectedSelected[0]
 
@@ -53,7 +54,7 @@ def get_lasterSelectedTargetData() -> List[fnBs.TargetData]:
     return targetData
 
 
-def get_selectionTargetData():
+def get_selectionTargetData(iterTargetInbetween=True) -> List[fnBs.TargetData]:
     """
     获取所有的选择项目，并且转换为 TargetData 列表。
     如果选择的是 blendshape 节点，则获取所有的目标数据。
@@ -61,7 +62,7 @@ def get_selectionTargetData():
     target = get_selectionTarget()
     bs = get_selectionBlendShape()
     if not bs and not target:
-        raise RuntimeError("Please select blendshape or targets in shapeEdit.")
+        return []
     if target and bs:
         raise RuntimeError("Please select blendshape or targets in shapeEdit not both.")
     if len(bs) > 1:
@@ -76,13 +77,34 @@ def get_selectionTargetData():
             if i_bs != _bs:
                 raise RuntimeError("Please select targets from the same blendShape node")
         _targetList = fnBs.get_targetDataList(_bs)
+
         targetList = []
-        for i in _targetList:
-            if i.targetIdx in idx_list:
-                targetList.append(i)
+        if iterTargetInbetween:
+            for i in _targetList:
+                if i.targetIdx in idx_list:
+                    targetList.append(i)
+        else:
+            _inbetween_dict = {}
+            for i in _targetList:
+                if (i.targetIdx in idx_list) and (i.inbetweenIdx > _inbetween_dict.get(i.targetIdx, [0])[0]):
+                    _inbetween_dict.update({i.targetIdx: [i.inbetweenIdx, i]})
+            for v in _inbetween_dict.values():
+                targetList.append(v[1])
+
     if bs:
         bs = bs[0]
         targetList = fnBs.get_targetDataList(bs)
 
     return targetList
 
+
+def get_selectionInbetweenData() -> List[str]:
+    inbetween_list = get_selectionInbetween()
+    targetData_list = []
+    for inbetween in inbetween_list:
+        node, target_idx, inbetween_idx = inbetween.split(".")
+        inbetween_weight = fnBs.convertInbetweenIndexToValue(int(inbetween_idx))
+        mode = cmds.getAttr(f"{node}.it[0].itg[{target_idx}].postDeformersMode")
+        name = cmds.getAttr(f"{node}.inbetweenInfoGroup[{target_idx}].inbetweenInfo[{inbetween_idx}].inbetweenTargetName")
+        targetData_list.append(fnBs.TargetData(node=node, targetIdx=int(target_idx), inbetweenIdx=int(inbetween_idx), weight=inbetween_weight, postDeformersMode=mode, targetName=name))
+    return targetData_list
