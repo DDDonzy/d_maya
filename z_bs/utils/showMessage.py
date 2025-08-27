@@ -7,7 +7,7 @@ MUTE_MESSAGE = False
 def showMessage(msg, time=1000):
     if MUTE_MESSAGE:
         return
-    message = f"<hl> {msg} </hl>"
+    message = f"{msg}"
     cmds.inViewMessage(amg=message, pos='botRight', fade=True, fadeInTime=100, fadeStayTime=time, fadeOutTime=100)
 
 
