@@ -19,7 +19,7 @@ def get_selectionInbetween():
     return mel.eval("getShapeEditorTreeviewSelection 16")
 
 
-def get_lasterSelectedData() -> List[fnBs.TargetData]:
+def get_lasterSelectedTargetData() -> List[fnBs.TargetData]:
     targetData: fnBs.TargetData = fnBs.TargetData()
 
     bsNameSelected = get_selectionBlendShape()
@@ -53,7 +53,7 @@ def get_lasterSelectedData() -> List[fnBs.TargetData]:
     return targetData
 
 
-def get_selectionConvertToTargetData():
+def get_selectionTargetData():
     """
     获取所有的选择项目，并且转换为 TargetData 列表。
     如果选择的是 blendshape 节点，则获取所有的目标数据。

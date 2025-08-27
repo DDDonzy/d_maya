@@ -6,7 +6,7 @@ from z_bs.core.wrap import createWrap, createProximityWrap
 
 import z_bs.ui.logic.treeViewFunction as treeFn
 from z_bs.utils.showMessage import showMessage
-from z_bs.ui.logic.treeViewSelection import get_lasterSelectedData, get_selectionBlendShape, get_selectionTarget, get_selectionConvertToTargetData, get_selectionInbetween
+from z_bs.ui.logic.treeViewSelection import get_lasterSelectedTargetData, get_selectionBlendShape, get_selectionTarget, get_selectionTargetData, get_selectionInbetween
 from z_bs.utils.getHistory import get_history, get_shape
 
 from maya import mel, cmds
@@ -57,7 +57,7 @@ class ActionHandler:
         blendShapeNames.extend(treeviewSelectedBSD)
 
         if not treeviewSelectedBSD:
-            lastSelectionData = get_lasterSelectedData()
+            lastSelectionData = get_lasterSelectedTargetData()
             if lastSelectionData.node:
                 blendShapeNames.append(lastSelectionData.node)
 
@@ -104,7 +104,7 @@ class ActionHandler:
         获取所有非零权重的目标
         Get all targets with non-zero weight from the selected blendShape node.
         """
-        target = get_lasterSelectedData()
+        target = get_lasterSelectedTargetData()
 
         if target.node is None:
             return []
@@ -124,7 +124,7 @@ class ActionHandler:
         添加雕刻到选择的 BlendShape 节点
         Add a sculpt to the selected blendShape node.
         """
-        target = get_lasterSelectedData()
+        target = get_lasterSelectedTargetData()
         if target.targetIdx < 0:
             showMessage("No target selected in shape editor.")
             return
@@ -153,7 +153,7 @@ class ActionHandler:
         自动设置选择目标的权重
         Auto set the weight of the selected target.
         """
-        target = get_lasterSelectedData()
+        target = get_lasterSelectedTargetData()
 
         if target.targetIdx < 0:
             weightAttr = f"{target.node}.envelope"
@@ -178,7 +178,7 @@ class ActionHandler:
         """更新对象标签"""
         meshText = "None"
         bsText = "None"
-        target = get_lasterSelectedData()
+        target = get_lasterSelectedTargetData()
 
         if target.baseMesh:
             if cmds.objExists(target.baseMesh):
@@ -319,7 +319,7 @@ class ActionHandler:
             del self.ui.dynamicButtonsDict[button_to_delete]
 
     def copy_delta_cmd(self):
-        target = get_lasterSelectedData()
+        target = get_lasterSelectedTargetData()
         if cmds.objExists(target.attr):
             self.copyDeltaDataTemp = fnBs.copy_delta(target)
             showMessage(f"Copy {target.attr}")
@@ -328,10 +328,11 @@ class ActionHandler:
 
     def pasted_delta_cmd(self):
         if self.copyDeltaDataTemp:
-            target = get_lasterSelectedData()
-            if cmds.objExists(target.attr):
-                fnBs.pasted_delta(target, self.copyDeltaDataTemp)
-                showMessage(f"Pasted {target.attr}")
+            targets = get_selectionTargetData()
+            for target in targets:
+                if cmds.objExists(target.attr):
+                    fnBs.pasted_delta(target, self.copyDeltaDataTemp)
+                    showMessage(f"Pasted {target.attr}")
             else:
                 showMessage("Please select a blendShape target")
 
@@ -498,7 +499,7 @@ class ActionHandler:
         镜像 BlendShape 目标
         Mirror the selected BlendShape target.
         """
-        targetList = get_selectionConvertToTargetData()
+        targetList = get_selectionTargetData()
 
         axis = ["x", "y", "z"][self.ui.mirrorAxisComboBox.currentIndex()]
         direction = self.ui.mirrorDirectionComboBox.currentIndex()
@@ -522,7 +523,7 @@ class ActionHandler:
         翻转 BlendShape 目标
         Flip the selected BlendShape target.
         """
-        targetList = get_selectionConvertToTargetData()
+        targetList = get_selectionTargetData()
 
         targetDict = {}
         for x in targetList:
