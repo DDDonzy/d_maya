@@ -30,8 +30,10 @@ from mocap_bake_rig import bakeAnimations  # noqa: E402
 
 mocap_ref = "MOCAPRN"
 rig_ref = "RIG"
+rig_file = r"N:\SourceAssets\Characters\TestCharacter\Rigs\TestCharacter_rig.ma"
 done = []
 error = []
+
 
 scan_dir = Path(r"N:\SourceAssets\Characters\Hero\Mocap\20250830")
 output_dir = Path(r"N:\SourceAssets\Characters\Hero\Mocap\20250830\test")
@@ -55,7 +57,7 @@ for x in file_list:
         print(f"当前播放范围: {playback_start_frame} - {playback_end_frame}")
 
         print("加载RIG 文件 Reference")
-        cmds.file(r"N:\SourceAssets\Characters\TestCharacter\Rigs\TestCharacter_rig.ma", reference=True, namespace="RIG")
+        cmds.file(rig_file, reference=True, namespace="RIG")
         print("Reference 加载完成")
 
         print("开始烘焙动画...")
