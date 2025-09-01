@@ -28,15 +28,17 @@ sys.path.insert(0, str(Path(__file__).parent))
 from mocap_bake_rig import bakeAnimations  # noqa: E402
 
 
-ma = {}
-fbx = {}
-ref_node = "MOCAPRN"
-
+mocap_ref = "MOCAPRN"
+rig_ref = "RIG"
 done = []
 error = []
 
+scan_dir = Path(r"N:\SourceAssets\Characters\Hero\Mocap\20250830")
+output_dir = Path(r"N:\SourceAssets\Characters\Hero\Mocap\20250830\test")
 
-for x in list(Path(r"N:\SourceAssets\Characters\Hero\Mocap\20250830").glob("*.ma")):
+
+file_list = scan_dir.glob("*.ma")
+for x in file_list:
     try:
         print("\n" * 5)
         maya_file_path = str(x)
@@ -57,11 +59,11 @@ for x in list(Path(r"N:\SourceAssets\Characters\Hero\Mocap\20250830").glob("*.ma
         print("Reference 加载完成")
 
         print("开始烘焙动画...")
-        bakeAnimations(target_namespace="RIG", source_namespace="MOCAP", time=(playback_start_frame, playback_end_frame))
+        bakeAnimations(target_namespace=rig_ref, source_namespace=mocap_ref, time=(playback_start_frame, playback_end_frame))
         print("烘焙动画完成")
 
         print("删除 FBX REFERENCE")
-        cmds.file(removeReference=True, referenceNode=ref_node)
+        cmds.file(removeReference=True, referenceNode=mocap_ref)
         print("FBX REFERENCE 删除完成")
 
         print("删除‘delete’")
@@ -74,7 +76,7 @@ for x in list(Path(r"N:\SourceAssets\Characters\Hero\Mocap\20250830").glob("*.ma
         cmds.playbackOptions(aet=playback_end_frame)
         print("设置播放范围为:", playback_start_frame)
 
-        new_ma_path = Path(r"N:\SourceAssets\Characters\Hero\Mocap\20250830\test") / f"{maya_file_name}.ma"
+        new_ma_path = output_dir / f"{maya_file_name}.ma"
 
         cmds.file(rename=new_ma_path)
         cmds.file(save=True, type="mayaAscii", f=1)
