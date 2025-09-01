@@ -1,9 +1,16 @@
+"""
+
+UE 骨骼动画，烘焙到ADV 控制器上
+
+"""
+
 from maya import cmds
 from maya.api import OpenMaya as om
 from UTILS.transform import get_worldMatrix, get_relativesMatrix
 from UTILS.compounds import matrixConstraint
 from UTILS.create.assetCallback import AssetCallback
 
+# 烘焙 ADV IK 向量控制器映射表
 bake_pv_dict = {
     "PoleArm_L": {
         "START": "upperarm_l",
@@ -26,7 +33,7 @@ bake_pv_dict = {
         "END": "foot_r",
     },
 }
-
+# ADV 控制器对应UE骨骼控制表
 bake_dict = {
     "FKAnkle_L": {"PARENT": "foot_l"},
     "FKAnkle_R": {"PARENT": "foot_r"},
@@ -68,6 +75,12 @@ bake_dict = {
 
 
 def cal_pv(name="xxx"):
+    """
+    根据ik三段骨骼计算pv位置
+    使用原骨骼，约束生成的locator，计算pv位置，约束到pv控制器上
+
+    Returns: 输出四个定位器，前三个是ik骨骼位置，第四个是计算出来的pv位置
+    """
     with AssetCallback(name=f"{name}_cal_pv", isDagAsset=False) as asset:
         start = cmds.spaceLocator(name=f"{name}ik_start")[0]
         mid = cmds.spaceLocator(name=f"{name}ik_mid")[0]
@@ -151,6 +164,9 @@ def cal_pv(name="xxx"):
 
 
 def cal_main(pelvis, pelvis_ctl, main_ctl, frontAxis="Z", t=1, r=1):
+    """
+    特殊计算Pelvis，然后约束到输入的控制器上
+    """
     with AssetCallback(name="cal_main", isDagAsset=True) as asset:
         offset = get_relativesMatrix(
             get_worldMatrix(pelvis_ctl),
@@ -187,6 +203,9 @@ def pre_bakeAnimations(
     main_t=True,
     main_r=True,
 ):
+    """
+    预烘焙，生成约束等
+    """
     # pre
     with AssetCallback(name="bakeConstraint", isDagAsset=False) as asset:
         # bake offset data

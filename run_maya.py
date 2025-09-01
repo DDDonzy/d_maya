@@ -1,5 +1,6 @@
-import maya.standalone 
-maya.standalone.initialize( name='python' )
+import maya.standalone
+
+maya.standalone.initialize(name="python")
 
 
 print("------------------------------")
@@ -19,7 +20,7 @@ from UTILS.transform import get_worldMatrix, get_relativesMatrix
 from UTILS.compounds import matrixConstraint
 from UTILS.create.assetCallback import AssetCallback
 
-from mocap_bake_rig import *
+from mocap.mocap_bake_rig import *
 
 
 def replace_reference_by_path(node, old_path, new_path):
@@ -33,6 +34,7 @@ def replace_reference_by_path(node, old_path, new_path):
             print(f"替换失败: {e}")
     else:
         print(f"错误：在场景中找不到对 '{old_path}' 的引用。")
+
 
 from maya import cmds
 from maya.api import OpenMaya as om
@@ -297,8 +299,6 @@ def bakeAnimations(target_namespace, source_namespace, time=(0, 1000)):
     )
 
     cmds.delete(asset)
-    
-    
 
 
 ma = {}
@@ -330,22 +330,18 @@ for k, v in ma.items():
         print(f"正在打开场景文件...{ma_file}")
         cmds.file(ma_file, o=1, f=1, loadNoReferences=1)
         print(f"加载完成: {ma_file}")
-        
+
         exporter_node = "_ANIM_EXPORTER_"
         num_clip = len(cmds.ls(f"{exporter_node}.ac[*]"))
         playback_start_frame = cmds.getAttr(f"{exporter_node}.ac[0].acs")
         playback_end_frame = cmds.getAttr(f"{exporter_node}.ac[{num_clip - 1}].ace")
         print(f"当前播放范围: {playback_start_frame} - {playback_end_frame}")
-        
 
         old_ref_path = cmds.referenceQuery(ref_node, filename=True)
         print("旧FBX引用路径:", old_ref_path)
 
-
-
         replace_reference_by_path(ref_node, old_ref_path, new_ref_path)
         print(f"新FBX路径已替换: {new_ref_path}")
-
 
         export_file_name = cmds.getAttr(f"{exporter_node}.exportFilename")
 
@@ -359,7 +355,6 @@ for k, v in ma.items():
         cmds.setAttr(f"{exporter_node}.exportFilename", f"{new_ma_name}_", type="string")
         cmds.setAttr(f"{exporter_node}.exportPath", r"N:\SourceAssets\Characters\Hero\Mocap\clip3\sourceRetarget_clip", type="string")
         print("设置导出ALL")
-        
 
         for x in range(num_clip):
             cmds.setAttr(f"{exporter_node}.ac[{x}].exportAnimClip", True)
@@ -367,28 +362,23 @@ for k, v in ma.items():
         cmds.setAttr(f"{exporter_node}.exportFilename", export_file_name, type="string")
         cmds.setAttr(f"{exporter_node}.exportPath", r"N:\SourceAssets\Characters\Hero\Mocap\clip3\FBX", type="string")
         new_ma_path = Path(r"N:\SourceAssets\Characters\Hero\Mocap\clip3") / f"{new_ma_name}.ma"
-        
+
         print("加载RIG 文件 Reference")
         cmds.file(r"N:\SourceAssets\Characters\TestCharacter\Rigs\TestCharacter_rig.ma", reference=True, namespace="RIG")
         print("Reference 加载完成")
+
         
-
-
         print("开始烘焙动画...")
         bakeAnimations(target_namespace="RIG", source_namespace="MOCAP", time=(playback_start_frame, playback_end_frame))
         print("烘焙动画完成")
-        
+
         print("删除 FBX REFERENCE")
         cmds.file(removeReference=True, referenceNode=ref_node)
         print("FBX REFERENCE 删除完成")
-        
-        
-        
+
         cmds.playbackOptions(ast=playback_start_frame)
         cmds.playbackOptions(aet=playback_end_frame)
         print("设置播放范围为:", playback_start_frame)
-
-
 
         cmds.file(rename=new_ma_path)
         cmds.file(save=True, type="mayaAscii", f=1)
