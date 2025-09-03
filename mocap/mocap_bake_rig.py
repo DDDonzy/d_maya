@@ -70,7 +70,6 @@ bake_dict = {
     "IKhybridSpine1_M": {"PARENT": "pelvis"},
     "IKhybridSpine3_M": {"PARENT": "spine_04"},
     "RootX_M": {"PARENT": "pelvis"},
-    "Fly": {"PARENT": "pelvis"},
 }
 
 

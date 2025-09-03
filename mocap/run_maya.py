@@ -1,10 +1,40 @@
-import sys  # noqa: E402
+import sys
+import time  # noqa: E402
 from maya import cmds  # noqa: E402
 from pathlib import Path  # noqa: E402
 
 import maya.standalone
+from maya import mel
 
 maya.standalone.initialize(name="python")
+
+
+def replace_reference_by_path(node, old_path, new_path):
+    ref_node_to_replace = node
+    if ref_node_to_replace:
+        print(f"找到了匹配的 Reference Node: {ref_node_to_replace}")
+        try:
+            cmds.file(query=True, reference=True)
+            cmds.file(new_path, loadReference=ref_node_to_replace)
+            print(f"成功将 '{old_path}' 替换为 '{new_path}'")
+        except Exception as e:
+            print(f"替换失败: {e}")
+    else:
+        print(f"错误：在场景中找不到对 '{old_path}' 的引用。")
+
+
+def run_optimize_scene():
+    """
+    执行 Maya 的 "Optimize Scene Size" 命令，清理所有类型的冗余节点。
+    这是一个非常全面的清理工具。
+    """
+    print(">>> Running Maya's full Optimize Scene Size command...")
+    # cleanUpScene 是 "Optimize Scene Size" 窗口背后的 MEL 脚本
+    # 参数 3 表示执行所有勾选的清理项
+    mel.eval("cleanUpScene(3)")
+    print(">>> Optimize Scene Size finished.")
+
+
 
 
 # 加载 FBX 插件
@@ -28,32 +58,71 @@ sys.path.insert(0, str(Path(__file__).parent))
 from mocap_bake_rig import bakeAnimations  # noqa: E402
 
 
-mocap_ref = "MOCAPRN"
-rig_ref = "RIG"
+source_namespace = "MOCAP"
+source_ref_node = "MOCAPRN"
+rig_namespace = "RIG"
+rig_ref_node = "RIGRN"
 rig_file = r"N:\SourceAssets\Characters\TestCharacter\Rigs\TestCharacter_rig.ma"
 done = []
 error = []
 
 
-scan_dir = Path(r"N:\SourceAssets\Characters\Hero\Mocap\20250830")
-output_dir = Path(r"N:\SourceAssets\Characters\Hero\Mocap\20250830\test")
+scan_dir = Path(r"N:\SourceAssets\Characters\Hero\Mocap\clip_preprocessing")
+output_dir = Path(r"N:\SourceAssets\Characters\Hero\Mocap")
 
 
-file_list = scan_dir.glob("*.ma")
-for x in file_list:
+file_list = list(scan_dir.glob("*.ma"))
+out_list = [x.name for x in output_dir.glob("*.ma")]
+
+
+
+num_clip = len(file_list)
+for i, x in enumerate(file_list):
     try:
+        if x.name in out_list:
+            print(x)
+            continue
+        
         print("\n" * 5)
+        print(f"============= Processing file {i + 1} of {num_clip} =============")
+        if "old" in x.name:
+            print("跳过旧文件:", x)
+            continue
         maya_file_path = str(x)
         maya_file_name = x.stem
 
         print(f"OPEN: {maya_file_path}")
-        cmds.file(maya_file_path, o=1, f=1)
+        try:
+            cmds.file(maya_file_path, o=1, f=1, loadNoReferences=1)
+        except RuntimeError as e:
+            print("Error opening file:", e)
+
+        if cmds.objExists(source_ref_node):
+            old_path = Path(cmds.referenceQuery(source_ref_node, filename=True))
+            if not (Path(r"N:\SourceAssets\Characters\Hero\Mocap\ue_retarget") / old_path.name).exists():
+                print("跳过不存在的文件:", old_path)
+                break
+            
+            replace_reference_by_path(source_ref_node, old_path, Path(r"N:\SourceAssets\Characters\Hero\Mocap\ue_retarget") / old_path.name)
+        else:
+            cmds.file(Path(r"N:\SourceAssets\Characters\Hero\Mocap\ue_retarget") / f"{maya_file_name}.fbx", reference=True, namespace=source_namespace)
+
+        if cmds.objExists(rig_ref_node):
+            cmds.file(removeReference=1, referenceNode=rig_ref_node)
         print("FILE OPENED!")
+
+        run_optimize_scene()
 
         exporter_node = "_ANIM_EXPORTER_"
         num_clip = len(cmds.ls(f"{exporter_node}.ac[*]"))
-        playback_start_frame = cmds.getAttr(f"{exporter_node}.ac[0].acs")
-        playback_end_frame = cmds.getAttr(f"{exporter_node}.ac[{num_clip - 1}].ace")
+        playback_start_frame = 0
+        playback_end_frame = 100000000000
+        for x in range(num_clip):
+            s = cmds.getAttr(f"{exporter_node}.ac[0].acs")
+            e = cmds.getAttr(f"{exporter_node}.ac[{num_clip - 1}].ace")
+            playback_start_frame = s if s > playback_start_frame else playback_start_frame
+            playback_end_frame = e if e < playback_end_frame else playback_end_frame
+
         print(f"当前播放范围: {playback_start_frame} - {playback_end_frame}")
 
         print("加载RIG 文件 Reference")
@@ -61,11 +130,11 @@ for x in file_list:
         print("Reference 加载完成")
 
         print("开始烘焙动画...")
-        bakeAnimations(target_namespace=rig_ref, source_namespace=mocap_ref, time=(playback_start_frame, playback_end_frame))
+        bakeAnimations(target_namespace=rig_namespace, source_namespace=source_namespace, time=(playback_start_frame, playback_end_frame))
         print("烘焙动画完成")
 
-        print("删除 FBX REFERENCE")
-        cmds.file(removeReference=True, referenceNode=mocap_ref)
+        print("取消加载 FBX REFERENCE")
+        cmds.file(unloadReference=source_ref_node)
         print("FBX REFERENCE 删除完成")
 
         print("删除‘delete’")
