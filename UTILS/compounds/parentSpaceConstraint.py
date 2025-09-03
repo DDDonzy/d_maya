@@ -20,12 +20,14 @@ class parentSpaceConstraint(CreateBase):
                 scale (bool): Default is True.
                 shear (bool): Default is True.
                 niceName (str or list): A nice name for the controller(s). Default is an empty list.
+                proxyAttrObject (str): Default is an empty string.
                 force (bool): Default is False.
         """
         self.translate = kwargs.get("translate", True) and kwargs.get("t", True)
         self.rotate = kwargs.get("rotate", True) and kwargs.get("r", True)
         self.scale = kwargs.get("scale", True) and kwargs.get("s", True)
         self.shear = kwargs.get("shear", True) and kwargs.get("sh", True)
+        self.proxyAttrObject = kwargs.get("proxyAttrObject") or kwargs.get("pxy") or ""
 
         # get controller and target
         if len(args) < 2:
@@ -35,8 +37,8 @@ class parentSpaceConstraint(CreateBase):
             self.target = sel.pop()
             self.controller = sel
         else:
-            self.target = args.pop()
-            self.controller = args
+            self.target = args[-1]
+            self.controller = args[0:-1]
         # get nice name
         self.niceName = kwargs.get("niceName") or kwargs.get("nn") or []
         if not isinstance(self.niceName, list):
@@ -51,7 +53,9 @@ class parentSpaceConstraint(CreateBase):
                 cmds.deleteAttr(f"{self.target}.{self.attrName}")
             else:
                 self.isEdit = True
-
+        # attr object
+        if not self.proxyAttrObject:
+            self.proxyAttrObject = self.target
         super().__init__(*args, **kwargs)
 
     def create(self):
@@ -102,28 +106,28 @@ class parentSpaceConstraint(CreateBase):
         cmds.connectAttr(f"{self.target}.parentMatrix[0]", f"{self.controllerMatrix}[0]")
         cmds.setAttr(f"{self.offsetMatrix}[0]", localMatrix, type="matrix")
 
-        # add parentspace attr to obj
-        if cmds.objExists(f"{self.target}.{self.attrName}"):
-            cmds.deleteAttr(f"{self.target}.{self.attrName}")
-        cmds.addAttr(self.target, ln=self.attrName, k=1, pxy=self.parentspace)
-        # add info
-        cmds.addAttr(self.target, ln="parentSpaceChoice", at="message")
-        cmds.addAttr(node_choseControllerMatrix, ln="parentSpaceTarget", at="message")
-        cmds.connectAttr(f"{node_choseControllerMatrix}.parentSpaceTarget", f"{self.target}.parentSpaceChoice")
+        # add parentspace attr to obj        
+        if cmds.objExists(f"{self.proxyAttrObject}.{self.attrName}"):
+            cmds.deleteAttr(f"{self.proxyAttrObject}.{self.attrName}")
+        cmds.addAttr(self.proxyAttrObject, ln=self.attrName, k=1, pxy=self.parentspace)
+        # # add info
+        # cmds.addAttr(self.proxyAttrObject, ln="parentSpaceChoice", at="message")
+        # cmds.addAttr(node_choseControllerMatrix, ln="parentSpaceTarget", at="message")
+        # cmds.connectAttr(f"{node_choseControllerMatrix}.parentSpaceTarget", f"{self.proxyAttrObject}.parentSpaceChoice")
 
     def addParentSpaceController(self,
                                  controller: str,
                                  niceName: str):
 
         # get index
-        enum_str = cmds.addAttr(f"{self.target}.{self.attrName}", q=1, en=1)
+        enum_str = cmds.addAttr(f"{self.proxyAttrObject}.{self.attrName}", q=1, en=1)
         nice_name_list = enum_str.split(":")
         nice_name_list.append(niceName)
         enum_str = ":".join(nice_name_list)
         parent_indices = len(nice_name_list)-1
 
         # update parentspace enum
-        cmds.addAttr(f"{self.target}.{self.attrName}", e=1, en=enum_str)
+        cmds.addAttr(f"{self.proxyAttrObject}.{self.attrName}", e=1, en=enum_str)
         cmds.addAttr(self.parentspace, e=1, en=enum_str)
 
         # offset matrix to chose

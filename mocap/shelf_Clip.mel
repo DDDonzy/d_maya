@@ -1,0 +1,313 @@
+global proc shelf_Clip () {
+    global string $gBuffStr;
+    global string $gBuffStr0;
+    global string $gBuffStr1;
+
+
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "from pathlib import Path\nimport ctypes\nfrom ctypes import wintypes\nfrom maya import cmds\n\n\nkernel32 = ctypes.WinDLL(\"kernel32\", use_last_error=True)\nuser32 = ctypes.WinDLL(\"user32\", use_last_error=True)\n\nCF_UNICODETEXT = 13  # Windows剪贴板使用Unicode文本格式\nGMEM_MOVEABLE = 0x0002  # 定义内存为可移动的\nGMEM_ZEROINIT = 0x0040  # 定义内存内容初始化为0\n\nkernel32.GlobalAlloc.argtypes = [wintypes.UINT, ctypes.c_size_t]\nkernel32.GlobalAlloc.restype = wintypes.HGLOBAL\n\nkernel32.GlobalLock.argtypes = [wintypes.HGLOBAL]\nkernel32.GlobalLock.restype = wintypes.LPVOID\n\nkernel32.GlobalUnlock.argtypes = [wintypes.HGLOBAL]\nkernel32.GlobalUnlock.restype = wintypes.BOOL\n\nkernel32.GlobalSize.argtypes = [wintypes.HGLOBAL]\nkernel32.GlobalSize.restype = ctypes.c_size_t\n\nuser32.OpenClipboard.argtypes = [wintypes.HWND]\nuser32.OpenClipboard.restype = wintypes.BOOL\n\nuser32.CloseClipboard.argtypes = []\nuser32.CloseClipboard.restype = wintypes.BOOL\n\nuser32.EmptyClipboard.argtypes = []\nuser32.EmptyClipboard.restype = wintypes.BOOL\n\nuser32.SetClipboardData.argtypes = [wintypes.UINT, wintypes.HANDLE]\nuser32.SetClipboardData.restype = wintypes.HANDLE\n\nuser32.IsClipboardFormatAvailable.argtypes = [wintypes.UINT]\nuser32.IsClipboardFormatAvailable.restype = wintypes.BOOL\n\nuser32.GetClipboardData.argtypes = [wintypes.UINT]\nuser32.GetClipboardData.restype = wintypes.HANDLE\n\n\ndef get_clipboard_text() -> str:\n    \"\"\"\n    使用 Windows API 获取剪贴板中的文本内容。\n    \"\"\"\n    text = \"\"\n    if not user32.OpenClipboard(None):\n        raise ctypes.WinError(ctypes.get_last_error())\n\n    try:\n        if user32.IsClipboardFormatAvailable(CF_UNICODETEXT):\n            h_clipboard_data = user32.GetClipboardData(CF_UNICODETEXT)\n            if h_clipboard_data:\n                p_clipboard_data = kernel32.GlobalLock(h_clipboard_data)\n                if p_clipboard_data:\n                    try:\n                        size = kernel32.GlobalSize(h_clipboard_data)\n                        text = ctypes.wstring_at(p_clipboard_data, size // 2 - 1)\n                    finally:\n                        kernel32.GlobalUnlock(h_clipboard_data)\n    finally:\n        user32.CloseClipboard()\n\n    return text\n\n\ndef convert_dir(path: str) -> Path:\n    \"\"\"\n    将路径转换为 Maya 可识别的格式。\n    \"\"\"\n    source_dir = Path(path)\n    name = source_dir.stem\n    print(source_dir)\n    target_dir = source_dir.parent.parent / r\"data\" / name\n    print(target_dir)\n    fbx_files = list(target_dir.glob(\"*.fbx\"))\n    print(fbx_files)\n    for fbx_file in fbx_files:\n        if \"skeleton\" in str(fbx_file):\n            return Path(fbx_file)\n\n\ndef openFbxWithFileDialog():\n    \"\"\"\n    使用标准文件对话框来获取FBX文件路径并导入。\n    \"\"\"\n    cmds.file(new=True, force=True)\n    cmds.currentUnit(time=\"ntscf\")\n\n    file_filter = \"FBX (*.fbx)\"\n\n    clipboard_path = get_clipboard_text()\n    clipboard_path = clipboard_path[1:-1]\n    fbx_path = convert_dir(clipboard_path)\n    result = cmds.fileDialog2(\n        fileFilter=file_filter,\n        dialogStyle=2,\n        fileMode=1,\n        caption=\"Select FBX Clip to Import\",\n        startingDirectory=fbx_path,\n    )\n\n    if result:\n        fbx_path = result[0]\n        print(f\"File selected: {fbx_path}\")\n\n        try:\n            cmds.file(fbx_path,type=\"FBX\", ignoreVersion=True, namespace=\"MOCAP\", r=1)\n            print(\"FBX file imported successfully.\")\n        except Exception as e:\n            cmds.warning(f\"Failed to import FBX file: {e}\")\n    else:\n        print(\"File selection was cancelled.\")\n\n\nopenFbxWithFileDialog()\n" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "from pathlib import Path\nimport ctypes\nfrom ctypes import wintyp..." 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -imageOverlayLabel "Open" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "pythonFamily.png" 
+        -image1 "pythonFamily.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "from pathlib import Path\nimport ctypes\nfrom ctypes import wintypes\nfrom maya import cmds\n\n\nkernel32 = ctypes.WinDLL(\"kernel32\", use_last_error=True)\nuser32 = ctypes.WinDLL(\"user32\", use_last_error=True)\n\nCF_UNICODETEXT = 13  # Windows剪贴板使用Unicode文本格式\nGMEM_MOVEABLE = 0x0002  # 定义内存为可移动的\nGMEM_ZEROINIT = 0x0040  # 定义内存内容初始化为0\n\nkernel32.GlobalAlloc.argtypes = [wintypes.UINT, ctypes.c_size_t]\nkernel32.GlobalAlloc.restype = wintypes.HGLOBAL\n\nkernel32.GlobalLock.argtypes = [wintypes.HGLOBAL]\nkernel32.GlobalLock.restype = wintypes.LPVOID\n\nkernel32.GlobalUnlock.argtypes = [wintypes.HGLOBAL]\nkernel32.GlobalUnlock.restype = wintypes.BOOL\n\nkernel32.GlobalSize.argtypes = [wintypes.HGLOBAL]\nkernel32.GlobalSize.restype = ctypes.c_size_t\n\nuser32.OpenClipboard.argtypes = [wintypes.HWND]\nuser32.OpenClipboard.restype = wintypes.BOOL\n\nuser32.CloseClipboard.argtypes = []\nuser32.CloseClipboard.restype = wintypes.BOOL\n\nuser32.EmptyClipboard.argtypes = []\nuser32.EmptyClipboard.restype = wintypes.BOOL\n\nuser32.SetClipboardData.argtypes = [wintypes.UINT, wintypes.HANDLE]\nuser32.SetClipboardData.restype = wintypes.HANDLE\n\nuser32.IsClipboardFormatAvailable.argtypes = [wintypes.UINT]\nuser32.IsClipboardFormatAvailable.restype = wintypes.BOOL\n\nuser32.GetClipboardData.argtypes = [wintypes.UINT]\nuser32.GetClipboardData.restype = wintypes.HANDLE\n\n\ndef get_clipboard_text() -> str:\n    \"\"\"\n    使用 Windows API 获取剪贴板中的文本内容。\n    \"\"\"\n    text = \"\"\n    if not user32.OpenClipboard(None):\n        raise ctypes.WinError(ctypes.get_last_error())\n\n    try:\n        if user32.IsClipboardFormatAvailable(CF_UNICODETEXT):\n            h_clipboard_data = user32.GetClipboardData(CF_UNICODETEXT)\n            if h_clipboard_data:\n                p_clipboard_data = kernel32.GlobalLock(h_clipboard_data)\n                if p_clipboard_data:\n                    try:\n                        size = kernel32.GlobalSize(h_clipboard_data)\n                        text = ctypes.wstring_at(p_clipboard_data, size // 2 - 1)\n                    finally:\n                        kernel32.GlobalUnlock(h_clipboard_data)\n    finally:\n        user32.CloseClipboard()\n\n    return text\n\n\ndef convert_dir(path: str) -> Path:\n    \"\"\"\n    将路径转换为 Maya 可识别的格式。\n    \"\"\"\n    source_dir = Path(path)\n    name = source_dir.stem\n    print(source_dir)\n    target_dir = source_dir.parent.parent / r\"data\" / name\n    print(target_dir)\n    fbx_files = list(target_dir.glob(\"*.fbx\"))\n    print(fbx_files)\n    for fbx_file in fbx_files:\n        if \"skeleton\" in str(fbx_file):\n            return Path(fbx_file)\n\n\ndef openFbxWithFileDialog():\n    \"\"\"\n    使用标准文件对话框来获取FBX文件路径并导入。\n    \"\"\"\n    cmds.file(new=True, force=True)\n    cmds.currentUnit(time=\"ntscf\")\n\n    file_filter = \"FBX (*.fbx)\"\n\n    clipboard_path = get_clipboard_text()\n    clipboard_path = clipboard_path[1:-1]\n    fbx_path = clipboard_path\n    result = cmds.fileDialog2(\n        fileFilter=file_filter,\n        dialogStyle=2,\n        fileMode=1,\n        caption=\"Select FBX Clip to Import\",\n        startingDirectory=fbx_path,\n    )\n\n    if result:\n        fbx_path = result[0]\n        print(f\"File selected: {fbx_path}\")\n\n        try:\n            cmds.file(fbx_path,type=\"FBX\", ignoreVersion=True, namespace=\"MOCAP\", r=1)\n            print(\"FBX file imported successfully.\")\n        except Exception as e:\n            cmds.warning(f\"Failed to import FBX file: {e}\")\n    else:\n        print(\"File selection was cancelled.\")\n\n\nopenFbxWithFileDialog()\n" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 39
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "# build clip\ncmds.select(root)\ncmds.TimeEditorCreateClip()\n\nstart = 0\nend = 0\nfor clip in cmds.ls(\"*.clip[*].clipStart\"):\n    _start = cmds.getAttr(clip)\n    print(_start)\n    if _start < start:\n        start = _start\n\nfor clip in cmds.ls(\"*.clip[*].clipDuration\"):\n    _end = cmds.getAttr(clip)\n    if _end > end:\n        end = _end\n\ncmds.playbackOptions(min=start, max=end)" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "# build clip\ncmds.select(root)\ncmds.TimeEditorCreateClip()\n\nstar..." 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -imageOverlayLabel "Clip" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "teCreateClip.png" 
+        -image1 "teCreateClip.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "from maya import cmds, mel\n\n# build clip\ncmds.select(\"*:root\")\ncmds.TimeEditorCreateClip()\n\nstart = 0\nend = 0\nfor clip in cmds.ls(\"*.clip[*].clipStart\"):\n    _start = cmds.getAttr(clip)\n    print(_start)\n    if _start < start:\n        start = _start\n\nfor clip in cmds.ls(\"*.clip[*].clipDuration\"):\n    _end = cmds.getAttr(clip)\n    if _end > end:\n        end = _end\n\ncmds.playbackOptions(min=start, max=end)" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 39
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "# mute\nfor x in cmds.ls(sl=1):\n    try:\n        if cmds.objectType(x, isa=\"timeEditorClip\"):\n            cmds.setAttr(f\"{x}.clipMuted\", not cmds.getAttr(f\"{x}.clipMuted\"))\n    except Exception as e:\n        print(f\"Error muting clip {x}: {e}\")\n" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "# mute\nfor x in cmds.ls(sl=1):\n    try:\n        if cmds.objectTy..." 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -imageOverlayLabel "Mute" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "teMute.svg" 
+        -image1 "teMute.svg" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "from maya import cmds, mel\n\n# mute\nfor x in cmds.ls(sl=1):\n    try:\n        if cmds.objectType(x, isa=\"timeEditorClip\"):\n            cmds.setAttr(f\"{x}.clipMuted\", not cmds.getAttr(f\"{x}.clipMuted\"))\n    except Exception as e:\n        print(f\"Error muting clip {x}: {e}\")\n" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "# rename clips\ndef rename_clips():\n    selected_clips = cmds.ls(sl=1)\n    for x in selected_clips:\n        try:\n            if cmds.objectType(x, isa=\"timeEditorClip\"):\n                clipid = cmds.getAttr(f\"{x}.clipid\")\n                mel.eval(f\"teRenameClip {clipid}\")\n        except Exception as e:\n            print(f\"Error renaming clip {x}: {e}\")\nrename_clips()" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "# rename clips\ndef rename_clips():\n    selected_clips = cmds.ls(..." 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -imageOverlayLabel "Rename" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "pythonFamily.png" 
+        -image1 "pythonFamily.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "from maya import cmds, mel\n\n# rename clips\ndef rename_clips():\n    selected_clips = cmds.ls(sl=1)\n    for x in selected_clips:\n        try:\n            if cmds.objectType(x, isa=\"timeEditorClip\"):\n                clipid = cmds.getAttr(f\"{x}.clipid\")\n                mel.eval(f\"teRenameClip {clipid}\")\n        except Exception as e:\n            print(f\"Error renaming clip {x}: {e}\")\nrename_clips()" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "# export\nexport_list = []\nclip_list = cmds.ls(type=\"timeEditorClip\")\n\nfor clip in clip_list:\n    if cmds.getAttr(f\"{clip}.clip[0].clipMuted\"):\n        print(f\"skip muted clip: {clip}\")\n        continue\n    clip_name = cmds.getAttr(f\"{clip}.clip[0].clipName\")\n    start_time = cmds.getAttr(f\"{clip}.clip[0].clipStart\")\n    end_time = cmds.getAttr(f\"{clip}.clip[0].clipDuration\")\n    export_list.append({\n        \"name\": clip_name,\n        \"start\": start_time,\n        \"end\": end_time,\n    })\n\n\ndef build_export_preset():\n    node_name = \"_ANIM_EXPORTER_\"\n\n    if cmds.objExists(node_name):\n        cmds.delete(node_name)\n\n    exporter_node = cmds.createNode(\"gameFbxExporter\", name=node_name)\n    cmds.setAttr(f\"{exporter_node}.pn\", node_name, type=\"string\")\n    cmds.setAttr(f\"{exporter_node}.ils\", True)\n    cmds.setAttr(f\"{exporter_node}.ilu\", True)\n    cmds.setAttr(f\"{exporter_node}.eti\", 2)\n    cmds.setAttr(f\"{exporter_node}.spt\", 2)\n    cmds.setAttr(f\"{exporter_node}.ic\", False)\n    cmds.setAttr(f\"{exporter_node}.ebm\", True)\n    cmds.setAttr(f\"{exporter_node}.fv\", \"FBX201800\", type=\"string\")\n    return node_name\n\n\nexporter_node = build_export_preset()\nfor i, clip in enumerate(export_list):\n    cmds.setAttr(f\"{exporter_node}.ac[{i}].acn\", clip[\"name\"], type=\"string\")\n    cmds.setAttr(f\"{exporter_node}.ac[{i}].acs\", clip[\"start\"])\n    cmds.setAttr(f\"{exporter_node}.ac[{i}].ace\", clip[\"end\"])\n" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "# export\nexport_list = []\nclip_list = cmds.ls(type=\"timeEditorCl..." 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -imageOverlayLabel "Export" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "pythonFamily.png" 
+        -image1 "pythonFamily.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "from maya import cmds, mel\n# export\nexport_list = []\nclip_list = cmds.ls(type=\"timeEditorClip\")\n\nfor clip in clip_list:\n    if cmds.getAttr(f\"{clip}.clip[0].clipMuted\"):\n        print(f\"skip muted clip: {clip}\")\n        continue\n    clip_name = cmds.getAttr(f\"{clip}.clip[0].clipName\")\n    start_time = cmds.getAttr(f\"{clip}.clip[0].clipStart\")\n    end_time = cmds.getAttr(f\"{clip}.clip[0].clipDuration\")\n    export_list.append({\n        \"name\": clip_name,\n        \"start\": start_time,\n        \"end\": start_time + end_time,\n    })\n\n\ndef build_export_preset():\n    node_name = \"_ANIM_EXPORTER_\"\n\n    current_file = Path(cmds.file(query=True, sceneName=True))\n    current_dir = current_file.parent\n    file_name = current_file.stem\n    fbx_dir = current_dir / \"fbx\"\n\n    if cmds.objExists(node_name):\n        cmds.delete(node_name)\n\n    for x in cmds.ls(type=\"gameFbxExporter\"):\n        cmds.setAttr(f\"{x}.ils\", False)\n        cmds.setAttr(f\"{x}.ilu\", False)\n    exporter_node = cmds.createNode(\"gameFbxExporter\", name=node_name)\n    cmds.setAttr(f\"{exporter_node}.pn\", node_name, type=\"string\")\n    cmds.setAttr(f\"{exporter_node}.ils\", True)\n    cmds.setAttr(f\"{exporter_node}.ilu\", True)\n    cmds.setAttr(f\"{exporter_node}.eti\", 2)\n    cmds.setAttr(f\"{exporter_node}.spt\", 2)\n    cmds.setAttr(f\"{exporter_node}.ic\", False)\n    cmds.setAttr(f\"{exporter_node}.ebm\", True)\n    cmds.setAttr(f\"{exporter_node}.fv\", \"FBX201800\", type=\"string\")\n    cmds.setAttr(f\"{exporter_node}.exp\", r\"N:\\SourceAssets\\Characters\\Hero\\Mocap\\20250830\", type=\"string\")\n    cmds.setAttr(f\"{exporter_node}.exf\", r\"M_Blade_Stand_Run_\", type=\"string\")\n    return node_name\n\n\nexporter_node = build_export_preset()\nfor i, clip in enumerate(export_list):\n    cmds.setAttr(f\"{exporter_node}.ac[{i}].acn\", clip[\"name\"], type=\"string\")\n    cmds.setAttr(f\"{exporter_node}.ac[{i}].acs\", clip[\"start\"])\n    cmds.setAttr(f\"{exporter_node}.ac[{i}].ace\", clip[\"end\"])\n\nif cmds.window(\"gameExporterWindow\", q=1, ex=1):\n    cmds.deleteUI(\"gameExporterWindow\")\nmel.eval(\"gameFbxExporter\")\n" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Game Exporter" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Game Exporter" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -imageOverlayLabel "GE" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "menuIconFile.png" 
+        -image1 "menuIconFile.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -version "2016" 
+        -command "gameFbxExporter" 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "createNode \"transform\" -n \"CAM_GRP\";\ncreateNode \"transform\" -p \"CAM_GRP\" -n \"CAM\";\ncreateNode \"camera\" -p \"CAM\" -n \"CAMShape\" -ss;\n\nsetAttr \".translateX\" 600;\nsetAttr \".translateY\" 900;\nsetAttr \".translateZ\" -600;\nsetAttr \".rotateX\" -45;\nsetAttr \".rotateY\" 135;\nsetAttr \".rotateZ\" 0;\n\nlookThroughModelPanel \"CAM\" modelPanel4;" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "createNode \"transform\" -n \"CAM_GRP\";\ncreateNode \"transform\" -p \"..." 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -imageOverlayLabel "CAM" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "stereoRigCamera.svg" 
+        -image1 "stereoRigCamera.svg" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "createNode \"transform\" -n \"CAM_GRP\";\ncreateNode \"transform\" -p \"CAM_GRP\" -n \"CAM\";\ncreateNode \"camera\" -p \"CAM\" -n \"CAMShape\" -ss;\n\nsetAttr \".translateX\" 600;\nsetAttr \".translateY\" 900;\nsetAttr \".translateZ\" -600;\nsetAttr \".rotateX\" -45;\nsetAttr \".rotateY\" 135;\nsetAttr \".rotateZ\" 0;\n\nlookThroughModelPanel \"CAM\" modelPanel4;" 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "CreateMotionTrail" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "CreateMotionTrail" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "motionTrail.png" 
+        -image1 "motionTrail.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "CreateMotionTrail" 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "from maya import cmds\n\npoly = cmds.polyPlane(w=1,h=1,sx=1,sy=1,ax=(0,0,1))[0]\ncmds.currentTime(cmds.playbackOptions(q=1,min=1))\npelvis_t = cmds.xform(\"MOCAP:pelvis\",q=1,t=1,ws=1)\npelvis_t[1]=0\ncmds.select([f\"{poly}.vtx[0]\",f\"{poly}.vtx[2]\"])\ncmds.move(*pelvis_t)\n\ncmds.currentTime(cmds.playbackOptions(q=1,max=1))\npelvis_t = cmds.xform(\"MOCAP:pelvis\",q=1,t=1,ws=1)\npelvis_t[1]=0\ncmds.select([f\"{poly}.vtx[1]\",f\"{poly}.vtx[3]\"])\ncmds.move(*pelvis_t)\n\n\n\ncmds.select([f\"{poly}.vtx[2]\",f\"{poly}.vtx[3]\"])\ncmds.move(0,200,0,r=1)\ncmds.select(cl=1)\n\nloc = cmds.spaceLocator()[0]\ncmds.select(poly,loc)\ncmds.UVPin()\nuvpin = \"uvPin1\"\ncmds.setAttr(f\"{uvpin}.coordinate[0]\",*(0,0))\n\ncmds.currentTime(cmds.playbackOptions(q=1,min=1))\n\nloc2 = cmds.spaceLocator()[0]\nloc3 = cmds.spaceLocator()[0]\ncmds.parentConstraint(loc,loc3)\ncmds.parent(\"MOCAP:root\",loc2)\ncmds.parent(loc2,loc3)\n\nt = cmds.xform(f\"{poly}.vtx[0]\",q=1,t=1,ws=1)\nt = (x*-1 for x in t)\ncmds.xform(poly,t=t,ws=1)\n\n\ndelete = cmds.createNode(\"transform\",name=\"delete\")\ncmds.parent([loc3,loc,poly],delete)" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "from maya import cmds\n\npoly = cmds.polyPlane(w=1,h=1,sx=1,sy=1,a..." 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "pythonFamily.png" 
+        -image1 "pythonFamily.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "from maya import cmds\n\npoly = cmds.polyPlane(w=1,h=0,sx=1,sy=1,ax=(0,0,1))[0]\ncmds.select(f\"{poly}.vtx[*]\")\ncmds.move(0,0,0)\n\n\ncmds.currentTime(cmds.playbackOptions(q=1,min=1))\npelvis_t = cmds.xform(\"MOCAP:pelvis\",q=1,t=1,ws=1)\npelvis_t[1]=0\ncmds.select([f\"{poly}.vtx[0]\",f\"{poly}.vtx[2]\"])\ncmds.move(*pelvis_t)\n\ncmds.currentTime(cmds.playbackOptions(q=1,max=1))\npelvis_t = cmds.xform(\"MOCAP:pelvis\",q=1,t=1,ws=1)\npelvis_t[1]=0\ncmds.select([f\"{poly}.vtx[1]\",f\"{poly}.vtx[3]\"])\ncmds.move(*pelvis_t)\n\n\n\ncmds.select([f\"{poly}.vtx[2]\",f\"{poly}.vtx[3]\"])\ncmds.move(0,200,0,r=1)\ncmds.select(cl=1)\n\nloc = cmds.spaceLocator()[0]\ncmds.select(poly,loc)\ncmds.UVPin()\nuvpin = \"uvPin1\"\ncmds.setAttr(f\"{uvpin}.coordinate[0]\",*(0,0))\n\ncmds.currentTime(cmds.playbackOptions(q=1,min=1))\n\nloc2 = cmds.spaceLocator()[0]\nloc3 = cmds.spaceLocator()[0]\ncmds.parentConstraint(loc,loc3)\ncmds.parent(\"MOCAP:root\",loc2)\ncmds.parent(loc2,loc3)\n\nt = cmds.xform(f\"{poly}.vtx[0]\",q=1,t=1,ws=1)\nt = (x*-1 for x in t)\ncmds.xform(poly,t=t,ws=1)\n\n\ndelete = cmds.createNode(\"transform\",name=\"delete\")\ncmds.parent([loc3,loc,poly],delete)" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+
+} 
