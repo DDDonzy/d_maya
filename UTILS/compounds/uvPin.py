@@ -13,25 +13,25 @@ from UTILS.create.generateUniqueName import generateUniqueName
 import json
 
 
-
 class uvPin(CreateBase):
     """Create uvPin constraint"""
+
     isBlackBox = False
 
     def __init__(self, *args, **kwargs):
         """
-            Args:
-            *args: Variable length argument list.
-                args[0] (list): List of target objects if not provided in kwargs.
-            **kwargs: Arbitrary keyword arguments.
-                targetList (list): List of target objects. Default is the current selection.
-                size (float): Size of the UV pin. Default is 0.1.
-                name (str): Name of the UV pin. Default is 'uvPin'.
+        Args:
+        *args: Variable length argument list.
+            args[0] (list): List of target objects if not provided in kwargs.
+        **kwargs: Arbitrary keyword arguments.
+            targetList (list): List of target objects. Default is the current selection.
+            size (float): Size of the UV pin. Default is 0.1.
+            name (str): Name of the UV pin. Default is 'uvPin'.
         """
 
         self.targetList = kwargs.get("targetList") or kwargs.get("tl") or args[0] if args else cmds.ls(sl=1)
         self.size = kwargs.get("size") or kwargs.get("s") or 0.1
-        self.name = kwargs.get("name") or kwargs.get("n") or 'uvPin'
+        self.name = kwargs.get("name") or kwargs.get("n") or "uvPin"
 
         if not isinstance(self.targetList, list):
             self.targetList = [self.targetList]
@@ -42,21 +42,15 @@ class uvPin(CreateBase):
 
     def create(self):
         # create mesh
-        self.mesh, self.meshShape = uvPin.create_planeByObjectList(targetList=self.targetList,
-                                                                   size=self.size,
-                                                                   name=f"{self.name}_uvPinMesh")
+        self.mesh, self.meshShape = uvPin.create_planeByObjectList(targetList=self.targetList, size=self.size, name=f"{self.name}_uvPinMesh")
         # create uvPin node
         self.uvPinNode = CreateNode("uvPin", name=f"{self.name}_uvPin")
         orig_outMesh = cmds.deformableShape(self.mesh, cog=1)[0]
         cmds.setAttr(f"{self.uvPinNode}.normalAxis", 0)
         cmds.setAttr(f"{self.uvPinNode}.tangentAxis", 5)
-        cmds.setAttr(f"{self.uvPinNode}.uvSetName",
-                     uvPin.get_currentUVSetName(self.mesh),
-                     type="string")
-        cmds.connectAttr(orig_outMesh,
-                         f"{self.uvPinNode}.originalGeometry")
-        cmds.connectAttr(f"{self.mesh}.worldMesh[0]",
-                         f"{self.uvPinNode}.deformedGeometry")
+        cmds.setAttr(f"{self.uvPinNode}.uvSetName", uvPin.get_currentUVSetName(self.mesh), type="string")
+        cmds.connectAttr(orig_outMesh, f"{self.uvPinNode}.originalGeometry")
+        cmds.connectAttr(f"{self.mesh}.worldMesh[0]", f"{self.uvPinNode}.deformedGeometry")
         for i, obj in enumerate(self.targetList):
             # set uvPin.uv value
             cmds.setAttr(f"{self.uvPinNode}.coordinate[{i}].coordinateU", i + 0.5)
@@ -91,7 +85,7 @@ class uvPin(CreateBase):
         info = []
         # num
         for i in range(num):
-            info.append({"driven": targetList[i], "meshComponent": list(range(5*i, 5*i+5))})
+            info.append({"driven": targetList[i], "meshComponent": list(range(5 * i, 5 * i + 5))})
             # pos_ary
             mult_matrix = get_worldMatrix(targetList[i])
             for pos in base_vtx_pos_ary:
@@ -101,7 +95,7 @@ class uvPin(CreateBase):
                 face_connect_ary.append(vtx + (i * base_vtx_num))
             # u
             for u_value in base_u:
-                u.append(u_value+i)
+                u.append(u_value + i)
             # uvIds
             for id in base_uvIds:
                 uvIds.append(id + (i * base_vtx_num))
@@ -163,21 +157,18 @@ class uvPin(CreateBase):
         weight, infCount = fnSkin.getWeights(uvPinMesh_mDag, vertexComp)
         for i in range(0, len(weight), infCount):
             print([weight[i]] * 4)
-            print(weight[i + 1:i + 5])
+            print(weight[i + 1 : i + 5])
             # weight[i + 1:i + 5] = [weight[i]] * 4
 
         # fnSkin.setWeights(uvPinMesh_mDag, vertexComp, om.MIntArray(list(range(infCount))), weight)
-        #TODO complete this function
-
+        # TODO complete this function
 
 
 class follicle(uvPin):
-    """Create follicle constraint """
+    """Create follicle constraint"""
 
     def create(self):
-        mesh, shape = follicle.create_planeByObjectList(targetList=self.targetList,
-                                                        size=self.size,
-                                                        name=f"{self.name}_mesh")
+        mesh, shape = follicle.create_planeByObjectList(targetList=self.targetList, size=self.size, name=f"{self.name}_mesh")
         self.uvPinNode = []
         for i, obj in enumerate(self.targetList):
             node_follicle = generateUniqueName(f"{obj}_follicle")
@@ -195,9 +186,10 @@ class follicle(uvPin):
 
         self.mesh = mesh
         self.meshShape = shape
-        
-        
-if cmds.about(api=1) >= 2020_0000:
-    uvPin = uvPin
-else:
-    uvPin = follicle
+
+
+try:
+    if not cmds.about(api=1) >= 2020_0000:
+        uvPin = follicle
+except Exception:
+    pass

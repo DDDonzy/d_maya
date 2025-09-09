@@ -557,24 +557,23 @@ def build():
 
             controls = [f"{namespace}:{x}" if has_namespace else x for x in [PELVIS] + IK]
 
-            pos = cmds.xform(controls[0], q=1, ws=1, t=1)
-            pos[1] = 0
+            # pos = cmds.xform(controls[0], q=1, ws=1, t=1)
+            # pos[1] = 0
+            pos = [0, 0, 0]
 
             move_handle = cmds.spaceLocator(name="MOVE_HANDLE")[0]
             cmds.setAttr(f"{move_handle}.localScale", 100, 100, 100)
             cmds.setAttr(f"{move_handle}.overrideEnabled", True)
             cmds.setAttr(f"{move_handle}.overrideColor", 14)
-            cmds.addAttr(move_handle, ln="moveBlend", min=0, max=1, dv=0, k=1)
             cmds.xform(move_handle, t=pos, ws=1)
 
             # select time
-            sel_end_time = cmds.playbackOptions(q=1, set=1)
-            sel_start_time = cmds.playbackOptions(q=1, sst=1)
-            if sel_end_time == sel_start_time:
-                sel_start_time = sel_end_time - 1
+            cmds.addAttr(asset, ln="moveBlend", min=0, max=1, dv=0, k=1)
+            sel_end_time = cmds.currentTime(q=1)
+            sel_start_time = sel_end_time - 1
 
-            cmds.setKeyframe(f"{move_handle}.moveBlend", t=sel_start_time, v=0, inTangentType="linear", outTangentType="linear")
-            cmds.setKeyframe(f"{move_handle}.moveBlend", t=sel_end_time, v=1, inTangentType="linear", outTangentType="linear")
+            cmds.setKeyframe(f"{asset}.moveBlend", t=sel_start_time, v=0, inTangentType="linear", outTangentType="linear")
+            cmds.setKeyframe(f"{asset}.moveBlend", t=sel_end_time, v=1, inTangentType="linear", outTangentType="linear")
 
             for x in controls:
                 con = cmds.parentConstraint(move_handle, x, mo=1)
@@ -584,16 +583,17 @@ def build():
                         blend_list.add(node)
                 if blend_list:
                     for node in blend_list:
-                        print(node)
                         controls_blend_attr = cmds.listConnections(f"{node}.weight", s=1, d=0, p=1) or []
-                        print(controls_blend_attr)
                         if controls_blend_attr:
                             attr = controls_blend_attr[0]
-                            cmds.connectAttr(f"{move_handle}.moveBlend", attr, f=1)
+                            cmds.connectAttr(f"{asset}.moveBlend", attr, f=1)
                 cmds.parent(con, move_handle)
             cmds.select(move_handle)
 
         for x in cmds.listAttr(asset, k=1):
+            if x == "moveBlend":
+                cmds.setAttr(f"{asset}.{x}", lock=0, k=0)
+                continue
             cmds.setAttr(f"{asset}.{x}", lock=1, k=0)
 
     except Exception as e:
@@ -605,34 +605,27 @@ def build():
 
 
 def bake():
-    try:
-        asset = cmds.ls("*MOVE_POSE*")[0]
-        node_list = cmds.container(asset, q=1, nodeList=1)
+    asset = cmds.ls("*MOVE_POSE*")[0]
+    node_list = cmds.container(asset, q=1, nodeList=1)
 
-        controls_list = []
+    controls_list = []
 
-        for node in node_list:
-            if cmds.objectType(node, isAType="constraint"):
-                control = cmds.listConnections(f"{node}.constraintParentInverseMatrix", s=1, d=0)
-                controls_list.extend(control)
+    for node in node_list:
+        if cmds.objectType(node, isAType="constraint"):
+            control = cmds.listConnections(f"{node}.constraintParentInverseMatrix", s=1, d=0)
+            controls_list.extend(control)
 
-        delete_attr = []
-        for attr in cmds.listConnections("MOVE_HANDLE.moveBlend", d=1, s=0, p=1):
-            delete_attr.append(attr)
+    delete_attr = []
+    for attr in cmds.listConnections("MOVE_POSE.moveBlend", d=1, s=0, p=1):
+        delete_attr.append(attr)
 
-        cmds.bakeResults(
-            controls_list,
-            at=["t", "r", "s"],
-            t=tuple(cmds.keyframe("MOVE_HANDLE.moveBlend", query=True, timeChange=True)),
-            sb=1,
-            simulation=1,
-        )
-
-        cmds.deleteAttr(delete_attr)
-        cmds.delete(asset)
-
-    except Exception as e:
-        raise RuntimeError(e)
+    t = cmds.keyframe("MOVE_POSE.moveBlend", query=True, timeChange=True)[-1]
+    cmds.currentTime(t)
+    cmds.select(controls_list)
+    cmds.setKeyframe()
+    cmds.deleteAttr(delete_attr)
+    print(delete_attr)
+    cmds.delete(asset)
 
 
 build()
