@@ -65,29 +65,29 @@ class ActionHandler:
 
     def load_blendshape(self):
         """加载 BlendShape 节点"""
-        blendShapeNames = []
+        BlendShapeNames = []
 
         sel = cmds.ls(sl=1)
         for obj in sel:
-            blendShapeNames.extend(get_history(obj, type="blendShape"))
+            BlendShapeNames.extend(get_history(obj, type="BlendShape"))
 
         treeviewSelectedBSD = mel.eval("getShapeEditorTreeviewSelection 1")
-        blendShapeNames.extend(treeviewSelectedBSD)
+        BlendShapeNames.extend(treeviewSelectedBSD)
 
         if not treeviewSelectedBSD:
             lastSelectionData = get_lasterSelectedTargetData()
             if lastSelectionData.node:
-                blendShapeNames.append(lastSelectionData.node)
+                BlendShapeNames.append(lastSelectionData.node)
 
-        blendShapeNames = list(dict.fromkeys(blendShapeNames))  # 保持顺序去重
-        if not blendShapeNames:
+        BlendShapeNames = list(dict.fromkeys(BlendShapeNames))  # 保持顺序去重
+        if not BlendShapeNames:
             self.ui.filterComboBox.clear()
             return
         self.ui.filterComboBox.clear()
-        allStr = "&".join(blendShapeNames)
-        if allStr not in blendShapeNames:
+        allStr = "&".join(BlendShapeNames)
+        if allStr not in BlendShapeNames:
             self.ui.filterComboBox.addItem(allStr)
-        self.ui.filterComboBox.addItems(blendShapeNames)
+        self.ui.filterComboBox.addItems(BlendShapeNames)
         self.ui.filterComboBox.setCurrentIndex(0)
         self.treeView_expand_all()
 
@@ -119,7 +119,7 @@ class ActionHandler:
     def get_no_zero_weight_targets(self):
         """
         获取所有非零权重的目标
-        Get all targets with non-zero weight from the selected blendShape node.
+        Get all targets with non-zero weight from the selected BlendShape node.
         """
         target = get_lasterSelectedTargetData()
 
@@ -139,7 +139,7 @@ class ActionHandler:
     def add_sculpt(self):
         """
         添加雕刻到选择的 BlendShape 节点
-        Add a sculpt to the selected blendShape node.
+        Add a sculpt to the selected BlendShape node.
         """
         target = get_lasterSelectedTargetData()
         if target.targetIdx < 0:
@@ -262,7 +262,7 @@ class ActionHandler:
             item_data = item.data()
             if not item_data:
                 continue
-            if treeFn.SelectedItemType(item_data) == treeFn.SelectedItemType.blendShape_group:
+            if treeFn.SelectedItemType(item_data) == treeFn.SelectedItemType.BlendShape_group:
                 continue
             self.ui.treeView.collapse(item.index())
         self.treeViewIsExpand = False
@@ -277,7 +277,7 @@ class ActionHandler:
             if not item_data:
                 continue
             # 默认不展开 inbetween
-            if treeFn.SelectedItemType(item_data) == treeFn.SelectedItemType.blendShape_target:
+            if treeFn.SelectedItemType(item_data) == treeFn.SelectedItemType.BlendShape_target:
                 self.ui.treeView.collapse(item.index())
                 continue
             self.ui.treeView.expand(item.index())
@@ -340,10 +340,10 @@ class ActionHandler:
         target = get_lasterSelectedTargetData()
         if cmds.objExists(target.attr):
             self.copyDeltaDataTemp = fnBs.copy_delta(target)
-            MSG_INFO("Copy", target)
+            MSG_INFO("Copy", target.attr)
         else:
-            MSG_ERROR("ERROR", "Please select a blendShape target.")
-            raise RuntimeError("Please select a blendShape target.")
+            MSG_ERROR("ERROR", "Please select a BlendShape target.")
+            raise RuntimeError("Please select a BlendShape target.")
 
     def pasted_delta_cmd(self):
         if self.copyDeltaDataTemp:
@@ -360,8 +360,8 @@ class ActionHandler:
                     fnBs.pasted_delta(target, self.copyDeltaDataTemp)
                     MSG_INFO("Paste", target.attr)
         else:
-            MSG_ERROR("ERROR", "Please copy a blendShape target.")
-            raise RuntimeError("Please select a blendShape target.")
+            MSG_ERROR("ERROR", "Please copy a BlendShape target.")
+            raise RuntimeError("Please select a BlendShape target.")
 
     def transfer_load(self):
         mesh = ""
@@ -389,7 +389,7 @@ class ActionHandler:
             MSG_ERROR("ERROR", "Selected object is not a mesh.")
             raise RuntimeError("Selected object is not a mesh.")
 
-        bs.extend(get_history(mesh, "blendShape"))
+        bs.extend(get_history(mesh, "BlendShape"))
         _set()
 
     def setBlendShapeManagerFilter(self, filter_str: str):
@@ -410,14 +410,14 @@ class ActionHandler:
         target = get_selectionTarget()
         bs = get_selectionBlendShape()
         if not bs and not target:
-            MSG_ERROR("ERROR", "Please select blendShape or targets in shapeEdit")
-            raise RuntimeError("Please select blendShape or targets in shapeEdit")
+            MSG_ERROR("ERROR", "Please select BlendShape or targets in shapeEdit")
+            raise RuntimeError("Please select BlendShape or targets in shapeEdit")
         if bs and target:
-            MSG_ERROR("ERROR", "Please select blendShape or targets in shapeEdit, not both")
-            raise RuntimeError("Please select blendShape or targets in shapeEdit, not both")
+            MSG_ERROR("ERROR", "Please select BlendShape or targets in shapeEdit, not both")
+            raise RuntimeError("Please select BlendShape or targets in shapeEdit, not both")
         if len(bs) > 1:
-            MSG_ERROR("ERROR", "Please select only one blendShape node in shapeEdit")
-            raise RuntimeError("Please select only one blendShape node in shapeEdit")
+            MSG_ERROR("ERROR", "Please select only one BlendShape node in shapeEdit")
+            raise RuntimeError("Please select only one BlendShape node in shapeEdit")
 
         if target:
             bs = target[0].split(".")[0]
@@ -426,20 +426,20 @@ class ActionHandler:
                 i_bs, idx = i.split(".")
                 idx_list.append(int(idx))
                 if i_bs != bs:
-                    MSG_ERROR("ERROR", "Please select targets from the same blendShape node")
-                    raise RuntimeError("Please select targets from the same blendShape node")
+                    MSG_ERROR("ERROR", "Please select targets from the same BlendShape node")
+                    raise RuntimeError("Please select targets from the same BlendShape node")
             targetList = fnBs.get_targetDataList(bs)
             transferList = []
             for i in targetList:
                 if i.targetIdx in idx_list:
                     transferList.append(i)
 
-            return {"blendShape": bs, "targetList": transferList, "targetMesh": targetMesh, "destinationBlendShape": newBlendShape}
+            return {"BlendShape": bs, "targetList": transferList, "targetMesh": targetMesh, "destinationBlendShape": newBlendShape}
 
         if bs:
             bs = bs[0]
             transferList = fnBs.get_targetDataList(bs)
-            return {"blendShape": bs, "targetList": transferList, "targetMesh": targetMesh, "destinationBlendShape": newBlendShape}
+            return {"BlendShape": bs, "targetList": transferList, "targetMesh": targetMesh, "destinationBlendShape": newBlendShape}
 
     @timeit
     def transfer(self):
@@ -448,7 +448,7 @@ class ActionHandler:
         preview = False
         if cmds.objExists("TRANSFER_DATA") and cmds.objExists("TRANSFER_MESH"):
             preview = ["TRANSFER_DATA", "TRANSFER_MESH"]
-        bsTransfer.transferBlendShape(sourceBlendShape=data["blendShape"], targetDataList=data["targetList"], destinationMesh=data["targetMesh"], destinationBlendShape=data["destinationBlendShape"], wrapFunction=wrap, preview=preview)
+        bsTransfer.transferBlendShape(sourceBlendShape=data["BlendShape"], targetDataList=data["targetList"], destinationMesh=data["targetMesh"], destinationBlendShape=data["destinationBlendShape"], wrapFunction=wrap, preview=preview)
 
     def preview(self):
         if self.transferPreviewObject:
@@ -462,7 +462,7 @@ class ActionHandler:
 
         data = self.getTransferData()
         wrap = self.makeWrapFunctions()
-        self.transferPreviewObject = bsTransfer.transferBlendShape(sourceBlendShape=data["blendShape"], targetDataList=data["targetList"], destinationMesh=data["targetMesh"], destinationBlendShape=data["destinationBlendShape"], wrapFunction=wrap, preview=True)
+        self.transferPreviewObject = bsTransfer.transferBlendShape(sourceBlendShape=data["BlendShape"], targetDataList=data["targetList"], destinationMesh=data["targetMesh"], destinationBlendShape=data["destinationBlendShape"], wrapFunction=wrap, preview=True)
 
     def makeWrapFunctions(self):
         if self.ui.wrapRadioButton.isChecked():
@@ -579,8 +579,8 @@ class ActionHandler:
         Reset the Delta of the selected BlendShape target.
         """
 
-        target = get_selectionTarget()  # ['M_Head_base_blendShape.1']
-        inbetween = get_selectionInbetween()  # ['M_Head_base_blendShape.1.5611']
+        target = get_selectionTarget()  # ['M_Head_base_BlendShape.1']
+        inbetween = get_selectionInbetween()  # ['M_Head_base_BlendShape.1.5611']
 
         output_inbetween = []
         if not inbetween and not target:
