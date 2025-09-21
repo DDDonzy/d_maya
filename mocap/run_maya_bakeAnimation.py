@@ -5,7 +5,7 @@ import maya.standalone
 from pathlib import Path
 
 from mocap.mocap_bake_rig import bakeAnimations
-from mocap.export_data import get_exportData, create_exportData
+from mocap.ainmExportInfo import get_exportData, create_exportData
 from UTILS.scene.removeUnknownPlugin import removeUnknownPlugin
 
 

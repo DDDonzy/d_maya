@@ -68,38 +68,36 @@ def repath_reference(reference_node, new_path):
             return False
 
 
-task_file = list(Path(r"N:\SourceAssets\Characters\Hero\Mocap").glob("*.ma"))
-output_dir = Path(r"N:\SourceAssets\Characters\Hero\Mocap")
+if __name__ == "__main__":
+    task_file = list(Path(r"N:\SourceAssets\Characters\Hero\Mocap").glob("*.ma"))
+    output_dir = Path(r"N:\SourceAssets\Characters\Hero\Mocap")
 
-rig_file = r"N:\SourceAssets\Characters\Hero\Rigs\RIG_TestCharacter.ma"
-rig_ref_node = "RIGRN"
+    rig_file = r"N:\SourceAssets\Characters\Hero\Rigs\RIG_TestCharacter.ma"
+    rig_ref_node = "RIGRN"
 
-maya.standalone.initialize(name="python")
-info("Maya Standalone Initialized")
+    maya.standalone.initialize(name="python")
+    info("Maya Standalone Initialized")
 
+    success_list = []
+    for maya_file in task_file:
+        file_name = maya_file.name
 
-success_list = []
-for maya_file in task_file:
-    file_name = maya_file.name
-
-    info(f"Process : {maya_file}")
-    try:
-        # Open File
-        debug(f"Open File: {file_name}")
+        info(f"Process : {maya_file}")
         try:
-            cmds.file(maya_file, open=1, force=1, loadNoReferences=True)
-        except RuntimeError:
-            pass
-        debug(f"File Opened: {file_name}")
-        
-        repath_reference(rig_ref_node, rig_file)
-        
-        debug(f"Repath Reference: {rig_ref_node} -> {rig_file}")
-        
-        cmds.file(rename=str(output_dir / file_name))
-        cmds.file(save=True, force=True, type="mayaAscii")
-        
-        
+            # Open File
+            debug(f"Open File: {file_name}")
+            try:
+                cmds.file(maya_file, open=1, force=1, loadNoReferences=True)
+            except RuntimeError:
+                pass
+            debug(f"File Opened: {file_name}")
 
-    except Exception:
-        continue
+            repath_reference(rig_ref_node, rig_file)
+
+            debug(f"Repath Reference: {rig_ref_node} -> {rig_file}")
+
+            cmds.file(rename=str(output_dir / file_name))
+            cmds.file(save=True, force=True, type="mayaAscii")
+
+        except Exception:
+            continue

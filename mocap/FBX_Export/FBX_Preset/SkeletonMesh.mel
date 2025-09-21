@@ -1,0 +1,37 @@
+// Reset defaults
+FBXResetExport;
+// FBX Version
+string $FbxVersion[] = `FBXExportFileVersion -vl`;
+FBXExportFileVersion -v $FbxVersion[0];            // The latest version
+
+// --- Advanced Options ---
+FBXExportUpAxis "y";
+FBXExportInAscii -v false;                          // false = Binary   true = ASCII
+
+// --- Relatives ---
+FBXExportIncludeChildren -v false;                  // Include children nodes
+FBXExportInputConnections -v false;                 // connections
+FBXExportEmbeddedTextures  -v false;                // Embedded Textures
+FBXExportReferencedAssetsContent -v false;          // Export referenced assets content
+
+// --- Geometry ---
+FBXExportSmoothingGroups -v true;                   // Smoothing Groups
+FBXExportHardEdges -v false;                        // "Split Vertex Normals"
+FBXExportTangents -v true;                          // Tangents
+FBXExportTriangulate -v false;                      // Triangulate
+FBXExportInstances -v true;                         // Instances
+
+// --- Deform ---
+FBXExportSkins -v true;                             // Skin
+FBXExportShapes -v true;                            // BlendShape
+
+// --- Skeleton ---
+FBXExportConstraints -v false;
+FBXExportSkeletonDefinitions -v false;              // Skeleton Definitions
+
+// --- Camera and Light ---
+FBXExportCameras -v false;
+FBXExportLights -v false;
+
+// --- Animation ---
+FBXExportBakeComplexAnimation -v true;              // Bake animation

@@ -1,5 +1,5 @@
-"""
-"""
+""" """
+
 from collections import OrderedDict
 from maya import cmds
 
@@ -8,6 +8,18 @@ EXPORT_NODE = "_ANIM_EXPORTER_"
 
 
 def get_exportData(exportNode=EXPORT_NODE):
+    """
+    {"exportPath": "N:/SourceAssets/Characters/Hero/Animations/FBX",
+     "exportName": "M_Blade_Stand_Turn_",
+     "clip"      : {"L_045": ( 673.0,  811.0),
+                    "R_045": (1171.0, 1294.0),
+                    "L_090": (1642.0, 1796.0),
+                    "R_090": (2175.0, 2360.0),
+                    "L_135": (2644.0, 2823.0),
+                    "R_135": (3153.0, 3323.0),
+                    "L_180": (3652.0, 3822.0),
+                    "R_180": (4146.0, 4337.0)}}
+    """
     export_data = OrderedDict()
     export_data["exportPath"] = cmds.getAttr(f"{exportNode}.exportPath")
     export_data["exportName"] = cmds.getAttr(f"{exportNode}.exportFilename")
