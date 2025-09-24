@@ -12,7 +12,7 @@ from maya import cmds
 
 
 @dataclass
-class weightsData(yaml.YAMLObject):
+class WeightsData(yaml.YAMLObject):
     yaml_tag = 'WeightsData'
 
     mesh: str
@@ -52,7 +52,7 @@ class D_FnSkin(oma.MFnSkinCluster):
         # component
         component_list = kwargs.get("component", [])
         if not isinstance(component_list, list):
-            raise RuntimeError(f"Input 'component' is not list ")
+            raise RuntimeError("Input 'component' is not list")
         component = om.MFnSingleIndexedComponent()
         component_mObj = component.create(om.MFn.kMeshVertComponent)
         component.addElements(component_list)
@@ -60,7 +60,7 @@ class D_FnSkin(oma.MFnSkinCluster):
         # influenceIndex
         influenceIndex = kwargs.get("influenceIndex", [])
         if not isinstance(influenceIndex, list):
-            raise RuntimeError(f"Input 'influenceIndex' is not list ")
+            raise RuntimeError("Input 'influenceIndex' is not list")
         if not influenceIndex:
             influenceIndex = [i for i in range(len(inf_list))]
 
@@ -74,7 +74,7 @@ class D_FnSkin(oma.MFnSkinCluster):
         blendWeight = list(self.getBlendWeights(self.shape, component_mObj))
 
         # data
-        data = weightsData(mesh=self.shape.partialPathName(),
+        data = WeightsData(mesh=self.shape.partialPathName(),
                            component=component_list,
                            influenceIndex=influenceIndex,
                            influenceName=influenceName,
@@ -82,7 +82,7 @@ class D_FnSkin(oma.MFnSkinCluster):
                            blendWeights=blendWeight)
         return data
 
-    def auto_setWeights(self, weightData: weightsData):
+    def auto_setWeights(self, weightData: WeightsData):
         # influence name and index
         index_list = []
         noInSkinInfluence = []
@@ -147,8 +147,8 @@ def importWeights(obj=None, path=None, data=None):
 
     try:
         obj = cmds.skinCluster(data.influenceName, obj, tsb=1, rui=0, name=f"{obj}_skinCluster")[0]
-    except:
-        pass
+    except Exception:
+        print("SkinCluster already exists, skip create new one.")
 
     fnSkin = D_FnSkin(obj)
     fnSkin.auto_setWeights(data)
