@@ -13,7 +13,7 @@ from maya import cmds
 
 @dataclass
 class WeightsData(yaml.YAMLObject):
-    yaml_tag = 'WeightsData'
+    yaml_tag = "WeightsData"
 
     mesh: str
     component: list
@@ -24,7 +24,6 @@ class WeightsData(yaml.YAMLObject):
 
 
 class D_FnSkin(oma.MFnSkinCluster):
-
     def __init__(self, obj):
         if not cmds.objExists(obj):
             raise RuntimeError(f"Can not find '{obj}'.")
@@ -74,12 +73,7 @@ class D_FnSkin(oma.MFnSkinCluster):
         blendWeight = list(self.getBlendWeights(self.shape, component_mObj))
 
         # data
-        data = WeightsData(mesh=self.shape.partialPathName(),
-                           component=component_list,
-                           influenceIndex=influenceIndex,
-                           influenceName=influenceName,
-                           weights=weight,
-                           blendWeights=blendWeight)
+        data = WeightsData(mesh=self.shape.partialPathName(), component=component_list, influenceIndex=influenceIndex, influenceName=influenceName, weights=weight, blendWeights=blendWeight)
         return data
 
     def auto_setWeights(self, weightData: WeightsData):
@@ -103,7 +97,7 @@ class D_FnSkin(oma.MFnSkinCluster):
         component_mObj = component.create(om.MFn.kMeshVertComponent)
         component.addElements(weightData.component)
 
-        self.setWeights(self.shape, component_mObj, om.MIntArray(index_list), om.MDoubleArray(weightData.weights), False)
+        self.setWeights(self.shape, component_mObj, om.MIntArray(index_list), om.MDoubleArray(weightData.weights), True, False)
         if weightData.blendWeights:
             self.setBlendWeights(self.shape, component_mObj, om.MDoubleArray(weightData.blendWeights))
 
