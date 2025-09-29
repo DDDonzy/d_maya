@@ -5,8 +5,8 @@ from pathlib import Path
 
 def install_requirements(requirements_file):
     """# Runs the 'pip install -r' command to install packages."""
-
-    command = [sys.executable, "-m", "pip", "install", "-r", str(requirements_file)]
+    mayapy = Path(sys.executable).parent / "mayapy.exe"
+    command = [str(mayapy), "-m", "pip", "install", "-r", str(requirements_file)]
 
     print(f"{'':=^{120}}")
     print(f"Executing command: \n{' '.join(command)}")
@@ -56,7 +56,6 @@ def install_package():
         print("Please run this by dragging the .py file into the Maya viewport instead of copy-pasting.")
         print(f"{'':=^{120}}")
         return
-    
 
     # Run the installation process
     if install_requirements(requirements_file):
@@ -76,6 +75,7 @@ def install_package():
         print(f"{'':=^{120}}")
         print("ERROR: Some or all dependencies failed to install.")
         print(f"{'':=^{120}}")
+
 
 if __name__ == "__main__":
     install_package()
