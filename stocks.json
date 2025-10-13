@@ -1,5 +1,60 @@
 [
     {
+        "symbol": "SZ300904",
+        "name": "威力传动",
+        "type": 11,
+        "remark": "",
+        "exchange": "SZ",
+        "created": 1760063931000,
+        "watched": 1760063931000,
+        "category": 1,
+        "marketplace": "CN"
+    },
+    {
+        "symbol": "SZ000811",
+        "name": "冰轮环境",
+        "type": 11,
+        "remark": "",
+        "exchange": "SZ",
+        "created": 1760063924910,
+        "watched": 1760063924910,
+        "category": 1,
+        "marketplace": "CN"
+    },
+    {
+        "symbol": "SZ002922",
+        "name": "伊戈尔",
+        "type": 11,
+        "remark": "",
+        "exchange": "SZ",
+        "created": 1760063919839,
+        "watched": 1760063919839,
+        "category": 1,
+        "marketplace": "CN"
+    },
+    {
+        "symbol": "SH600686",
+        "name": "金龙汽车",
+        "type": 11,
+        "remark": "",
+        "exchange": "SH",
+        "created": 1760060768118,
+        "watched": 1760060768118,
+        "category": 1,
+        "marketplace": "CN"
+    },
+    {
+        "symbol": "SH603606",
+        "name": "东方电缆",
+        "type": 11,
+        "remark": "",
+        "exchange": "SH",
+        "created": 1759213477785,
+        "watched": 1759213477785,
+        "category": 1,
+        "marketplace": "CN"
+    },
+    {
         "symbol": "SH601615",
         "name": "明阳智能",
         "type": 11,
@@ -11,17 +66,6 @@
         "marketplace": "CN"
     },
     {
-        "symbol": "SH603087",
-        "name": "甘李药业",
-        "type": 11,
-        "remark": "",
-        "exchange": "SH",
-        "created": 1758769846553,
-        "watched": 1758769846553,
-        "category": 1,
-        "marketplace": "CN"
-    },
-    {
         "symbol": "SZ002202",
         "name": "金风科技",
         "type": 11,
@@ -29,17 +73,6 @@
         "exchange": "SZ",
         "created": 1758195804574,
         "watched": 1758195804574,
-        "category": 1,
-        "marketplace": "CN"
-    },
-    {
-        "symbol": "SH688036",
-        "name": "传音控股",
-        "type": 82,
-        "remark": "",
-        "exchange": "SH",
-        "created": 1758164630218,
-        "watched": 1758164630218,
         "category": 1,
         "marketplace": "CN"
     },
@@ -75,17 +108,6 @@
         "watched": 1757371037444,
         "category": 1,
         "marketplace": "US"
-    },
-    {
-        "symbol": "03918",
-        "name": "金界控股",
-        "type": 30,
-        "remark": "",
-        "exchange": "HK",
-        "created": 1757156578411,
-        "watched": 1757156578411,
-        "category": 1,
-        "marketplace": "HK"
     },
     {
         "symbol": "TRMD",
@@ -152,28 +174,6 @@
         "watched": 1757126112281,
         "category": 1,
         "marketplace": "US"
-    },
-    {
-        "symbol": "01138",
-        "name": "中远海能",
-        "type": 30,
-        "remark": "",
-        "exchange": "HK",
-        "created": 1757039207775,
-        "watched": 1757039207775,
-        "category": 1,
-        "marketplace": "HK"
-    },
-    {
-        "symbol": "00819",
-        "name": "天能动力",
-        "type": 30,
-        "remark": "",
-        "exchange": "HK",
-        "created": 1756137138856,
-        "watched": 1756137138856,
-        "category": 1,
-        "marketplace": "HK"
     },
     {
         "symbol": "NTDOY",
@@ -364,7 +364,7 @@
     },
     {
         "symbol": "SLB",
-        "name": "斯伦贝谢",
+        "name": "SLB LMTD ORD",
         "type": 0,
         "remark": "",
         "exchange": "NYSE",
@@ -722,17 +722,6 @@
         "exchange": "CSI",
         "created": 1716389060119,
         "watched": 1716389060119,
-        "category": 1,
-        "marketplace": "CN"
-    },
-    {
-        "symbol": "BJ430047",
-        "name": "诺思兰德",
-        "type": 90,
-        "remark": "",
-        "exchange": "BJ",
-        "created": 1710813181727,
-        "watched": 1710813181727,
         "category": 1,
         "marketplace": "CN"
     },

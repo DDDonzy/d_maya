@@ -29,6 +29,12 @@ HEADERS = {
 }
 
 
+SENDER_EMAIL = "donzy.xu@qq.com"
+SENDER_EMAIL_KEY = "uixdjqkouqwqcafb"
+
+RECIPIENT = ["donzy.xu@qq.com", "285102896@qq.com"]
+
+
 def dump_stocks_json(new_data, filepath=STOCKS_JSON):
     old_data = []
     if filepath.exists():
@@ -83,13 +89,20 @@ def send_qq_mail_notification(
     subject,
     body,
     recipient,
-    sender="donzy.xu@qq.com",
-    auth_code="uixdjqkouqwqcafb",
+    sender=SENDER_EMAIL,
+    cc_recipients=None,
+    auth_code=SENDER_EMAIL_KEY,
 ):
+    recipients_list = [recipient] if isinstance(recipient, str) else recipient
     msg = MIMEText(body, "plain", "utf-8")
     msg["From"] = formataddr((Header(subject, "utf-8").encode(), sender))
     msg["To"] = formataddr((Header("收件人", "utf-8").encode(), recipient))
     msg["Subject"] = Header(subject, "utf-8")
+
+    # 如果有抄送人，则添加到邮件头
+    if cc_recipients:
+        msg["Cc"] = ", ".join(cc_recipients)
+        recipients_list.extend(cc_recipients)  # 将抄送人也加入到实际发送列表
 
     try:
         print("Connect to QQ SMTP sever...")
@@ -97,7 +110,7 @@ def send_qq_mail_notification(
         print("Login...")
         smtp_server.login(sender, auth_code)
         print("Send mail...")
-        smtp_server.sendmail(sender, [recipient], msg.as_string())
+        smtp_server.sendmail(sender, recipients_list, msg.as_string())
         print("Send success!")
 
         smtp_server.quit()
@@ -139,11 +152,7 @@ def main():
     if diff["add"] or diff["remove"]:
         send_telegram_message(message)
 
-        send_qq_mail_notification(
-            subject="STOCKS",
-            body=message,
-            recipient="donzy.xu@qq.com",
-        )
+        send_qq_mail_notification(subject="STOCKS", body=message, recipient=RECIPIENT[0], cc_recipients=RECIPIENT[1:])
     print(message)
 
 
@@ -157,6 +166,6 @@ if __name__ == "__main__":
             print("Will retry after the sleep interval.")
 
         # Generate a random sleep time between 3 and 5 minutes (180 to 300 seconds)
-        sleep_duration = random.uniform(180, 300)
+        sleep_duration = random.uniform(10, 30)
         print(f"Script finished. Sleeping for {sleep_duration:.2f} seconds...")
         time.sleep(sleep_duration)
