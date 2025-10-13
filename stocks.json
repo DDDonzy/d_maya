@@ -1,5 +1,16 @@
 [
     {
+        "symbol": "AVA",
+        "name": "阿维斯塔",
+        "type": 0,
+        "remark": "",
+        "exchange": "NYSE",
+        "created": 1760159057736,
+        "watched": 1760159057736,
+        "category": 1,
+        "marketplace": "US"
+    },
+    {
         "symbol": "SZ300904",
         "name": "威力传动",
         "type": 11,
@@ -86,17 +97,6 @@
         "watched": 1758159416840,
         "category": 1,
         "marketplace": "CN"
-    },
-    {
-        "symbol": "02208",
-        "name": "金风科技",
-        "type": 30,
-        "remark": "",
-        "exchange": "HK",
-        "created": 1757481621246,
-        "watched": 1757481621246,
-        "category": 1,
-        "marketplace": "HK"
     },
     {
         "symbol": "STNG",
