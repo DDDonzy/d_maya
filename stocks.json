@@ -1,4 +1,38 @@
 [
+
+    {
+        "symbol": "SH603049",
+        "name": "中策橡胶",
+        "type": 11,
+        "remark": "",
+        "exchange": "SH",
+        "created": 1760494152099,
+        "watched": 1760494152099,
+        "category": 1,
+        "marketplace": "CN"
+    },
+    {
+        "symbol": "SH600801",
+        "name": "华新水泥",
+        "type": 11,
+        "remark": "",
+        "exchange": "SH",
+        "created": 1760445514717,
+        "watched": 1760445514717,
+        "category": 1,
+        "marketplace": "CN"
+    },
+    {
+        "symbol": "SH603766",
+        "name": "隆鑫通用",
+        "type": 11,
+        "remark": "",
+        "exchange": "SH",
+        "created": 1760412733256,
+        "watched": 1760412733256,
+        "category": 1,
+        "marketplace": "CN"
+    },
     {
         "symbol": "AVA",
         "name": "阿维斯塔",
