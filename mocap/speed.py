@@ -1,9 +1,7 @@
 import math
-from re import T
 from maya import cmds
 
-from mocap.merge_animLayers import merge_animLayers, find_animCurveNode
-from mocap.ainmExportInfo import get_exportData, create_exportData
+from mocap.gameExportInfo import get_exportData, create_exportData
 
 # --- 常量定义 (单位基于秒) ---
 FPS = 60

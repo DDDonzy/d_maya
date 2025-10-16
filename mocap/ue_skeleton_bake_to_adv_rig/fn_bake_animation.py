@@ -1,18 +1,53 @@
-import maya.standalone
+"""
+================================================================================
+Animation Baking Core Functions
+================================================================================
 
-maya.standalone.initialize(name="python")
+[ 脚本目的 ]
+该文件提供了将动画从一个源骨骼（UE 标准骨骼）烘焙到 绑定（Advanced Skeleton）的核心功能。
+它通过创建一系列动态约束，将源骨骼的运动实时传递给目标绑定控制器，然后将这些运动的关键帧烘焙下来。
 
+[ 核心组件 ]
+1.  bake_dict:
+    - 定义了目标绑定中 FK/IK 控制器与源骨骼关节的一对一映射关系。
+    - 用于创建直接的矩阵约束（Matrix Constraint）。
 
-print("------------------------------")
-print("启动maya脚本环境完成")
+2.  bake_pv_dict:
+    - 定义了目标绑定中极向量（Pole Vector）控制器与源骨骼中对应 IK 链
+      （如上臂、小臂、手）的映射关系。
+    - 用于驱动极向量的动态计算。
 
+[ 主要函数与工作流程 ]
+1.  bakeAnimations(target_namespace, source_namespace, time):
+    - 这是供外部调用的主入口函数。
+    - 工作流程:
+        a. 调用 `pre_bakeAnimations` 来创建所有的约束和计算节点。
+        b. 调用 Maya 的 `bakeResults` 命令，对所有受约束的控制器在指定时间
+           范围内进行烘焙，将动态的运动转化为静态的关键帧。
+        c. 调用 `cmds.delete` 删除在预处理阶段创建的所有临时约束节点，
+           保持场景干净。
 
-from maya import cmds  # noqa: E402
-import os  # noqa: E402
-from pathlib import Path  # noqa: E402
+2.  pre_bakeAnimations(...):
+    - 烘焙前的预处理函数，负责搭建所有的“桥梁”。
+    - 遍历 `bake_dict`，计算每个控制器相对于其驱动关节的初始偏移矩阵，
+      并创建 `matrixConstraint` 将源关节的运动传递给目标控制器。
+    - 遍历 `bake_pv_dict`，为每个 IK 链调用 `cal_pv` 函数，创建一套
+      用于实时计算极向量位置的节点网络，并将计算结果约束到对应的极向量
+      控制器上。
+    - 返回所有被约束的控制器列表，供 `bakeResults` 使用。
 
-import maya.mel as mel
+3.  cal_pv(name):
+    - 极向量位置的数学计算函数。
+    - 它不使用简单的约束，而是通过创建一套 Maya 节点（如 plusMinusAverage,
+      vectorProduct, multiplyDivide 等）来精确地、动态地计算出在 IK 链
+      运动过程中，极向量应该处于的正确空间位置，以防止膝盖或手肘发生翻转。
 
+[ 依赖项 ]
+- 该脚本依赖于一系列自定义的工具函数，位于 `UTILS` 模块下，如
+  `get_worldMatrix`, `matrixConstraint` 等。
+
+================================================================================
+"""
 
 from maya import cmds
 from maya.api import OpenMaya as om
@@ -20,28 +55,7 @@ from UTILS.transform import get_worldMatrix, get_relativesMatrix
 from UTILS.compounds import matrixConstraint
 from UTILS.create.assetCallback import AssetCallback
 
-from mocap.mocap_bake_rig import *
-
-
-def replace_reference_by_path(node, old_path, new_path):
-    ref_node_to_replace = node
-    if ref_node_to_replace:
-        print(f"找到了匹配的 Reference Node: {ref_node_to_replace}")
-        try:
-            cmds.file(new_path, loadReference=ref_node_to_replace)
-            print(f"成功将 '{old_path}' 替换为 '{new_path}'")
-        except Exception as e:
-            print(f"替换失败: {e}")
-    else:
-        print(f"错误：在场景中找不到对 '{old_path}' 的引用。")
-
-
-from maya import cmds
-from maya.api import OpenMaya as om
-from UTILS.transform import get_worldMatrix, get_relativesMatrix
-from UTILS.compounds import matrixConstraint
-from UTILS.create.assetCallback import AssetCallback
-
+# 烘焙 ADV IK 向量控制器映射表
 bake_pv_dict = {
     "PoleArm_L": {
         "START": "upperarm_l",
@@ -64,7 +78,7 @@ bake_pv_dict = {
         "END": "foot_r",
     },
 }
-
+# ADV 控制器对应UE骨骼控制表
 bake_dict = {
     "FKAnkle_L": {"PARENT": "foot_l"},
     "FKAnkle_R": {"PARENT": "foot_r"},
@@ -101,11 +115,16 @@ bake_dict = {
     "IKhybridSpine1_M": {"PARENT": "pelvis"},
     "IKhybridSpine3_M": {"PARENT": "spine_04"},
     "RootX_M": {"PARENT": "pelvis"},
-    "Fly": {"PARENT": "pelvis"},
 }
 
 
 def cal_pv(name="xxx"):
+    """
+    根据ik三段骨骼计算pv位置
+    使用原骨骼，约束生成的locator，计算pv位置，约束到pv控制器上
+
+    Returns: 输出四个定位器，前三个是ik骨骼位置，第四个是计算出来的pv位置
+    """
     with AssetCallback(name=f"{name}_cal_pv", isDagAsset=False) as asset:
         start = cmds.spaceLocator(name=f"{name}ik_start")[0]
         mid = cmds.spaceLocator(name=f"{name}ik_mid")[0]
@@ -189,6 +208,9 @@ def cal_pv(name="xxx"):
 
 
 def cal_main(pelvis, pelvis_ctl, main_ctl, frontAxis="Z", t=1, r=1):
+    """
+    特殊计算Pelvis，然后约束到输入的控制器上
+    """
     with AssetCallback(name="cal_main", isDagAsset=True) as asset:
         offset = get_relativesMatrix(
             get_worldMatrix(pelvis_ctl),
@@ -225,9 +247,12 @@ def pre_bakeAnimations(
     main_t=True,
     main_r=True,
 ):
+    """
+    烘焙预处理，生成约束等
+    """
     # pre
     with AssetCallback(name="bakeConstraint", isDagAsset=False) as asset:
-        # bake offset data
+        # get offset data
         for k, v in bake_dict.items():
             control = f"{target_namespace}:{k}" if target_namespace else k
             source = f"{source_namespace}:{v['PARENT']}" if source_namespace else v["PARENT"]
@@ -243,7 +268,7 @@ def pre_bakeAnimations(
             )
             v["OFFSET"] = offset
 
-        # do fk constraints
+        # do constraints
         for k, v in bake_dict.items():
             control = f"{target_namespace}:{k}" if target_namespace else k
             source = f"{source_namespace}:{v['PARENT']}" if source_namespace else v["PARENT"]
@@ -299,87 +324,3 @@ def bakeAnimations(target_namespace, source_namespace, time=(0, 1000)):
     )
 
     cmds.delete(asset)
-
-
-ma = {}
-fbx = {}
-ref_node = "MOCAPRN"
-
-
-for x in list(Path(r"N:\SourceAssets\Characters\Hero\Mocap\clip2").glob("*.ma")):
-    source = x.stem
-    new = "".join(char for char in source if char.isalnum())
-    ma.update({new: x})
-    print(new)
-
-
-for x in list(Path(r"N:\SourceAssets\Characters\Hero\Mocap\retarget_source").glob("*.fbx")):
-    source = x.stem
-    new = "".join(char for char in source if char.isalnum()).replace("Retarget", "")
-    fbx.update({new: x})
-
-
-for k, v in ma.items():
-    if k in fbx.keys():
-        ma_file = ma[k]
-        new_ma_name = ma_file.stem.replace("(", "_").replace(")", "_")
-
-        new_ref_path = fbx[k]
-
-        print(f"正在处理: {k} - {ma_file}")
-        print(f"正在打开场景文件...{ma_file}")
-        cmds.file(ma_file, o=1, f=1, loadNoReferences=1)
-        print(f"加载完成: {ma_file}")
-
-        exporter_node = "_ANIM_EXPORTER_"
-        num_clip = len(cmds.ls(f"{exporter_node}.ac[*]"))
-        playback_start_frame = cmds.getAttr(f"{exporter_node}.ac[0].acs")
-        playback_end_frame = cmds.getAttr(f"{exporter_node}.ac[{num_clip - 1}].ace")
-        print(f"当前播放范围: {playback_start_frame} - {playback_end_frame}")
-
-        old_ref_path = cmds.referenceQuery(ref_node, filename=True)
-        print("旧FBX引用路径:", old_ref_path)
-
-        replace_reference_by_path(ref_node, old_ref_path, new_ref_path)
-        print(f"新FBX路径已替换: {new_ref_path}")
-
-        export_file_name = cmds.getAttr(f"{exporter_node}.exportFilename")
-
-        cmds.setAttr(f"{exporter_node}.ac[{num_clip}].acn", "All", type="string")
-        cmds.setAttr(f"{exporter_node}.ac[{num_clip}].acs", playback_start_frame)
-        cmds.setAttr(f"{exporter_node}.ac[{num_clip}].ace", playback_end_frame)
-
-        for x in range(num_clip):
-            cmds.setAttr(f"{exporter_node}.ac[{x}].exportAnimClip", False)
-        cmds.setAttr(f"{exporter_node}.ac[{num_clip}].exportAnimClip", True)
-        cmds.setAttr(f"{exporter_node}.exportFilename", f"{new_ma_name}_", type="string")
-        cmds.setAttr(f"{exporter_node}.exportPath", r"N:\SourceAssets\Characters\Hero\Mocap\clip3\sourceRetarget_clip", type="string")
-        print("设置导出ALL")
-
-        for x in range(num_clip):
-            cmds.setAttr(f"{exporter_node}.ac[{x}].exportAnimClip", True)
-        cmds.setAttr(f"{exporter_node}.ac[{num_clip}].exportAnimClip", False)
-        cmds.setAttr(f"{exporter_node}.exportFilename", export_file_name, type="string")
-        cmds.setAttr(f"{exporter_node}.exportPath", r"N:\SourceAssets\Characters\Hero\Mocap\clip3\FBX", type="string")
-        new_ma_path = Path(r"N:\SourceAssets\Characters\Hero\Mocap\clip3") / f"{new_ma_name}.ma"
-
-        print("加载RIG 文件 Reference")
-        cmds.file(r"N:\SourceAssets\Characters\TestCharacter\Rigs\TestCharacter_rig.ma", reference=True, namespace="RIG")
-        print("Reference 加载完成")
-
-        
-        print("开始烘焙动画...")
-        bakeAnimations(target_namespace="RIG", source_namespace="MOCAP", time=(playback_start_frame, playback_end_frame))
-        print("烘焙动画完成")
-
-        print("删除 FBX REFERENCE")
-        cmds.file(removeReference=True, referenceNode=ref_node)
-        print("FBX REFERENCE 删除完成")
-
-        cmds.playbackOptions(ast=playback_start_frame)
-        cmds.playbackOptions(aet=playback_end_frame)
-        print("设置播放范围为:", playback_start_frame)
-
-        cmds.file(rename=new_ma_path)
-        cmds.file(save=True, type="mayaAscii", f=1)
-        print(f"场景文件已保存: {new_ma_path}")

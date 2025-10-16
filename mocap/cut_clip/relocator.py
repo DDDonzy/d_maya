@@ -3,6 +3,7 @@ from maya import cmds, mel
 from UTILS.transform import matrix_to_trs
 
 # 选择clip，矫正方向和位置
+# 主要用来让每个clip的起始位置在原点，然后调整方向
 pelvis = "MOCAP:pelvis"
 
 

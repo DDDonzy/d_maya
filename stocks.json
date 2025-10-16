@@ -1,5 +1,15 @@
 [
-
+    {
+        "symbol": "SH600522",
+        "name": "中天科技",
+        "type": 11,
+        "remark": "",
+        "exchange": "SH",
+        "created": 1760510611741,
+        "watched": 1760510611741,
+        "category": 1,
+        "marketplace": "CN"
+    },
     {
         "symbol": "SH603049",
         "name": "中策橡胶",

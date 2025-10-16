@@ -1,0 +1,3 @@
+1. 运行 fbx202037_fbxpythonsdk_win.exe直接安装
+2. 找到安装路径下的 whl文件  C:\Program Files\Autodesk\FBX\FBX Python SDK\2020.3.7\fbx-2020.3.7-cp310-none-win_amd64.whl
+3. 启动cmd，运行 mayapy.exe -m pip install C:\Program Files\Autodesk\FBX\FBX Python SDK\2020.3.7\fbx-2020.3.7-cp310-none-win_amd64.whl
