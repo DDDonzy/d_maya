@@ -2,23 +2,14 @@ import maya.cmds as cmds
 import maya.api.OpenMaya as om
 from UTILS.ui.showMessage import showMessage
 
-RAD_TO_DEG = 57.29577951308232     # 180.0 / pi
+RAD_TO_DEG = 57.29577951308232  # 180.0 / pi
 DEG_TO_RAD = 0.017453292519943295  # pi / 180.0
 
 
-class MIRROR_MATRIX():
-    x = om.MMatrix([[-1, 0, 0, 0],
-                    [0, 1, 0, 0],
-                    [0, 0, 1, 0],
-                    [0, 0, 0, 1]])
-    y = om.MMatrix([[1, 0, 0, 0],
-                    [0, -1, 0, 0],
-                    [0, 0, 1, 0],
-                    [0, 0, 0, 1]])
-    z = om.MMatrix([[1, 0, 0, 0],
-                    [0, 1, 0, 0],
-                    [0, 0, -1, 0],
-                    [0, 0, 0, 1]])
+class MIRROR_MATRIX:
+    x = om.MMatrix([[-1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
+    y = om.MMatrix([[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
+    z = om.MMatrix([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, -1, 0], [0, 0, 0, 1]])
 
     def __init__(self, axis: str = "x"):
         axis = axis.lower()
@@ -41,19 +32,17 @@ def UNIT_CONVERT(unit: str = None) -> float:
     """
     if unit is None:
         unit = cmds.currentUnit(q=1)
-    conversion_factors = {
-        "mm": 10.0,
-        "cm": 1.0,
-        "m": 0.01
-    }
+    conversion_factors = {"mm": 10.0, "cm": 1.0, "m": 0.01}
     if unit not in conversion_factors:
         raise ValueError("Invalid unit. Choose from 'mm', 'cm', or 'm'.")
     return conversion_factors[unit]
 
 
-def mirror_transform(source_obj: str,
-                     target_obj: str,
-                     mirror_axis: str = "x",):
+def mirror_transform(
+    source_obj: str,
+    target_obj: str,
+    mirror_axis: str = "x",
+):
     """flip source object's world space matrix  as target object's world space matrix
 
     Args:
@@ -70,9 +59,11 @@ def mirror_transform(source_obj: str,
     set_worldMatrix(target_obj, flip_offsetMatrix * sour_worldMatrix_flip)
 
 
-def flip_transform(source_obj: str,
-                   target_obj: str,
-                   mirror_axis: str = "x",):
+def flip_transform(
+    source_obj: str,
+    target_obj: str,
+    mirror_axis: str = "x",
+):
     sour_worldMatrix = get_worldMatrix(source_obj)
     sour_worldMatrix_flip = flip_matrix(sour_worldMatrix, mirror_axis)
     set_worldMatrix(target_obj, sour_worldMatrix_flip)
@@ -80,8 +71,7 @@ def flip_transform(source_obj: str,
         cmds.setAttr(f"{target_obj}.s{x}", abs(cmds.getAttr(f"{target_obj}.s{x}")))
 
 
-def flip_matrix(worldMatrix: om.MMatrix,
-                mirror_axis: str = "x") -> om.MMatrix:
+def flip_matrix(worldMatrix: om.MMatrix, mirror_axis: str = "x") -> om.MMatrix:
     """flip matrix by mirror matrix
 
     Args:
@@ -95,8 +85,7 @@ def flip_matrix(worldMatrix: om.MMatrix,
     return mirror_matrix
 
 
-def get_offsetMatrix(child_worldMatrix: om.MMatrix,
-                     parent_worldMatrix: om.MMatrix) -> om.MMatrix:
+def get_offsetMatrix(child_worldMatrix: om.MMatrix, parent_worldMatrix: om.MMatrix) -> om.MMatrix:
     """
     get offset matrix
     get local matrix when child in parent space
@@ -114,8 +103,7 @@ def get_offsetMatrix(child_worldMatrix: om.MMatrix,
     return child_localMatrix
 
 
-def get_relativesMatrix(matrix: om.MMatrix,
-                        referenceMatrix: om.MMatrix) -> om.MMatrix:
+def get_relativesMatrix(matrix: om.MMatrix, referenceMatrix: om.MMatrix) -> om.MMatrix:
     """
     Calculate the relative matrix
 
@@ -174,7 +162,7 @@ def get_parentMatrix(obj: str) -> om.MMatrix:
     return mSel.getDagPath(0).exclusiveMatrix()
 
 
-def set_localMatrix(obj: str, matrix: om.MMatrix) -> None:
+def set_localMatrix(obj: str, matrix: om.MMatrix, rotateOrder: int = 0) -> None:
     """set maya object's local as input matrix
 
     Args:
@@ -186,11 +174,11 @@ def set_localMatrix(obj: str, matrix: om.MMatrix) -> None:
             cmds.setAttr(f"{obj}.jointOrient", 0, 0, 0)
         except Exception as e:
             om.MGlobal.displayWarning(str(e))
-    set_trs(obj, matrix_to_trs(matrix))
+    set_trs(obj, matrix_to_trs(matrix, rotateOrder))
 
 
-def set_worldMatrix(obj: str, matrix: om.MMatrix) -> None:
-    """ convert world space matrix to local space matrix and as object's local space matrix
+def set_worldMatrix(obj: str, matrix: om.MMatrix, rotateOrder: int = 0) -> None:
+    """convert world space matrix to local space matrix and as object's local space matrix
 
     Args:
         obj (str): maya transform name
@@ -199,11 +187,11 @@ def set_worldMatrix(obj: str, matrix: om.MMatrix) -> None:
     mSel = om.MSelectionList()
     mSel.add(obj)
     localMatrix = matrix * mSel.getDagPath(0).exclusiveMatrixInverse()
-    set_localMatrix(obj, localMatrix)
+    set_localMatrix(obj, localMatrix, rotateOrder)
 
 
 def matrix_to_trs(matrix: om.MMatrix, rotateOrder: int = 0) -> list:
-    """ convert matrix to maya's translate,rotate and scale
+    """convert matrix to maya's translate,rotate and scale
 
     Args:
         matrix (om.MMatrix): input matrix
@@ -218,9 +206,17 @@ def matrix_to_trs(matrix: om.MMatrix, rotateOrder: int = 0) -> list:
     euler_radians.reorderIt(rotateOrder)
     euler_angle = [RAD_TO_DEG * radians for radians in [euler_radians.x, euler_radians.y, euler_radians.z]]
     scale = mTransformation.scale(1)
-    outputList = [translate[0], translate[1], translate[2],
-                  euler_angle[0], euler_angle[1], euler_angle[2],
-                  scale[0], scale[1], scale[2], ]
+    outputList = [
+        translate[0],
+        translate[1],
+        translate[2],
+        euler_angle[0],
+        euler_angle[1],
+        euler_angle[2],
+        scale[0],
+        scale[1],
+        scale[2],
+    ]
     return outputList
 
 
@@ -304,6 +300,7 @@ def reset_transformObjectValue(obj, transform=True, userDefined=True):
                 cmds.setAttr(f"{obj}.{attr}", trs[i])
             except Exception as e:
                 om.MGlobal.displayInfo(str(e))
+
     if transform:
         _set_trsv(obj, [0, 0, 0, 0, 0, 0, 1, 1, 1, 1])
     if userDefined:

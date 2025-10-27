@@ -63,8 +63,8 @@ init_maya()
 #
 #
 #
-task_file = list(Path(r"N:\SourceAssets\Characters\Hero\Mocap\xx").glob("*.ma"))
-fbx_output_dir = Path(r"N:\SourceAssets\Characters\Hero\Mocap\xx")
+task_file = list(Path(r"N:\SourceAssets\Characters\Hero\Mocap\re").glob("*.ma"))
+fbx_output_dir = Path(r"N:\SourceAssets\Characters\Hero\Mocap\re")
 rig_file = r"N:\SourceAssets\Characters\Hero\Rigs\RIG_Hero.ma"
 rig_namespace = "RIG"
 rig_reference_node = "RIGRN"

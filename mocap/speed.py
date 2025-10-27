@@ -3,25 +3,47 @@ from maya import cmds
 
 from mocap.gameExportInfo import get_exportData, create_exportData
 
-# --- 常量定义 (单位基于秒) ---
 FPS = 60
+
+# sprint 
 SPRINT = 700
+
+# run speeds
 RUN_F = 500  # 最大前进速度 (单位/秒)
-RUN_B = 300
-RUN_L = 350
-RUN_R = 350
-ACCEL_SPEED = 800  # 加速度 (单位/秒^2)
-DECEL_SPEED = 1000  # 减速度 (单位/秒^2)
+RUN_B = 400
+
+RUN_L = 450   
+RUN_R = 450
+
+RUN_LN = 400 
+RUN_RN = 400
+
+
+# walk speeds
+WALK_F = 170
+WALK_B = 150
+
+WALK_L = 160
+WALK_R = 160
+
+WALK_LN = 150
+WALK_RN = 150
+
+
+RUN_ACCEL = 1000  # 加速度 (单位/秒^2)
+RUN_DECEL = 2000  # 减速度 (单位/秒^2)
+WALK_ACCEL = 400
+WALK_DECEL = 800
 
 
 def get_accel_time_to_speed(target_speed):
     """计算加速到目标速度所需的时间(秒)"""
-    return target_speed / ACCEL_SPEED
+    return target_speed / RUN_ACCEL
 
 
 def get_decel_time_from_speed(initial_speed):
     """计算从初始速度减速到0所需的时间(秒)"""
-    return initial_speed / DECEL_SPEED
+    return initial_speed / RUN_DECEL
 
 
 def get_position_at_time(time_in_seconds, total_motion_duration, max_speed, accel=False, decel=False):
@@ -48,9 +70,9 @@ def get_position_at_time(time_in_seconds, total_motion_duration, max_speed, acce
     # 情况2: 只有加速 (加速 -> 匀速)
     elif accel and not decel:
         if time_in_seconds <= time_to_max_speed:
-            return 0.5 * ACCEL_SPEED * (time_in_seconds**2)
+            return 0.5 * RUN_ACCEL * (time_in_seconds**2)
         else:
-            accel_distance = 0.5 * ACCEL_SPEED * (time_to_max_speed**2)
+            accel_distance = 0.5 * RUN_ACCEL * (time_to_max_speed**2)
             constant_time = time_in_seconds - time_to_max_speed
             constant_distance = max_speed * constant_time
             return accel_distance + constant_distance
@@ -68,7 +90,7 @@ def get_position_at_time(time_in_seconds, total_motion_duration, max_speed, acce
             constant_distance = max_speed * decel_start_time
             time_into_decel = time_in_seconds - decel_start_time
             # 使用减速公式计算减速阶段的位移
-            decel_distance = max_speed * time_into_decel - 0.5 * DECEL_SPEED * (time_into_decel**2)
+            decel_distance = max_speed * time_into_decel - 0.5 * RUN_DECEL * (time_into_decel**2)
             return constant_distance + decel_distance
 
     # 情况4: 既有加速又有减速 (加速 -> 匀速 -> 减速)
@@ -78,21 +100,21 @@ def get_position_at_time(time_in_seconds, total_motion_duration, max_speed, acce
         # 判断当前时间处于哪个阶段
         if time_in_seconds <= time_to_max_speed:
             # 1. 加速阶段
-            return 0.5 * ACCEL_SPEED * (time_in_seconds**2)
+            return 0.5 * RUN_ACCEL * (time_in_seconds**2)
         elif time_in_seconds <= time_to_max_speed + constant_duration:
             # 2. 匀速阶段
-            accel_distance = 0.5 * ACCEL_SPEED * (time_to_max_speed**2)
+            accel_distance = 0.5 * RUN_ACCEL * (time_to_max_speed**2)
             constant_time = time_in_seconds - time_to_max_speed
             constant_distance = max_speed * constant_time
             return accel_distance + constant_distance
         else:
             # 3. 减速阶段
-            accel_distance = 0.5 * ACCEL_SPEED * (time_to_max_speed**2)
+            accel_distance = 0.5 * RUN_ACCEL * (time_to_max_speed**2)
             constant_distance = max_speed * constant_duration
 
             decel_start_time = time_to_max_speed + constant_duration
             time_into_decel = time_in_seconds - decel_start_time
-            decel_distance = max_speed * time_into_decel - 0.5 * DECEL_SPEED * (time_into_decel**2)
+            decel_distance = max_speed * time_into_decel - 0.5 * RUN_DECEL * (time_into_decel**2)
             return accel_distance + constant_distance + decel_distance
 
     return 0
@@ -122,11 +144,11 @@ def get_time_from_distance(distance, max_speed, accel=False, decel=False):
     elif accel and not decel:
         # 计算加速到最大速度所需的距离
         time_to_max_speed = get_accel_time_to_speed(max_speed)
-        distance_to_max_speed = 0.5 * ACCEL_SPEED * (time_to_max_speed**2)
+        distance_to_max_speed = 0.5 * RUN_ACCEL * (time_to_max_speed**2)
 
         if distance <= distance_to_max_speed:
             # 整个运动都在加速阶段
-            return math.sqrt(2 * distance / ACCEL_SPEED)
+            return math.sqrt(2 * distance / RUN_ACCEL)
         else:
             # 加速到最大速度后保持匀速
             constant_distance = distance - distance_to_max_speed
@@ -137,18 +159,18 @@ def get_time_from_distance(distance, max_speed, accel=False, decel=False):
     elif not accel and decel:
         # 计算从最大速度减速到0所需的距离
         time_to_stop = get_decel_time_from_speed(max_speed)
-        distance_to_stop = 0.5 * DECEL_SPEED * (time_to_stop**2)
+        distance_to_stop = 0.5 * RUN_DECEL * (time_to_stop**2)
 
         if distance <= distance_to_stop:
             # 整个运动都在减速阶段
             # 解方程: distance = max_speed * t - 0.5 * DECEL_SPEED * t^2
-            discriminant = max_speed**2 - 2 * DECEL_SPEED * distance
+            discriminant = max_speed**2 - 2 * RUN_DECEL * distance
             if discriminant < 0:
                 raise ValueError("在物理上不可能的减速距离")
 
             # 选择合理的解 (时间应该小于减速到0所需的时间)
-            t1 = (max_speed - math.sqrt(discriminant)) / DECEL_SPEED
-            t2 = (max_speed + math.sqrt(discriminant)) / DECEL_SPEED
+            t1 = (max_speed - math.sqrt(discriminant)) / RUN_DECEL
+            t2 = (max_speed + math.sqrt(discriminant)) / RUN_DECEL
 
             return min(t1, t2) if t1 > 0 else t2
         else:
@@ -163,16 +185,16 @@ def get_time_from_distance(distance, max_speed, accel=False, decel=False):
         time_to_max_speed = get_accel_time_to_speed(max_speed)
         time_to_stop = get_decel_time_from_speed(max_speed)
 
-        distance_accel = 0.5 * ACCEL_SPEED * (time_to_max_speed**2)
-        distance_decel = 0.5 * DECEL_SPEED * (time_to_stop**2)
+        distance_accel = 0.5 * RUN_ACCEL * (time_to_max_speed**2)
+        distance_decel = 0.5 * RUN_DECEL * (time_to_stop**2)
         total_accel_decel_distance = distance_accel + distance_decel
 
         if distance <= total_accel_decel_distance:
             # 无法达到最大速度，需要计算实际峰值速度
             # 根据距离计算峰值速度
-            peak_speed = math.sqrt(2 * distance * (ACCEL_SPEED * DECEL_SPEED) / (ACCEL_SPEED + DECEL_SPEED))
-            accel_time = peak_speed / ACCEL_SPEED
-            decel_time = peak_speed / DECEL_SPEED
+            peak_speed = math.sqrt(2 * distance * (RUN_ACCEL * RUN_DECEL) / (RUN_ACCEL + RUN_DECEL))
+            accel_time = peak_speed / RUN_ACCEL
+            decel_time = peak_speed / RUN_DECEL
             return accel_time + decel_time
         else:
             # 完整的加速-匀速-减速过程
@@ -203,7 +225,7 @@ def log_info():
     print(f"    - Max Speed Frames Range:       [{min_fps + accel_time:.2f} - {modify_end_time - decel_time:.2f}] frames")
 
     if decel:
-        print(f"    - Decel:                        {DECEL_SPEED} units/sec²")
+        print(f"    - Decel:                        {RUN_DECEL} units/sec²")
         print(f"    - Decel Time:                   {decel_time:.2f} frames ({decel_time / FPS:.2f} sec)")
         print(f"    - Decel Frames Range:           [{modify_end_time - decel_time:.2f} - {modify_end_time:.2f}] frames")
 
@@ -216,23 +238,8 @@ def log_info():
 
 
 def do():
-    # cmds.scaleKey(find_animCurveNode(), time=(min_fps, max_fps), newStartTime=min_fps, newEndTime=modify_end_time)
-    # merge_animLayers()
-    cmds.select(clear=True)
-
-    rootMotionLayer = "RootMotion"
-    if not cmds.objExists(rootMotionLayer):
-        rootMotionLayer = cmds.animLayer(rootMotionLayer)
-
-    cmds.setAttr(f"{rootMotionLayer}.rotationAccumulationMode", 0)
-    cmds.setAttr(f"{rootMotionLayer}.scaleAccumulationMode", 1)
-    cmds.animLayer(rootMotionLayer, edit=True, override=True)
 
     target_object = "RIG:FKRootControls_M"
-    cmds.select(target_object)
-    cmds.animLayer(rootMotionLayer, edit=True, addSelectedObjects=True)
-    cmds.animLayer(rootMotionLayer, edit=True, selected=True)
-
     for x in range(int(motion_time + 1)):
         current_time_sec = x / FPS
         total_motion_sec = motion_time / FPS
@@ -245,6 +252,7 @@ def do():
             time=min_fps + x,  # 帧
             value=p * p_or_n,  # 值
         )
+        print(p * p_or_n)
 
     target_attribute = f"{target_object}.t{axis}"
     cmds.keyTangent(target_attribute, itt="clamped", ott="clamped")
@@ -263,10 +271,10 @@ def do():
         create_exportData(data)
 
 
-speed = RUN_L
+speed = RUN_LN
 accel = False
 decel = False
-axis = "x"
+axis = "z"
 
 
 axis = axis.lower()

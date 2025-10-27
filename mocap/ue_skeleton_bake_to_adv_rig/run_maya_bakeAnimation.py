@@ -108,7 +108,7 @@ if __name__ == "__main__":
     rig_file = r"N:\SourceAssets\Characters\Hero\Rigs\Rig_Hero.ma"  # 绑定角色文件
     rig_namespace = "RIG"  # 绑定角色命名空间
     mocap_namespace = "MOCAP"  # 动作源命名空间
-    clip_namespace = "CLIP"  # 动作片段命名空间
+    clip_namespace = "CLIP"  # 动作片段命名空间 
 
     # 初始化maya独立环境
     init_maya()
