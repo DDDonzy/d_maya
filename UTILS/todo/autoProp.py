@@ -13,6 +13,7 @@ def autoProp(autoSkin=True):
     try:
         sel: om.MSelectionList = om.MGlobal.getActiveSelectionList()
         mesh_dag: om.MDagPath = sel.getDagPath(0)
+        name = mesh_dag.partialPathName().replace("Shape", "")
     except Exception:
         cmds.error("Please select mesh and its components.")
         raise
@@ -41,7 +42,7 @@ def autoProp(autoSkin=True):
     center_matrix = om.MMatrix()
     center_matrix[12], center_matrix[13], center_matrix[14] = center_pos
 
-    jnt = cmds.createNode("joint")
+    jnt = cmds.createNode("joint", name=f"JNT_prop_{name}")
     cmds.xform(jnt, ws=1, matrix=center_matrix)
 
     if autoSkin:
@@ -60,15 +61,16 @@ def autoProp(autoSkin=True):
             if x.partialPathName() == jnt:
                 jnt_idx = i  # influence index
                 break
-        weights = WeightsData(
+        weights = component_weights if len(inf_list) > 1 else [1.0] * len(selections_vertex_idx)
+        data: WeightsData = WeightsData(
             mesh=mesh_dag.partialPathName(),
             component=list(selections_vertex_idx),
             influenceIndex=[jnt_idx],
             influenceName=[jnt],
-            weights=component_weights if inf_list > 1 else [1.0] * len(selections_vertex_idx),
+            weights=weights,
             blendWeights=[0.0] * len(selections_vertex_idx),
         )
-        skin.auto_setWeights(weights)
+        skin.auto_setWeights(data)
 
     return jnt
 
