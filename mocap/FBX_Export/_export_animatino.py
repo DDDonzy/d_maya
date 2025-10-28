@@ -2,20 +2,15 @@ from pathlib import Path
 
 from maya import cmds, mel
 
-import mocap.ainmExportInfo as exportInfo
+import mocap.gameExportInfo as exportInfo
 
-PRESET = r"E:\d_maya\mocap\FBX_Export\FBX_Preset\Animation.mel"
+
 EXPORT_SETS = "UE_Animation_Sets"
 
-# get animation preset
-try:
-    preset_anim = Path(__file__).parent / r"FBX_Preset" / r"Animation.mel"
-except Exception:
-    preset_anim = Path(PRESET)
+
+preset_anim = Path(__file__).parent / r"FBX_Preset" / r"Animation.mel"
 if not preset_anim.exists():
     raise RuntimeError(f"Preset file not found: {preset_anim}")
-
-
 try:
     mel.eval(f'source "{preset_anim.as_posix()}";')
 except Exception:
