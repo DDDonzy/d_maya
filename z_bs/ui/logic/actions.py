@@ -448,7 +448,7 @@ class ActionHandler:
         preview = False
         if cmds.objExists("TRANSFER_DATA") and cmds.objExists("TRANSFER_MESH"):
             preview = ["TRANSFER_DATA", "TRANSFER_MESH"]
-        bsTransfer.transferBlendShape(sourceBlendShape=data["BlendShape"], targetDataList=data["targetList"], destinationMesh=data["targetMesh"], destinationBlendShape=data["destinationBlendShape"], wrapFunction=wrap, preview=preview)
+        bsTransfer.transferBlendShape(sourceBlendShape=data["BlendShape"], targetDataList=data["targetList"], destinationMesh=data["targetMesh"], destinationBlendShape=data["destinationBlendShape"], wrapFunction=wrap, preview=preview,)
 
     def preview(self):
         if self.transferPreviewObject:
