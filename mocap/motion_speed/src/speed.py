@@ -9,7 +9,6 @@ t: 时间
 a: 加速度
 """
 
-from functools import partial
 import math
 from typing import Dict
 
