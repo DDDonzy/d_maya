@@ -262,7 +262,7 @@ class ActionHandler:
             item_data = item.data()
             if not item_data:
                 continue
-            if treeFn.SelectedItemType(item_data) == treeFn.SelectedItemType.BlendShape_group:
+            if treeFn.SelectedItemType(item_data) == treeFn.SelectedItemType.blendShape_group:
                 continue
             self.ui.treeView.collapse(item.index())
         self.treeViewIsExpand = False
@@ -277,7 +277,8 @@ class ActionHandler:
             if not item_data:
                 continue
             # 默认不展开 inbetween
-            if treeFn.SelectedItemType(item_data) == treeFn.SelectedItemType.BlendShape_target:
+
+            if treeFn.SelectedItemType(item_data) == treeFn.SelectedItemType.blendShape_target:
                 self.ui.treeView.collapse(item.index())
                 continue
             self.ui.treeView.expand(item.index())
