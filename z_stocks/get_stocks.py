@@ -24,7 +24,7 @@ class StocksHandle:
 
     USER_ID = "2292705444"  # 替换为你的雪球用户 ID
     URL = f"https://stock.xueqiu.com/v5/stock/portfolio/stock/list.json?pid=-1&category=1&size=1000&uid={USER_ID}"  # 雪球用户URL
-    COOKIE = "cookiesu=411758851853646; device_id=dd70da9a99c311926daab8b4d833ccfa; Hm_lvt_1db88642e346389874251b5a1eded6e3=1758851854; HMACCOUNT=3F2C01D0E75046DF; smidV2=20250926095734e4bbb374b9b5263ecc09526df307eee10054114a7e14facc0; xq_is_login=1; u=8084764820; s=am11t74ka5; bid=608df1fbdbdaad2d39baaa6ec88568bc_mg0703qh; aliyungf_tc=2f412bbf1c9d23c5acb13fac73be0216513bc73e994876a0ceec184e14830a7e; xq_a_token=063326666234970cbb78d2277025cc05d124db9d; xqat=063326666234970cbb78d2277025cc05d124db9d; xq_id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ1aWQiOjgwODQ3NjQ4MjAsImlzcyI6InVjIiwiZXhwIjoxNzYyNzQ0MDc2LCJjdG0iOjE3NjAxNTIwNzYzNjEsImNpZCI6ImQ5ZDBuNEFadXAifQ.bWx7jlWCTCIX8V2Rh17ADf-grF1DCywDeFWNwOcmHtfCQxmkRWeTxBPfnuBDyUdtS0ZIsxwgo8XJMfz5VvhCXCZrItmSpCQ_C0rqTtH4ggdOBwkC_Hae-oZKgAWzJ9D-3m9rhmY6rgAGv1g-7sE6Kj4rFldMhfyu9t1NSjLHViv0lg8zmznUPqgGT8rwp5oTB4PpM9nS0o5zvkKIvqg2DQS3w7fTuL8MwrS6SRUlHdR9YpWqcRMvmE27hIdEuMTIoN_kNDrY9uhIQiSBrudU7-tgbfcmbK6IAqkR86YCL1cgQTtwSbFk80bqf30oaqyLDsTKnoS3Lp8eYy-5xU19Sw; xq_r_token=f73f7da919b1873e49db329c540fbb546972328b; acw_tc=b65cfd3417603802370701930e3d7031ae1b8a737d63546ec866e51c4c0b3b; Hm_lpvt_1db88642e346389874251b5a1eded6e3=1760380537; .thumbcache_f24b8bbe5a5934237bbc0eda20c1b6e7=qPGXlOJQiMK9B1A10bjohssUS2fPVqWyJW3Vzt2/ZOVHU2WsGrKt8JRIT776mZ5BaqhsiRPCvtsTtgcwwfqksA%3D%3D; ssxmod_itna=1-Wq_x9iPiw4yDhrDgYxBDIxYKGQq7QDOKDl4BtGRRDIkq7=GFDxCgbIB8kmA2DDIL3ZKC2DNoSDEqDsoKxiNDAZ40iDC8ndPxcaW744Qxci4hr_l2mrNpa8QGON5QpjIDYq3NHHZld37UqzLcwOwD0aDmKDU1rb=t4DxaPD5xDTDWeDGDD3axGaDmeDex3mD0bIst8EOtgoD7eDXxGCzCbIDYPDWxDFOzrNx2ONDGHN5yqYGnwxDmbI__BjvBxDn1hAeiiID7v3DlcDsyTIDD5B_yqf__69=Lnm2KdDvxDky4f_zYqvfb3m=keDToDkee4ea7eXgKeA4bixV0D30QK0D3L4eB5eS4bAx5uDbiepEQefmwDD=OiaIePCGreNS1XQpXZ=_e4_dmvk0epWepi_4nqN3nQ3i10wsemxAD3WhmQD3Y2KY_mWWiYxxD; ssxmod_itna2=1-Wq_x9iPiw4yDhrDgYxBDIxYKGQq7QDOKDl4BtGRRDIkq7=GFDxCgbIB8kmA2DDIL3ZKC2DNoSD=4iTwS=fguzFQDGXzeDp62Amt1zr5Xsx5AGbpUi1bAED"
+    COOKIE = "cookiesu=411758851853646; device_id=dd70da9a99c311926daab8b4d833ccfa; xq_is_login=1; u=8084764820; s=am11t74ka5; bid=608df1fbdbdaad2d39baaa6ec88568bc_mg0703qh; xq_a_token=22a23b105c19bc1c76efd60cb68b482cccae03ae; xqat=22a23b105c19bc1c76efd60cb68b482cccae03ae; xq_id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ1aWQiOjgwODQ3NjQ4MjAsImlzcyI6InVjIiwiZXhwIjoxNzY0MzQ2NjI3LCJjdG0iOjE3NjE3NTQ2Mjc3ODcsImNpZCI6ImQ5ZDBuNEFadXAifQ.IfLIh9asW5-5iJNO5w4C7FpcqqZel3llymxI6Udr-AmDAMzpttGvbQAt3xJsuSBgil0M53lcioHh2FTDAGhirmZt4BgYlt3CwYep7LrxAmZi0wAZ7ddJaewIvit6L8Hub6CBdWAIy98agKMnGMrQ8U_lqaEEsL1Cw8-Mu1EDgT7bLYvK4bQ3eKbJXDcDfS5SNRv_cbqPcMWCTO5tb4TYWS4fNJ1XqgoA-pC-et7nUTg4OVo3HgP2-mP4FRukKAqJvda3Ii74Tegwnl5jk0l4MVHzh5GrN3zUmfI-cpWeeinAeCU8pCOQI-i_iE4B2A7dDO1mytiQc1iDHgrxe4v9Dg; xq_r_token=b87888318fb42ef3da13a1898dbf90b74c572eb6; Hm_lvt_1db88642e346389874251b5a1eded6e3=1761754629; HMACCOUNT=3F2C01D0E75046DF; Hm_lpvt_1db88642e346389874251b5a1eded6e3=1761755623"
     HEADERS = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
         "Cookie": COOKIE,
@@ -146,7 +146,7 @@ class SenderHandle:
 
 
 def main():
-    send_error = True
+    error_num = 0
     stocks_handle = StocksHandle()
     sender_stocks_handle = SenderHandle()
     while True:
@@ -162,6 +162,7 @@ def main():
                 print("检测到数据变更，正在发送通知...")
                 sender_stocks_handle.send_qqMail_message(message)
                 sender_stocks_handle.send_telegram_message(message)
+                print("通知发送完成，更新本地缓存文件...")
 
                 with open(stocks_handle.STOCKS_JSON, "w", encoding="utf-8") as f:
                     json.dump(data, f, ensure_ascii=False, indent=4)
@@ -169,20 +170,23 @@ def main():
             else:
                 print("本轮检测未发现数据变更。")
 
-            send_error = True  # 解除错误通知锁定
+            error_num = 0  # 解除错误通知锁定
 
         except Exception as e:
             print("本轮检测失败，等待下次重试...")
             print(e)
+            error_num += 1
             try:
-                if send_error is True:
+                if error_num == 5:
+                    print("Error 连续5次，发送错误通知...")
                     sender_stocks_handle.send_qqMail_message(subject="股票监控通知出错", message=f"股票监控脚本运行出错，请检查！\n-\n {e}")
                     sender_stocks_handle.send_telegram_message(message=f"股票监控脚本运行出错，请检查！\n-\n {e}")
-                    send_error = False  # 保证只发送一次错误通知，防止频繁报错时刷屏。
+                    print("休眠 %.2f 秒, 等待下一轮Tick" % 7200)
+                    time.sleep(7200)
             except Exception as ee:
                 print(ee)
 
-        sleep_duration = random.uniform(5, 25)
+        sleep_duration = random.uniform(1, 20)
         print("休眠 %.2f 秒, 等待下一轮Tick" % sleep_duration)
         time.sleep(sleep_duration)
 
