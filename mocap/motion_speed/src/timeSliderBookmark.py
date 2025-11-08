@@ -28,3 +28,27 @@ def timeSliderBookmark(name: str, time: List[int], color: List[float], priority:
     cmds.setAttr(f"{bookmark}.priority", priority)
 
     return bookmark
+
+
+def get_timeSliderBookmark():
+    bookmark_list = cmds.ls(type="timeSliderBookmark")
+    data = {}
+    for bookmark in bookmark_list:
+        name = cmds.getAttr(f"{bookmark}.name")
+        start = cmds.getAttr(f"{bookmark}.timeRangeStart")
+        end = cmds.getAttr(f"{bookmark}.timeRangeStop")
+        color = cmds.getAttr(f"{bookmark}.color")[0]
+        priority = cmds.getAttr(f"{bookmark}.priority")
+        data[name] = {
+            "time": [start, end],
+            "color": list(color),
+            "priority": priority,
+        }
+    return data
+
+def create_timeSliderBookmark_from_data(data: dict):
+    for name, info in data.items():
+        time = info["time"]
+        color = info["color"]
+        priority = info.get("priority", 1)
+        timeSliderBookmark(name, time, color, priority)

@@ -47,6 +47,7 @@ import maya.standalone
 
 
 from pathlib import Path
+from typing import List
 
 from mocap.ue_skeleton_bake_to_adv_rig.fn_bake_animation import bakeAnimations
 from mocap.gameExportInfo import get_exportData, create_exportData
@@ -100,15 +101,76 @@ def clean_unknown_data():
         print(f"Clear unknown error: {e}")
 
 
+def loadHandPose():
+    import sys
+
+    if r"C:\Users\Donzy\Downloads\studiolibrary-2.20.2\src" not in sys.path:
+        sys.path.insert(0, r"C:\Users\Donzy\Downloads\studiolibrary-2.20.2\src")
+    import mutils # type: ignore
+
+    mutils.loadPose(r"C:\Users\Donzy\Desktop\pose\Hero\Hand\Hand_R_Weapon.pose\pose.json", namespaces=":", key=True)
+
+
+
+def timeSliderBookmark(name: str, time: List[int], color: List[float], priority: int = 1) -> str:
+    """
+    在Maya时间轴上创建一个书签标记
+
+    Args:
+        name (str): 书签的名称
+        time (List[int]): 时间范围，包含开始帧和结束帧 [开始帧, 结束帧]
+        color (List[float]): RGB颜色值，范围0-1 [R, G, B]
+        priority (int, optional): 书签的优先级，默认为1
+
+    Returns:
+        str: 创建的timeSliderBookmark节点名称
+
+    Example:
+        # 创建一个名为"idle"的书签，时间范围10-50帧，颜色为灰色
+        bookmark_node = timeSliderBookmark("idle", [10, 50], [0.5, 0.5, 0.5])
+    """
+
+    bookmark = cmds.createNode("timeSliderBookmark", name=f"timeSliderBookmark_{name}")
+    cmds.setAttr(f"{bookmark}.name", name, type="string")
+    cmds.setAttr(f"{bookmark}.color", *color)
+    cmds.setAttr(f"{bookmark}.timeRangeStart", time[0])
+    cmds.setAttr(f"{bookmark}.timeRangeStop", time[1])
+    cmds.setAttr(f"{bookmark}.priority", priority)
+
+    return bookmark
+def get_timeSliderBookmark():
+    bookmark_list = cmds.ls(type="timeSliderBookmark")
+    data = {}
+    for bookmark in bookmark_list:
+        name = cmds.getAttr(f"{bookmark}.name")
+        start = cmds.getAttr(f"{bookmark}.timeRangeStart")
+        end = cmds.getAttr(f"{bookmark}.timeRangeStop")
+        color = cmds.getAttr(f"{bookmark}.color")[0]
+        priority = cmds.getAttr(f"{bookmark}.priority")
+        data[name] = {
+            "time": [start, end],
+            "color": list(color),
+            "priority": priority,
+        }
+    return data
+
+def create_timeSliderBookmark_from_data(data: dict):
+    for name, info in data.items():
+        time = info["time"]
+        color = info["color"]
+        priority = info.get("priority", 1)
+        timeSliderBookmark(name, time, color, priority)
+
+
 if __name__ == "__main__":
-    task_file = list(Path(r"N:\SourceAssets\Characters\Hero\Mocap\clip_preprocessing").glob("*.ma"))  # 扫描目录
+    task_file = list(Path(r"N:\SourceAssets\Characters\Hero\Mocap\clip_preprocessing2").glob("*.ma"))  # 扫描目录
     fbx_output_dir = Path(r"N:\SourceAssets\Characters\Hero\Animations\FBX")  # FBX 输出目录，用于配置Game Exporter节点，不导出fbx
-    output_dir = Path(r"N:\SourceAssets\Characters\Hero\Mocap\xx")  # 输出目录
+    output_dir = Path(r"N:\SourceAssets\Characters\Hero\Mocap\clip_preprocessing2\bake")  # 输出目录
 
     rig_file = r"N:\SourceAssets\Characters\Hero\Rigs\Rig_Hero.ma"  # 绑定角色文件
     rig_namespace = "RIG"  # 绑定角色命名空间
     mocap_namespace = "MOCAP"  # 动作源命名空间
-    clip_namespace = "CLIP"  # 动作片段命名空间 
+    clip_namespace = "CLIP"  # 动作片段命名空间
 
     # 初始化maya独立环境
     init_maya()
@@ -128,6 +190,7 @@ if __name__ == "__main__":
                 cmds.file(maya_file, open=1, force=1)
             # Get Clip Data
             clip_data = get_exportData()  # 获取导出数据
+            bookmark_data = get_timeSliderBookmark()
             # 如果没有导出数据，跳过
             if clip_data:
                 debug("Get Clip Success")
@@ -161,6 +224,8 @@ if __name__ == "__main__":
                 debug("Clip Reference Complete")
             print(cmds.ls(type="skinCluster"))
 
+            loadHandPose() # 加载手部姿势
+
             # bake Animation
             clips_attrs = cmds.ls(f"{export_node}.animClips[*]")  # 获取所有动画片段属性
             start = cmds.getAttr(f"{clips_attrs[0]}.animClipStart")  # 获取第一个片段的开始时间
@@ -184,16 +249,17 @@ if __name__ == "__main__":
             debug("Clean Unknown Data Complete")
             cmds.file(unloadReference=f"{clip_namespace}RN")  # 卸载片段引用
             debug("Unload Clip Reference Complete")
+            create_timeSliderBookmark_from_data(bookmark_data)
             cmds.file(rename=str(output_dir / file_name))  # 重命名文件
             cmds.file(save=True, force=True, type="mayaAscii")  # 保存文件
             debug("Save File Complete")
+            
 
         except Exception:
             error(maya_file)
             raise
         success_list.append(maya_file)  # 添加到成功列表
         info(f"Complate: {str(output_dir / file_name)}")
-        break
 
     info(f"Total {len(success_list)} files processed successfully.")
     for x in success_list:

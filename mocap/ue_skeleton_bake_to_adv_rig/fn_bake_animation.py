@@ -207,40 +207,6 @@ def cal_pv(name="xxx"):
     return start, mid, end, loc_result
 
 
-def cal_main(pelvis, pelvis_ctl, main_ctl, frontAxis="Z", t=1, r=1):
-    """
-    特殊计算Pelvis，然后约束到输入的控制器上
-    """
-    with AssetCallback(name="cal_main", isDagAsset=True) as asset:
-        offset = get_relativesMatrix(
-            get_worldMatrix(pelvis_ctl),
-            get_worldMatrix(pelvis),
-        )
-        proxy_loc = cmds.spaceLocator(name="cal_main_pelvis_loc")[0]
-        pelvis_con = matrixConstraint(pelvis, proxy_loc)
-        cmds.setAttr(pelvis_con.inputOffsetMatrix, offset, type="matrix")
-        # pelvis ground
-        pelvis_ground_loc = cmds.spaceLocator(name="cal_main_pelvis_ground_loc")[0]
-        cmds.parentConstraint(proxy_loc, pelvis_ground_loc, mo=False, skipTranslate="y")[0]
-
-        pelvis_ground_aim_loc = cmds.spaceLocator(name="cal_main_pelvis_ground_aim_loc")[0]
-        aim_parentCon = cmds.parentConstraint(pelvis_ground_loc, pelvis_ground_aim_loc, mo=False, skipTranslate="y")[0]
-        cmds.setAttr(f"{aim_parentCon}.target[0].targetOffsetTranslate{frontAxis}", 100)
-
-        cmds.pointConstraint(pelvis_ground_loc, main_ctl, mo=0)
-        aimVector = {"X": [1, 0, 0], "Y": [0, 1, 0], "Z": [0, 0, 1]}
-        cmds.aimConstraint(pelvis_ground_aim_loc, main_ctl, aimVector=aimVector[frontAxis], worldUpType="scene", upVector=[0, 1, 0])
-
-        if not t:
-            cmds.setAttr(f"{main_ctl}.translate", 0, 0, 0)
-            cmds.mute(f"{main_ctl}.translate")
-        if not r:
-            cmds.setAttr(f"{main_ctl}.rotate", 0, 0, 0)
-            cmds.mute(f"{main_ctl}.rotate")
-
-    return asset
-
-
 def pre_bakeAnimations(
     target_namespace="TestCharacter_rig",
     source_namespace="Retarget_M_Blade_Stand_Idle",
@@ -303,6 +269,15 @@ def pre_bakeAnimations(
 
         bake_list = list(bake_pv_dict.keys()) + list(bake_dict.keys())
         bake_list = [f"{target_namespace}:{x}*" if target_namespace else x for x in bake_list]
+        # root motion
+        try:
+            matrixConstraint(f"{source_namespace}:rootMotion", f"{target_namespace}:FKRootControls_M", mo=False)
+            bake_list.append(f"{target_namespace}:FKRootControls_M" if target_namespace else "FKRootControls_M")
+        except Exception:
+            print(f"{source_namespace}:rootMotion")
+            print(f"{target_namespace}:FKRootControls_M")
+
+            raise
 
     return asset, bake_list
 

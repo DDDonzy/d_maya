@@ -116,8 +116,10 @@ def create_exportData(data, name=EXPORT_NODE):
     cmds.setAttr(f"{node}.eti", 2)
     cmds.setAttr(f"{node}.ils", 1)
     cmds.setAttr(f"{node}.ilu", 1)
+    cmds.setAttr(f"{node}.spt", 2)
     cmds.setAttr(f"{node}.exportPath", data["exportPath"], type="string")
     cmds.setAttr(f"{node}.exportFilename", data["exportName"], type="string")
+
     i = 0
     for k, v in data["clip"].items():
         clipAttr = f"{node}.animClips[{i}]"
