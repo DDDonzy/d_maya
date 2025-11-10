@@ -3,6 +3,9 @@ from shiboken2 import wrapInstance
 from PySide2.QtWidgets import QWidget
 
 
+__all__ = ["getMayaMainWindow", "getMayaControl"]
+
+
 def getMayaMainWindow():
     main_window_ptr = omui.MQtUtil.mainWindow()
     return wrapInstance(int(main_window_ptr), QWidget) if main_window_ptr else None
@@ -15,5 +18,6 @@ def getMayaControl(name):
 
 if __name__ == "__main__":
     from maya import cmds
+
     bsPanelName = cmds.getPanel(type="shapePanel")[0]
     getMayaControl()

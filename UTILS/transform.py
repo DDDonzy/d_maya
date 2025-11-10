@@ -2,8 +2,8 @@ import maya.cmds as cmds
 import maya.api.OpenMaya as om
 from UTILS.ui.showMessage import showMessage
 
-RAD_TO_DEG = 57.29577951308232  # 180.0 / pi
-DEG_TO_RAD = 0.017453292519943295  # pi / 180.0
+_RAD_TO_DEG = 57.29577951308232  # 180.0 / pi
+_DEG_TO_RAD = 0.017453292519943295  # pi / 180.0
 
 
 class MIRROR_MATRIX:
@@ -204,7 +204,7 @@ def matrix_to_trs(matrix: om.MMatrix, rotateOrder: int = 0) -> list:
     translate = mTransformation.translation(1) * UNIT_CONVERT()
     euler_radians = mTransformation.rotation()
     euler_radians.reorderIt(rotateOrder)
-    euler_angle = [RAD_TO_DEG * radians for radians in [euler_radians.x, euler_radians.y, euler_radians.z]]
+    euler_angle = [_RAD_TO_DEG * radians for radians in [euler_radians.x, euler_radians.y, euler_radians.z]]
     scale = mTransformation.scale(1)
     outputList = [
         translate[0],
@@ -232,7 +232,7 @@ def trs_to_matrix(trs: list, rotateOrder: int = 0) -> om.MMatrix:
     """
     mTransformation = om.MTransformationMatrix()
     translate = om.MVector(trs[0], trs[1], trs[2]) / UNIT_CONVERT()
-    euler_radians = om.MEulerRotation([DEG_TO_RAD * angle for angle in trs[3:6]], rotateOrder)
+    euler_radians = om.MEulerRotation([_DEG_TO_RAD * angle for angle in trs[3:6]], rotateOrder)
     scale = om.MVector(trs[6], trs[7], trs[8])
     mTransformation.setTranslation(translate, 1)
     mTransformation.setRotation(euler_radians)

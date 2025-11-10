@@ -44,7 +44,14 @@ def assign_default_material(object_name):
         cmds.warning(f"ERROR: Assign materials '{object_name}'\n{e}")
 
 
-def transferBlendShape(sourceBlendShape="", targetDataList: List[TargetData] = [], destinationMesh="", destinationBlendShape=None, wrapFunction=pre_configured_wrap, preview=False):
+def transferBlendShape(
+    sourceBlendShape="",
+    targetDataList: List[TargetData] = None,
+    destinationMesh="",
+    destinationBlendShape=None,
+    wrapFunction=pre_configured_wrap,
+    preview=False,
+):
     """
     Transfer blendShape targets between different topology models using wrap
 
