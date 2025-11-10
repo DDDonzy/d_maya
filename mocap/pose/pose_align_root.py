@@ -174,18 +174,19 @@ def set_trs(obj: str, trs: list) -> None:
             om.MGlobal.displayWarning(str(e))
 
 
-try:
-    namespace = cmds.ls(sl=1)[-1].split(":")[0]
-except:
-    raise RuntimeError("请选择Root控制器")
-root = "FKRootControls_M"
-move_controls = ["IKLeg_R", "IKLeg_L", "RootX_M", "IKArm_L", "IKArm_R", "PoleArm_R", "PoleArm_L", "PoleLeg_R", "PoleLeg_L"]
+if __name__ == "__main__":
+    try:
+        namespace = cmds.ls(sl=1)[-1].split(":")[0]
+    except Exception:
+        raise RuntimeError("请选择Root控制器")
+    root = "FKRootControls_M"
+    move_controls = ["IKLeg_R", "IKLeg_L", "RootX_M", "IKArm_L", "IKArm_R", "PoleArm_R", "PoleArm_L", "PoleLeg_R", "PoleLeg_L"]
 
-root_matrix = get_worldMatrix(f"{namespace}:{root}")
-offset = []
-fun_list = []
-for x in move_controls:
-    m = get_worldMatrix(f"{namespace}:{x}") * root_matrix
-    fun_list.append(functools.partial(set_worldMatrix, f"{namespace}:{x}", m))
-for x in fun_list:
-    x()
+    root_matrix = get_worldMatrix(f"{namespace}:{root}")
+    offset = []
+    fun_list = []
+    for x in move_controls:
+        m = get_worldMatrix(f"{namespace}:{x}") * root_matrix
+        fun_list.append(functools.partial(set_worldMatrix, f"{namespace}:{x}", m))
+    for x in fun_list:
+        x()

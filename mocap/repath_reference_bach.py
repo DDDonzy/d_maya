@@ -47,81 +47,103 @@ mayapy.exe "path/to/this/script/repath_reference.py"
 ================================================================================
 """
 
+import os
 from pathlib import Path
 
 from maya import cmds
 
+import log
 from mocap.mayapy import init_maya
 from mocap.suppress_maya_logs import suppress_maya_logs
 from mocap.reference import list_all_references, repath_reference
 
 
-def info(title: str, total_length: int = 200) -> None:
-    formatted_title = f"{f' {title} ':=^{total_length}}"
-    print(formatted_title)
-
-
-def debug(label: str, total_length: int = 20, fill_char: str = " ") -> None:
-    formatted_line = f"{f'[ DEBUG ]: {label} ':{fill_char}<{total_length}}"
-    print(formatted_line)
-
-
-def error(label: str, total_length: int = 20, fill_char: str = " ") -> None:
-    formatted_line = f"{f'[ ERROR ]: {label} ':{fill_char}<{total_length}}"
-    print(formatted_line)
-
-
-if __name__ == "__main__":
-    task_file = list(Path(r"N:\SourceAssets\Characters\Hero\Mocap").glob("*.ma"))  # 扫描目录
-    output_dir = Path(r"N:\SourceAssets\Characters\Hero\Mocap\xx")  # 输出目录
-
-    rig_file = r"N:\SourceAssets\Characters\Hero\Rigs\RIG_Hero.ma"  # 绑定角色文件
+def repath_reference_bach(
+    task_dir,  # dir of maya files to process
+    rig_file,  # path of the rig file to repath
+    output_dir,  # dir to save processed maya files
+    ref_filter_func=None,  # function to filter which reference to repath   Example: lambda path: "Rigs" in path
+):
+    task_dir = Path(task_dir)
+    rig_file = Path(rig_file)
+    output_dir = Path(output_dir)
+    os.makedirs(output_dir, exist_ok=True)
 
     # 初始化maya独立环境
     init_maya()
 
-    success_list = []  # 处理成功的文件列表
-    error_list = []  # 处理失败的文件列表
-    already_done = [x.name for x in output_dir.glob("*.ma")]  # 已处理的文件列表
-    for maya_file in task_file:
-        file_name = maya_file.name  # 获取文件名
-        if file_name in already_done:
-            info(f"Skip Already Done: {maya_file}")
-            continue  # 跳过已处理的文件
+    success_task = []  # 处理成功的文件列表
+    error_task = []  # 处理失败的文件列表
 
-        info(f"Process : {maya_file}")
+    completed_task = [x.name for x in output_dir.glob("*.ma")]  # 已处理的文件列表
+    task_list = list(task_dir.glob("*.ma"))  # 扫描目录
+    for maya_file in task_list:
+        file_name = maya_file.name  # 获取文件名
+
+        # skip already completed file
+        if file_name in completed_task:
+            log.info(f"Already Completed: '{maya_file}'")
+            continue
+
+        # Process File
+        log.info(f"Process : {maya_file}")
         try:
             # Open File
-            debug(f"Open File: {file_name}")
             with suppress_maya_logs():
-                try:
-                    cmds.file(maya_file, open=1, force=1, loadNoReferences=True)  # 打开，不加载引用
-                except Exception:
-                    pass
-            debug(f"File Opened: {file_name}")
+                log.debug(f"Open File: '{file_name}'")
+                cmds.file(maya_file, open=1, force=1, loadNoReferences=True)  # 打开，不加载引用
+                log.debug(f"File Opened: '{file_name}'")
 
+            # Repath Reference
+            log.debug("change reference path...")
             ref_data = list_all_references()
-            for x in ref_data:
-                if "Rigs" in x["path"] or "TestCharacter" in x["path"]:
-                    rig_ref_node = x["node"]
+            for ref in ref_data:
+                old_path = ref["path"]
+                if ref_filter_func(old_path):
+                    rig_ref_node = ref["node"]
                     break
             repath_reference(rig_ref_node, rig_file)  # 重新指定 引用路径
+            log.debug("Reference path changed.")
+
+            # rename reference node
+            log.debug("Rename reference node name.")
             cmds.lockNode(rig_ref_node, lock=False)  # 解锁引用节点
             cmds.rename(rig_ref_node, "RIGRN")  # 重命名引用节点
-            debug(f"Repath Reference: {rig_ref_node} -> {rig_file}")
+            log.debug("Reference node name renamed.")
 
+            # save file
+            log.debug(f"Try Save File: '{output_dir / file_name}'")
             cmds.file(rename=str(output_dir / file_name))  # 另存为
             cmds.file(save=True, force=True, type="mayaAscii")  # 保存
-            success_list.append(maya_file)
-            debug(f"File Saved: {output_dir / file_name}")
+            log.debug(f"File Saved: '{output_dir / file_name}'")
+
+            # add to success list
+            success_task.append(maya_file)
+            log.success(f"Completed: '{maya_file}' saved to '{output_dir / file_name}'")
 
         except Exception as e:
-            error(f"Process Failed: {maya_file} | Error: {e}")
-            error_list.append(maya_file)
+            error_task.append(maya_file)
+            log.exception(f"Process Failed: '{maya_file}'\n{e}")
+            continue
+    
+    #
+    log.success(f"Total {len(success_task)} files processed successfully.")
+    for ref in success_task:
+        log.success(f"Completed File: {ref}")
 
-    info(f"Total {len(success_list)} files processed successfully.")
-    for x in success_list:
-        info(x)
-    info(f"Total {len(error_list)} files failed.")
-    for x in error_list:
-        error(x)
+    log.error(f"Total {len(error_task)} files failed.")
+    for ref in error_task:
+        log.error(f"Failed File: {ref}")
+
+
+if __name__ == "__main__":
+    task_dir = r"N:\SourceAssets\Characters\Hero\Mocap"  # 扫描目录
+    rig_file = r"N:\SourceAssets\Characters\Hero\Rigs\RIG_Hero.ma"  # 绑定角色文件
+    output_dir = r"N:\SourceAssets\Characters\Hero\Mocap\xxxxxx"  # 输出目录
+
+    repath_reference_bach(
+        task_dir=task_dir,
+        rig_file=rig_file,
+        output_dir=output_dir,
+        ref_filter_func=lambda path: "Rigs" in path or "TestCharacter" in path,
+    )

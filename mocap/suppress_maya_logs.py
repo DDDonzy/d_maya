@@ -24,26 +24,27 @@ import contextlib
 
 from maya import cmds
 
+import log
+
 
 @contextlib.contextmanager
 def suppress_maya_logs(suppressError=True, suppressWarning=True, suppressInfo=True):
     """
     一个上下文管理器，用于临时禁止 Maya 的警告信息输出。
     """
-    # 记录当前的警告设置状态
     try:
-        # 禁止警告输出
         cmds.scriptEditorInfo(e=True, suppressWarnings=suppressWarning, suppressInfo=suppressInfo, suppressErrors=suppressError)
+        log.trace("Disable Maya scripts logs")
         yield
     finally:
-        # 无论成功还是失败，都恢复原始设置
         cmds.scriptEditorInfo(e=True, suppressWarnings=False, suppressInfo=False, suppressErrors=False)
+        log.trace("Enable Maya scripts logs")
+
 
 
 if __name__ == "__main__":
-    # 打开文件
+    from mocap.mayapy import init_maya
+    init_maya()
     with suppress_maya_logs():
-        cmds.file(r"N:\SourceAssets\Characters\Hero\Mocap\xx\M_Blade_Stand_Run_F_Loop.ma", o=1, f=1)
-
-    print("+++++++++++++++++++++++++++++++++++++")
-    print("打开文件完成")
+        log.info("Open File")
+        cmds.file(r"N:\SourceAssets\Characters\Hero\Mocap\M_Blade_Stand_Run_F_Loop.ma", o=1, f=1)

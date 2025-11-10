@@ -2,6 +2,7 @@ from pathlib import Path
 from maya import cmds
 
 from mocap.suppress_maya_logs import suppress_maya_logs
+import log
 
 
 def list_all_references():
@@ -84,7 +85,7 @@ def repath_reference(reference_node, new_path):
         if ref["node"] != reference_node:
             continue
 
-        old_path = ref["path"]
         with suppress_maya_logs():
+            log.trace(f"Repath '{reference_node}' from '{ref['path']}' to '{new_path}'")
             cmds.file(new_path, loadReference=reference_node)
-        print(f"Repath Reference Success: {old_path} -> {new_path}")
+            log.trace("Repath Success")
