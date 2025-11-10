@@ -1,6 +1,7 @@
-from log.config import logger, DEFAULT_FORMAT
+from log.config import logger, level_filter, DEFAULT_FORMAT, CONSOLE_ID
 
 from maya import cmds
+from maya.api.OpenMaya import MGlobal
 
 
 __all__ = ["uiMessage"]
@@ -66,19 +67,29 @@ uiMessage = MessageHandler()
 
 
 # Maya inViewMessage
+def popup_sink(message):
+    level_name = message.record["level"].name
+    log_message = message.record["message"]
+    if level_name == "ERROR" or level_name == "CRITICAL":
+        MGlobal.displayError(message)
+    elif level_name == "WARNING":
+        MGlobal.displayWarning(message)
+    else:
+        MGlobal.displayInfo(message)
+
+    if level_name in ("INFO", "SUCCESS", "WARNING", "ERROR", "CRITICAL"):
+        color = LEVEL_COLORS.get(level_name, "#FFFFFF")
+        msg = f'<font color="{color}">{level_name}: {log_message}</font>'
+        uiMessage.show(msg)
+
+
+MAYA_CONSOLE_ID = None
 if ui_maya:
-
-    def popup_sink(message):
-        level_name = message.record["level"].name
-        log_message = message.record["message"]
-        if level_name in ("INFO", "SUCCESS", "WARNING", "ERROR", "CRITICAL"):
-            color = LEVEL_COLORS.get(level_name, "#FFFFFF")
-            msg = f'<font color="{color}">{level_name}: {log_message}</font>'
-            uiMessage.show(msg)
-
-    logger.add(
+    logger.remove(CONSOLE_ID)
+    MAYA_CONSOLE_ID = logger.add(
         popup_sink,
-        level="INFO",
+        level="TRACE",
+        filter=level_filter,
         format=DEFAULT_FORMAT,
     )
 

@@ -2,6 +2,7 @@ from loguru import logger
 
 import sys
 import os
+from enum import Enum
 
 # Public API
 __all__ = [
@@ -30,26 +31,61 @@ DEFAULT_FORMAT = (
 # fmt: on
 
 
+# filter
+log_filter = {"level": "INFO"}
+
+
+def level_filter(record):
+    filter_level = log_filter["level"]
+    current_level_no = logger.level(filter_level).no
+    return record["level"].no >= current_level_no
+
+
 logger.remove()
+_handlers = logger._core.handlers.copy()
 
 # Console
+LOG_CONSOLE_ID = None
 if CONSOLE:
-    logger.add(
+    CONSOLE_ID = logger.add(
         sys.stdout,  # 输出到控制台
         level="TRACE",  # 最低日志级别
+        filter=level_filter,
         format=DEFAULT_FORMAT,
     )
 
 
 # file
+LOG_FILE_ID = None
 if LOG_FILE_PATH:
     if os.path.exists(LOG_FILE_PATH):
         os.remove(LOG_FILE_PATH)
-    logger.add(
+    LOG_FILE_ID = logger.add(
         LOG_FILE_PATH,  # 输出到文件
         level="TRACE",  # 最低日志级别
+        filter=level_filter,
         format=DEFAULT_FORMAT,
     )
+
+
+# Modify handler levels
+class LogLevel(Enum):
+    TRACE = 0
+    DEBUG = 1
+    INFO = 2
+    WARNING = 3
+    ERROR = 4
+    CRITICAL = 5
+
+
+def set_level(level: int):
+    if isinstance(level, int):
+        level = LogLevel(level).name
+    else:
+        logger.error("Invalid level type. Must be str or int.")
+        return
+    log_filter["level"] = level
+    logger.success(f"Log level set to '{level}'")
 
 
 debug = logger.debug
@@ -63,9 +99,4 @@ catch = logger.catch
 trace = logger.trace
 
 if __name__ == "__main__":
-    import time
-
-    s = time.time()
-    for x in range(1000):
-        trace(f"This is a trace message. {x}")
-    print(f"Done in {time.time() - s}")
+    info("Test")
