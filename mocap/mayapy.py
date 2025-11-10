@@ -23,10 +23,10 @@ def init_maya():
     # 加载 FBX 插件
     for plugin in PLUGIN_LIST:
         if not cmds.pluginInfo(plugin, query=True, loaded=True):
-            log.debug(f"Loading plugin: '{plugin}' ...")
+            log.debug(f"Loading plugin: '{plugin}'...")
             try:
                 cmds.loadPlugin(plugin)
-                log.debug(f"'{plugin}' loaded successfully.")
+                log.debug(f"Load plugin: '{plugin}' successfully")
             except Exception as e:
                 log.warning(e)
     log.info("Maya environment initialized successfully.")
@@ -34,3 +34,6 @@ def init_maya():
 
 if __name__ == "__main__":
     init_maya()
+    import time
+    s = time.time()
+    log.info(f"Done in {time.time()-s}")
