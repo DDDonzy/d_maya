@@ -5,8 +5,9 @@ from dataclasses import dataclass
 from maya import cmds
 from maya.api import OpenMaya as om
 
+import z_bs.log as log
+
 import z_bs.utils.apiundo as apiundo
-from z_bs.utils.showMessage import showMessage
 from z_bs.utils.mirrorEnv import MIRROR_BASE
 
 
@@ -153,7 +154,7 @@ def sculptTarget(targetData: TargetData, message=False):
         cmds.setAttr(f"{targetData.node}.it[0].deformMatrixModified", False)
         cmds.setAttr(sculptInbetweenWeight, 1)
         if message:
-            showMessage("Sculpt target mode disabled.")
+            log.info("Sculpt target mode disabled.")
         return
     if targetData.isInbetweenExists:
         cmds.connectAttr(sculptTargetTweaks, tweak, f=1)
@@ -162,7 +163,7 @@ def sculptTarget(targetData: TargetData, message=False):
         cmds.setAttr(sculptInbetweenWeight, round((targetData.inbetweenIdx - 5000) / 1000, 3))
         cmds.setAttr(f"{targetData.node}.it[0].deformMatrixModified", True)
         if message:
-            showMessage("Sculpt target mode enabled.")
+            log.info("Sculpt target mode enabled.")
     else:
         raise RuntimeError(f"Can not find {targetData.attr}!")
 

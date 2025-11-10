@@ -1,5 +1,6 @@
 from maya import cmds
-from UTILS.ui.showMessage import showMessage
+
+import log
 
 CHANNELBOX_NAME = "mainChannelBox"
 
@@ -70,7 +71,7 @@ def lockAttr(obj: list = [], attr: list = []):
             for a in attr:
                 cmds.setAttr(f"{x}.{a}", l=not lock)
                 cmds.setAttr(f"{x}.{a}", k=lock)
-        showMessage(f"LOCK ATTR: {not lock}".upper())
+        log.success("Lock Attrs = {}", not lock)
 
 
 def getLockedAttr(obj: list = [], userDefine=True):
@@ -105,7 +106,7 @@ def showLockAttr(obj: list = [], userDefine=True):
         hide = not isAverageTrue(bool_list=boolList)
         for x in lockedAttrList:
             cmds.setAttr(x, k=hide)
-        showMessage(f"SHOW HIDE ATTR: {hide}".upper())
+        log.success("Show hide Attrs = {}", hide)
 
 
 def showJointOrient(objList: list = []):
@@ -137,7 +138,8 @@ def showJointOrient(objList: list = []):
     for obj in jointList:
         for a in attr_list:
             cmds.setAttr(f"{obj}.{a}", k=boolValue)
-    showMessage(f"SHOW JOINT ORIENT: {boolValue}".upper())
+    log.success("Show joint orient = {}", boolValue)
+    
 
 
 def showLocalAxes(objList: list = []):
@@ -155,7 +157,7 @@ def showLocalAxes(objList: list = []):
     for obj in objList:
         if cmds.objExists(f"{obj}.displayLocalAxis"):
             cmds.setAttr(f"{obj}.displayLocalAxis", boolValue)
-    showMessage(f"SHOW LOCAL AXES: {boolValue}".upper())
+    log.success("Show local axes = {}", boolValue)
 
 
 def lockPivot(objList: list = []):
@@ -177,4 +179,5 @@ def lockPivot(objList: list = []):
         for attr in PIVOT_ATTR:
             cmds.setAttr(f"{obj}.{attr}", l=boolValue)
 
-    showMessage(f"LOCK PIVOT: {boolValue}".upper())
+    log.success("Lock pivot = {}", boolValue)
+

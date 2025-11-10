@@ -1,20 +1,17 @@
 from maya import cmds as cmds
-from UTILS.ui.showMessage import showMessage
+import log
 
 
 def removeUnknownPlugin():
-    print("REMOVE_UNKNOWN_PLUGIN:")
+    log.debug("REMOVE_UNKNOWN_PLUGIN:")
     unknown_plugin = cmds.unknownPlugin(q=1, l=1)
     if not unknown_plugin:
-        showMessage("REMOVE_UNKNOWN_PLUGIN_DONE")
+        log.warning("None unknown plugin found.")
         return
     for x in unknown_plugin:
         try:
             cmds.unknownPlugin(x, r=1)
-            print(f"    REMOVE: {x}")
+            log.debug("    REMOVE: {}", x)
         except Exception:
-            print(f"  ERROR:{x}")
-    showMessage("REMOVE_UNKNOWN_PLUGIN_DONE")
-
-
-# removeUnknownPlugin()
+            log.warning("    ERROR:{}", x)
+    log.success("REMOVE_UNKNOWN_PLUGIN_DONE")

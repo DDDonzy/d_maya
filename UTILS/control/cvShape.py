@@ -1,16 +1,17 @@
 import yaml
 from dataclasses import dataclass, field
 
+import log
+
 from maya import mel, cmds
 from maya.api import OpenMaya as om
-from UTILS.ui.showMessage import showMessage
 from UTILS.mirrorEnv import MIRROR_CONFIG
 from UTILS.other.choseFile import choseFile
 
 
 @dataclass
 class CurveShapeData(yaml.YAMLObject):
-    """ Save nurbsCurveShapeData 
+    """Save nurbsCurveShapeData
 
     Data:
         shapeName (str): shape's name
@@ -24,7 +25,7 @@ class CurveShapeData(yaml.YAMLObject):
         shapeSetAttrCmd (str): set shape's nurbsCurve data cmd scripts
     """
 
-    yaml_tag = 'CurveShapeData'
+    yaml_tag = "CurveShapeData"
     shapeName: str = "shapeName"
     lineWidth: float = 0
     overrideEnabled: bool = False
@@ -55,7 +56,7 @@ class CurveShapeData(yaml.YAMLObject):
             raise RuntimeError(f"'{shape}' is not nurbsCurve")
 
     def get_shapeData(self, shape_object=None):
-        """ Get shape data"""
+        """Get shape data"""
         self.check_shape(shape_object)
 
         self.shapeName = shape_object
@@ -66,10 +67,7 @@ class CurveShapeData(yaml.YAMLObject):
                 setattr(self, attr, cmds.getAttr(f"{shape_object}.{attr}"))
         self.shapeSetAttrCmd = get_setCvShapeCmd(self.shapeName)
 
-    def set_shapeData(self, shape_object=None,
-                      setShape: bool = True,
-                      setDrawInfo: bool = True,
-                      setLineWidth: bool = True):
+    def set_shapeData(self, shape_object=None, setShape: bool = True, setDrawInfo: bool = True, setLineWidth: bool = True):
         """Set shape data"""
         self.check_shape(shape_object)
         attrs = self.attrs
@@ -79,8 +77,8 @@ class CurveShapeData(yaml.YAMLObject):
             attrs.remove("lineWidth")
             try:
                 cmds.setAttr(f"{shape_object}.{attr}", getattr(self, attr))
-            except:
-                cmds.warning(f"setAttr '{shape_object}.{attr}' fail.")
+            except Exception:
+                log.debug("SetAttr '{}.{}' fail.", shape_object, attr)
 
         if setDrawInfo:
             for attr in attrs:
@@ -92,29 +90,30 @@ class CurveShapeData(yaml.YAMLObject):
                         cmds.setAttr(f"{shape_object}.{attr}", *getattr(self, attr))
                     else:
                         cmds.setAttr(f"{shape_object}.{attr}", getattr(self, attr))
-                except:
-                    cmds.warning(f"setAttr '{shape_object}.{attr}' fail.")
+                except Exception:
+                    log.debug(f"SetAttr '{shape_object}.{attr}' fail.")
 
         if setShape:
             sel_temp = cmds.ls(sl=1)
             cmds.select(shape_object)
             try:
                 mel.eval(self.shapeSetAttrCmd)
-            except:
-                cmds.warning(f"setAttr '{shape_object}.create' fail.")
+            except Exception:
+                log.debug("SetAttr '{}.create' fail.", shape_object)
             cmds.select(sel_temp)
 
 
 @dataclass
 class CurveData(yaml.YAMLObject):
-    """ Save Curve Data
+    """Save Curve Data
     Args:
         args[0] (str): Curve's transform name
     Data:
         transformName (str):  Curve's transform name
         curveShapeDataList (list[CurveShapeData]):  List of shape's CurveShapeData
     """
-    yaml_tag = 'CurveData'
+
+    yaml_tag = "CurveData"
     transformName: str = "transformName"
     curveShapeDataList: list = field(default_factory=list)
 
@@ -137,10 +136,7 @@ class CurveData(yaml.YAMLObject):
         for shape in shape_list:
             self.curveShapeDataList.append(CurveShapeData(shape))
 
-    def set_data(self, transform_obj: str = None,
-                 setShape: bool = True,
-                 setDrawInfo: bool = True,
-                 setLineWidth: bool = True):
+    def set_data(self, transform_obj: str = None, setShape: bool = True, setDrawInfo: bool = True, setLineWidth: bool = True):
         if not transform_obj:
             transform_obj = self.transformName
         if not cmds.objExists(transform_obj):
@@ -164,14 +160,11 @@ class CurveData(yaml.YAMLObject):
 
         if len(self.curveShapeDataList) == len(target_shape_list):
             for i, x in enumerate(self.curveShapeDataList):
-                self.curveShapeDataList[i].set_shapeData(target_shape_list[i],
-                                                         setShape,
-                                                         setDrawInfo,
-                                                         setLineWidth)
+                self.curveShapeDataList[i].set_shapeData(target_shape_list[i], setShape, setDrawInfo, setLineWidth)
 
 
 def getShapes(transform=None, type: str = None):
-    """Get shapes """
+    """Get shapes"""
     if not transform:
         transform = cmds.ls(sl=1)
     if not type:
@@ -196,16 +189,12 @@ def get_setCvShapeCmd(shape_obj):
     mSel.add(f"{shape_obj}.local")
     mPlug: om.MPlug = mSel.getPlug(0)
     cmd_list = mPlug.getSetAttrCmds(useLongNames=True)
-    cmd_str = "".join(cmd_list).replace('\t', ' ').replace(".local", ".create")
+    cmd_str = "".join(cmd_list).replace("\t", " ").replace(".local", ".create")
     return cmd_str
 
 
-def replace_cvShape(source: str,
-                    target: list,
-                    setShape: bool = True,
-                    setDrawInfo: bool = True,
-                    setLineWidth: bool = True):
-    """ replace curve's shapes
+def replace_cvShape(source: str, target: list, setShape: bool = True, setDrawInfo: bool = True, setLineWidth: bool = True):
+    """replace curve's shapes
     Args:
         source (str): source curve object
         target (str): target curve object
@@ -220,18 +209,11 @@ def replace_cvShape(source: str,
 
     cvData = CurveData(source)
     for obj in target:
-        cvData.set_data(obj,
-                        setShape=setShape,
-                        setDrawInfo=setDrawInfo,
-                        setLineWidth=setLineWidth)
+        cvData.set_data(obj, setShape=setShape, setDrawInfo=setDrawInfo, setLineWidth=setLineWidth)
 
 
-def mirror_cvShape(source_list: list = [],
-                   target_list: list = [],
-                   setShape: bool = True,
-                   setDrawInfo: bool = False,
-                   setLineWidth: bool = True):
-    """ Mirror the shape of one side to the other side.
+def mirror_cvShape(source_list: list = [], target_list: list = [], setShape: bool = True, setDrawInfo: bool = False, setLineWidth: bool = True):
+    """Mirror the shape of one side to the other side.
 
     Args:
         object (list, optional): Source transform object list
@@ -259,16 +241,13 @@ def mirror_cvShape(source_list: list = [],
             continue
         # transf cv shape data
         cvData = CurveData(obj)
-        cvData.set_data(transform_obj=otherSide_obj,
-                        setShape=setShape,
-                        setDrawInfo=setDrawInfo,
-                        setLineWidth=setLineWidth)
+        cvData.set_data(transform_obj=otherSide_obj, setShape=setShape, setDrawInfo=setDrawInfo, setLineWidth=setLineWidth)
         # .cv[*].pos[x,y,z] * -1
         obj_shape_list = get_cvShapes(obj)
         otherSide_obj_shape_list = get_cvShapes(otherSide_obj)
         for shape_i, shape in enumerate(obj_shape_list):
             pos_list = cmds.xform(f"{shape}.cv[*]", q=1, t=1, ws=1)
-            pos_ary = [pos_list[i:i+3] for i in range(0, len(pos_list), 3)]
+            pos_ary = [pos_list[i : i + 3] for i in range(0, len(pos_list), 3)]
             for cv_i, cv_pos in enumerate(pos_ary):
                 cv_pos[0] *= -1
                 cmds.xform(f"{otherSide_obj_shape_list[shape_i]}.cv[{cv_i}]", t=cv_pos, ws=1)
@@ -304,7 +283,7 @@ def export_cvData(cv_list=None, path=None, **kwargs):
         return
     with open(path, "w") as f:
         yaml.dump(data_list, f, sort_keys=False, indent=4, width=80)
-    showMessage("Export shapes successful")
+    log.success("Export shapes successful.")
 
 
 def import_cvData(path=None, **kwargs):
@@ -318,7 +297,7 @@ def import_cvData(path=None, **kwargs):
                 data.set_data()
             else:
                 cmds.warning(f"Can not find '{data.transformName}'")
-    showMessage("Import shapes successful")
+    log.success("Import shapes successful.")
 
 
 def mirror_cvShape_cmd():
@@ -326,14 +305,9 @@ def mirror_cvShape_cmd():
     for i, x in enumerate(sel_list):
         if cmds.objectType(x) == "nurbsCurve":
             sel_list[i] = cmds.listRelatives(x, p=1)[0]
-    mirror_cvShape(source_list=sel_list,
-                   target_list=MIRROR_CONFIG.exchange(sel_list),
-                   setShape=1,
-                   setDrawInfo=0,
-                   setLineWidth=1)
-    msg = "Mirror curve shapes."
-    showMessage(MIRROR_CONFIG)
-    showMessage(msg)
+    mirror_cvShape(source_list=sel_list, target_list=MIRROR_CONFIG.exchange(sel_list), setShape=1, setDrawInfo=0, setLineWidth=1)
+    log.info(MIRROR_CONFIG)
+    log.success("Mirror curve shapes.")
 
 
 def replace_cvShape_cmd():
@@ -344,16 +318,14 @@ def replace_cvShape_cmd():
         if cmds.objectType(x) == "nurbsCurve":
             sel_list[i] = cmds.listRelatives(x, p=1)[0]
     replace_cvShape(sel_list[0], sel_list[1:], setShape=1, setDrawInfo=1, setLineWidth=1)
-    msg = "Replace curve shapes."
-    showMessage(msg)
+    log.success("Replace curve shapes.")
 
 
 def select_cvControlVertex_cmd():
     sel_list = cmds.ls(sl=1, o=1)
     select_cvControlVertex(sel_list)
-    msg = "Select curve CV."
-    showMessage(MIRROR_CONFIG)
-    showMessage(msg)
+    log.info(MIRROR_CONFIG)
+    log.success("Select curve CV.")
 
 
 # export_cvData()

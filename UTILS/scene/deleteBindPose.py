@@ -1,6 +1,8 @@
 from maya import cmds
-from UTILS.ui.showMessage import showMessage
+
+import log
+
 
 def deleteBindPose():
     cmds.delete(cmds.ls(type="dagPose"))
-    showMessage("DELETE BIND POSE DONE")
+    log.success("DELETE BIND POSE DONE")

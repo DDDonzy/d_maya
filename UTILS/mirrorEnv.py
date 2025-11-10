@@ -1,10 +1,10 @@
 import maya.cmds as cmds
-from UTILS.ui.showMessage import showMessage
+
+import log
 
 
 class MIRROR_BASE:
-    MIRROR_PAIRS = [("L", "R"),
-                    ("Left", "Right")]
+    MIRROR_PAIRS = [("L", "R"), ("Left", "Right")]
 
     def __init__(self):
         self._current_index: int = 0
@@ -24,7 +24,7 @@ class MIRROR_BASE:
     def switch_mode(self):
         self._current_index += 1
         pair = self.current_pair
-        showMessage(pair)
+        log.info(pair)
         return pair
 
     def exchange(self, name: list) -> list:
@@ -79,10 +79,18 @@ class MIRROR_BASE:
 
 
 def mirror_selected(add=False):
-    exchange_list = MIRROR_CONFIG.exchange(cmds.ls(sl=1))
-    cmds.select(exchange_list, add=add)
-    showMessage(MIRROR_CONFIG)
-    showMessage("Mirror Selected Done")
+    log.info(MIRROR_CONFIG)
+    try:
+        sel_list = cmds.ls(sl=1)
+        if not sel_list:
+            log.warning("No objects selected.")
+            return
+        exchange_list = MIRROR_CONFIG.exchange(sel_list)
+        cmds.select(exchange_list, add=add)
+    except Exception as e:
+        log.error(f"Mirror Selected Failed: {e}")
+        return
+    log.success("Mirror Selected Done")
 
 
 MIRROR_CONFIG = MIRROR_BASE()

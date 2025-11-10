@@ -1,4 +1,5 @@
 
+from UTILS.transform_cmd import align_transform_cmd
 from maya import cmds
 
 from UTILS.control.cvShape import (mirror_cvShape_cmd,
@@ -9,7 +10,7 @@ from UTILS.control.cvShape import (mirror_cvShape_cmd,
 from UTILS.compounds import matrixConstraint, uvPin
 import UTILS.other.attr as attr
 from UTILS.other.zeroPivot import zeroPivot
-from UTILS.transform import reset_transformObjectValue_cmd, alignTransform_cmd
+from UTILS.transform_cmd import reset_transform_cmd
 from UTILS.mirrorEnv import mirror_selected, MIRROR_CONFIG
 from Rainbow.rainbow_UI import rainbow_win
 from UTILS.deform.skin.getSkinJoint import get_skinJoint_cmd
@@ -30,9 +31,9 @@ DELETE_UNKNOWN_PLUGIN_CMD = lambda *args, **kwargs: removeUnknownPlugin()
 DISPLAY_AFFECTED_CMD = lambda *args, **kwargs: cmds.displayPref(displayAffected=not cmds.displayPref(q=1, displayAffected=1))
 
 # transform
-RESET_CMD = lambda *args, **kwargs: reset_transformObjectValue_cmd(transform=True, userDefined=False)
-RESET_UD_CMD = lambda *args, **kwargs: reset_transformObjectValue_cmd(transform=True, userDefined=True)
-ALIGN_TRANSFORM_CMD = lambda *args, **kwargs: alignTransform_cmd()
+RESET_CMD = lambda *args, **kwargs: reset_transform_cmd(transform=True, userDefined=False)
+RESET_UD_CMD = lambda *args, **kwargs: reset_transform_cmd(transform=True, userDefined=True)
+ALIGN_TRANSFORM_CMD = lambda *args, **kwargs: align_transform_cmd()
 LOCK_ATTR_CMD = lambda *args, **kwargs: attr.lockAttr()
 LOCK_PIVOT_CMD = lambda *args, **kwargs: attr.lockPivot()
 SHOW_JOINT_ORIENT_CMD = lambda *args, **kwargs: attr.showJointOrient()

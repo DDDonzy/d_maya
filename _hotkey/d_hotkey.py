@@ -1,7 +1,7 @@
 import os
 from maya import cmds, mel
 from functools import partial
-from UTILS.transform import reset_transformObjectValue_cmd
+from UTILS.transform_cmd import reset_transform_cmd
 from .d_hotbox_ui import addUI
 
 PRESS_COUNT = 0
@@ -55,7 +55,7 @@ def d_hotbox_release():
     global PRESS_COUNT, DISPLAY_COUNT
 
     if PRESS_COUNT != DISPLAY_COUNT:
-        reset_transformObjectValue_cmd(transform=True, userDefined=False)
+        reset_transform_cmd(transform=True, userDefined=False)
     PRESS_COUNT = 0
     DISPLAY_COUNT = 0
 

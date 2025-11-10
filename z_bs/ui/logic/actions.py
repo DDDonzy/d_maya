@@ -1,57 +1,21 @@
 from PySide2 import QtWidgets, QtCore
-
-import z_bs.core.bsFunctions as fnBs
-import z_bs.core.transferBlendShape as bsTransfer
-from z_bs.core.wrap import createWrap, createProximityWrap
-
-import z_bs.ui.logic.treeViewFunction as treeFn
-from z_bs.utils.showMessage import showMessage
-from z_bs.ui.logic.treeViewSelection import get_lasterSelectedTargetData, get_selectionBlendShape, get_selectionTarget, get_selectionTargetData, get_selectionInbetween, get_selectionInbetweenData
-from z_bs.utils.getHistory import get_history, get_shape
+from functools import partial
+from typing import TYPE_CHECKING
 
 from maya import mel, cmds
 
-import time
-from functools import partial, wraps
-from typing import TYPE_CHECKING
+import z_bs.log as log
+import z_bs.core.bsFunctions as fnBs
+import z_bs.core.transferBlendShape as bsTransfer
+from z_bs.core.wrap import createWrap, createProximityWrap
+from z_bs.utils.getHistory import get_history, get_shape
+from z_bs.utils.time_decorator import time_decorator
+import z_bs.ui.logic.treeViewFunction as treeFn
+from z_bs.ui.logic.treeViewSelection import get_lasterSelectedTargetData, get_selectionBlendShape, get_selectionTarget, get_selectionTargetData, get_selectionInbetween, get_selectionInbetweenData
+
 
 if TYPE_CHECKING:
     from z_bs.ui.uiMain import ShapeToolsWidget
-
-
-def MSG_ERROR(action, msg):
-    showTime = 2000
-    color = "#FF0000"
-    message = f"""<font color={color}>{action}</font>
-    <i>{msg}</i>"""
-    print(f"{action}: {msg}")
-    showMessage(message, showTime)
-
-
-def MSG_INFO(action, msg):
-    showTime = 2000
-    color = "#00D900"
-    message = f"""<font color={color}>{action}</font>
-    <i>{msg}</i>"""
-    print(f"{action}: {msg}")
-    showMessage(message, showTime)
-
-
-def timeit(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        start_time = time.perf_counter()
-
-        result = func(*args, **kwargs)
-
-        end_time = time.perf_counter()
-        duration = end_time - start_time
-
-        print(f"Function: '{func.__name__}' Runtimes: {duration:.6f} sec")
-
-        return result
-
-    return wrapper
 
 
 class ActionHandler:
@@ -143,27 +107,27 @@ class ActionHandler:
         """
         target = get_lasterSelectedTargetData()
         if target.targetIdx < 0:
-            MSG_ERROR("ERROR", "Please select a target in shape editor.")
+            log.error("Please select a target in shape editor.")
             return
 
         sel = cmds.ls(sl=1)
         if not cmds.ls(sl=1):
-            MSG_ERROR("ERROR", "No mesh selected.")
+            log.error("No mesh selected.")
             return
         sculptGeo = sel[0]
         shapes = get_shape(sculptGeo)
         if not shapes:
-            MSG_ERROR("ERROR", "Selected object is not a mesh.")
+            log.error("Selected object is not a mesh.")
             return
         shape = shapes[0]
         if not cmds.objectType(shape, isa="mesh"):
-            MSG_ERROR("ERROR", "Selected object is not a mesh.")
+            log.error("Selected object is not a mesh.")
 
         fnBs.add_sculptGeo(sculptGeo=shape, targetData=target, addInbetween=self.ui.addInbetweenCheckBox.isChecked())
 
         if not self.ui.deleteSculptCheckBox.isChecked():
             cmds.delete(sculptGeo)
-        MSG_INFO("Add Sculpt", "Add sculpt target successfully.")
+        log.success("Add sculpt target successfully.")
 
     def auto_set_weight(self):
         """
@@ -233,7 +197,7 @@ class ActionHandler:
             if cmds.objExists(mesh):
                 cmds.select(mesh)
             else:
-                MSG_ERROR("ERROR", f"{mesh} does not exist in the scene.")
+                log.error("'{}' does not exist in the scene.", mesh)
 
     def select_bs_node(self):
         """选择 BlendShape 节点"""
@@ -244,7 +208,7 @@ class ActionHandler:
             if cmds.objExists(bsName):
                 cmds.select(bsName)
             else:
-                MSG_ERROR("ERROR", f"{bsName} does not exist in the scene.")
+                log.error("'{}' does not exist in the scene.", bsName)
 
     def tree_view_expand_or_collapse(self):
         """树视图展开/折叠"""
@@ -341,28 +305,25 @@ class ActionHandler:
         target = get_lasterSelectedTargetData()
         if cmds.objExists(target.attr):
             self.copyDeltaDataTemp = fnBs.copy_delta(target)
-            MSG_INFO("Copy", target.attr)
+            log.success("Copy delta from '{}'.", target.attr)
         else:
-            MSG_ERROR("ERROR", "Please select a BlendShape target.")
-            raise RuntimeError("Please select a BlendShape target.")
+            log.error("Please select a BlendShape target.")
 
     def pasted_delta_cmd(self):
         if self.copyDeltaDataTemp:
             try:
                 targets = get_selectionTargetData(iterTargetInbetween=False)
                 inbetweens = get_selectionInbetweenData()
-                # print(targets)
-                # print(inbetweens)
             except Exception as e:
-                MSG_ERROR("ERROR", "Please select targets in shapeEditor.")
+                log.error("Please select targets in shapeEditor.")
                 raise Exception(e)
             for target in targets + inbetweens:
                 if cmds.objExists(target.attr):
                     fnBs.pasted_delta(target, self.copyDeltaDataTemp)
-                    MSG_INFO("Paste", target.attr)
+                    log.debug("Pasted delta to '{}'.", target.attr)
         else:
-            MSG_ERROR("ERROR", "Please copy a BlendShape target.")
-            raise RuntimeError("Please select a BlendShape target.")
+            log.error("Please copy a BlendShape target.")
+        log.success("Pasted delta successful.")
 
     def transfer_load(self):
         mesh = ""
@@ -376,19 +337,19 @@ class ActionHandler:
         sel = cmds.ls(sl=1)
         if not sel:
             _set()
-            MSG_ERROR("ERROR", "No mesh selected.")
-            raise RuntimeError("No mesh selected.")
+            log.error("No mesh selected.")
+            return
 
         mesh = sel[0]
         shapes = get_shape(mesh)
         if not shapes:
             _set()
-            MSG_ERROR("ERROR", "Selected object is not a mesh.")
-            raise RuntimeError("Selected object is not a mesh.")
+            log.error("Selected object is not a mesh.")
+            return
 
         if not cmds.objectType(shapes[0], isa="mesh"):
-            MSG_ERROR("ERROR", "Selected object is not a mesh.")
-            raise RuntimeError("Selected object is not a mesh.")
+            log.error("Selected object is not a mesh.")
+            return
 
         bs.extend(get_history(mesh, "BlendShape"))
         _set()
@@ -400,25 +361,25 @@ class ActionHandler:
     def getTransferData(self):
         targetMesh = self.ui.transferMeshLineEdit.text()
         if not targetMesh:
-            MSG_ERROR("ERROR", "Please input target mesh name.")
-            raise RuntimeError("Please input target mesh name")
+            log.error("Please input target mesh name.")
+            return
         newBlendShape = None
         if self.ui.transferComboBox.currentIndex() != 0:
             newBlendShape = self.ui.transferComboBox.currentText()
         if not cmds.objExists(targetMesh):
-            MSG_ERROR("ERROR", f"Can not find {targetMesh}")
-            raise RuntimeError(f"Can not find {targetMesh}")
+            log.error("Can not find '{}'", targetMesh)
+            return
         target = get_selectionTarget()
         bs = get_selectionBlendShape()
         if not bs and not target:
-            MSG_ERROR("ERROR", "Please select BlendShape or targets in shapeEdit")
-            raise RuntimeError("Please select BlendShape or targets in shapeEdit")
+            log.error("Please select BlendShape or targets in shapeEdit")
+            return
         if bs and target:
-            MSG_ERROR("ERROR", "Please select BlendShape or targets in shapeEdit, not both")
-            raise RuntimeError("Please select BlendShape or targets in shapeEdit, not both")
+            log.error("Please select BlendShape or targets in shapeEdit, not both")
+            return
         if len(bs) > 1:
-            MSG_ERROR("ERROR", "Please select only one BlendShape node in shapeEdit")
-            raise RuntimeError("Please select only one BlendShape node in shapeEdit")
+            log.error("Please select only one BlendShape node in shapeEdit")
+            return
 
         if target:
             bs = target[0].split(".")[0]
@@ -427,8 +388,8 @@ class ActionHandler:
                 i_bs, idx = i.split(".")
                 idx_list.append(int(idx))
                 if i_bs != bs:
-                    MSG_ERROR("ERROR", "Please select targets from the same BlendShape node")
-                    raise RuntimeError("Please select targets from the same BlendShape node")
+                    log.error("Please select targets from the same BlendShape node")
+                    return
             targetList = fnBs.get_targetDataList(bs)
             transferList = []
             for i in targetList:
@@ -442,14 +403,21 @@ class ActionHandler:
             transferList = fnBs.get_targetDataList(bs)
             return {"BlendShape": bs, "targetList": transferList, "targetMesh": targetMesh, "destinationBlendShape": newBlendShape}
 
-    @timeit
+    @time_decorator
     def transfer(self):
         data = self.getTransferData()
         wrap = self.makeWrapFunctions()
         preview = False
         if cmds.objExists("TRANSFER_DATA") and cmds.objExists("TRANSFER_MESH"):
             preview = ["TRANSFER_DATA", "TRANSFER_MESH"]
-        bsTransfer.transferBlendShape(sourceBlendShape=data["BlendShape"], targetDataList=data["targetList"], destinationMesh=data["targetMesh"], destinationBlendShape=data["destinationBlendShape"], wrapFunction=wrap, preview=preview,)
+        bsTransfer.transferBlendShape(
+            sourceBlendShape=data["BlendShape"],
+            targetDataList=data["targetList"],
+            destinationMesh=data["targetMesh"],
+            destinationBlendShape=data["destinationBlendShape"],
+            wrapFunction=wrap,
+            preview=preview,
+        )
 
     def preview(self):
         if self.transferPreviewObject:
@@ -525,7 +493,7 @@ class ActionHandler:
             if index.isValid():
                 selection_model.select(index, QtCore.QItemSelectionModel.Select | QtCore.QItemSelectionModel.Rows)
 
-    @timeit
+    @time_decorator
     def mirror_bsTarget(self):
         """
         镜像 BlendShape 目标
@@ -549,7 +517,7 @@ class ActionHandler:
             )
             print(f"Mirror: {target.targetName} successfully.")
 
-    @timeit
+    @time_decorator
     def flip_bsTarget(self, autoMirror=False):
         """
         翻转 BlendShape 目标
@@ -585,8 +553,8 @@ class ActionHandler:
 
         output_inbetween = []
         if not inbetween and not target:
-            MSG_ERROR("ERROR", "Please select targets or inbetween in shapeEdit.")
-            raise RuntimeError("Please select targets or inbetween in shapeEdit.")
+            log.error("Please select targets or inbetween in shapeEdit.")
+            return
         for t in target:
             node, targetIdx = t.split(".")
             output_inbetween.extend(fnBs.get_targetInbetween(node, int(targetIdx)))
@@ -597,5 +565,5 @@ class ActionHandler:
 
         for i in output_inbetween:
             fnBs.resetInbetweenDelta(i, False)
-            MSG_INFO("Reset", i.attr)
-            print(f"Reset {i.attr}")
+            log.debug("Reset '{}'", i.attr)
+        log.success("Reset Delta successfully.")

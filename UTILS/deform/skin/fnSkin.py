@@ -4,7 +4,7 @@ import yaml
 from UTILS.dag.getHistory import get_history
 from UTILS.other.choseFile import choseFile
 
-from UTILS.ui.showMessage import showMessage
+import log
 
 from maya.api import OpenMaya as om
 from maya.api import OpenMayaAnim as oma
@@ -115,7 +115,7 @@ def exportWeights(obj=None, path=None, **kwargs):
     with open(path, "w") as f:
         yaml.dump(weights, f, sort_keys=False, indent=4, width=80)
 
-    showMessage("Export weights.")
+    log.success("Export weights.")
 
 
 def importWeights(obj=None, path=None, data=None):
@@ -147,4 +147,4 @@ def importWeights(obj=None, path=None, data=None):
     fnSkin = D_FnSkin(obj)
     fnSkin.auto_setWeights(data)
 
-    showMessage("Import weights.")
+    log.success("Import weights.")

@@ -1,6 +1,9 @@
 import maya.cmds as cmds
 import maya.api.OpenMaya as om
-from UTILS.ui.showMessage import showMessage
+
+import log
+
+import UTILS.apiundo as apiundo
 
 _RAD_TO_DEG = 57.29577951308232  # 180.0 / pi
 _DEG_TO_RAD = 0.017453292519943295  # pi / 180.0
@@ -34,41 +37,9 @@ def UNIT_CONVERT(unit: str = None) -> float:
         unit = cmds.currentUnit(q=1)
     conversion_factors = {"mm": 10.0, "cm": 1.0, "m": 0.01}
     if unit not in conversion_factors:
-        raise ValueError("Invalid unit. Choose from 'mm', 'cm', or 'm'.")
+        log.error("Invalid unit. Choose from 'mm', 'cm', or 'm'.")
+        raise
     return conversion_factors[unit]
-
-
-def mirror_transform(
-    source_obj: str,
-    target_obj: str,
-    mirror_axis: str = "x",
-):
-    """flip source object's world space matrix  as target object's world space matrix
-
-    Args:
-        sour_obj (str): source transform object
-        target_obj (str): target transform object
-        mirror_axis (str, optional): mirror axis. Defaults to "x".
-    """
-    sour_worldMatrix = get_worldMatrix(source_obj)
-    sour_parent_matrix = get_parentMatrix(source_obj)
-    sour_worldMatrix_flip = flip_matrix(sour_worldMatrix, mirror_axis)
-    sour_parent_matrix_flip = flip_matrix(sour_parent_matrix, mirror_axis)
-    target_parent_matrix = get_parentMatrix(target_obj)
-    flip_offsetMatrix = get_offsetMatrix(sour_parent_matrix_flip, target_parent_matrix)
-    set_worldMatrix(target_obj, flip_offsetMatrix * sour_worldMatrix_flip)
-
-
-def flip_transform(
-    source_obj: str,
-    target_obj: str,
-    mirror_axis: str = "x",
-):
-    sour_worldMatrix = get_worldMatrix(source_obj)
-    sour_worldMatrix_flip = flip_matrix(sour_worldMatrix, mirror_axis)
-    set_worldMatrix(target_obj, sour_worldMatrix_flip)
-    for x in "xyz":
-        cmds.setAttr(f"{target_obj}.s{x}", abs(cmds.getAttr(f"{target_obj}.s{x}")))
 
 
 def flip_matrix(worldMatrix: om.MMatrix, mirror_axis: str = "x") -> om.MMatrix:
@@ -162,6 +133,39 @@ def get_parentMatrix(obj: str) -> om.MMatrix:
     return mSel.getDagPath(0).exclusiveMatrix()
 
 
+def set_matrix(obj: str, matrix: om.MMatrix, worldSpace: bool = False, _enable_log: bool = True) -> None:
+    """set maya object's matrix.
+
+    Args:
+        obj (str): maya transform name
+        matrix (om.MMatrix): input local matrix
+    """
+    mSel = om.MSelectionList()
+    try:
+        mSel.add(obj)
+    except RuntimeError as e:
+        log.error("{} (Object = '{}').", e, obj)
+        raise
+
+    mDag_obj: om.MDagPath = mSel.getDagPath(0)
+    original_matrix: om.MMatrix = mDag_obj.inclusiveMatrix()
+
+    fnTransform: om.MFnTransform = om.MFnTransform(mDag_obj)
+
+    local_matrix: om.MMatrix = matrix * mDag_obj.exclusiveMatrixInverse() if worldSpace else matrix
+
+    def do_it():
+        fnTransform.setTransformation(om.MTransformationMatrix(local_matrix))
+
+    def undo_it():
+        fnTransform.setTransformation(om.MTransformationMatrix(original_matrix))
+
+    apiundo.commit(undo_it, do_it)
+    do_it()
+    if _enable_log:
+        log.debug("Set Matrix: '{}' -> {}.", obj, local_matrix)
+
+
 def set_localMatrix(obj: str, matrix: om.MMatrix) -> None:
     """set maya object's local as input matrix
 
@@ -169,12 +173,8 @@ def set_localMatrix(obj: str, matrix: om.MMatrix) -> None:
         obj (str): maya transform name
         matrix (om.MMatrix): input local matrix
     """
-    if cmds.objExists(f"{obj}.jointOrient"):
-        try:
-            cmds.setAttr(f"{obj}.jointOrient", 0, 0, 0)
-        except Exception as e:
-            om.MGlobal.displayWarning(str(e))
-    set_trs(obj, matrix_to_trs(matrix, cmds.getAttr(f"{obj}.rotateOrder")))
+    set_matrix(obj, matrix, worldSpace=False, _enable_log=False)
+    log.debug("Set Local Matrix: '{}' -> {}.", obj, matrix)
 
 
 def set_worldMatrix(obj: str, matrix: om.MMatrix) -> None:
@@ -184,10 +184,8 @@ def set_worldMatrix(obj: str, matrix: om.MMatrix) -> None:
         obj (str): maya transform name
         matrix (om.MMatrix): input world space matrix
     """
-    mSel = om.MSelectionList()
-    mSel.add(obj)
-    localMatrix = matrix * mSel.getDagPath(0).exclusiveMatrixInverse()
-    set_localMatrix(obj, localMatrix)
+    set_matrix(obj, matrix, worldSpace=True, _enable_log=False)
+    log.debug("Set World Matrix: '{}' -> {}.", obj, matrix)
 
 
 def matrix_to_trs(matrix: om.MMatrix, rotateOrder: int = 0) -> list:
@@ -256,53 +254,73 @@ def get_trs(obj: str) -> list:
     return trs
 
 
-def set_trs(obj: str, trs: list) -> None:
+def set_trs(
+    obj: str,
+    trs: list,
+    attrs: list = ["tx", "ty", "tz", "rx", "ry", "rz", "sx", "sy", "sz"],
+) -> None:
     """set maya transform [tx,ty.tz,rx,ry,rz,sx,sy,sz].
     Args:.
         obj (str): maya transform object'name.
-        trs (list): [tx,ty.tz,rx,ry,rz,sx,sy,sz].
+        trs (list): list of [tx,ty.tz,rx,ry,rz,sx,sy,sz]'s value.
+        attrs (list, optional): specify which attributes to set. Defaults to all.
     """
-    attrs = ["tx", "ty", "tz", "rx", "ry", "rz", "sx", "sy", "sz"]
     for i, attr in enumerate(attrs):
         try:
             cmds.setAttr(f"{obj}.{attr}", trs[i])
         except Exception as e:
-            om.MGlobal.displayWarning(str(e))
+            log.debug(e)
+    log.debug("Set TRS: {} -> {}.", obj, trs)
 
 
-def alignTransform(source: str, target: str):
+def align_transform(source: str, target: str):
     """Align target object to source object
 
     Args:
         source (str): align source object
         target (str): align target object
     """
-    set_worldMatrix(target, get_worldMatrix(source))
+    set_matrix(target, get_worldMatrix(source), worldSpace=True, _enable_log=False)
+    log.debug("Align Transform: '{}' -> '{}'", source, target)
 
 
-def alignTransform_cmd():
-    """Align selected objects to the first selected object"""
-    selected_objects = cmds.ls(sl=True)
-    if len(selected_objects) < 2:
-        om.MGlobal.displayError("Please select at least two objects.")
-        return
-    source = selected_objects[0]
-    for target in selected_objects[1:]:
-        alignTransform(source, target)
-    showMessage("Align Complete.")
+def mirror_transform(
+    source_obj: str,
+    target_obj: str,
+    mirror_axis: str = "x",
+):
+    """flip source object's world space matrix  as target object's world space matrix
+
+    Args:
+        sour_obj (str): source transform object
+        target_obj (str): target transform object
+        mirror_axis (str, optional): mirror axis. Defaults to "x".
+    """
+    sour_worldMatrix = get_worldMatrix(source_obj)
+    sour_parent_matrix = get_parentMatrix(source_obj)
+    sour_worldMatrix_flip = flip_matrix(sour_worldMatrix, mirror_axis)
+    sour_parent_matrix_flip = flip_matrix(sour_parent_matrix, mirror_axis)
+    target_parent_matrix = get_parentMatrix(target_obj)
+    flip_offsetMatrix = get_offsetMatrix(sour_parent_matrix_flip, target_parent_matrix)
+    set_worldMatrix(target_obj, flip_offsetMatrix * sour_worldMatrix_flip)
 
 
-def reset_transformObjectValue(obj, transform=True, userDefined=True):
-    def _set_trsv(obj, trs):
-        attrs = ["tx", "ty", "tz", "rx", "ry", "rz", "sx", "sy", "sz", "v"]
-        for i, attr in enumerate(attrs):
-            try:
-                cmds.setAttr(f"{obj}.{attr}", trs[i])
-            except Exception as e:
-                om.MGlobal.displayInfo(str(e))
+def flip_transform(
+    source_obj: str,
+    target_obj: str,
+    mirror_axis: str = "x",
+):
+    sour_worldMatrix = get_worldMatrix(source_obj)
+    sour_worldMatrix_flip = flip_matrix(sour_worldMatrix, mirror_axis)
+    set_worldMatrix(target_obj, sour_worldMatrix_flip)
+    for x in "xyz":
+        cmds.setAttr(f"{target_obj}.s{x}", abs(cmds.getAttr(f"{target_obj}.s{x}")))
 
+
+def reset_transform(obj, transform=True, userDefined=True):
     if transform:
-        _set_trsv(obj, [0, 0, 0, 0, 0, 0, 1, 1, 1, 1])
+        set_matrix(obj, om.MMatrix(), worldSpace=False, _enable_log=False)
+        cmds.setAttr(f"{obj}.visibility", 1)
     if userDefined:
         user_defined = cmds.listAttr(obj, ud=1, u=1)
         if not user_defined:
@@ -312,13 +330,5 @@ def reset_transformObjectValue(obj, transform=True, userDefined=True):
                 v = cmds.addAttr(f"{obj}.{x}", q=1, dv=1)
                 cmds.setAttr(f"{obj}.{x}", v)
             except Exception as e:
-                om.MGlobal.displayInfo(str(e))
-
-
-def reset_transformObjectValue_cmd(transform=True, userDefined=False):
-    for obj in cmds.ls(sl=1):
-        reset_transformObjectValue(obj, transform, userDefined)
-    msg = "Reset value."
-    if userDefined:
-        msg = "Reset value (all)."
-    showMessage(msg)
+                log.debug(e)
+    log.debug("Reset Transform: '{}'", obj)
