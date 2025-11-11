@@ -1,20 +1,38 @@
+from functools import partial
+
 from log.config import logger, level_filter, DEFAULT_FORMAT
-
-from maya import cmds
-
 from log.mayaScriptLineColor import updateLineEditStyleSheet
+
+from maya import cmds, utils
 
 __all__ = ["uiMessage"]
 
 
 class MessageHandler:
     def __init__(self):
+        self._message_list = []
+        self._job_scheduled = False
+
         self._is_muted = False
         self.pos = "botLeft"
         self.fade = True
         self.fadeInTime = 100
         self.fadeStayTime = 1000
         self.fadeOutTime = 100
+
+    def _show_messages(self):
+        if not self._message_list:
+            self._job_scheduled = False
+            return
+
+        self._job_scheduled = False
+
+        for showMessage_command in self._message_list:
+            try:
+                showMessage_command()
+            except Exception:
+                pass
+        self._message_list.clear()
 
     def show(self, msg, *args, **kwargs):
         """Displays a message in the viewport unless muted."""
@@ -26,7 +44,8 @@ class MessageHandler:
         fadeStayTime = kwargs.get("fadeStayTime") or kwargs.get("fst") or self.fadeStayTime
         fadeOutTime = kwargs.get("fadeOutTime") or kwargs.get("fot") or self.fadeOutTime
 
-        cmds.inViewMessage(
+        showMessage_command = partial(
+            cmds.inViewMessage,
             amg=msg,
             pos=pos,
             fade=fade,
@@ -34,6 +53,13 @@ class MessageHandler:
             fadeStayTime=fadeStayTime,
             fadeOutTime=fadeOutTime,
         )
+        self._message_list.append(showMessage_command)
+        if len(self._message_list) > 3:
+            self._message_list.pop(0)
+
+        if not self._job_scheduled:
+            self._job_scheduled = True
+            utils.executeDeferred(self._show_messages)
 
     def mute(self, mute_status: bool = None):
         """Sets the mute status."""
