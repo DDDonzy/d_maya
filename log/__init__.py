@@ -1,4 +1,4 @@
-from log.config import logger, debug, info, warning, error, critical, exception, catch, success, trace, set_level
+from log.config import logger, debug, info, warning, error, exception, catch, success, trace, notice, set_level
 
 
 __all__ = [
@@ -7,7 +7,7 @@ __all__ = [
     "info",
     "warning",
     "error",
-    "critical",
+    "notice",
     "exception",
     "catch",
     "success",

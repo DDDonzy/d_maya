@@ -3,6 +3,7 @@ from loguru import logger
 import sys
 import os
 from enum import Enum
+from functools import partial
 
 # Public API
 __all__ = [
@@ -11,7 +12,6 @@ __all__ = [
     "info",
     "warning",
     "error",
-    "critical",
     "exception",
     "catch",
     "success",
@@ -29,10 +29,15 @@ DEFAULT_FORMAT = (
     "<cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>"
 )
 # fmt: on
-
+logger.level("TRACE", color="<cyan><dim><bold>")
+try:
+    logger.level("NOTICE", no=22, color="<cyan><bold>")
+except Exception:
+    pass
+logger.notice = partial(logger.log, "NOTICE")
 
 # filter
-log_filter = {"level": "INFO"}
+log_filter = {"level": "TRACE"}
 
 
 def level_filter(record):
@@ -43,6 +48,7 @@ def level_filter(record):
 
 # Clear existing handlers
 logger.remove()
+#
 
 # Console
 LOG_CONSOLE_ID = None
@@ -88,15 +94,17 @@ def set_level(level: int):
     logger.success(f"Log level set to '{level}'")
 
 
+trace = logger.trace
 debug = logger.debug
 info = logger.info
+notice = logger.notice
+success = logger.success
 warning = logger.warning
 error = logger.error
-critical = logger.critical
-success = logger.success
 exception = logger.exception
 catch = logger.catch
-trace = logger.trace
+
+
 
 if __name__ == "__main__":
     info("Test")

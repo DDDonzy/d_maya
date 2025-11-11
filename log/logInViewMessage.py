@@ -1,8 +1,8 @@
-from log.config import logger, level_filter, DEFAULT_FORMAT, CONSOLE_ID
+from log.config import logger, level_filter, DEFAULT_FORMAT
 
 from maya import cmds
-from maya.api.OpenMaya import MGlobal
 
+from log.mayaScriptLineColor import updateLineEditStyleSheet
 
 __all__ = ["uiMessage"]
 
@@ -54,13 +54,13 @@ except Exception:
     pass
 
 LEVEL_COLORS = {
-    "TRACE": "#29b8db",  # Grey
-    "DEBUG": "#3b8eea",  # Light Grey
-    "INFO": "#e5e5e5",  # White
-    "SUCCESS": "#23d18b",  # Green
-    "WARNING": "#f5f543",  # Amber/Orange
-    "ERROR": "#f14c4c",  # Red
-    "CRITICAL": "#f14c4c",  # Dark Red
+    "TRACE": "#29b8db",
+    "DEBUG": "#3b8eea",
+    "INFO": "#e5e5e5",
+    "NOTICE": "#b0b0b0",
+    "SUCCESS": "#23d18b",
+    "WARNING": "#f5f543",
+    "ERROR": "#f14c4c",
 }
 
 uiMessage = MessageHandler()
@@ -70,25 +70,18 @@ uiMessage = MessageHandler()
 def popup_sink(message):
     level_name = message.record["level"].name
     log_message = message.record["message"]
-    if level_name == "ERROR" or level_name == "CRITICAL":
-        MGlobal.displayError(message)
-    elif level_name == "WARNING":
-        MGlobal.displayWarning(message)
-    else:
-        MGlobal.displayInfo(message)
-
-    if level_name in ("INFO", "SUCCESS", "WARNING", "ERROR", "CRITICAL"):
+    if message.record["level"].no >= logger.level("NOTICE").no:
         color = LEVEL_COLORS.get(level_name, "#FFFFFF")
         msg = f'<font color="{color}">{level_name}: {log_message}</font>'
+        updateLineEditStyleSheet(level_name)
         uiMessage.show(msg)
 
 
 MAYA_CONSOLE_ID = None
 if ui_maya:
-    logger.remove(CONSOLE_ID)
     MAYA_CONSOLE_ID = logger.add(
         popup_sink,
-        level="TRACE",
+        level="NOTICE",
         filter=level_filter,
         format=DEFAULT_FORMAT,
     )
