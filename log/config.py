@@ -41,8 +41,8 @@ def level_filter(record):
     return record["level"].no >= current_level_no
 
 
+# Clear existing handlers
 logger.remove()
-_handlers = logger._core.handlers.copy()
 
 # Console
 LOG_CONSOLE_ID = None
@@ -55,7 +55,7 @@ if CONSOLE:
     )
 
 
-# file
+# File
 LOG_FILE_ID = None
 if LOG_FILE_PATH:
     if os.path.exists(LOG_FILE_PATH):
