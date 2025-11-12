@@ -37,11 +37,21 @@ except Exception:
 logger.notice = partial(logger.log, "NOTICE")
 
 # filter
-log_filter = {"level": "TRACE"}
+_log_filter = {"level": "TRACE"}
+
+
+def set_level(level: int):
+    if isinstance(level, int):
+        level = LogLevel(level).name
+    else:
+        logger.error("Invalid level type. Must be str or int.")
+        return
+    _log_filter["level"] = level
+    logger.success(f"Log level set to '{level}'")
 
 
 def level_filter(record):
-    filter_level = log_filter["level"]
+    filter_level = _log_filter["level"]
     current_level_no = logger.level(filter_level).no
     return record["level"].no >= current_level_no
 
@@ -84,15 +94,7 @@ class LogLevel(Enum):
     CRITICAL = 5
 
 
-def set_level(level: int):
-    if isinstance(level, int):
-        level = LogLevel(level).name
-    else:
-        logger.error("Invalid level type. Must be str or int.")
-        return
-    log_filter["level"] = level
-    logger.success(f"Log level set to '{level}'")
-
+# set_level(1)
 
 trace = logger.trace
 debug = logger.debug
@@ -103,7 +105,6 @@ warning = logger.warning
 error = logger.error
 exception = logger.exception
 catch = logger.catch
-
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 from functools import partial
 
 from log.config import logger, level_filter, DEFAULT_FORMAT
-from log.mayaScriptLineColor import updateLineEditStyleSheet
+from log.mayaScriptLineColor import ScriptEditorStyler
 
 from maya import cmds, utils
 
@@ -90,24 +90,24 @@ LEVEL_COLORS = {
 }
 
 uiMessage = MessageHandler()
+scriptStyler = ScriptEditorStyler()
 
 
 # Maya inViewMessage
 def popup_sink(message):
     level_name = message.record["level"].name
     log_message = message.record["message"]
-    if message.record["level"].no >= logger.level("NOTICE").no:
-        color = LEVEL_COLORS.get(level_name, "#FFFFFF")
-        msg = f'<font color="{color}">{level_name}: {log_message}</font>'
-        updateLineEditStyleSheet(level_name)
-        uiMessage.show(msg)
+    color = LEVEL_COLORS.get(level_name, "#FFFFFF")
+    msg = f'<font color="{color}">{level_name}: {log_message}</font>'
+    scriptStyler.update(level_name)
+    uiMessage.show(msg)
 
 
 MAYA_CONSOLE_ID = None
 if ui_maya:
     MAYA_CONSOLE_ID = logger.add(
         popup_sink,
-        level="NOTICE",
+        level="TRACE",
         filter=level_filter,
         format=DEFAULT_FORMAT,
     )

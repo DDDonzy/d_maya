@@ -1,9 +1,20 @@
+import cProfile
+import pstats
 import log
-for x in range(200):
-    log.trace("dsafdsaf")
-    log.debug("dsafdsaf")
-    log.info("dsafdsafa")
-    log.notice("sdafdsa")
-    log.success("sdfasfdas")
-    log.warning("dsafdsaf")
-    log.error("dsafdsaf")
+
+def main():
+    for x in range(10000):
+
+        log.debug(x)
+
+
+if __name__ == "__main__":
+    profiler = cProfile.Profile()
+
+    profiler.enable()
+    main()
+    profiler.disable()
+
+    stats = pstats.Stats(profiler)
+    stats.sort_stats('tottime')
+    stats.print_stats(30)
