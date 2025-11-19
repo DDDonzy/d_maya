@@ -22,6 +22,8 @@ __all__ = [
 CONSOLE = True
 LOG_FILE_PATH = None  # r"t:/d_maya/log.log"
 
+
+# format
 # fmt: off
 DEFAULT_FORMAT = (
     "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | "
@@ -29,6 +31,12 @@ DEFAULT_FORMAT = (
     "<cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>"
 )
 # fmt: on
+def formatter(record):
+    """Custom formatter to handle multi-line messages."""
+    record["message"] = record["message"].strip() + "\n"
+    return DEFAULT_FORMAT
+
+
 logger.level("TRACE", color="<cyan><dim><bold>")
 try:
     logger.level("NOTICE", no=22, color="<cyan><bold>")
@@ -40,6 +48,13 @@ logger.notice = partial(logger.log, "NOTICE")
 _log_filter = {"level": "TRACE"}
 
 
+def level_filter(record):
+    filter_level = _log_filter["level"]
+    current_level_no = logger.level(filter_level).no
+    return record["level"].no >= current_level_no
+
+
+# set level
 def set_level(level: int):
     if isinstance(level, int):
         level = LogLevel(level).name
@@ -48,12 +63,6 @@ def set_level(level: int):
         return
     _log_filter["level"] = level
     logger.success(f"Log level set to '{level}'")
-
-
-def level_filter(record):
-    filter_level = _log_filter["level"]
-    current_level_no = logger.level(filter_level).no
-    return record["level"].no >= current_level_no
 
 
 # Clear existing handlers
@@ -67,7 +76,7 @@ if CONSOLE:
         sys.stdout,  # 输出到控制台
         level="TRACE",  # 最低日志级别
         filter=level_filter,
-        format=DEFAULT_FORMAT,
+        format=formatter,
     )
 
 
@@ -80,7 +89,7 @@ if LOG_FILE_PATH:
         LOG_FILE_PATH,  # 输出到文件
         level="TRACE",  # 最低日志级别
         filter=level_filter,
-        format=DEFAULT_FORMAT,
+        format=formatter,
     )
 
 

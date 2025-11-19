@@ -1,5 +1,3 @@
-from functools import partial
-
 from maya import cmds, utils
 import maya.OpenMayaUI as omui
 

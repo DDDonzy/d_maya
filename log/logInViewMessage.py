@@ -103,13 +103,20 @@ def popup_sink(message):
     uiMessage.show(msg)
 
 
+# Maya inViewMessage format
+def maya_inViewMessage_formatter(record):
+    """Custom formatter to handle multi-line messages."""
+    record["message"] = record["message"].strip()
+    return DEFAULT_FORMAT
+
+
 MAYA_CONSOLE_ID = None
 if ui_maya:
     MAYA_CONSOLE_ID = logger.add(
         popup_sink,
-        level="TRACE",
+        level="INFO",
         filter=level_filter,
-        format=DEFAULT_FORMAT,
+        format=maya_inViewMessage_formatter,
     )
 
 if __name__ == "__main__":

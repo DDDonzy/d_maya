@@ -148,7 +148,7 @@ def set_matrix(obj: str, matrix: om.MMatrix, worldSpace: bool = False, _enable_l
         raise
 
     mDag_obj: om.MDagPath = mSel.getDagPath(0)
-    original_matrix: om.MMatrix = mDag_obj.inclusiveMatrix()
+    original_matrix: om.MMatrix = om.MFnTransform(mDag_obj).transformation().asMatrix()
 
     fnTransform: om.MFnTransform = om.MFnTransform(mDag_obj)
 
@@ -320,15 +320,16 @@ def flip_transform(
 def reset_transform(obj, transform=True, userDefined=True):
     if transform:
         set_matrix(obj, om.MMatrix(), worldSpace=False, _enable_log=False)
-        cmds.setAttr(f"{obj}.visibility", 1)
+        try:
+            cmds.setAttr(f"{obj}.visibility", 1)
+        except Exception as e:
+            log.warning(e)
     if userDefined:
-        user_defined = cmds.listAttr(obj, ud=1, u=1)
-        if not user_defined:
-            return
+        user_defined = cmds.listAttr(obj, ud=1, u=1) or []
         for x in user_defined:
             try:
                 v = cmds.addAttr(f"{obj}.{x}", q=1, dv=1)
                 cmds.setAttr(f"{obj}.{x}", v)
             except Exception as e:
-                log.debug(e)
-    log.debug("Reset Transform: '{}'", obj)
+                log.warning(e)
+    log.debug("Reset Transform: '{}' successful.", obj)
