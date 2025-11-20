@@ -33,7 +33,7 @@ DEFAULT_FORMAT = (
 # fmt: on
 def formatter(record):
     """Custom formatter to handle multi-line messages."""
-    record["message"] = record["message"].strip() + "\n"
+    record["message"] = record["message"].strip("\n") + "\n"
     return DEFAULT_FORMAT
 
 
