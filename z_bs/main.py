@@ -4,7 +4,8 @@ from importlib import reload
 
 
 if __name__ == "__main__":
-    bsUI.ShapeToolsWidget().show()
+    ui = bsUI.ShapeToolsWidget()
+    ui.show()
 
     # debugUI=  _debugUI.WidgetDebugTool(ui)
     # debugUI.show()

@@ -1,26 +1,26 @@
 
-from UTILS.transform_cmd import align_transform_cmd
+from mutils.transform_cmd import align_transform_cmd
 from maya import cmds
 
-from UTILS.control.cvShape import (mirror_cvShape_cmd,
+from mutils.control.cvShape import (mirror_cvShape_cmd,
                                    replace_cvShape_cmd,
                                    select_cvControlVertex_cmd,
                                    import_cvData,
                                    export_cvData)
-from UTILS.compounds import matrixConstraint, uvPin
-import UTILS.other.attr as attr
-from UTILS.other.zeroPivot import zeroPivot
-from UTILS.transform_cmd import reset_transform_cmd
-from UTILS.mirrorEnv import mirror_selected, MIRROR_CONFIG
+from mutils.compounds import matrixConstraint, uvPin
+import mutils.other.attr as attr
+from mutils.other.zeroPivot import zeroPivot
+from mutils.transform_cmd import reset_transform_cmd
+from mutils.mirrorEnv import mirror_selected, MIRROR_CONFIG
 from Rainbow.rainbow_UI import rainbow_win
-from UTILS.deform.skin.getSkinJoint import get_skinJoint_cmd
-from UTILS.deform.skin.copyWeightsOneToN import copyWeightsOneToN_cmd
-from UTILS.deform.skin.updateBindSkin import updateBindSkin_cmd
-from UTILS.rename import showUI as renameShowUI
-from UTILS.scene.deleteBindPose import deleteBindPose
-from UTILS.scene.removeNamespace import removeNamespace
-from UTILS.scene.removeUnknownPlugin import removeUnknownPlugin
-from UTILS.dag.selectHierarchy import selectHierarchy_cmd
+from mutils.deform.skin.getSkinJoint import get_skinJoint_cmd
+from mutils.deform.skin.copyWeightsOneToN import copyWeightsOneToN_cmd
+from mutils.deform.skin.updateBindSkin import updateBindSkin_cmd
+from mutils.rename import showUI as renameShowUI
+from mutils.scene.deleteBindPose import deleteBindPose
+from mutils.scene.removeNamespace import removeNamespace
+from mutils.scene.removeUnknownPlugin import removeUnknownPlugin
+from mutils.dag.selectHierarchy import selectHierarchy_cmd
 
 #
 RENAME_CMD = lambda *args, **kwargs: renameShowUI()

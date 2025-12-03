@@ -3,7 +3,7 @@ from maya import cmds
 from z_bs.core.wrap import createWrap, createProximityWrap
 from z_bs.core.bsFunctions import TargetData, add_target, add_sculptGeo, get_targetDataList, get_bsBaseGeometry, create_blendShapeNode, get_targetIndex
 from z_bs.utils.duplicateMesh import duplicate_mesh
-from z_bs.utils.assetCallback import AssetCallback
+from mutils.create.assetCallback import AssetCallback
 
 from functools import partial
 from typing import Dict, List

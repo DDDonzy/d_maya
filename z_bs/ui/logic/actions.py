@@ -4,14 +4,14 @@ from typing import TYPE_CHECKING
 
 from maya import mel, cmds
 
-import z_bs.log as log
+import log as log
 import z_bs.core.bsFunctions as fnBs
 import z_bs.core.transferBlendShape as bsTransfer
 from z_bs.core.wrap import createWrap, createProximityWrap
-from z_bs.utils.getHistory import get_history, get_shape
 from z_bs.utils.time_decorator import time_decorator
 import z_bs.ui.logic.treeViewFunction as treeFn
 from z_bs.ui.logic.treeViewSelection import get_lasterSelectedTargetData, get_selectionBlendShape, get_selectionTarget, get_selectionTargetData, get_selectionInbetween, get_selectionInbetweenData
+from mutils.dag.getHistory import get_history, get_shape
 
 
 if TYPE_CHECKING:
