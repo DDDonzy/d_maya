@@ -1,5 +1,5 @@
 
-from mutils.transform_cmd import align_transform_cmd
+from mutils.transform import align_transform_cmd
 from maya import cmds
 
 from mutils.control.cvShape import (mirror_cvShape_cmd,
@@ -10,7 +10,7 @@ from mutils.control.cvShape import (mirror_cvShape_cmd,
 from mutils.compounds import matrixConstraint, uvPin
 import mutils.other.attr as attr
 from mutils.other.zeroPivot import zeroPivot
-from mutils.transform_cmd import reset_transform_cmd
+from mutils.transform import reset_transform_cmd
 from mutils.mirrorEnv import mirror_selected, MIRROR_CONFIG
 from Rainbow.rainbow_UI import rainbow_win
 from mutils.deform.skin.getSkinJoint import get_skinJoint_cmd

@@ -1,7 +1,7 @@
 import os
 from maya import cmds, mel
 from functools import partial
-from mutils.transform_cmd import reset_transform_cmd
+from mutils.transform import reset_transform_cmd
 from .d_hotbox_ui import addUI
 
 PRESS_COUNT = 0
