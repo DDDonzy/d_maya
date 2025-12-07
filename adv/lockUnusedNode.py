@@ -1,5 +1,5 @@
 from maya import cmds
-from UTILS.dag.iterHierarchy import IterHierarchy
+from mutils.dag.iterHierarchy import IterHierarchy
 
 
 def isController(obj):

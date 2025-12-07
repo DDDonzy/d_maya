@@ -1,6 +1,9 @@
-from maya import cmds, mel
-import z_bs.core.bsFunctions as fnBs
 from typing import List
+
+from maya import cmds, mel
+
+import z_bs.core.bsFunctions as fnBs
+
 
 
 def get_lastSelection():

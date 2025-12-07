@@ -1,6 +1,6 @@
 from maya import cmds
 from z_bs.utils.duplicateMesh import duplicate_mesh
-from z_bs.utils.getHistory import get_shape, get_orig
+from mutils.dag.getHistory import get_shape, get_orig
 
 
 def createWrap(*args, **kwargs):

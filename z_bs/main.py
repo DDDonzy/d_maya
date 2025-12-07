@@ -1,10 +1,11 @@
 import z_bs.ui.uiMain as bsUI
-from z_bs._tools import _debugUI
+from z_bs._tools import debugUI
 from importlib import reload
 
 
 if __name__ == "__main__":
-    bsUI.ShapeToolsWidget().show()
+    ui = bsUI.ShapeToolsWidget()
+    ui.show()
 
     # debugUI=  _debugUI.WidgetDebugTool(ui)
     # debugUI.show()

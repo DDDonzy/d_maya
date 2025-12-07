@@ -53,7 +53,7 @@ from mocap.ue_skeleton_bake_to_adv_rig.fn_bake_animation import bakeAnimations
 from mocap.gameExportInfo import get_exportData, create_exportData
 from mocap.mayapy import init_maya
 from mocap.suppress_maya_logs import suppress_maya_logs
-from UTILS.scene.removeUnknownPlugin import removeUnknownPlugin
+from mutils.scene.removeUnknownPlugin import removeUnknownPlugin
 
 
 def clean_unknown_data():
