@@ -119,7 +119,7 @@ def get_worldMatrix(obj: str) -> om.MMatrix:
     return mSel.getDagPath(0).inclusiveMatrix()
 
 
-def get_parentMatrix(obj: str) -> om.MMatrix:
+def get_parentMatrix(obj: str, offsetParentMatrix=False) -> om.MMatrix:
     """get object's parent object's world space matrix
 
     Args:
@@ -130,7 +130,9 @@ def get_parentMatrix(obj: str) -> om.MMatrix:
     """
     mSel = om.MSelectionList()
     mSel.add(obj)
-    return mSel.getDagPath(0).exclusiveMatrix()
+    if offsetParentMatrix:
+        return mSel.getDagPath(0).exclusiveMatrix()
+    return mSel.getDagPath(0).pop().inclusiveMatrix()
 
 
 def set_matrix(obj: str, matrix: om.MMatrix, worldSpace: bool = False, _enable_log: bool = True) -> None:
