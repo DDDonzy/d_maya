@@ -46,10 +46,9 @@ import subprocess
 from pathlib import Path
 
 
-def install_requirements(requirements_file):
+def install_requirements(requirements_file, executable_path=sys.executable):
     """# Runs the 'pip install -r' command to install packages."""
-    mayapy = Path(sys.executable).parent / "mayapy.exe"
-    command = [str(mayapy), "-m", "pip", "install", "-r", str(requirements_file)]
+    command = [str(executable_path), "-m", "pip", "install", "-r", str(requirements_file)]
 
     print(f"{'':=^{120}}")
     print(f"Executing command: \n{' '.join(command)}")
@@ -101,7 +100,7 @@ def install_package():
         return
 
     # Run the installation process
-    if install_requirements(requirements_file):
+    if install_requirements(requirements_file, Path(sys.executable).parent / "mayapy.exe"):
         import site
         import importlib
 
