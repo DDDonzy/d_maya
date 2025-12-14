@@ -24,6 +24,13 @@ d_hotBox_RMB = "d_hotbox_RMB"
 # To work around this, the system's default hotkey is temporarily changed to the middle mouse button, and it is switched back to the right mouse button after the menu is called.
 
 
+def toggle_joint_option():
+    panel = cmds.getPanel(withFocus=True)
+    if cmds.getPanel(typeOf=panel) == "modelPanel":
+        is_visible = cmds.modelEditor(panel, query=True, joints=True)
+        cmds.modelEditor(panel, edit=True, joints=(not is_visible))
+
+
 def createUI():
 
     if cmds.popupMenu(d_hotBox_LMB, q=1, ex=1):
@@ -60,7 +67,6 @@ def d_hotbox_release():
         reset_transform_cmd(transform=True, userDefined=False)
     PRESS_COUNT = 0
     DISPLAY_COUNT = 0
-
     deleteUI()
 
 

@@ -17,7 +17,7 @@ runTimeCommand
 	-helpUrl ""
 	-hotkeyCtx ""
 	-commandLanguage "python"
-	-command ("from _hotkey.d_hotkey import d_hotbox_press,d_hotbox_release\nd_hotbox_release()")
+	-command ("import _hotkey.d_hotkey\n_hotkey.d_hotkey.d_hotbox_release()")
 	hotbox_release;
 
 runTimeCommand
@@ -32,22 +32,7 @@ runTimeCommand
 	-helpUrl ""
 	-hotkeyCtx ""
 	-commandLanguage "python"
-	-command ("from _hotkey.d_hotFunctions import RESET_UD_CMD\nRESET_UD_CMD()")
-	reset_all_attrs;
-
-runTimeCommand
-	-label ""
-	-annotation ""
-	-longAnnotation ""
-	-category "Custom Scripts"
-	-image ""
-	-tags ""
-	-keywords ""
-	-plugin ""
-	-helpUrl ""
-	-hotkeyCtx ""
-	-commandLanguage "python"
-	-command ("from _hotkey.d_hotFunctions import TOGGLE_JOINT_OPTION_CMD\nTOGGLE_JOINT_OPTION_CMD()")
+	-command ("import _hotkey.d_hotkey\n_hotkey.d_hotkey.toggle_joint_option()")
 	toggle_joint_option;
 
 runTimeCommand
@@ -62,7 +47,22 @@ runTimeCommand
 	-helpUrl ""
 	-hotkeyCtx ""
 	-commandLanguage "python"
-	-command ("from _hotkey.d_hotkey import d_hotbox_press,d_hotbox_release\nd_hotbox_press()")
+	-command ("import _hotkey.d_hotkey\n_hotkey.d_hotkey.reset_transform_cmd(transform=True, userDefined=True)")
+	reset_all_attrs;
+
+runTimeCommand
+	-label ""
+	-annotation ""
+	-longAnnotation ""
+	-category "Custom Scripts"
+	-image ""
+	-tags ""
+	-keywords ""
+	-plugin ""
+	-helpUrl ""
+	-hotkeyCtx ""
+	-commandLanguage "python"
+	-command ("import _hotkey.d_hotkey\n_hotkey.d_hotkey.d_hotbox_press()")
 	hotbox_press;
 
 //
@@ -93,10 +93,10 @@ nameCommand
 	hotbox_releaseNameCommand;
 
 nameCommand
-	-annotation "RESET_UD_CMDNameCommand"
+	-annotation "resetAllNameCommand"
 	-sourceType "mel"
 	-command ("reset_all_attrs")
-	RESET_UD_CMDNameCommand;
+	resetAllNameCommand;
 
 nameCommand
 	-annotation "toggle_joint_optionNameCommand"
@@ -117,26 +117,26 @@ hotkeySet -source "Maya_Default" -current hotkey;
 hotkey -keyShortcut "3" -alt -name ("toggle_joint_optionNameCommand");
 hotkey -keyShortcut "`" -name ("hotbox_pressNameCommand");
 hotkey -keyShortcut "`" -releaseName ("hotbox_releaseNameCommand");
-hotkey -keyShortcut "c" -sht -name ("CopyVertexWeightsNameCommand");
-hotkey -keyShortcut "c" -sht -releaseName ("");
-hotkey -keyShortcut "`" -ctl -name ("RESET_UD_CMDNameCommand");
 hotkey -keyShortcut "v" -sht -name ("PasteVertexWeightsNameCommand");
 hotkey -keyShortcut "v" -sht -releaseName ("");
-hotkeyCtx -type "Editor" -addClient "outlinerPanel";
-hotkeyCtx -type "Editor" -addClient "posePanel";
-hotkeyCtx -type "Editor" -addClient "nodeEditorPanel";
-hotkeyCtx -type "Editor" -addClient "polyTexturePlacementPanel";
-hotkeyCtx -type "Editor" -addClient "graphEditor";
-hotkeyCtx -type "Editor" -addClient "shapePanel";
-hotkeyCtx -type "Editor" -addClient "timeEditorPanel";
-hotkeyCtx -type "Editor" -addClient "profilerPanel";
+hotkey -keyShortcut "c" -sht -name ("CopyVertexWeightsNameCommand");
+hotkey -keyShortcut "c" -sht -releaseName ("");
+hotkey -keyShortcut "`" -ctl -name ("resetAllNameCommand");
 hotkeyCtx -type "Editor" -addClient "hyperGraphPanel";
+hotkeyCtx -type "Editor" -addClient "polyTexturePlacementPanel";
+hotkeyCtx -type "Editor" -addClient "timeEditorPanel";
+hotkeyCtx -type "Editor" -addClient "posePanel";
+hotkeyCtx -type "Editor" -addClient "shapePanel";
+hotkeyCtx -type "Editor" -addClient "profilerPanel";
 hotkeyCtx -type "Editor" -addClient "hyperShadePanel";
-hotkeyCtx -type "Tool" -addClient "SymmetrizeUVBrush";
+hotkeyCtx -type "Editor" -addClient "outlinerPanel";
+hotkeyCtx -type "Editor" -addClient "nodeEditorPanel";
+hotkeyCtx -type "Editor" -addClient "graphEditor";
+hotkeyCtx -type "Tool" -addClient "polyCutUV";
+hotkeyCtx -type "Tool" -addClient "texCutContext";
 hotkeyCtx -type "Tool" -addClient "sculptMeshCache";
 hotkeyCtx -type "Tool" -addClient "Unfold3DBrush";
 hotkeyCtx -type "Tool" -addClient "texSculptCacheContext";
-hotkeyCtx -type "Tool" -addClient "bpDraw";
 hotkeyCtx -type "Tool" -addClient "xgmIGBrush";
-hotkeyCtx -type "Tool" -addClient "texCutContext";
-hotkeyCtx -type "Tool" -addClient "polyCutUV";
+hotkeyCtx -type "Tool" -addClient "bpDraw";
+hotkeyCtx -type "Tool" -addClient "SymmetrizeUVBrush";
