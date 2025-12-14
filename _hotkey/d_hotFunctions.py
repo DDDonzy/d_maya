@@ -1,22 +1,23 @@
+
 from functools import partial
-from mutils.transform import align_transform_cmd
+
 from maya import cmds
 
-from mutils.control.cvShape import mirror_cvShape_cmd, replace_cvShape_cmd, select_cvControlVertex_cmd, import_cvData, export_cvData
-from mutils.compounds import matrixConstraint, uvPin
-import mutils.other.attr as attr
-from mutils.other.zeroPivot import zeroPivot
-from mutils.transform import reset_transform_cmd
-from mutils.mirrorEnv import mirror_selected, MIRROR_CONFIG
+import m_utils.other.attr as attr
+from m_utils.control.cvShape import mirror_cvShape_cmd, replace_cvShape_cmd, select_cvControlVertex_cmd, import_cvData, export_cvData
+from m_utils.compounds import matrixConstraint, uvPin
+from m_utils.other.zeroPivot import zeroPivot
+from m_utils.transform import reset_transform_cmd, align_transform_cmd
+from m_utils.mirrorEnv import mirror_selected, MIRROR_CONFIG
+from m_utils.deform.skin.getSkinJoint import get_skinJoint_cmd
+from m_utils.deform.skin.copyWeightsOneToN import copyWeightsOneToN_cmd
+from m_utils.deform.skin.updateBindSkin import updateBindSkin_cmd
+from m_utils.rename import showUI as renameShowUI
+from m_utils.scene.deleteBindPose import deleteBindPose
+from m_utils.scene.removeNamespace import removeNamespace
+from m_utils.scene.removeUnknownPlugin import removeUnknownPlugin
+from m_utils.dag.selectHierarchy import selectHierarchy_cmd
 from Rainbow.rainbow_UI import rainbow_win
-from mutils.deform.skin.getSkinJoint import get_skinJoint_cmd
-from mutils.deform.skin.copyWeightsOneToN import copyWeightsOneToN_cmd
-from mutils.deform.skin.updateBindSkin import updateBindSkin_cmd
-from mutils.rename import showUI as renameShowUI
-from mutils.scene.deleteBindPose import deleteBindPose
-from mutils.scene.removeNamespace import removeNamespace
-from mutils.scene.removeUnknownPlugin import removeUnknownPlugin
-from mutils.dag.selectHierarchy import selectHierarchy_cmd
 
 
 #

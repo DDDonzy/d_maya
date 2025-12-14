@@ -1,8 +1,9 @@
 import os
 from maya import cmds, mel
 from functools import partial
-from mutils.transform import reset_transform_cmd
-from .d_hotbox_ui import addUI
+
+from m_utils.transform import reset_transform_cmd
+from _hotkey.d_hotbox_ui import addUI
 
 PRESS_COUNT = 0
 DISPLAY_COUNT = 0
@@ -11,7 +12,7 @@ DISPLAY_COUNT = 0
 sys_hotBox = "modelPanel4ObjectPop"
 hotkeyFileName = "hotkey.mhk"
 
-hotkeyPath = os.path.join(os.path.dirname(__file__), hotkeyFileName).replace('\\', '/')
+hotkeyPath = os.path.join(os.path.dirname(__file__), hotkeyFileName).replace("\\", "/")
 
 
 d_hotBox_LMB = "d_hotbox_LMB"
@@ -21,6 +22,7 @@ d_hotBox_RMB = "d_hotbox_RMB"
 # Custom menu hotkeys are set to allow both left and right mouse buttons to activate the menu, so two menus are added.
 # However, in Maya, the right mouse button setting doesn't work because the system's default hotkey is assigned to it, and system defaults have the highest priority.
 # To work around this, the system's default hotkey is temporarily changed to the middle mouse button, and it is switched back to the right mouse button after the menu is called.
+
 
 def createUI():
 

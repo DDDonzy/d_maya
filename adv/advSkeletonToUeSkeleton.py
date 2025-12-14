@@ -106,7 +106,7 @@ a = {
 }
 
 
-import mutils.compounds.matrixConstraint as matrixConstraint
+import m_utils.compounds.matrixConstraint as matrixConstraint
 for k,v in a.items():
     con = matrixConstraint(v["driver"],k,mo=1)
     cmds.setAttr(con.inputOffsetMatrix,v["offsetMatrix"],type="matrix")

@@ -1,6 +1,6 @@
 import maya.cmds as cmds
 from maya.api import OpenMaya as om
-from mutils.dag.getHistory import get_history
+from m_utils.dag.getHistory import get_history
 
 
 def copyWeightsOneToN(sour_mesh, target_mesh_list, **kwargs):

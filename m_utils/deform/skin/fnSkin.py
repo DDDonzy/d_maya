@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 import yaml
 
-from mutils.dag.getHistory import get_history
-from mutils.other.choseFile import choseFile
+from m_utils.dag.getHistory import get_history
+from m_utils.other.choseFile import choseFile
 
 import log
 

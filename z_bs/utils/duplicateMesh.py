@@ -1,7 +1,7 @@
 from maya import cmds
 from maya.api import OpenMaya as om
 
-from mutils import apiundo
+from m_utils import apiundo
 
 
 class DuplicateMeshCommand:

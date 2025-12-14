@@ -1,6 +1,6 @@
-from mutils.dag.getHistory import get_orig, get_shape, get_obj
+from m_utils.dag.getHistory import get_orig, get_shape, get_obj
 from maya.api import OpenMaya as om
-import mutils.apiundo as apiundo
+import m_utils.apiundo as apiundo
 from maya import cmds
 
 

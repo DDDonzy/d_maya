@@ -11,7 +11,7 @@ from z_bs.core.wrap import createWrap, createProximityWrap
 from z_bs.utils.time_decorator import time_decorator
 import z_bs.ui.logic.treeViewFunction as treeFn
 from z_bs.ui.logic.treeViewSelection import get_lasterSelectedTargetData, get_selectionBlendShape, get_selectionTarget, get_selectionTargetData, get_selectionInbetween, get_selectionInbetweenData
-from mutils.dag.getHistory import get_history, get_shape
+from m_utils.dag.getHistory import get_history, get_shape
 
 
 if TYPE_CHECKING:

@@ -53,7 +53,7 @@ from mocap.ue_skeleton_bake_to_adv_rig.fn_bake_animation import bakeAnimations
 from mocap.gameExportInfo import get_exportData, create_exportData
 from mocap.mayapy import init_maya
 from mocap.suppress_maya_logs import suppress_maya_logs
-from mutils.scene.removeUnknownPlugin import removeUnknownPlugin
+from m_utils.scene.removeUnknownPlugin import removeUnknownPlugin
 
 
 def clean_unknown_data():
@@ -92,9 +92,9 @@ def loadHandPose():
 
     if r"C:\Users\Donzy\Downloads\studiolibrary-2.20.2\src" not in sys.path:
         sys.path.insert(0, r"C:\Users\Donzy\Downloads\studiolibrary-2.20.2\src")
-    import mutils  # type: ignore
+    import m_utils  # type: ignore
 
-    mutils.loadPose(r"C:\Users\Donzy\Desktop\pose\Hero\Hand\Hand_R_Weapon.pose\pose.json", namespaces=":", key=True)
+    m_utils.loadPose(r"C:\Users\Donzy\Desktop\pose\Hero\Hand\Hand_R_Weapon.pose\pose.json", namespaces=":", key=True)
 
 
 def timeSliderBookmark(name: str, time: List[int], color: List[float], priority: int = 1) -> str:

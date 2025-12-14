@@ -1,6 +1,6 @@
 import maya.cmds as cmds
 
-from mutils.create.createBase import CreateBase, CreateNode
+from m_utils.create.createBase import CreateBase, CreateNode
 
 
 class decomMatrix(CreateBase):

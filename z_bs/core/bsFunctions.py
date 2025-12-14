@@ -5,10 +5,10 @@ from dataclasses import dataclass
 from maya import cmds
 from maya.api import OpenMaya as om
 
-import mutils.apiundo as apiundo
+import m_utils.apiundo as apiundo
 
 import log as log
-from mutils.mirrorEnv import MIRROR_BASE
+from m_utils.mirrorEnv import MIRROR_BASE
 
 @dataclass
 class TargetData:

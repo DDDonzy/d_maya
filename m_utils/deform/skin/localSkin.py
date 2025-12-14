@@ -1,11 +1,11 @@
-from mutils.dag.getHistory import get_history
+from m_utils.dag.getHistory import get_history
 from maya import cmds
-from mutils.create.createBase import CreateBase
-from mutils.apiundo import commit
-from mutils.compounds import matrixConstraint
+from m_utils.create.createBase import CreateBase
+from m_utils.apiundo import commit
+from m_utils.compounds import matrixConstraint
 
 from maya import cmds
-from mutils.create.createBase import CreateBase
+from m_utils.create.createBase import CreateBase
 
 
 class skinClusterToLocal(CreateBase):

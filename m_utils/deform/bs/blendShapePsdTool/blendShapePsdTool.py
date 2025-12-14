@@ -1,6 +1,6 @@
 from maya import cmds
 from maya.api import OpenMaya as om
-from mutils.create.assetCallback import AssetCallback
+from m_utils.create.assetCallback import AssetCallback
 
 import yaml
 from dataclasses import dataclass

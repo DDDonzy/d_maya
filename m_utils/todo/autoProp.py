@@ -55,9 +55,9 @@ from maya.api import OpenMaya as om
 from maya import cmds
 
 
-from mutils.deform.skin.fnSkin import D_FnSkin, WeightsData
-from mutils.todo.get_softComponent import get_soft_selection_component
-from mutils.dag.getHistory import get_history
+from m_utils.deform.skin.fnSkin import D_FnSkin, WeightsData
+from m_utils.todo.get_softComponent import get_soft_selection_component
+from m_utils.dag.getHistory import get_history
 
 
 def autoProp(autoSkin=True):

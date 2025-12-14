@@ -1,14 +1,14 @@
-from mutils.compounds.decomMatrix import decomMatrix
-from mutils.compounds.matrixConstraint import matrixConstraint
-from mutils.transform import *
+from m_utils.compounds.decomMatrix import decomMatrix
+from m_utils.compounds.matrixConstraint import matrixConstraint
+from m_utils.transform import *
 
 
 import maya.cmds as cmds
 import maya.api.OpenMaya as om
 import maya.api.OpenMayaAnim as oma
 
-from mutils.create.createBase import CreateBase, CreateNode
-from mutils.create.generateUniqueName import generateUniqueName
+from m_utils.create.createBase import CreateBase, CreateNode
+from m_utils.create.generateUniqueName import generateUniqueName
 
 import json
 

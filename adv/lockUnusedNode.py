@@ -1,5 +1,5 @@
 from maya import cmds
-from mutils.dag.iterHierarchy import IterHierarchy
+from m_utils.dag.iterHierarchy import IterHierarchy
 
 lockAttr = {
     "visibility": {"channelBox": False, "lock": True, "keyable": False},

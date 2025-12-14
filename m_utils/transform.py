@@ -3,7 +3,7 @@ import maya.api.OpenMaya as om
 
 import log
 
-import mutils.apiundo as apiundo
+import m_utils.apiundo as apiundo
 
 _RAD_TO_DEG = 57.29577951308232  # 180.0 / pi
 _DEG_TO_RAD = 0.017453292519943295  # pi / 180.0

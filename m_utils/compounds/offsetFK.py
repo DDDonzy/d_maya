@@ -1,6 +1,6 @@
 import maya.cmds as cmds
-from mutils.compounds.decomMatrix import decomMatrix
-from mutils.create.createBase import CreateBase, CreateNode
+from m_utils.compounds.decomMatrix import decomMatrix
+from m_utils.create.createBase import CreateBase, CreateNode
 
 class offsetFK(CreateBase):
     """Create offset fk system"""

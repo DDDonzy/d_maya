@@ -1,7 +1,7 @@
 import maya.cmds as cmds
-from mutils.compounds.decomMatrix import decomMatrix
-from mutils.create.createBase import CreateBase, CreateNode
-from mutils.transform import get_offsetMatrix, get_worldMatrix
+from m_utils.compounds.decomMatrix import decomMatrix
+from m_utils.create.createBase import CreateBase, CreateNode
+from m_utils.transform import get_offsetMatrix, get_worldMatrix
 
 
 class matrixConstraint(CreateBase):

@@ -5,8 +5,8 @@ import log
 
 from maya import mel, cmds
 from maya.api import OpenMaya as om
-from mutils.mirrorEnv import MIRROR_CONFIG
-from mutils.other.choseFile import choseFile
+from m_utils.mirrorEnv import MIRROR_CONFIG
+from m_utils.other.choseFile import choseFile
 
 
 @dataclass

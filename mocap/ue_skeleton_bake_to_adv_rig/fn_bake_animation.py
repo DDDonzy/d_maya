@@ -51,9 +51,9 @@ Animation Baking Core Functions
 
 from maya import cmds
 from maya.api import OpenMaya as om
-from mutils.transform import get_worldMatrix, get_relativesMatrix
-from mutils.compounds import matrixConstraint
-from mutils.create.assetCallback import AssetCallback
+from m_utils.transform import get_worldMatrix, get_relativesMatrix
+from m_utils.compounds import matrixConstraint
+from m_utils.create.assetCallback import AssetCallback
 
 # 烘焙 ADV IK 向量控制器映射表
 bake_pv_dict = {

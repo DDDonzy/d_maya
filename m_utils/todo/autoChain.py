@@ -1,9 +1,9 @@
 import numpy as np
 from maya import cmds
 from maya.api import OpenMaya as om
-from mutils.other.attr import lockAttr
-from mutils.create.createBase import CreateBase
-from mutils.ui.showMessage import muteMessage
+from m_utils.other.attr import lockAttr
+from m_utils.create.createBase import CreateBase
+from m_utils.ui.showMessage import muteMessage
 
 
 def get_neighbor_edgeVtx(mesh):

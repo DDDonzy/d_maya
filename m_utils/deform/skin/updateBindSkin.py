@@ -1,5 +1,5 @@
 from maya import cmds
-from mutils.dag.getHistory import get_history
+from m_utils.dag.getHistory import get_history
 
 
 def updateBindSkin(node_skin):

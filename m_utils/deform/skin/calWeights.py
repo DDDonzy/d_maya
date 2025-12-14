@@ -3,8 +3,8 @@ import numpy as np
 from maya import cmds
 from maya.api import OpenMaya as om
 
-from mutils.bSpline import CurveData
-from mutils.skin.fnSkin import D_FnSkin, weightsData
+from m_utils.bSpline import CurveData
+from m_utils.skin.fnSkin import D_FnSkin, weightsData
 
 
 class CalWeights(D_FnSkin):
