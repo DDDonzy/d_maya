@@ -30,12 +30,17 @@ x = (vector_b - vector_a).normal()
 z = (x ^ y).normal()
 matrix = [*x, 0, *y, 0, *z, 0, 0, 0, 0, 0]
 
+
 mel.eval("teCreateRelocator(-1)")
-loc = cmds.ls(sl=1)[0]
+loc_clip = cmds.ls(sl=1)[0]
+loc = cmds.spaceLocator(name=loc_clip.replace("Relocator", "Reworld"))[0]
+cmds.parentConstraint(loc,loc_clip,mo=1)
 cmds.xform(loc, t=vector_a * -1, ws=1)
 
 
-loc_ro = cmds.spaceLocator(name=loc.replace("Relocator", "Rerotate"))[0]
+
+
+loc_ro = cmds.spaceLocator(name=loc_clip.replace("Relocator", "Rerotate"))[0]
 cmds.setAttr(f"{loc_ro}.localScale", 500, 500, 500)
 cmds.setAttr(f"{loc_ro}.r", *matrix_to_trs(om.MMatrix(matrix))[3:6])
 cmds.parentConstraint(loc_ro, loc, mo=1)

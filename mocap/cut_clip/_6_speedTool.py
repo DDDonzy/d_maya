@@ -26,7 +26,7 @@ class UESpeed:
     # sprint
     sprint = 700
     sprint_accel = 1000
-    sprint_decel = 2000
+    sprint_decel = 1000
 
     # run speeds
     run_f = 500
@@ -36,7 +36,7 @@ class UESpeed:
     run_rp = 450
     run_rn = 400
     run_accel = 1000
-    run_decel = 2000
+    run_decel = 1000
 
     # walk speeds
     walk_f = 170
@@ -103,13 +103,14 @@ def fn_loop(
         "frames_range": [initial_frame, initial_frame + loop_frames],
         "motion_data": [],
     }
+
     for frame in range(loop_frames + 1):
         current_time = frame / float(sample_fps)
         # 位移 = 初始位置 + 速度 * 时间
-        position = initial_pos + speed * current_time
+        position = (abs(initial_pos) + speed * current_time) * (1 if initial_pos >= 0 else -1)
         motion_info["motion_data"].append([initial_frame + frame, position])
-        
-    timeSliderBookmark(name="loop", time=[initial_frame, initial_frame + loop_frames+1], color=[0.6, 0.263, 0.431])
+
+    timeSliderBookmark(name="loop", time=[initial_frame, initial_frame + loop_frames + 1], color=[0.6, 0.263, 0.431])
     return motion_info
 
 
@@ -160,13 +161,13 @@ def fn_accel(
         current_pos = initial_pos + initial_speed * current_time + 0.5 * accel * current_time**2
         motion_info["motion_data"].append([initial_frame + frame, current_pos])
 
-    timeSliderBookmark(name="accel", time=[initial_frame, initial_frame + accel_frames+1], color=[0.67, 0.235, 0.235])
+    timeSliderBookmark(name="accel", time=[initial_frame, initial_frame + accel_frames + 1], color=[0.67, 0.235, 0.235])
     return motion_info
 
 
 def fn_decel(
     initial_speed=500.0,
-    decel=2000.0,
+    decel=1000.0,
     min_speed=0.0,
     initial_pos=0.0,
     initial_frame=0,
@@ -177,7 +178,7 @@ def fn_decel(
 
     Args:
         initial_speed (float, optional): 初始速度。默认为 500.0。
-        decel (float, optional): 减速度（正数）。默认为 2000.0。
+        decel (float, optional): 减速度（正数）。默认为 1000.0。
         min_speed (float, optional): 减速后的最小速度。默认为 0.0。
         initial_pos (float, optional): 初始位置。默认为 0.0。
         initial_frame (int, optional): 初始帧。默认为 0。
@@ -207,7 +208,7 @@ def fn_decel(
         current_pos = initial_pos + initial_speed * current_time - 0.5 * decel * (current_time**2)
         motion_info["motion_data"].append([initial_frame + frame, current_pos])
 
-    timeSliderBookmark(name="decel", time=[initial_frame, initial_frame + decel_frames+1], color=[0.749, 0.4, 0.235])
+    timeSliderBookmark(name="decel", time=[initial_frame, initial_frame + decel_frames + 1], color=[0.749, 0.4, 0.235])
     return motion_info
 
 
@@ -284,6 +285,7 @@ def run_script_with_ui_values(attr, is_positive, max_speed, accel, decel):
     print(attr, is_positive, max_speed, accel, decel)
     if not cmds.objExists("rootMotion"):
         cmds.spaceLocator(name="rootMotion")
+        cmds.setAttr("rootMotion.localScale", *(100, 100, 100))
 
     loop_frames = abs(int(cmds.playbackOptions(q=1, sst=1)) - int(cmds.playbackOptions(q=1, set=1)))
     start_frame = int(cmds.playbackOptions(q=1, sst=1))
@@ -449,7 +451,7 @@ def create_simple_ui():
 
     ui_elements["accel_field"] = cmds.floatFieldGrp(label="Accel", numberOfFields=1, value1=1000.0, columnWidth2=[80, 100])
 
-    ui_elements["decel_field"] = cmds.floatFieldGrp(label="Decel", numberOfFields=1, value1=2000.0, columnWidth2=[80, 100])
+    ui_elements["decel_field"] = cmds.floatFieldGrp(label="Decel", numberOfFields=1, value1=1000.0, columnWidth2=[80, 100])
 
     cmds.setParent(main_layout)
 
@@ -461,10 +463,10 @@ def create_simple_ui():
 
     # --- Row 1: Run ---
     cmds.rowLayout(numberOfColumns=4)
-    cmds.button(label="Run_F", w=60, command=functools.partial(set_speed_values, 500, 1000, 2000))
-    cmds.button(label="Run_LRP", w=60, command=functools.partial(set_speed_values, 450, 1000, 2000))
-    cmds.button(label="Run_LRN", w=60, command=functools.partial(set_speed_values, 400, 1000, 2000))
-    cmds.button(label="Run_B", w=60, command=functools.partial(set_speed_values, 400, 1000, 2000))
+    cmds.button(label="Run_F", w=60, command=functools.partial(set_speed_values, 500, 1000, 1000))
+    cmds.button(label="Run_LRP", w=60, command=functools.partial(set_speed_values, 450, 1000, 1000))
+    cmds.button(label="Run_LRN", w=60, command=functools.partial(set_speed_values, 400, 1000, 1000))
+    cmds.button(label="Run_B", w=60, command=functools.partial(set_speed_values, 400, 1000, 1000))
     cmds.setParent(main_layout)
 
     # --- Row 2: Walk ---
@@ -479,7 +481,7 @@ def create_simple_ui():
     cmds.rowLayout(numberOfColumns=1, adjustableColumn=1)
     # 让这个按钮填满宽度
     full_width = (btn_width * 4) + (btn_spacing * 3)
-    cmds.button(label="Sprint", command=functools.partial(set_speed_values, 700, 1000, 2000), width=full_width)
+    cmds.button(label="Sprint", command=functools.partial(set_speed_values, 700, 1000, 1000), width=full_width)
     cmds.setParent(main_layout)
 
     # --- 最终运行按钮 ---
