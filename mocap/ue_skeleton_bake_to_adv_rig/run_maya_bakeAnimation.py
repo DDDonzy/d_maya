@@ -181,7 +181,10 @@ if __name__ == "__main__":
             # 不加载Reference打开CLIP文件，获取动画片段数据
             with suppress_maya_logs():
                 log.debug(f"Open File: '{maya_file}'")
-                cmds.file(maya_file, open=1, force=1, loadNoReferences=True)
+                try:
+                    cmds.file(maya_file, open=1, force=1, loadNoReferences=True)
+                except RuntimeError as e:
+                    log.trace(e)
                 log.debug("File Opened")
 
             log.debug("Get clip data...")

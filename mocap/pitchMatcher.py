@@ -19,8 +19,8 @@ kPluginNodeId = om.MTypeId(0x0007F7F8)
 
 
 class _PitchMatcher(om.MPxNode):
-    aInputCurve = None
-    aSpeedCurve = None
+    aInput = None
+    aSpeed = None
     aStartFrame = None
     aOutput = None
 
@@ -30,15 +30,15 @@ class _PitchMatcher(om.MPxNode):
     def calculate_simulation(
         self,
         fn_input: oma.MFnAnimCurve,
-        fn_speed: oma.MFnAnimCurve | None,
         start_frame: int,
         current_frame: int,
+        fn_speed: oma.MFnAnimCurve | float = 1.0,
     ) -> float:
         """
         计算输入曲线在指定帧区间的积分结果。
         Args:
             fn_input (oma.MFnAnimCurve): 输入动画曲线的函数集。
-            fn_speed (oma.MFnAnimCurve | None): 速度动画曲线的函数集；若为 None，则速度视为 1.0。
+            fn_speed (oma.MFnAnimCurve | float): 速度动画曲线的函数集，默认值为 1.0。
             start_frame (int): 起始帧（包含）。
             current_frame (int): 当前帧（包含）。
         Returns:
@@ -46,18 +46,22 @@ class _PitchMatcher(om.MPxNode):
         """
         if fn_input is None:
             return 0.0
+        time_unit = om.MTime.uiUnit()
         accumulated_pos = 0.0
-        prev_input_val = fn_input.evaluate(om.MTime(start_frame))
+        prev_input_val = fn_input.evaluate(om.MTime(start_frame, time_unit))
+        print(start_frame + 1, current_frame + 1)
         for t in range(start_frame + 1, current_frame + 1):
-            m_time = om.MTime(t)
+            m_time = om.MTime(t, time_unit)
             curr_input_val = fn_input.evaluate(m_time)
-            if fn_speed:
+            if isinstance(fn_speed, oma.MFnAnimCurve):
                 speed_val = fn_speed.evaluate(m_time)
+            elif isinstance(fn_speed, (int, float)):
+                speed_val = fn_speed
             else:
                 speed_val = 1.0
             accumulated_pos += (curr_input_val - prev_input_val) * speed_val
             prev_input_val = curr_input_val
-        initial_offset = fn_input.evaluate(om.MTime(start_frame))
+        initial_offset = fn_input.evaluate(om.MTime(start_frame, time_unit))
         return initial_offset + accumulated_pos
 
     def get_input_fn(self, logical_index: int) -> oma.MFnAnimCurve:
@@ -68,7 +72,7 @@ class _PitchMatcher(om.MPxNode):
         Returns:
             oma.MFnAnimCurve: 连接到该元素的动画曲线函数集；若未连接则可能返回 None。
         """
-        attr_plug = om.MPlug(self.thisMObject(), self.aInputCurve)
+        attr_plug = om.MPlug(self.thisMObject(), self.aInput)
         element_plug = attr_plug.elementByLogicalIndex(logical_index)
         return self.get_connected_anim_curve(element_plug)
 
@@ -93,35 +97,36 @@ class _PitchMatcher(om.MPxNode):
         if plug.attribute() != self.aOutput:
             return
 
-        start_frame_val = data.inputValue(self.aStartFrame).asTime().value
+        start_frame_val = data.inputValue(self.aStartFrame).asFloat()
         current_time_val = oma.MAnimControl.currentTime().value
         start_frame = int(start_frame_val)
         current_frame = int(current_time_val)
-        speed_plug = om.MPlug(self.thisMObject(), self.aSpeedCurve)
+        speed_plug = om.MPlug(self.thisMObject(), self.aSpeed)
         fn_speed_curve = self.get_connected_anim_curve(speed_plug)
+        if not fn_speed_curve:
+            fn_speed_curve = data.inputValue(self.aSpeed).asFloat()
 
-        if plug.isElement():
+        if plug.isElement:
             # call single
             index = plug.logicalIndex()
             fn_input = self.get_input_fn(index)
-            result = self.calculate_simulation(fn_input, fn_speed_curve, start_frame, current_frame)
+            result = self.calculate_simulation(fn_input, start_frame, current_frame, fn_speed_curve)
             out_handle = data.outputValue(plug)
             out_handle.setFloat(result)
             data.setClean(plug)
 
         else:
             # cal all
-            input_array_handle = data.inputArrayValue(self.aInputCurve)
+            input_array_handle: om.MArrayDataHandle = data.inputArrayValue(self.aInput)
             output_array_handle = data.outputArrayValue(self.aOutput)
             builder = output_array_handle.builder()
 
             for i in range(len(input_array_handle)):
-                input_array_handle.jumpToElement(i)
-                index = input_array_handle.elementIndex()
-
+                input_array_handle.jumpToPhysicalElement(i)
+                index = input_array_handle.elementLogicalIndex()
                 fn_input = self.get_input_fn(index)
 
-                result = self.calculate_simulation(fn_input, fn_speed_curve, start_frame, current_frame)
+                result = self.calculate_simulation(fn_input, start_frame, current_frame, fn_speed_curve)
 
                 out_element = builder.addElement(index)
                 out_element.setFloat(result)
@@ -136,36 +141,35 @@ class _PitchMatcher(om.MPxNode):
     @classmethod
     def initialize(cls):
         nAttr = om.MFnNumericAttribute()
-        uAttr = om.MFnUnitAttribute()
 
-        cls.aInputCurve = nAttr.create("inputCurve", "inC", om.MFnNumericData.kFloat, 0.0)
+        cls.aInput = nAttr.create("input", "i", om.MFnNumericData.kFloat, 0.0)
         nAttr.readable = False
-        nAttr.storable = False
+        nAttr.storable = True
         nAttr.array = True
         nAttr.indexMatters = True
         nAttr.disconnectBehavior = om.MFnAttribute.kDelete
 
-        cls.aSpeedCurve = nAttr.create("speedCurve", "spC", om.MFnNumericData.kFloat, 0.0)
+        cls.aSpeed = nAttr.create("speed", "s", om.MFnNumericData.kFloat, 1.0)
         nAttr.readable = False
         nAttr.keyable = True
 
-        cls.aStartFrame = uAttr.create("startFrame", "sf", om.MFnUnitAttribute.kTime, 0.0)
-        uAttr.keyable = True
-        uAttr.storable = True
+        cls.aStartFrame = nAttr.create("startFrame", "sf", om.MFnNumericData.kFloat, 0.0)
+        nAttr.keyable = True
+        nAttr.storable = True
 
-        cls.aOutput = nAttr.create("output", "out", om.MFnNumericData.kFloat, 0.0)
+        cls.aOutput = nAttr.create("output", "o", om.MFnNumericData.kFloat, 0.0)
         nAttr.writable = False
-        nAttr.storable = False
+        nAttr.storable = True
         nAttr.array = True
         nAttr.usesArrayDataBuilder = True
 
-        cls.addAttribute(cls.aInputCurve)
-        cls.addAttribute(cls.aSpeedCurve)
+        cls.addAttribute(cls.aInput)
+        cls.addAttribute(cls.aSpeed)
         cls.addAttribute(cls.aStartFrame)
         cls.addAttribute(cls.aOutput)
 
-        cls.attributeAffects(cls.aInputCurve, cls.aOutput)
-        cls.attributeAffects(cls.aSpeedCurve, cls.aOutput)
+        cls.attributeAffects(cls.aInput, cls.aOutput)
+        cls.attributeAffects(cls.aSpeed, cls.aOutput)
         cls.attributeAffects(cls.aStartFrame, cls.aOutput)
 
 
@@ -191,8 +195,30 @@ def install():
     cmds.loadPlugin(__file__.replace(".pyc", ".py"), quiet=True)
 
 
-def pitchMatcher(*args, **kwargs):
+def createPitchMatcherNode(*args, **kwargs):
     if not cmds.pluginInfo(Path(__file__).stem, query=True, loaded=True):
         install()
     node = cmds.createNode("pitchMatcher", *args, **kwargs)
     return node
+
+
+def pitchMatcher():
+    attrs = ["*:IKLeg_R.tx", "*:IKLeg_L.tx", "*:RootX_M.tx"]
+    node = createPitchMatcherNode()
+
+    for i, x in enumerate(attrs):
+        print(cmds.objExists(x))
+        p = cmds.listConnections(x, p=1) or []
+        cmds.connectAttr(p[0], f"{node}.input[{i}]")
+        cmds.connectAttr(f"{node}.output[{i}]", x, f=1)
+
+
+def bakeAnimation():
+    attrs = ["*:IKLeg_R.tx", "*:IKLeg_L.tx", "*:RootX_M.tx"]
+    timeRange = (oma.MAnimControl.animationStartTime().value, oma.MAnimControl.animationEndTime().value)
+    cmds.bakeResults(
+        attrs,
+        t=timeRange,
+        sb=1,
+        simulation=1,
+    )
