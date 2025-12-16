@@ -72,6 +72,8 @@ def get_exportData(exportNode=EXPORT_NODE):
                                     "R_180": (4146.0, 4337.0)}}
     """
     export_data = OrderedDict()
+    if not cmds.objExists(exportNode):
+        return export_data
     export_data["exportPath"] = cmds.getAttr(f"{exportNode}.exportPath")
     export_data["exportName"] = cmds.getAttr(f"{exportNode}.exportFilename")
 

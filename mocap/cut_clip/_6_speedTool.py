@@ -29,13 +29,13 @@ class UESpeed:
     sprint_decel = 1000
 
     # run speeds
-    run_f = 500
-    run_b = 400
-    run_lp = 450
+    run_f = 475
+    run_b = 320
+    run_lp = 400
     run_ln = 400
-    run_rp = 450
+    run_rp = 400
     run_rn = 400
-    run_accel = 1000
+    run_accel = 800
     run_decel = 1000
 
     # walk speeds

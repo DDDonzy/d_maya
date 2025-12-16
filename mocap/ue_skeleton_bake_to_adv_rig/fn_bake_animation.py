@@ -207,6 +207,17 @@ def cal_pv(name="xxx"):
     return start, mid, end, loc_result
 
 
+def find_object_ignoring_namespace(obj_name):
+    """
+    查找物体，忽略 Namespace 层级
+    """
+    # 查找所有 transform 节点
+    all_transforms = cmds.ls(type="transform")
+    # 筛选
+    result = [o for o in all_transforms if o == obj_name or o.endswith(":" + obj_name)]
+    return result
+
+
 def pre_bakeAnimations(
     target_namespace="TestCharacter_rig",
     source_namespace="Retarget_M_Blade_Stand_Idle",
@@ -270,18 +281,20 @@ def pre_bakeAnimations(
         bake_list = list(bake_pv_dict.keys()) + list(bake_dict.keys())
         bake_list = [f"{target_namespace}:{x}*" if target_namespace else x for x in bake_list]
         # root motion
-        try:
-            matrixConstraint(f"{source_namespace}:rootMotion", f"{target_namespace}:FKRootControls_M", mo=False)
-            bake_list.append(f"{target_namespace}:FKRootControls_M" if target_namespace else "FKRootControls_M")
-        except Exception:
-            print(f"{source_namespace}:rootMotion")
-            print(f"{target_namespace}:FKRootControls_M")
 
-            raise
+        rootMotion = find_object_ignoring_namespace("rootMotion")
+        if rootMotion:
+            matrixConstraint(rootMotion[0], f"{target_namespace}:FKRootGround_M", mo=False)
+            bake_list.append(f"{target_namespace}:FKRootGround_M" if target_namespace else "FKRootGround_M")
+
 
     return asset, bake_list
 
 
+import log
+
+
+@log.catch
 def bakeAnimations(target_namespace, source_namespace, time=(0, 1000)):
     asset, bake_list = pre_bakeAnimations(
         target_namespace=target_namespace,

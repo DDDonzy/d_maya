@@ -53,8 +53,6 @@ from mocap.ue_skeleton_bake_to_adv_rig.fn_bake_animation import bakeAnimations
 from mocap.gameExportInfo import get_exportData, create_exportData
 from mocap.mayapy import init_maya
 from mocap.suppress_maya_logs import suppress_maya_logs
-from m_utils.scene.removeUnknownPlugin import removeUnknownPlugin
-
 
 def clean_unknown_data():
     """清理场景中的 unknown 节点和未加载的引用"""
@@ -92,9 +90,9 @@ def loadHandPose():
 
     if r"C:\Users\Donzy\Downloads\studiolibrary-2.20.2\src" not in sys.path:
         sys.path.insert(0, r"C:\Users\Donzy\Downloads\studiolibrary-2.20.2\src")
-    import m_utils  # type: ignore
+    import mutils  # type: ignore
 
-    m_utils.loadPose(r"C:\Users\Donzy\Desktop\pose\Hero\Hand\Hand_R_Weapon.pose\pose.json", namespaces=":", key=True)
+    mutils.loadPose(r"C:\Users\Donzy\Desktop\pose\Hero\Hand\Hand_R_Weapon.pose\pose.json", namespaces=":", key=True)
 
 
 def timeSliderBookmark(name: str, time: List[int], color: List[float], priority: int = 1) -> str:
@@ -151,9 +149,9 @@ def create_timeSliderBookmark_from_data(data: dict):
 
 
 if __name__ == "__main__":
-    task_file = list(Path(r"N:\SourceAssets\Characters\Hero\Mocap\clip_preprocessing2").glob("*.ma"))  # 扫描目录
+    task_file = list(Path(r"E:\Project1\SourceAssets\Characters\Hero\Mocap\Clip").glob("*.ma"))  # 扫描目录
     fbx_output_dir = Path(r"N:\SourceAssets\Characters\Hero\Animations\FBX")  # FBX 输出目录，用于配置Game Exporter节点，不导出fbx
-    output_dir = Path(r"N:\SourceAssets\Characters\Hero\Mocap\clip_preprocessing2\bake")  # 输出目录
+    output_dir = Path(r"E:\Project1\SourceAssets\Characters\Hero\Mocap\Bake")  # 输出目录
     rig_file = r"N:\SourceAssets\Characters\Hero\Rigs\Rig_Hero.ma"  # 绑定角色文件
 
     rig_namespace = "RIG"  # 绑定角色命名空间
@@ -169,54 +167,47 @@ if __name__ == "__main__":
     skip_list = []  # 跳过的文件列表
 
     for maya_file in task_file:
-        file_name = maya_file.name  # 获取文件名
-
+        file_name = maya_file.name.replace("CLIP_", "")  # 获取文件名
+        name = maya_file.stem.replace("CLIP_", "")
         # 如果文件已处理，跳过
         if file_name in already_completed_list:
             skip_list.append(file_name)
             log.info(f"Skip (already done): '{maya_file}'")
             continue
+
+        # 开始处理文件
         log.info(f"Process : '{maya_file}'")
         try:
-            # Open File
+            # 不加载Reference打开CLIP文件，获取动画片段数据
             with suppress_maya_logs():
-                log.debug(f"Open File: '{file_name}'")
-                cmds.file(maya_file, open=1, force=1)
+                log.debug(f"Open File: '{maya_file}'")
+                cmds.file(maya_file, open=1, force=1, loadNoReferences=True)
                 log.debug("File Opened")
 
-            # Get Clip Data
             log.debug("Get clip data...")
-            clip_data = get_exportData()  # 获取导出数据
-            bookmark_data = get_timeSliderBookmark()
-            if clip_data:  # 如果没有导出数据，跳过
-                log.debug("Get Clip Success")
-            else:
-                log.debug("No Clip Data Found, Skip!")
-                continue
+            bookmark_data = get_timeSliderBookmark()  # 动画标签
+            clip_export_data = get_exportData()
+            clip_start_time = cmds.playbackOptions(q=1, min=1)  # 开始时间
+            clip_end_time = cmds.playbackOptions(q=1, max=1)  # 结束时间
 
-            # data structure clear
-            log.debug("Clean Scene...")
-            log.debug("Clean DataStructure")
-            cmds.dataStructure(removeAll=True)
-            log.debug("Remove Unknown Plugin")
-            removeUnknownPlugin()
-            log.debug("Clean Scene Completed")
-
-            # save file
-            log.debug("save Cleaned File...")
-            cmds.file(rename=maya_file)
-            cmds.file(save=True, force=True)
-            log.debug("Cleaned File Saved")
-
-            # Create New File
+            # 新建文件
             cmds.file(file_name, new=1, force=1)
-            log.debug("New File Created")
+            log.debug(f"New File Created:{file_name}")
             cmds.currentUnit(time="ntscf")  # 设置时间单位为 60 FPS
             log.debug("Set Time Unit to ntscf ----- 60 FPS")
-            export_node = create_exportData(clip_data)  # 创建导出节点
+            if not clip_export_data:
+                clip_export_data = {
+                    "exportPath": fbx_output_dir,
+                    "exportName": "",
+                    "clip": {
+                        name: (clip_start_time, clip_end_time),
+                    },
+                }
+            export_node = create_exportData(clip_export_data)  # 创建导出节点
+            create_timeSliderBookmark_from_data(bookmark_data)  # 创建时间轴书签
             log.debug("Create Export Node Complete")
 
-            # reference Rig and Mocap
+            # 引用 绑定 和 CLIP
             log.debug("Reference Clip and Rig")
             with suppress_maya_logs():
                 log.debug("Referencing Files...")
@@ -248,12 +239,12 @@ if __name__ == "__main__":
             log.debug("Baking Animation Complete")
 
             cmds.setAttr(f"{export_node}.exportPath", str(fbx_output_dir), type="string")  # 设置导出路径
+
             log.debug("Set Export Path Complete")
             clean_unknown_data()  # 清理 unknown 数据
             log.debug("Clean Unknown Data Complete")
             cmds.file(unloadReference=f"{clip_namespace}RN")  # 卸载片段引用
             log.debug("Unload Clip Reference Complete")
-            create_timeSliderBookmark_from_data(bookmark_data)
 
             log.debug("Save Fils...")
             cmds.file(rename=str(output_dir / file_name))  # 重命名文件
@@ -263,6 +254,7 @@ if __name__ == "__main__":
         except Exception as e:
             log.exception(e)
             failed_list.append(maya_file)  # 添加到失败列表
+            raise
             continue
 
         succeeded_list.append(maya_file)  # 添加到成功列表
@@ -275,6 +267,9 @@ if __name__ == "__main__":
     log.success(f"Total {len(succeeded_list)} files processed successfully.")
     for x in succeeded_list:
         log.success(f"Completed File: {x}")
-    log.error(f"Total {len(failed_list)} files failed.")
+    if failed_list:
+        log.error(f"Total {len(failed_list)} files failed.")
+    else:
+        log.success("All files processed successfully without errors.")
     for x in failed_list:
         log.error(f"Failed File: {x}")

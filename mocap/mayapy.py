@@ -10,6 +10,8 @@ from maya import cmds
 
 PLUGIN_LIST = [
     "fbxmaya",
+    "timeSliderBookmark",
+    "gameFbxExporter",
 ]
 
 
@@ -35,5 +37,6 @@ def init_maya():
 if __name__ == "__main__":
     init_maya()
     import time
+
     s = time.time()
-    log.info(f"Done in {time.time()-s}")
+    log.info(f"Done in {time.time() - s}")
