@@ -49,7 +49,6 @@ class _PitchMatcher(om.MPxNode):
         time_unit = om.MTime.uiUnit()
         accumulated_pos = 0.0
         prev_input_val = fn_input.evaluate(om.MTime(start_frame, time_unit))
-        print(start_frame + 1, current_frame + 1)
         for t in range(start_frame + 1, current_frame + 1):
             m_time = om.MTime(t, time_unit)
             curr_input_val = fn_input.evaluate(m_time)
@@ -207,7 +206,6 @@ def pitchMatcher():
     node = createPitchMatcherNode()
 
     for i, x in enumerate(attrs):
-        print(cmds.objExists(x))
         p = cmds.listConnections(x, p=1) or []
         cmds.connectAttr(p[0], f"{node}.input[{i}]")
         cmds.connectAttr(f"{node}.output[{i}]", x, f=1)
