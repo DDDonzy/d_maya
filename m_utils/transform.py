@@ -135,7 +135,7 @@ def get_parentMatrix(obj: str, offsetParentMatrix=False) -> om.MMatrix:
     return mSel.getDagPath(0).pop().inclusiveMatrix()
 
 
-def set_matrix(obj: str, matrix: om.MMatrix, worldSpace: bool = False, _enable_log: bool = True) -> None:
+def set_matrix(obj: str, matrix: om.MMatrix, worldSpace: bool = False) -> None:
     """set maya object's matrix.
 
     Args:
@@ -157,15 +157,14 @@ def set_matrix(obj: str, matrix: om.MMatrix, worldSpace: bool = False, _enable_l
     local_matrix: om.MMatrix = matrix * mDag_obj.exclusiveMatrixInverse() if worldSpace else matrix
 
     def do_it():
-        fnTransform.setTransformation(om.MTransformationMatrix(local_matrix))
+        fnTransform.resetTransformation(local_matrix)
 
     def undo_it():
-        fnTransform.setTransformation(om.MTransformationMatrix(original_matrix))
+        fnTransform.resetTransformation(original_matrix)
 
     apiundo.commit(undo_it, do_it)
     do_it()
-    if _enable_log:
-        log.debug("Set Matrix: '{}' -> {}.", obj, local_matrix)
+    log.trace("Set Matrix: '{}' -> {}.", obj, local_matrix)
 
 
 def set_localMatrix(obj: str, matrix: om.MMatrix) -> None:
@@ -175,8 +174,8 @@ def set_localMatrix(obj: str, matrix: om.MMatrix) -> None:
         obj (str): maya transform name
         matrix (om.MMatrix): input local matrix
     """
-    set_matrix(obj, matrix, worldSpace=False, _enable_log=False)
-    log.debug("Set Local Matrix: '{}' -> {}.", obj, matrix)
+    set_matrix(obj, matrix, worldSpace=False)
+    log.trace("Set Local Matrix: '{}' -> {}.", obj, matrix)
 
 
 def set_worldMatrix(obj: str, matrix: om.MMatrix) -> None:
@@ -186,8 +185,8 @@ def set_worldMatrix(obj: str, matrix: om.MMatrix) -> None:
         obj (str): maya transform name
         matrix (om.MMatrix): input world space matrix
     """
-    set_matrix(obj, matrix, worldSpace=True, _enable_log=False)
-    log.debug("Set World Matrix: '{}' -> {}.", obj, matrix)
+    set_matrix(obj, matrix, worldSpace=True)
+    log.trace("Set World Matrix: '{}' -> {}.", obj, matrix)
 
 
 def matrix_to_trs(matrix: om.MMatrix, rotateOrder: int = 0) -> list:
@@ -271,8 +270,8 @@ def set_trs(
         try:
             cmds.setAttr(f"{obj}.{attr}", trs[i])
         except Exception as e:
-            log.debug(e)
-    log.debug("Set TRS: {} -> {}.", obj, trs)
+            log.trace(e)
+    log.trace("Set TRS: {} -> {}.", obj, trs)
 
 
 def align_transform(source: str, target: str):
@@ -282,8 +281,8 @@ def align_transform(source: str, target: str):
         source (str): align source object
         target (str): align target object
     """
-    set_matrix(target, get_worldMatrix(source), worldSpace=True, _enable_log=False)
-    log.debug("Align Transform: '{}' -> '{}'", source, target)
+    set_matrix(target, get_worldMatrix(source), worldSpace=True)
+    log.trace("Align Transform: '{}' -> '{}'", source, target)
 
 
 def mirror_transform(
@@ -321,7 +320,7 @@ def flip_transform(
 
 def reset_transform(obj, transform=True, userDefined=True):
     if transform:
-        set_matrix(obj, om.MMatrix(), worldSpace=False, _enable_log=False)
+        set_matrix(obj, om.MMatrix(), worldSpace=False)
         try:
             cmds.setAttr(f"{obj}.visibility", 1)
         except Exception as e:
@@ -334,7 +333,8 @@ def reset_transform(obj, transform=True, userDefined=True):
                 cmds.setAttr(f"{obj}.{x}", v)
             except Exception as e:
                 log.warning(e)
-    log.debug("Reset Transform: '{}' successful.", obj)
+    log.trace("Reset Transform: '{}' successful.", obj)
+
 
 def align_transform_cmd():
     """Align selected objects to the first selected object"""

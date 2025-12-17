@@ -202,7 +202,7 @@ def createPitchMatcherNode(*args, **kwargs):
 
 
 def pitchMatcher():
-    attrs = ["*:IKLeg_R.tx", "*:IKLeg_L.tx", "*:RootX_M.tx"]
+    attrs = ["*:IKLeg_R.tz", "*:IKLeg_L.tz", "*:RootX_M.tz"]
     node = createPitchMatcherNode()
 
     for i, x in enumerate(attrs):
@@ -212,7 +212,7 @@ def pitchMatcher():
 
 
 def bakeAnimation():
-    attrs = ["*:IKLeg_R.tx", "*:IKLeg_L.tx", "*:RootX_M.tx"]
+    attrs = ["*:IKLeg_R.tz", "*:IKLeg_L.tz", "*:RootX_M.tz"]
     timeRange = (oma.MAnimControl.animationStartTime().value, oma.MAnimControl.animationEndTime().value)
     cmds.bakeResults(
         attrs,
