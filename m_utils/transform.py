@@ -150,17 +150,17 @@ def set_matrix(obj: str, matrix: om.MMatrix, worldSpace: bool = False) -> None:
         raise
 
     mDag_obj: om.MDagPath = mSel.getDagPath(0)
-    original_matrix: om.MMatrix = om.MFnTransform(mDag_obj).transformation().asMatrix()
 
     fnTransform: om.MFnTransform = om.MFnTransform(mDag_obj)
+    original_transform: om.MTransformationMatrix = fnTransform.transformation()
 
     local_matrix: om.MMatrix = matrix * mDag_obj.exclusiveMatrixInverse() if worldSpace else matrix
 
     def do_it():
-        fnTransform.resetTransformation(local_matrix)
+        fnTransform.setTransformation(om.MTransformationMatrix(local_matrix))
 
     def undo_it():
-        fnTransform.resetTransformation(original_matrix)
+        fnTransform.setTransformation(original_transform)
 
     apiundo.commit(undo_it, do_it)
     do_it()
