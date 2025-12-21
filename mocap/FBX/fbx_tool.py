@@ -130,6 +130,19 @@ def get_fbx(directory_path_str: str):
 
     return fbx_files
 
+def remove_fbx_containers(scene):
+    """
+    移除场景中的所有 FbxContainer 对象
+    """
+    container_class_id = manager.FindClass("FbxContainer") or []
+    container_criteria = FBX.FbxCriteria.ObjectType(container_class_id)
+    container_count = scene.GetSrcObjectCount(container_criteria)
+    delete_list = []
+    for i in range(container_count):
+        obj = scene.GetSrcObject(container_criteria, i)
+        delete_list.append(obj)
+    for obj in delete_list:
+        obj.Destroy()
 
 if __name__ == "__main__":
     """
@@ -147,8 +160,8 @@ if __name__ == "__main__":
 
     reverse_dict = {v: k for k, v in name_dict.items()}  # 反转字典以便查找
 
-    input_folder = r"N:\SourceAssets\Characters\Hero\Mocap\20250830\mocap_source"  # 输入文件夹
-    output_folder = r"N:\SourceAssets\Characters\Hero\Mocap\20250830\mocap_source"  # 输出文件夹
+    input_folder = r"N:\SourceAssets\Characters\Hero\Mocap\Bake"  # 输入文件夹
+    output_folder = r"N:\SourceAssets\Characters\Hero\Mocap\Bake"  # 输出文件夹
 
     output_folder = Path(output_folder)  # 转换为 Path 对象
     output_folder.mkdir(parents=True, exist_ok=True)  # 直接创建，如果存在就跳过
@@ -167,5 +180,6 @@ if __name__ == "__main__":
                     new_node_name = reverse_dict[node_name]  # 获取新名称
                     node.SetName(new_node_name)  # 重命名节点
                     print(f"RENAME: {node_name} -> {new_node_name}")
+                remove_fbx_containers(scene)  # 移除 FbxContainer 对象
             fbx_exporter(manager, scene, str(export_file), -1, manager.GetIOSettings())  # 导出FBX
         # break  # 只处理一个文件，测试用, 删除这行以处理所有文件

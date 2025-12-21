@@ -12,7 +12,7 @@ FBXExportInAscii -v false;                          // false = Binary   true = A
 FBXExportIncludeChildren -v false;                  // Include children nodes
 FBXExportInputConnections -v false;                 // connections
 FBXExportEmbeddedTextures  -v false;                // Embedded Textures
-FBXExportReferencedAssetsContent -v false;          // Export referenced assets content
+FBXExportReferencedAssetsContent -v true;          // Export referenced assets content
 
 // --- Geometry ---
 FBXExportSmoothingGroups -v false;                   // Smoothing Groups
@@ -27,13 +27,14 @@ FBXExportShapes -v true;                            // BlendShape
 
 // --- Skeleton ---
 FBXExportConstraints -v false;
-FBXExportSkeletonDefinitions -v true;               // Skeleton Definitions
+FBXExportSkeletonDefinitions -v false;               // Skeleton Definitions
 
 // --- Camera and Light ---
 FBXExportCameras -v false;
 FBXExportLights -v false;
 
 // --- Animation ---
+// FBXExportAnimationOnly -v true ;                     // Animation Only  开启后会导致joint变为 transform,不方便预览
 FBXExportBakeComplexAnimation -v true;              // Bake animation
 // FBXExportBakeComplexStart -v 0;                     // Time Start
 // FBXExportBakeComplexEnd -v 100;                     // Time End

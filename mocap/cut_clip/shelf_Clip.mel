@@ -14,18 +14,18 @@ global proc shelf_Clip () {
         -manage 1
         -visible 1
         -preventOverride 0
-        -annotation "from pathlib import Path\nimport ctypes\nfrom ctypes import wintypes\nfrom maya import cmds\n\n\nkernel32 = ctypes.WinDLL(\"kernel32\", use_last_error=True)\nuser32 = ctypes.WinDLL(\"user32\", use_last_error=True)\n\nCF_UNICODETEXT = 13  # Windows剪贴板使用Unicode文本格式\nGMEM_MOVEABLE = 0x0002  # 定义内存为可移动的\nGMEM_ZEROINIT = 0x0040  # 定义内存内容初始化为0\n\nkernel32.GlobalAlloc.argtypes = [wintypes.UINT, ctypes.c_size_t]\nkernel32.GlobalAlloc.restype = wintypes.HGLOBAL\n\nkernel32.GlobalLock.argtypes = [wintypes.HGLOBAL]\nkernel32.GlobalLock.restype = wintypes.LPVOID\n\nkernel32.GlobalUnlock.argtypes = [wintypes.HGLOBAL]\nkernel32.GlobalUnlock.restype = wintypes.BOOL\n\nkernel32.GlobalSize.argtypes = [wintypes.HGLOBAL]\nkernel32.GlobalSize.restype = ctypes.c_size_t\n\nuser32.OpenClipboard.argtypes = [wintypes.HWND]\nuser32.OpenClipboard.restype = wintypes.BOOL\n\nuser32.CloseClipboard.argtypes = []\nuser32.CloseClipboard.restype = wintypes.BOOL\n\nuser32.EmptyClipboard.argtypes = []\nuser32.EmptyClipboard.restype = wintypes.BOOL\n\nuser32.SetClipboardData.argtypes = [wintypes.UINT, wintypes.HANDLE]\nuser32.SetClipboardData.restype = wintypes.HANDLE\n\nuser32.IsClipboardFormatAvailable.argtypes = [wintypes.UINT]\nuser32.IsClipboardFormatAvailable.restype = wintypes.BOOL\n\nuser32.GetClipboardData.argtypes = [wintypes.UINT]\nuser32.GetClipboardData.restype = wintypes.HANDLE\n\n\ndef get_clipboard_text() -> str:\n    \"\"\"\n    使用 Windows API 获取剪贴板中的文本内容。\n    \"\"\"\n    text = \"\"\n    if not user32.OpenClipboard(None):\n        raise ctypes.WinError(ctypes.get_last_error())\n\n    try:\n        if user32.IsClipboardFormatAvailable(CF_UNICODETEXT):\n            h_clipboard_data = user32.GetClipboardData(CF_UNICODETEXT)\n            if h_clipboard_data:\n                p_clipboard_data = kernel32.GlobalLock(h_clipboard_data)\n                if p_clipboard_data:\n                    try:\n                        size = kernel32.GlobalSize(h_clipboard_data)\n                        text = ctypes.wstring_at(p_clipboard_data, size // 2 - 1)\n                    finally:\n                        kernel32.GlobalUnlock(h_clipboard_data)\n    finally:\n        user32.CloseClipboard()\n\n    return text\n\n\ndef convert_dir(path: str) -> Path:\n    \"\"\"\n    将路径转换为 Maya 可识别的格式。\n    \"\"\"\n    source_dir = Path(path)\n    name = source_dir.stem\n    print(source_dir)\n    target_dir = source_dir.parent.parent / r\"data\" / name\n    print(target_dir)\n    fbx_files = list(target_dir.glob(\"*.fbx\"))\n    print(fbx_files)\n    for fbx_file in fbx_files:\n        if \"skeleton\" in str(fbx_file):\n            return Path(fbx_file)\n\n\ndef openFbxWithFileDialog():\n    \"\"\"\n    使用标准文件对话框来获取FBX文件路径并导入。\n    \"\"\"\n    cmds.file(new=True, force=True)\n    cmds.currentUnit(time=\"ntscf\")\n\n    file_filter = \"FBX (*.fbx)\"\n\n    clipboard_path = get_clipboard_text()\n    clipboard_path = clipboard_path[1:-1]\n    fbx_path = convert_dir(clipboard_path)\n    result = cmds.fileDialog2(\n        fileFilter=file_filter,\n        dialogStyle=2,\n        fileMode=1,\n        caption=\"Select FBX Clip to Import\",\n        startingDirectory=fbx_path,\n    )\n\n    if result:\n        fbx_path = result[0]\n        print(f\"File selected: {fbx_path}\")\n\n        try:\n            cmds.file(fbx_path,type=\"FBX\", ignoreVersion=True, namespace=\"MOCAP\", r=1)\n            print(\"FBX file imported successfully.\")\n        except Exception as e:\n            cmds.warning(f\"Failed to import FBX file: {e}\")\n    else:\n        print(\"File selection was cancelled.\")\n\n\nopenFbxWithFileDialog()\n" 
+        -annotation "Import Mocap Animations (*.FBX)" 
         -enableBackground 0
         -backgroundColor 0 0 0 
         -highlightColor 0.321569 0.521569 0.65098 
         -align "center" 
-        -label "from pathlib import Path\nimport ctypes\nfrom ctypes import wintyp..." 
+        -label "Import Anim" 
         -labelOffset 0
         -rotation 0
         -flipX 0
         -flipY 0
         -useAlpha 1
-        -imageOverlayLabel "Open" 
+        -imageOverlayLabel "Import" 
         -overlayLabelColor 0.8 0.8 0.8 
         -overlayLabelBackColor 0 0 0 0.5 
         -image "pythonFamily.png" 
@@ -33,7 +33,7 @@ global proc shelf_Clip () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "from pathlib import Path\nimport ctypes\nfrom ctypes import wintypes\nfrom maya import cmds\n\n\nkernel32 = ctypes.WinDLL(\"kernel32\", use_last_error=True)\nuser32 = ctypes.WinDLL(\"user32\", use_last_error=True)\n\nCF_UNICODETEXT = 13  # Windows剪贴板使用Unicode文本格式\nGMEM_MOVEABLE = 0x0002  # 定义内存为可移动的\nGMEM_ZEROINIT = 0x0040  # 定义内存内容初始化为0\n\nkernel32.GlobalAlloc.argtypes = [wintypes.UINT, ctypes.c_size_t]\nkernel32.GlobalAlloc.restype = wintypes.HGLOBAL\n\nkernel32.GlobalLock.argtypes = [wintypes.HGLOBAL]\nkernel32.GlobalLock.restype = wintypes.LPVOID\n\nkernel32.GlobalUnlock.argtypes = [wintypes.HGLOBAL]\nkernel32.GlobalUnlock.restype = wintypes.BOOL\n\nkernel32.GlobalSize.argtypes = [wintypes.HGLOBAL]\nkernel32.GlobalSize.restype = ctypes.c_size_t\n\nuser32.OpenClipboard.argtypes = [wintypes.HWND]\nuser32.OpenClipboard.restype = wintypes.BOOL\n\nuser32.CloseClipboard.argtypes = []\nuser32.CloseClipboard.restype = wintypes.BOOL\n\nuser32.EmptyClipboard.argtypes = []\nuser32.EmptyClipboard.restype = wintypes.BOOL\n\nuser32.SetClipboardData.argtypes = [wintypes.UINT, wintypes.HANDLE]\nuser32.SetClipboardData.restype = wintypes.HANDLE\n\nuser32.IsClipboardFormatAvailable.argtypes = [wintypes.UINT]\nuser32.IsClipboardFormatAvailable.restype = wintypes.BOOL\n\nuser32.GetClipboardData.argtypes = [wintypes.UINT]\nuser32.GetClipboardData.restype = wintypes.HANDLE\n\n\ndef get_clipboard_text() -> str:\n    \"\"\"\n    使用 Windows API 获取剪贴板中的文本内容。\n    \"\"\"\n    text = \"\"\n    if not user32.OpenClipboard(None):\n        raise ctypes.WinError(ctypes.get_last_error())\n\n    try:\n        if user32.IsClipboardFormatAvailable(CF_UNICODETEXT):\n            h_clipboard_data = user32.GetClipboardData(CF_UNICODETEXT)\n            if h_clipboard_data:\n                p_clipboard_data = kernel32.GlobalLock(h_clipboard_data)\n                if p_clipboard_data:\n                    try:\n                        size = kernel32.GlobalSize(h_clipboard_data)\n                        text = ctypes.wstring_at(p_clipboard_data, size // 2 - 1)\n                    finally:\n                        kernel32.GlobalUnlock(h_clipboard_data)\n    finally:\n        user32.CloseClipboard()\n\n    return text\n\n\ndef convert_dir(path: str) -> Path:\n    \"\"\"\n    将路径转换为 Maya 可识别的格式。\n    \"\"\"\n    source_dir = Path(path)\n    name = source_dir.stem\n    print(source_dir)\n    target_dir = source_dir.parent.parent / r\"data\" / name\n    print(target_dir)\n    fbx_files = list(target_dir.glob(\"*.fbx\"))\n    print(fbx_files)\n    for fbx_file in fbx_files:\n        if \"skeleton\" in str(fbx_file):\n            return Path(fbx_file)\n\n\ndef openFbxWithFileDialog():\n    \"\"\"\n    使用标准文件对话框来获取FBX文件路径并导入。\n    \"\"\"\n    cmds.file(new=True, force=True)\n    cmds.currentUnit(time=\"ntscf\")\n\n    file_filter = \"FBX (*.fbx)\"\n\n    clipboard_path = get_clipboard_text()\n    clipboard_path = clipboard_path[1:-1]\n    fbx_path = clipboard_path\n    result = cmds.fileDialog2(\n        fileFilter=file_filter,\n        dialogStyle=2,\n        fileMode=1,\n        caption=\"Select FBX Clip to Import\",\n        startingDirectory=fbx_path,\n    )\n\n    if result:\n        fbx_path = result[0]\n        print(f\"File selected: {fbx_path}\")\n\n        try:\n            cmds.file(fbx_path,type=\"FBX\", ignoreVersion=True, namespace=\"MOCAP\", r=1)\n            print(\"FBX file imported successfully.\")\n        except Exception as e:\n            cmds.warning(f\"Failed to import FBX file: {e}\")\n    else:\n        print(\"File selection was cancelled.\")\n\n\nopenFbxWithFileDialog()\n" 
+        -command "from pathlib import Path\nimport ctypes\nfrom ctypes import wintypes\nfrom maya import cmds\n\n\nkernel32 = ctypes.WinDLL(\"kernel32\", use_last_error=True)\nuser32 = ctypes.WinDLL(\"user32\", use_last_error=True)\n\nCF_UNICODETEXT = 13  # Windows?????Unicode????\nGMEM_MOVEABLE = 0x0002  # ?????????\nGMEM_ZEROINIT = 0x0040  # ??????????0\n\nkernel32.GlobalAlloc.argtypes = [wintypes.UINT, ctypes.c_size_t]\nkernel32.GlobalAlloc.restype = wintypes.HGLOBAL\n\nkernel32.GlobalLock.argtypes = [wintypes.HGLOBAL]\nkernel32.GlobalLock.restype = wintypes.LPVOID\n\nkernel32.GlobalUnlock.argtypes = [wintypes.HGLOBAL]\nkernel32.GlobalUnlock.restype = wintypes.BOOL\n\nkernel32.GlobalSize.argtypes = [wintypes.HGLOBAL]\nkernel32.GlobalSize.restype = ctypes.c_size_t\n\nuser32.OpenClipboard.argtypes = [wintypes.HWND]\nuser32.OpenClipboard.restype = wintypes.BOOL\n\nuser32.CloseClipboard.argtypes = []\nuser32.CloseClipboard.restype = wintypes.BOOL\n\nuser32.EmptyClipboard.argtypes = []\nuser32.EmptyClipboard.restype = wintypes.BOOL\n\nuser32.SetClipboardData.argtypes = [wintypes.UINT, wintypes.HANDLE]\nuser32.SetClipboardData.restype = wintypes.HANDLE\n\nuser32.IsClipboardFormatAvailable.argtypes = [wintypes.UINT]\nuser32.IsClipboardFormatAvailable.restype = wintypes.BOOL\n\nuser32.GetClipboardData.argtypes = [wintypes.UINT]\nuser32.GetClipboardData.restype = wintypes.HANDLE\n\n\ndef get_clipboard_text() -> str:\n    \"\"\"\n    ?? Windows API ????????????\n    \"\"\"\n    text = \"\"\n    if not user32.OpenClipboard(None):\n        raise ctypes.WinError(ctypes.get_last_error())\n\n    try:\n        if user32.IsClipboardFormatAvailable(CF_UNICODETEXT):\n            h_clipboard_data = user32.GetClipboardData(CF_UNICODETEXT)\n            if h_clipboard_data:\n                p_clipboard_data = kernel32.GlobalLock(h_clipboard_data)\n                if p_clipboard_data:\n                    try:\n                        size = kernel32.GlobalSize(h_clipboard_data)\n                        text = ctypes.wstring_at(p_clipboard_data, size // 2 - 1)\n                    finally:\n                        kernel32.GlobalUnlock(h_clipboard_data)\n    finally:\n        user32.CloseClipboard()\n\n    return text\n\n\ndef convert_dir(path: str) -> Path:\n    \"\"\"\n    ?????? Maya ???????\n    \"\"\"\n    source_dir = Path(path)\n    name = source_dir.stem\n    print(source_dir)\n    target_dir = source_dir.parent.parent / r\"data\" / name\n    print(target_dir)\n    fbx_files = list(target_dir.glob(\"*.fbx\"))\n    print(fbx_files)\n    for fbx_file in fbx_files:\n        if \"skeleton\" in str(fbx_file):\n            return Path(fbx_file)\n\n\ndef openFbxWithFileDialog():\n    \"\"\"\n    ????????????FBX????????\n    \"\"\"\n    cmds.file(new=True, force=True)\n    cmds.currentUnit(time=\"ntscf\")\n\n    file_filter = \"FBX (*.fbx)\"\n\n    clipboard_path = get_clipboard_text()\n    clipboard_path = clipboard_path[1:-1]\n    fbx_path = convert_dir(clipboard_path)\n    result = cmds.fileDialog2(\n        fileFilter=file_filter,\n        dialogStyle=2,\n        fileMode=1,\n        caption=\"Select FBX Clip to Import\",\n        startingDirectory=fbx_path,\n    )\n\n    if result:\n        fbx_path = result[0]\n        print(f\"File selected: {fbx_path}\")\n\n        try:\n            cmds.file(fbx_path,type=\"FBX\", ignoreVersion=True, namespace=\"MOCAP\", r=1)\n            print(\"FBX file imported successfully.\")\n        except Exception as e:\n            cmds.warning(f\"Failed to import FBX file: {e}\")\n    else:\n        print(\"File selection was cancelled.\")\n\n\nopenFbxWithFileDialog()\n" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
@@ -43,17 +43,17 @@ global proc shelf_Clip () {
         -flexibleWidthType 3
         -flexibleWidthValue 32
         -enable 1
-        -width 39
+        -width 35
         -height 34
         -manage 1
         -visible 1
         -preventOverride 0
-        -annotation "# build clip\ncmds.select(root)\ncmds.TimeEditorCreateClip()\n\nstart = 0\nend = 0\nfor clip in cmds.ls(\"*.clip[*].clipStart\"):\n    _start = cmds.getAttr(clip)\n    print(_start)\n    if _start < start:\n        start = _start\n\nfor clip in cmds.ls(\"*.clip[*].clipDuration\"):\n    _end = cmds.getAttr(clip)\n    if _end > end:\n        end = _end\n\ncmds.playbackOptions(min=start, max=end)" 
+        -annotation "Auto Create Anim Clip From Scene (Search \"*:root\")" 
         -enableBackground 0
         -backgroundColor 0 0 0 
         -highlightColor 0.321569 0.521569 0.65098 
         -align "center" 
-        -label "# build clip\ncmds.select(root)\ncmds.TimeEditorCreateClip()\n\nstar..." 
+        -label "Build Clip" 
         -labelOffset 0
         -rotation 0
         -flipX 0
@@ -67,41 +67,7 @@ global proc shelf_Clip () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "from maya import cmds, mel\n\n# build clip\ncmds.select(\"*:root\")\ncmds.TimeEditorCreateClip()\n\nstart = 0\nend = 0\nfor clip in cmds.ls(\"*.clip[*].clipStart\"):\n    _start = cmds.getAttr(clip)\n    print(_start)\n    if _start < start:\n        start = _start\n\nfor clip in cmds.ls(\"*.clip[*].clipDuration\"):\n    _end = cmds.getAttr(clip)\n    if _end > end:\n        end = _end\n\ncmds.playbackOptions(min=start, max=end)" 
-        -sourceType "python" 
-        -commandRepeatable 1
-        -flat 1
-    ;
-    shelfButton
-        -enableCommandRepeat 1
-        -flexibleWidthType 3
-        -flexibleWidthValue 32
-        -enable 1
-        -width 39
-        -height 34
-        -manage 1
-        -visible 1
-        -preventOverride 0
-        -annotation "# mute\nfor x in cmds.ls(sl=1):\n    try:\n        if cmds.objectType(x, isa=\"timeEditorClip\"):\n            cmds.setAttr(f\"{x}.clipMuted\", not cmds.getAttr(f\"{x}.clipMuted\"))\n    except Exception as e:\n        print(f\"Error muting clip {x}: {e}\")\n" 
-        -enableBackground 0
-        -backgroundColor 0 0 0 
-        -highlightColor 0.321569 0.521569 0.65098 
-        -align "center" 
-        -label "# mute\nfor x in cmds.ls(sl=1):\n    try:\n        if cmds.objectTy..." 
-        -labelOffset 0
-        -rotation 0
-        -flipX 0
-        -flipY 0
-        -useAlpha 1
-        -imageOverlayLabel "Mute" 
-        -overlayLabelColor 0.8 0.8 0.8 
-        -overlayLabelBackColor 0 0 0 0.5 
-        -image "teMute.svg" 
-        -image1 "teMute.svg" 
-        -style "iconOnly" 
-        -marginWidth 0
-        -marginHeight 1
-        -command "from maya import cmds, mel\n\n# mute\nfor x in cmds.ls(sl=1):\n    try:\n        if cmds.objectType(x, isa=\"timeEditorClip\"):\n            cmds.setAttr(f\"{x}.clipMuted\", not cmds.getAttr(f\"{x}.clipMuted\"))\n    except Exception as e:\n        print(f\"Error muting clip {x}: {e}\")\n" 
+        -command "from maya import cmds\n\n# build clip\ncmds.select(cl=1)\ncmds.select(\"*:root\")\ncmds.TimeEditorCreateClip()\n\nstart = 0\nend = 0\nfor clip in cmds.ls(\"*.clip[*].clipStart\"):\n    _start = cmds.getAttr(clip)\n    print(_start)\n    if _start < start:\n        start = _start\n\nfor clip in cmds.ls(\"*.clip[*].clipDuration\"):\n    _end = cmds.getAttr(clip)\n    if _end > end:\n        end = _end\n\ncmds.playbackOptions(min=start, max=end)" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
@@ -116,12 +82,46 @@ global proc shelf_Clip () {
         -manage 1
         -visible 1
         -preventOverride 0
-        -annotation "# rename clips\ndef rename_clips():\n    selected_clips = cmds.ls(sl=1)\n    for x in selected_clips:\n        try:\n            if cmds.objectType(x, isa=\"timeEditorClip\"):\n                clipid = cmds.getAttr(f\"{x}.clipid\")\n                mel.eval(f\"teRenameClip {clipid}\")\n        except Exception as e:\n            print(f\"Error renaming clip {x}: {e}\")\nrename_clips()" 
+        -annotation "Find Pose" 
         -enableBackground 0
         -backgroundColor 0 0 0 
         -highlightColor 0.321569 0.521569 0.65098 
         -align "center" 
-        -label "# rename clips\ndef rename_clips():\n    selected_clips = cmds.ls(..." 
+        -label "Rename Clip" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -imageOverlayLabel "Pose" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "pythonFamily.png" 
+        -image1 "pythonFamily.png" 
+        -style "iconOnly" 
+        -marginWidth 0
+        -marginHeight 1
+        -command "from maya.api import OpenMaya as om\nfrom maya import cmds\n\n\nr_foot = \"MOCAP:calf_l\"\nl_foot = \"MOCAP:calf_r\"\n\ncurrent_time = cmds.currentTime(q=1)\ntime_range = range(int(current_time - 5), int(current_time + 5))\nmin_distance = 0.0\nmin_distance_time = None\nfor t in time_range:\n    matrix_a = om.MMatrix(cmds.getAttr(f\"{l_foot}.worldMatrix\", t=t))\n    matrix_b = om.MMatrix(cmds.getAttr(f\"{r_foot}.worldMatrix\", t=t))\n    vector_a = om.MTransformationMatrix(matrix_a).translation(om.MSpace.kWorld)\n    vector_b = om.MTransformationMatrix(matrix_b).translation(om.MSpace.kWorld)\n    dis = (vector_a - vector_b).length()\n    if min_distance == 0.0 or dis < min_distance:\n        min_distance = dis\n        min_distance_time = t\ncmds.currentTime(min_distance_time)\n" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Rename clip and move it to frame 1" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "Find pose" 
         -labelOffset 0
         -rotation 0
         -flipX 0
@@ -135,7 +135,7 @@ global proc shelf_Clip () {
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "from maya import cmds, mel\n\n# rename clips\ndef rename_clips():\n    selected_clips = cmds.ls(sl=1)\n    for x in selected_clips:\n        try:\n            if cmds.objectType(x, isa=\"timeEditorClip\"):\n                clipid = cmds.getAttr(f\"{x}.clipid\")\n                mel.eval(f\"teRenameClip {clipid}\")\n        except Exception as e:\n            print(f\"Error renaming clip {x}: {e}\")\nrename_clips()" 
+        -command "import maya.cmds as cmds\n\nif not cmds.ls(sl=1):\n    cmds.error(\"Please Select Clip !\")\nif cmds.objectType(cmds.ls(sl=1)[-1]) != \"timeEditorClip\":\n    cmds.error(\"Please Select Clip !\")\n# --- 1. Pop up a text input dialog ---\nresult = cmds.promptDialog(\n    title=\"Enter Clip Name\",\n    message=\"Please enter the new clip name:\",\n    button=[\"OK\", \"Cancel\"],\n    defaultButton=\"OK\",\n    cancelButton=\"Cancel\",\n    dismissString=\"Cancel\",\n)\n\n# --- 2. Check if the user pressed 'OK' ---\nif result == \"OK\":\n    # Get the text input by the user and set it as the 'name' variable\n    name = cmds.promptDialog(query=True, text=True)\n\n    # --- 3. This is your original code block ---\n    # (Note: 'clipid' in your code might be 'clipId', keeping it as is)\n\n    try:\n        clip = cmds.ls(sl=1)[-1]\n        clipNode = clip.split(\".\")[0]\n        clipId = cmds.getAttr(f\"{clip}.clipid\")  # Using 'clipid' from your code\n        cmds.select(clipNode)\n        clips = cmds.ls(type=\"timeEditorClip\")\n        for x in clips:\n            if cmds.getAttr(f\"{x}.clip[0].clipid\") == clipId:  # Using 'clip[0].clipid' from your code\n                continue\n            cmds.delete(x)\n\n        cmds.setAttr(f\"{clip}.clipStart\", 1)\n        cmds.setAttr(f\"{clip}.clipName\", name, type=\"string\")\n        cmds.playbackOptions(min=1, max=cmds.getAttr(f\"{clip}.clipDuration\") + 1)\n        cmds.playbackOptions(ast=1, aet=cmds.getAttr(f\"{clip}.clipDuration\") + 1)\n\n        print(f\"Script execution finished. Name set to: {name}\")\n\n    except Exception as e:\n        cmds.warning(f\"Error executing your original code: {e}\")\n        cmds.warning(\"Tip: Please check if 'clipid' spelling is correct (it's often 'clipId' in Maya) and if the node attributes are correct.\")\n\nelse:\n    print(\"Operation cancelled by user.\")\n" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
@@ -150,52 +150,18 @@ global proc shelf_Clip () {
         -manage 1
         -visible 1
         -preventOverride 0
-        -annotation "# export\nexport_list = []\nclip_list = cmds.ls(type=\"timeEditorClip\")\n\nfor clip in clip_list:\n    if cmds.getAttr(f\"{clip}.clip[0].clipMuted\"):\n        print(f\"skip muted clip: {clip}\")\n        continue\n    clip_name = cmds.getAttr(f\"{clip}.clip[0].clipName\")\n    start_time = cmds.getAttr(f\"{clip}.clip[0].clipStart\")\n    end_time = cmds.getAttr(f\"{clip}.clip[0].clipDuration\")\n    export_list.append({\n        \"name\": clip_name,\n        \"start\": start_time,\n        \"end\": end_time,\n    })\n\n\ndef build_export_preset():\n    node_name = \"_ANIM_EXPORTER_\"\n\n    if cmds.objExists(node_name):\n        cmds.delete(node_name)\n\n    exporter_node = cmds.createNode(\"gameFbxExporter\", name=node_name)\n    cmds.setAttr(f\"{exporter_node}.pn\", node_name, type=\"string\")\n    cmds.setAttr(f\"{exporter_node}.ils\", True)\n    cmds.setAttr(f\"{exporter_node}.ilu\", True)\n    cmds.setAttr(f\"{exporter_node}.eti\", 2)\n    cmds.setAttr(f\"{exporter_node}.spt\", 2)\n    cmds.setAttr(f\"{exporter_node}.ic\", False)\n    cmds.setAttr(f\"{exporter_node}.ebm\", True)\n    cmds.setAttr(f\"{exporter_node}.fv\", \"FBX201800\", type=\"string\")\n    return node_name\n\n\nexporter_node = build_export_preset()\nfor i, clip in enumerate(export_list):\n    cmds.setAttr(f\"{exporter_node}.ac[{i}].acn\", clip[\"name\"], type=\"string\")\n    cmds.setAttr(f\"{exporter_node}.ac[{i}].acs\", clip[\"start\"])\n    cmds.setAttr(f\"{exporter_node}.ac[{i}].ace\", clip[\"end\"])\n" 
+        -annotation "Relocator anim clip position and orient " 
         -enableBackground 0
         -backgroundColor 0 0 0 
         -highlightColor 0.321569 0.521569 0.65098 
         -align "center" 
-        -label "# export\nexport_list = []\nclip_list = cmds.ls(type=\"timeEditorCl..." 
+        -label "Reloc" 
         -labelOffset 0
         -rotation 0
         -flipX 0
         -flipY 0
         -useAlpha 1
-        -imageOverlayLabel "Export" 
-        -overlayLabelColor 0.8 0.8 0.8 
-        -overlayLabelBackColor 0 0 0 0.5 
-        -image "pythonFamily.png" 
-        -image1 "pythonFamily.png" 
-        -style "iconOnly" 
-        -marginWidth 0
-        -marginHeight 1
-        -command "from maya import cmds, mel\n# export\nexport_list = []\nclip_list = cmds.ls(type=\"timeEditorClip\")\n\nfor clip in clip_list:\n    if cmds.getAttr(f\"{clip}.clip[0].clipMuted\"):\n        print(f\"skip muted clip: {clip}\")\n        continue\n    clip_name = cmds.getAttr(f\"{clip}.clip[0].clipName\")\n    start_time = cmds.getAttr(f\"{clip}.clip[0].clipStart\")\n    end_time = cmds.getAttr(f\"{clip}.clip[0].clipDuration\")\n    export_list.append({\n        \"name\": clip_name,\n        \"start\": start_time,\n        \"end\": start_time + end_time,\n    })\n\n\ndef build_export_preset():\n    node_name = \"_ANIM_EXPORTER_\"\n\n    current_file = Path(cmds.file(query=True, sceneName=True))\n    current_dir = current_file.parent\n    file_name = current_file.stem\n    fbx_dir = current_dir / \"fbx\"\n\n    if cmds.objExists(node_name):\n        cmds.delete(node_name)\n\n    for x in cmds.ls(type=\"gameFbxExporter\"):\n        cmds.setAttr(f\"{x}.ils\", False)\n        cmds.setAttr(f\"{x}.ilu\", False)\n    exporter_node = cmds.createNode(\"gameFbxExporter\", name=node_name)\n    cmds.setAttr(f\"{exporter_node}.pn\", node_name, type=\"string\")\n    cmds.setAttr(f\"{exporter_node}.ils\", True)\n    cmds.setAttr(f\"{exporter_node}.ilu\", True)\n    cmds.setAttr(f\"{exporter_node}.eti\", 2)\n    cmds.setAttr(f\"{exporter_node}.spt\", 2)\n    cmds.setAttr(f\"{exporter_node}.ic\", False)\n    cmds.setAttr(f\"{exporter_node}.ebm\", True)\n    cmds.setAttr(f\"{exporter_node}.fv\", \"FBX201800\", type=\"string\")\n    cmds.setAttr(f\"{exporter_node}.exp\", r\"N:\\SourceAssets\\Characters\\Hero\\Mocap\\20250830\", type=\"string\")\n    cmds.setAttr(f\"{exporter_node}.exf\", r\"M_Blade_Stand_Run_\", type=\"string\")\n    return node_name\n\n\nexporter_node = build_export_preset()\nfor i, clip in enumerate(export_list):\n    cmds.setAttr(f\"{exporter_node}.ac[{i}].acn\", clip[\"name\"], type=\"string\")\n    cmds.setAttr(f\"{exporter_node}.ac[{i}].acs\", clip[\"start\"])\n    cmds.setAttr(f\"{exporter_node}.ac[{i}].ace\", clip[\"end\"])\n\nif cmds.window(\"gameExporterWindow\", q=1, ex=1):\n    cmds.deleteUI(\"gameExporterWindow\")\nmel.eval(\"gameFbxExporter\")\n" 
-        -sourceType "python" 
-        -commandRepeatable 1
-        -flat 1
-    ;
-    shelfButton
-        -enableCommandRepeat 1
-        -flexibleWidthType 3
-        -flexibleWidthValue 32
-        -enable 1
-        -width 35
-        -height 34
-        -manage 1
-        -visible 1
-        -preventOverride 0
-        -annotation "Game Exporter" 
-        -enableBackground 0
-        -backgroundColor 0 0 0 
-        -highlightColor 0.321569 0.521569 0.65098 
-        -align "center" 
-        -label "Game Exporter" 
-        -labelOffset 0
-        -rotation 0
-        -flipX 0
-        -flipY 0
-        -useAlpha 1
-        -imageOverlayLabel "GE" 
+        -imageOverlayLabel "Reloc" 
         -overlayLabelColor 0.8 0.8 0.8 
         -overlayLabelBackColor 0 0 0 0.5 
         -image "menuIconFile.png" 
@@ -204,8 +170,8 @@ global proc shelf_Clip () {
         -marginWidth 0
         -marginHeight 1
         -version "2016" 
-        -command "gameFbxExporter" 
-        -sourceType "mel" 
+        -command "from maya.api import OpenMaya as om\nfrom maya import cmds, mel\nfrom m_utils.transform import matrix_to_trs\n\n# ??clip,???????\n# ???????clip????????,??????\npelvis = \"MOCAP:pelvis\"\n\n\nclip = None\nfor x in cmds.ls(sl=1):\n    if cmds.objectType(x,isa=\"timeEditorClip\"):\n        clip = x\n        break\nif not clip:\n    raise RuntimeError (\"Please Select clip\")\n    \nstart_time = cmds.getAttr(f\"{clip}.clipStart\")\nend_time = start_time + cmds.getAttr(f\"{clip}.clipDuration\")\n\n\nmatrix_a = om.MMatrix(cmds.getAttr(f\"{pelvis}.worldMatrix\", t=start_time))\nmatrix_b = om.MMatrix(cmds.getAttr(f\"{pelvis}.worldMatrix\", t=end_time))\nvector_a = om.MTransformationMatrix(matrix_a).translation(om.MSpace.kWorld)\nvector_b = om.MTransformationMatrix(matrix_b).translation(om.MSpace.kWorld)\nvector_a.y = 0\nvector_b.y = 0\ny = om.MVector([0, 1, 0])\nx = (vector_b - vector_a).normal()\nz = (x ^ y).normal()\nmatrix = [*x, 0, *y, 0, *z, 0, 0, 0, 0, 0]\n\n\nmel.eval(\"teCreateRelocator(-1)\")\nloc_clip = cmds.ls(sl=1)[0]\nloc = cmds.spaceLocator(name=loc_clip.replace(\"Relocator\", \"Reworld\"))[0]\ncmds.parentConstraint(loc,loc_clip,mo=1)\ncmds.xform(loc, t=vector_a * -1, ws=1)\n\n\n\n\nloc_ro = cmds.spaceLocator(name=loc_clip.replace(\"Relocator\", \"Rerotate\"))[0]\ncmds.setAttr(f\"{loc_ro}.localScale\", 500, 500, 500)\ncmds.setAttr(f\"{loc_ro}.r\", *matrix_to_trs(om.MMatrix(matrix))[3:6])\ncmds.parentConstraint(loc_ro, loc, mo=1)\ncmds.setAttr(f\"{loc_ro}.r\", 0, 0, 0)\ncmds.parent(loc, loc_ro)\ncmds.setAttr(f\"{loc}.inheritsTransform\", 0)\ncmds.select(loc_ro)\ncmds.refresh()\n" 
+        -sourceType "python" 
         -commandRepeatable 1
         -flat 1
     ;
@@ -219,92 +185,26 @@ global proc shelf_Clip () {
         -manage 1
         -visible 1
         -preventOverride 0
-        -annotation "createNode \"transform\" -n \"CAM_GRP\";\ncreateNode \"transform\" -p \"CAM_GRP\" -n \"CAM\";\ncreateNode \"camera\" -p \"CAM\" -n \"CAMShape\" -ss;\n\nsetAttr \".translateX\" 600;\nsetAttr \".translateY\" 900;\nsetAttr \".translateZ\" -600;\nsetAttr \".rotateX\" -45;\nsetAttr \".rotateY\" 135;\nsetAttr \".rotateZ\" 0;\n\nlookThroughModelPanel \"CAM\" modelPanel4;" 
+        -annotation "make root speed" 
         -enableBackground 0
         -backgroundColor 0 0 0 
         -highlightColor 0.321569 0.521569 0.65098 
         -align "center" 
-        -label "createNode \"transform\" -n \"CAM_GRP\";\ncreateNode \"transform\" -p \"..." 
+        -label "speed" 
         -labelOffset 0
         -rotation 0
         -flipX 0
         -flipY 0
         -useAlpha 1
-        -imageOverlayLabel "CAM" 
+        -imageOverlayLabel "Speed" 
         -overlayLabelColor 0.8 0.8 0.8 
         -overlayLabelBackColor 0 0 0 0.5 
-        -image "stereoRigCamera.svg" 
-        -image1 "stereoRigCamera.svg" 
+        -image "ghostingClearAllGhosts.png" 
+        -image1 "ghostingClearAllGhosts.png" 
         -style "iconOnly" 
         -marginWidth 0
         -marginHeight 1
-        -command "createNode \"transform\" -n \"CAM_GRP\";\ncreateNode \"transform\" -p \"CAM_GRP\" -n \"CAM\";\ncreateNode \"camera\" -p \"CAM\" -n \"CAMShape\" -ss;\n\nsetAttr \".translateX\" 600;\nsetAttr \".translateY\" 900;\nsetAttr \".translateZ\" -600;\nsetAttr \".rotateX\" -45;\nsetAttr \".rotateY\" 135;\nsetAttr \".rotateZ\" 0;\n\nlookThroughModelPanel \"CAM\" modelPanel4;" 
-        -sourceType "mel" 
-        -commandRepeatable 1
-        -flat 1
-    ;
-    shelfButton
-        -enableCommandRepeat 1
-        -flexibleWidthType 3
-        -flexibleWidthValue 32
-        -enable 1
-        -width 35
-        -height 34
-        -manage 1
-        -visible 1
-        -preventOverride 0
-        -annotation "CreateMotionTrail" 
-        -enableBackground 0
-        -backgroundColor 0 0 0 
-        -highlightColor 0.321569 0.521569 0.65098 
-        -align "center" 
-        -label "CreateMotionTrail" 
-        -labelOffset 0
-        -rotation 0
-        -flipX 0
-        -flipY 0
-        -useAlpha 1
-        -overlayLabelColor 0.8 0.8 0.8 
-        -overlayLabelBackColor 0 0 0 0.5 
-        -image "motionTrail.png" 
-        -image1 "motionTrail.png" 
-        -style "iconOnly" 
-        -marginWidth 0
-        -marginHeight 1
-        -command "CreateMotionTrail" 
-        -sourceType "mel" 
-        -commandRepeatable 1
-        -flat 1
-    ;
-    shelfButton
-        -enableCommandRepeat 1
-        -flexibleWidthType 3
-        -flexibleWidthValue 32
-        -enable 1
-        -width 35
-        -height 34
-        -manage 1
-        -visible 1
-        -preventOverride 0
-        -annotation "from maya import cmds\n\npoly = cmds.polyPlane(w=1,h=1,sx=1,sy=1,ax=(0,0,1))[0]\ncmds.currentTime(cmds.playbackOptions(q=1,min=1))\npelvis_t = cmds.xform(\"MOCAP:pelvis\",q=1,t=1,ws=1)\npelvis_t[1]=0\ncmds.select([f\"{poly}.vtx[0]\",f\"{poly}.vtx[2]\"])\ncmds.move(*pelvis_t)\n\ncmds.currentTime(cmds.playbackOptions(q=1,max=1))\npelvis_t = cmds.xform(\"MOCAP:pelvis\",q=1,t=1,ws=1)\npelvis_t[1]=0\ncmds.select([f\"{poly}.vtx[1]\",f\"{poly}.vtx[3]\"])\ncmds.move(*pelvis_t)\n\n\n\ncmds.select([f\"{poly}.vtx[2]\",f\"{poly}.vtx[3]\"])\ncmds.move(0,200,0,r=1)\ncmds.select(cl=1)\n\nloc = cmds.spaceLocator()[0]\ncmds.select(poly,loc)\ncmds.UVPin()\nuvpin = \"uvPin1\"\ncmds.setAttr(f\"{uvpin}.coordinate[0]\",*(0,0))\n\ncmds.currentTime(cmds.playbackOptions(q=1,min=1))\n\nloc2 = cmds.spaceLocator()[0]\nloc3 = cmds.spaceLocator()[0]\ncmds.parentConstraint(loc,loc3)\ncmds.parent(\"MOCAP:root\",loc2)\ncmds.parent(loc2,loc3)\n\nt = cmds.xform(f\"{poly}.vtx[0]\",q=1,t=1,ws=1)\nt = (x*-1 for x in t)\ncmds.xform(poly,t=t,ws=1)\n\n\ndelete = cmds.createNode(\"transform\",name=\"delete\")\ncmds.parent([loc3,loc,poly],delete)" 
-        -enableBackground 0
-        -backgroundColor 0 0 0 
-        -highlightColor 0.321569 0.521569 0.65098 
-        -align "center" 
-        -label "from maya import cmds\n\npoly = cmds.polyPlane(w=1,h=1,sx=1,sy=1,a..." 
-        -labelOffset 0
-        -rotation 0
-        -flipX 0
-        -flipY 0
-        -useAlpha 1
-        -overlayLabelColor 0.8 0.8 0.8 
-        -overlayLabelBackColor 0 0 0 0.5 
-        -image "pythonFamily.png" 
-        -image1 "pythonFamily.png" 
-        -style "iconOnly" 
-        -marginWidth 0
-        -marginHeight 1
-        -command "from maya import cmds\n\npoly = cmds.polyPlane(w=1,h=0,sx=1,sy=1,ax=(0,0,1))[0]\ncmds.select(f\"{poly}.vtx[*]\")\ncmds.move(0,0,0)\n\n\ncmds.currentTime(cmds.playbackOptions(q=1,min=1))\npelvis_t = cmds.xform(\"MOCAP:pelvis\",q=1,t=1,ws=1)\npelvis_t[1]=0\ncmds.select([f\"{poly}.vtx[0]\",f\"{poly}.vtx[2]\"])\ncmds.move(*pelvis_t)\n\ncmds.currentTime(cmds.playbackOptions(q=1,max=1))\npelvis_t = cmds.xform(\"MOCAP:pelvis\",q=1,t=1,ws=1)\npelvis_t[1]=0\ncmds.select([f\"{poly}.vtx[1]\",f\"{poly}.vtx[3]\"])\ncmds.move(*pelvis_t)\n\n\n\ncmds.select([f\"{poly}.vtx[2]\",f\"{poly}.vtx[3]\"])\ncmds.move(0,200,0,r=1)\ncmds.select(cl=1)\n\nloc = cmds.spaceLocator()[0]\ncmds.select(poly,loc)\ncmds.UVPin()\nuvpin = \"uvPin1\"\ncmds.setAttr(f\"{uvpin}.coordinate[0]\",*(0,0))\n\ncmds.currentTime(cmds.playbackOptions(q=1,min=1))\n\nloc2 = cmds.spaceLocator()[0]\nloc3 = cmds.spaceLocator()[0]\ncmds.parentConstraint(loc,loc3)\ncmds.parent(\"MOCAP:root\",loc2)\ncmds.parent(loc2,loc3)\n\nt = cmds.xform(f\"{poly}.vtx[0]\",q=1,t=1,ws=1)\nt = (x*-1 for x in t)\ncmds.xform(poly,t=t,ws=1)\n\n\ndelete = cmds.createNode(\"transform\",name=\"delete\")\ncmds.parent([loc3,loc,poly],delete)" 
+        -command "import maya.cmds as cmds\nimport functools  # <-- ????????????????\n\n# -----------------------------------------------------------------\n# 1. ????????? (?????)\n# -----------------------------------------------------------------\n\"\"\"\n???????\n?????????,?????????????????????\n\ncal: p = v*t + 0.5*a*t^2\np: ??\nv: ????\nt: ??\na: ???\n\"\"\"\n\nimport math\nfrom typing import Dict, List\n\nfrom maya import cmds\n\n\nclass UESpeed:\n    FPS = 60\n    # sprint\n    sprint = 700\n    sprint_accel = 1000\n    sprint_decel = 1000\n\n    # run speeds\n    run_f = 475\n    run_b = 320\n    run_lp = 400\n    run_ln = 400\n    run_rp = 400\n    run_rn = 400\n    run_accel = 800\n    run_decel = 1000\n\n    # walk speeds\n    walk_f = 170\n    walk_b = 150\n    walk_lp = 160\n    walk_ln = 150\n    walk_rp = 160\n    walk_rn = 150\n    walk_accel = 400\n    walk_decel = 800\n\n\ndef timeSliderBookmark(name: str, time: List[int], color: List[float], priority: int = 1) -> str:\n    \"\"\"\n    ?Maya????????????\n\n    Args:\n        name (str): ?????\n        time (List[int]): ????,????????? [???, ???]\n        color (List[float]): RGB???,??0-1 [R, G, B]\n        priority (int, optional): ??????,???1\n\n    Returns:\n        str: ???timeSliderBookmark????\n\n    Example:\n        # ??????\"idle\"???,????10-50?,?????\n        bookmark_node = timeSliderBookmark(\"idle\", [10, 50], [0.5, 0.5, 0.5])\n    \"\"\"\n\n    bookmark = cmds.createNode(\"timeSliderBookmark\", name=f\"timeSliderBookmark_{name}\")\n    cmds.setAttr(f\"{bookmark}.name\", name, type=\"string\")\n    cmds.setAttr(f\"{bookmark}.color\", *color)\n    cmds.setAttr(f\"{bookmark}.timeRangeStart\", time[0])\n    cmds.setAttr(f\"{bookmark}.timeRangeStop\", time[1])\n    cmds.setAttr(f\"{bookmark}.priority\", priority)\n\n    return bookmark\n\n\ndef fn_loop(\n    speed=500,\n    loop_frames=60,\n    initial_pos=0.0,\n    initial_frame=0,\n    sample_fps=60,\n):\n    \"\"\"\n    ????????????\n\n    Args:\n        speed (int, optional): ???????? 500?\n        loop_frames (int, optional): ????????????? 60?\n        initial_pos (float, optional): ???????? 0.0?\n        initial_frame (int, optional): ??????? 0?\n        sample_fps (int, optional): ???????? FPS?\n\n    Returns:\n        dict ({str: list}): ?????????,?????:\n            - \"frames_range\" (list): [start_frame, end_frame]\n            - \"motion_data\" (list): ?? [frame, position] ?????\n    \"\"\"\n    motion_info: Dict[str, list] = {\n        \"frames_range\": [initial_frame, initial_frame + loop_frames],\n        \"motion_data\": [],\n    }\n\n    for frame in range(loop_frames + 1):\n        current_time = frame / float(sample_fps)\n        # ?? = ???? + ?? * ??\n        position = (abs(initial_pos) + speed * current_time) * (1 if initial_pos >= 0 else -1)\n        motion_info[\"motion_data\"].append([initial_frame + frame, position])\n\n    timeSliderBookmark(name=\"loop\", time=[initial_frame, initial_frame + loop_frames + 1], color=[0.6, 0.263, 0.431])\n    return motion_info\n\n\ndef fn_accel(\n    initial_speed=0.0,\n    accel=1000.0,\n    max_speed=500.0,\n    initial_pos=0.0,\n    initial_frame=0,\n    sample_fps=60,\n):\n    \"\"\"\n    ?????????????\n\n    Args:\n        initial_speed (float, optional): ???????? 0.0?\n        accel (float, optional): ???(??)???? 1000.0?\n        max_speed (float, optional): ??????????? 500.0?\n        initial_pos (float, optional): ???????? 0.0?\n        initial_frame (int, optional): ??????? 0?\n        sample_fps (int, optional): ???????? FPS?\n\n    Returns:\n        dict ({str: list}): ?????????,?????:\n            - \"frames_range\" (list): [start_frame, end_frame]\n            - \"motion_data\" (list): ?? [frame, position] ?????\n    \"\"\"\n    if accel <= 0:\n        raise ValueError(\"?????????\")\n    if initial_speed >= max_speed:\n        raise ValueError(\"?????????????\")\n\n    # ?????????????????\n    accel_times = (max_speed - initial_speed) / accel\n    accel_frames = math.ceil(accel_times * sample_fps)\n\n    motion_info: Dict[str, list] = {\n        \"frames_range\": [initial_frame, initial_frame + accel_frames],\n        \"motion_data\": [],\n    }\n    for frame in range(accel_frames + 1):\n        current_time = frame / float(sample_fps)\n        current_speed = initial_speed + accel * current_time\n        # ??????????\n        if current_speed > max_speed:\n            current_speed = max_speed\n        # ?? = ???? + ????*?? + 0.5*???*??^2\n        current_pos = initial_pos + initial_speed * current_time + 0.5 * accel * current_time**2\n        motion_info[\"motion_data\"].append([initial_frame + frame, current_pos])\n\n    timeSliderBookmark(name=\"accel\", time=[initial_frame, initial_frame + accel_frames + 1], color=[0.67, 0.235, 0.235])\n    return motion_info\n\n\ndef fn_decel(\n    initial_speed=500.0,\n    decel=1000.0,\n    min_speed=0.0,\n    initial_pos=0.0,\n    initial_frame=0,\n    sample_fps=60,\n):\n    \"\"\"\n    ?????????????\n\n    Args:\n        initial_speed (float, optional): ???????? 500.0?\n        decel (float, optional): ???(??)???? 1000.0?\n        min_speed (float, optional): ???????????? 0.0?\n        initial_pos (float, optional): ???????? 0.0?\n        initial_frame (int, optional): ??????? 0?\n        sample_fps (int, optional): ???????? FPS?\n\n    Returns:\n        dict ({str: list}): ?????????,?????:\n            - \"frames_range\" (list): [start_frame, end_frame]\n            - \"motion_data\" (list): ?? [frame, position] ?????\n    \"\"\"\n    if decel <= 0:\n        raise ValueError(\"????????\")\n    if initial_speed <= min_speed:\n        raise ValueError(\"?????????????\")\n\n    # ?????????????????\n    decel_times = (initial_speed - min_speed) / decel\n    decel_frames = math.ceil(decel_times * sample_fps)\n\n    motion_info: Dict[str, list] = {\n        \"frames_range\": [initial_frame, initial_frame + decel_frames],\n        \"motion_data\": [],\n    }\n    for frame in range(decel_frames + 1):\n        current_time = frame / float(sample_fps)\n        # ?? = ???? + ????*?? - 0.5*???*??^2\n        current_pos = initial_pos + initial_speed * current_time - 0.5 * decel * (current_time**2)\n        motion_info[\"motion_data\"].append([initial_frame + frame, current_pos])\n\n    timeSliderBookmark(name=\"decel\", time=[initial_frame, initial_frame + decel_frames + 1], color=[0.749, 0.4, 0.235])\n    return motion_info\n\n\ndef pre_motion_data(motion_data: Dict[str, list]) -> Dict[str, list]:\n    \"\"\"\n    ???????,??????????????????????????\n\n    ?? ????? ??????,???? `[0, 30]`,??? `[0, 250]`,\n    ?????,????? `[-30, 0]`,???? `[-250cm, 0cm]`?\n\n    ????????,??????,?? accel -> loop ??????,\n    ??????? loop ??,????? accel ??,\n    ?? pre_motion_data ? accel ??????,???loop???? accel ???\n\n    Args:\n        motion_data ({str: list}): ??????????\n            - \"frames_range\" (list): [start_frame, end_frame]\n            - \"motion_data\" (list): ?? [frame, position] ?????\n    Returns:\n        dict ({str: list}): ??????????,????????????????\n            - \"frames_range\" (list): [start_frame, end_frame]\n            - \"motion_data\" (list): ?? [frame, position] ?????\n    \"\"\"\n\n    if not motion_data:\n        raise ValueError(\"Please input motion data\")\n\n    # ???????????????\n    start_frame = motion_data[\"frames_range\"][0]\n    end_frame = motion_data[\"frames_range\"][-1]\n    motion_frames = end_frame - start_frame\n    start_pos = motion_data[\"motion_data\"][0][-1]\n    end_pos = motion_data[\"motion_data\"][-1][-1]\n    motion_pos = end_pos - start_pos\n\n    motion_data[\"frames_range\"] = [start_frame - motion_frames, start_frame]\n    # ?????????????\n    for frame in motion_data[\"motion_data\"]:\n        current_frame = frame[0]\n        current_pos = frame[1]\n        frame[0] = current_frame - motion_frames\n        frame[1] = current_pos - motion_pos\n    return motion_data\n\n\ndef key_motion_data(\n    motion_data: Dict[str, list],\n    object: str,\n    attr: str,\n    negative: bool = False,\n):\n    \"\"\"\n    ???????????????????\n\n    Args:\n        motion_data (dict): ?????????,?????:\n            - \"frames_range\" (list): [start_frame, end_frame]\n            - \"motion_data\" (list): ?? [frame, position] ?????\n        object_attribute (str): ??????(? \"translateX\")?\n        negative (bool, optional): ??????????? False?\n    \"\"\"\n    if not motion_data:\n        raise ValueError(\"Please input motion data\")\n\n    if negative:\n        negative = -1\n    else:\n        negative = 1\n    for frame in motion_data[\"motion_data\"]:\n        cmds.setKeyframe(object, attribute=attr, value=frame[1] * negative, time=frame[0])\n\n\ndef run_script_with_ui_values(attr, is_positive, max_speed, accel, decel):\n    print(attr, is_positive, max_speed, accel, decel)\n    if not cmds.objExists(\"rootMotion\"):\n        cmds.spaceLocator(name=\"rootMotion\")\n        cmds.setAttr(\"rootMotion.localScale\", *(100, 100, 100))\n\n    loop_frames = abs(int(cmds.playbackOptions(q=1, sst=1)) - int(cmds.playbackOptions(q=1, set=1)))\n    start_frame = int(cmds.playbackOptions(q=1, sst=1))\n\n    loop_data = fn_loop(\n        speed=max_speed,\n        loop_frames=loop_frames,\n        initial_pos=cmds.getAttr(f\"rootMotion.{attr}\"),\n        initial_frame=start_frame,\n        sample_fps=60,\n    )\n\n    key_motion_data(loop_data, object=\"rootMotion\", attr=attr, negative=not is_positive)\n\n\ndef run_accel_script(attr, is_positive, max_speed, accel, decel):\n    print(attr, is_positive, max_speed, accel, decel)\n    if not cmds.objExists(\"rootMotion\"):\n        cmds.spaceLocator(name=\"rootMotion\")\n\n    start_frame = int(cmds.currentTime(q=1))\n\n    data = fn_accel(\n        initial_speed=0.0,\n        accel=accel,\n        max_speed=max_speed,\n        initial_pos=cmds.getAttr(f\"rootMotion.{attr}\"),\n        initial_frame=start_frame,\n        sample_fps=60,\n    )\n\n    key_motion_data(data, object=\"rootMotion\", attr=attr, negative=not is_positive)\n\n\ndef run_decel_script(attr, is_positive, max_speed, accel, decel):\n    print(attr, is_positive, max_speed, accel, decel)\n    if not cmds.objExists(\"rootMotion\"):\n        cmds.spaceLocator(name=\"rootMotion\")\n\n    start_frame = int(cmds.currentTime(q=1))\n\n    data = fn_decel(\n        initial_speed=max_speed,\n        decel=decel,\n        min_speed=0.0,\n        initial_pos=cmds.getAttr(f\"rootMotion.{attr}\"),\n        initial_frame=start_frame,\n        sample_fps=60,\n    )\n\n    key_motion_data(data, object=\"rootMotion\", attr=attr, negative=not is_positive)\n\n\n# -----------------------------------------------------------------\n# 2. UI ??\n# -----------------------------------------------------------------\n\nui_elements = {}\nwindow_name = \"simpleAxisUI\"\n\n\ndef _query_common_ui_values():\n    \"\"\"????,????UI??\"\"\"\n\n    selected_axis = cmds.radioCollection(ui_elements[\"axis_collection\"], query=True, select=True)\n    if selected_axis == \"x_rb\":\n        attr = \"tx\"\n    elif selected_axis == \"y_rb\":\n        attr = \"ty\"\n    elif selected_axis == \"z_rb\":\n        attr = \"tz\"\n    else:\n        attr = \"tx\"\n\n    selected_dir = cmds.radioCollection(ui_elements[\"dir_collection\"], query=True, select=True)\n    is_positive = selected_dir == \"plus_rb\"\n\n    max_speed = cmds.floatFieldGrp(ui_elements[\"maxSpeed_field\"], query=True, value1=True)\n    accel = cmds.floatFieldGrp(ui_elements[\"accel_field\"], query=True, value1=True)\n    decel = cmds.floatFieldGrp(ui_elements[\"decel_field\"], query=True, value1=True)\n\n    return attr, is_positive, max_speed, accel, decel\n\n\n# --- ????????? ---\n\n\ndef on_loop_click(*args):\n    \"\"\"? 'Loop' ????????\"\"\"\n    attr, is_positive, max_speed, accel, decel = _query_common_ui_values()\n    run_script_with_ui_values(attr, is_positive, max_speed, accel, decel)\n\n\ndef on_accel_click(*args):\n    \"\"\"? 'Accel' ????????\"\"\"\n    attr, is_positive, max_speed, accel, decel = _query_common_ui_values()\n    run_accel_script(attr, is_positive, max_speed, accel, decel)\n\n\ndef on_decel_click(*args):\n    \"\"\"? 'Decel' ????????\"\"\"\n    attr, is_positive, max_speed, accel, decel = _query_common_ui_values()\n    run_decel_script(attr, is_positive, max_speed, accel, decel)\n\n\n# --- ??:??????? ---\n\n\ndef set_speed_values(max_speed, accel, decel, *args):\n    \"\"\"\n    ???????????????\n    ????UI?? float fields?\n    \"\"\"\n    try:\n        cmds.floatFieldGrp(ui_elements[\"maxSpeed_field\"], edit=True, value1=max_speed)\n        cmds.floatFieldGrp(ui_elements[\"accel_field\"], edit=True, value1=accel)\n        cmds.floatFieldGrp(ui_elements[\"decel_field\"], edit=True, value1=decel)\n        print(f\"Preset set: MaxSpeed={max_speed}, Accel={accel}, Decel={decel}\")\n    except KeyError:\n        cmds.warning(\"UI elements not found. Cannot set preset values.\")\n    except RuntimeError:\n        # ????????????\n        pass\n\n\n# -----------------------------------------------------------------\n# 3. UI ??\n# -----------------------------------------------------------------\n\n\ndef create_simple_ui():\n    \"\"\"\n    ??UI??\n    \"\"\"\n    global ui_elements, window_name\n\n    if cmds.window(window_name, exists=True):\n        cmds.deleteUI(window_name, window=True)\n\n    # ????????????\n    cmds.window(window_name, title=\"Select Axis\", widthHeight=(260, 600), s=False)\n\n    main_layout = cmds.columnLayout(adjustableColumn=True, rowSpacing=10)\n\n    # --- Axis (X, Y, Z) ---\n    ui_elements[\"axis_collection\"] = cmds.radioCollection()\n    cmds.rowLayout(numberOfColumns=3)\n    cmds.radioButton(\"x_rb\", label=\"X\")\n    cmds.radioButton(\"z_rb\", label=\"Z\", select=True)\n    cmds.setParent(main_layout)\n\n    # --- Direction (+, -) ---\n    ui_elements[\"dir_collection\"] = cmds.radioCollection()\n    cmds.rowLayout(numberOfColumns=2)\n    cmds.radioButton(\"plus_rb\", label=\"+ (Positive)\", select=True)\n    cmds.radioButton(\"minus_rb\", label=\"- (Negative)\")\n    cmds.setParent(main_layout)\n\n    cmds.separator(h=10, style=\"in\")\n\n    # --- ????? ---\n    ui_elements[\"maxSpeed_field\"] = cmds.floatFieldGrp(label=\"Max Speed\", numberOfFields=1, value1=500.0, columnWidth2=[80, 100])\n\n    ui_elements[\"accel_field\"] = cmds.floatFieldGrp(label=\"Accel\", numberOfFields=1, value1=1000.0, columnWidth2=[80, 100])\n\n    ui_elements[\"decel_field\"] = cmds.floatFieldGrp(label=\"Decel\", numberOfFields=1, value1=1000.0, columnWidth2=[80, 100])\n\n    cmds.setParent(main_layout)\n\n    cmds.separator(h=10, style=\"in\")\n\n    # ????: 4?, ???5, ????60\n    btn_width = 60\n    btn_spacing = 5\n\n    # --- Row 1: Run ---\n    cmds.rowLayout(numberOfColumns=4)\n    cmds.button(label=\"Run_F\", w=60, command=functools.partial(set_speed_values, 500, 1000, 1000))\n    cmds.button(label=\"Run_LRP\", w=60, command=functools.partial(set_speed_values, 450, 1000, 1000))\n    cmds.button(label=\"Run_LRN\", w=60, command=functools.partial(set_speed_values, 400, 1000, 1000))\n    cmds.button(label=\"Run_B\", w=60, command=functools.partial(set_speed_values, 400, 1000, 1000))\n    cmds.setParent(main_layout)\n\n    # --- Row 2: Walk ---\n    cmds.rowLayout(numberOfColumns=4)\n    cmds.button(label=\"Walk_F\", w=60, command=functools.partial(set_speed_values, 170, 400, 800))\n    cmds.button(label=\"Walk_LRP\", w=60, command=functools.partial(set_speed_values, 160, 400, 800))\n    cmds.button(label=\"Walk_LRN\", w=60, command=functools.partial(set_speed_values, 150, 400, 800))\n    cmds.button(label=\"Walk_B\", w=60, command=functools.partial(set_speed_values, 150, 400, 800))\n    cmds.setParent(main_layout)\n\n    # --- Row 3: Sprint ---\n    cmds.rowLayout(numberOfColumns=1, adjustableColumn=1)\n    # ?????????\n    full_width = (btn_width * 4) + (btn_spacing * 3)\n    cmds.button(label=\"Sprint\", command=functools.partial(set_speed_values, 700, 1000, 1000), width=full_width)\n    cmds.setParent(main_layout)\n\n    # --- ?????? ---\n    cmds.separator(h=15, style=\"in\")\n    cmds.button(label=\"Loop\", command=on_loop_click, height=30)\n    cmds.button(label=\"Accel\", command=on_accel_click, height=30)\n    cmds.button(label=\"Decel\", command=on_decel_click, height=30)\n\n    cmds.showWindow(window_name)\n\n\n# -----------------------------------------------------------------\n# 4. ????\n# -----------------------------------------------------------------\nif __name__ == \"__main__\":\n    # ???? loop ? key_motion_data ??????\n    # (?????,???? source ??????????)\n\n    # ??UI\n    create_simple_ui()\n" 
         -sourceType "python" 
         -commandRepeatable 1
         -flat 1
