@@ -3,13 +3,12 @@
 Game Export Info - Animation Metadata Handler
 ================================================================================
 
-[ 脚本目的 ]
 该脚本提供了一套核心工具函数，用于在 Maya 场景中创建、读取和管理动画导出
 所需的元数据 (Metadata)。它通过一个自定义的 "gameFbxExporter" 节点来持久化
 存储这些信息，使得动画数据可以在不同的 Maya 文件和处理阶段之间被精确、可靠
 地传递。
 
-[ 核心设计 ]
+
 - 节点中心化: 所有元数据都存储在一个名为 "_ANIM_EXPORTER_" 的
   "gameFbxExporter" 类型的节点上。这种方法比使用场景变量或外部文件更
   加健壮，因为数据与 Maya 场景文件本身绑定在一起。
@@ -18,7 +17,7 @@ Game Export Info - Animation Metadata Handler
     - 导出的 FBX 文件名 (`exportName`)。
     - 一个或多个动画片段 (`clip`) 的信息，每个片段包含名称、开始帧和结束帧。
 
-[ 主要函数 ]
+
 1.  get_exportData(exportNode="_ANIM_EXPORTER_"):
     - 功能: 从场景中指定的 `exportNode` 上读取所有动画元数据。
     - 工作流程:
@@ -38,7 +37,6 @@ Game Export Info - Animation Metadata Handler
            各个动画片段）逐一设置到新节点的对应属性上。
         d. 返回新创建的节点。
 
-[ 应用场景 ]
 这个模块是整个自动化管线的“数据中枢”。例如：
 - 在 Mocap 数据预处理阶段，使用 `create_exportData` 将切分好的动画片段信息
   写入文件。

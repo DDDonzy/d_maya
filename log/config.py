@@ -28,7 +28,7 @@ LOG_FILE_PATH = None  # r"t:/d_maya/log.log"
 DEFAULT_FORMAT = (
     "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | "
     "<level>{level: <8}</level> | "
-    "<cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>"
+    "<cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>{exception}"
 )
 # fmt: on
 def formatter(record):
@@ -54,8 +54,26 @@ def level_filter(record):
     return record["level"].no >= current_level_no
 
 
+# Modify handler levels
+class LogLevel(Enum):
+    TRACE = 0
+    DEBUG = 1
+    INFO = 2
+    WARNING = 3
+    ERROR = 4
+    CRITICAL = 5
+
+
 # set level
 def set_level(level: int):
+    """
+    设置日志记录器的日志级别。
+    Args:
+        level (int): 日志级别，使用 LogLevel 枚举中的值。
+    Examples:
+        `set_level(LogLevel.DEBUG.value)`
+        `set_level(2)`
+    """
     if isinstance(level, int):
         level = LogLevel(level).name
     else:
@@ -77,6 +95,8 @@ if CONSOLE:
         level="TRACE",  # 最低日志级别
         filter=level_filter,
         format=formatter,
+        backtrace=True,
+        diagnose=True,
     )
 
 
@@ -90,20 +110,10 @@ if LOG_FILE_PATH:
         level="TRACE",  # 最低日志级别
         filter=level_filter,
         format=formatter,
+        backtrace=True,
+        diagnose=True,
     )
 
-
-# Modify handler levels
-class LogLevel(Enum):
-    TRACE = 0
-    DEBUG = 1
-    INFO = 2
-    WARNING = 3
-    ERROR = 4
-    CRITICAL = 5
-
-
-# set_level(1)
 
 trace = logger.trace
 debug = logger.debug
