@@ -31,12 +31,8 @@ def init_maya():
                 log.debug(f"Load plugin: '{plugin}' successfully")
             except Exception as e:
                 log.warning(e)
-    log.info("Maya environment initialized successfully.")
+    log.success("Maya environment initialized successfully.")
 
 
 if __name__ == "__main__":
     init_maya()
-    import time
-
-    s = time.time()
-    log.info(f"Done in {time.time() - s}")

@@ -3,7 +3,9 @@ from loguru import logger
 import sys
 import os
 from enum import Enum
+from pathlib import Path
 from functools import partial
+
 
 # Public API
 __all__ = [
@@ -20,7 +22,7 @@ __all__ = [
 
 
 CONSOLE = True
-LOG_FILE_PATH = None  # r"t:/d_maya/log.log"
+LOG_FILE_PATH = None #Path(__file__).parent / "_logTemp" / "_temp.log"  # r"t:/d_maya/log.log"
 
 
 # format

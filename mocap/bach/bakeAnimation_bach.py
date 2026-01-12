@@ -244,7 +244,8 @@ if __name__ == "__main__":
             cmds.setAttr(f"{export_node}.exportPath", str(fbx_output_dir), type="string")  # 设置导出路径
 
             log.debug("Set Export Path Complete")
-            clean_unknown_data()  # 清理 unknown 数据
+            with suppress_maya_logs():
+                clean_unknown_data()  # 清理 unknown 数据
             log.debug("Clean Unknown Data Complete")
             cmds.file(unloadReference=f"{clip_namespace}RN")  # 卸载片段引用
             log.debug("Unload Clip Reference Complete")
