@@ -3,7 +3,6 @@ from maya import cmds
 from maya.api import OpenMaya as om
 from m_utils.other.attr import lockAttr
 from m_utils.create.createBase import CreateBase
-from m_utils.ui.showMessage import muteMessage
 
 
 def get_neighbor_edgeVtx(mesh):
@@ -139,9 +138,7 @@ class chainFit(CreateBase):
         cvTransform, cvShape = self.buildCurve()
 
     def _post_create(self):
-        muteMessage(True)
         lockAttr(self.thisAssetName.name)
-        muteMessage(False)
 
     def buildCurve(self):
         cvPosition = calCenterPosition(getGrowVtxGroup(self.mesh, step=self.step), self.mesh)

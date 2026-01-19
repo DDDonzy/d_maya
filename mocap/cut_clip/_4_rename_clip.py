@@ -33,10 +33,10 @@ if result == "OK":
                 continue
             cmds.delete(x)
 
-        cmds.setAttr(f"{clip}.clipStart", 1)
+        cmds.setAttr(f"{clip}.clipStart", 0)
         cmds.setAttr(f"{clip}.clipName", name, type="string")
-        cmds.playbackOptions(min=1, max=cmds.getAttr(f"{clip}.clipDuration") + 1)
-        cmds.playbackOptions(ast=1, aet=cmds.getAttr(f"{clip}.clipDuration") + 1)
+        cmds.playbackOptions(min=0, max=cmds.getAttr(f"{clip}.clipDuration"))
+        cmds.playbackOptions(ast=0, aet=cmds.getAttr(f"{clip}.clipDuration"))
 
         print(f"Script execution finished. Name set to: {name}")
 
