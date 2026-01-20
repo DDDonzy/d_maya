@@ -106,3 +106,6 @@ def rename(text: str, obj: list = None):
 def showUI():
     rename_ui = RenameUI()
     rename_ui.show()
+
+if __name__ == "__main__":
+    showUI()

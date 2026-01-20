@@ -119,5 +119,9 @@ def install_package():
         print(f"{'':=^{120}}")
 
 
+def onMayaDroppedPythonFile(*args, **kwargs):
+    install_package()
+
+
 if __name__ == "__main__":
     install_package()

@@ -17,22 +17,7 @@ runTimeCommand
 	-helpUrl ""
 	-hotkeyCtx ""
 	-commandLanguage "python"
-	-command ("import _hotkey.d_hotkey\n_hotkey.d_hotkey.d_hotbox_release()")
-	hotbox_release;
-
-runTimeCommand
-	-label ""
-	-annotation ""
-	-longAnnotation ""
-	-category "Custom Scripts"
-	-image ""
-	-tags ""
-	-keywords ""
-	-plugin ""
-	-helpUrl ""
-	-hotkeyCtx ""
-	-commandLanguage "python"
-	-command ("import _hotkey.d_hotkey\n_hotkey.d_hotkey.toggle_joint_option()")
+	-command ("import d_hotkeys\nd_hotkeys.UI_Command.toggle_joint_option()")
 	toggle_joint_option;
 
 runTimeCommand
@@ -47,7 +32,22 @@ runTimeCommand
 	-helpUrl ""
 	-hotkeyCtx ""
 	-commandLanguage "python"
-	-command ("import _hotkey.d_hotkey\n_hotkey.d_hotkey.reset_transform_cmd(transform=True, userDefined=True)")
+	-command ("import d_hotkeys\nd_hotkeys.ui_logic.d_hotbox_release()")
+	hotbox_release;
+
+runTimeCommand
+	-label ""
+	-annotation ""
+	-longAnnotation ""
+	-category "Custom Scripts"
+	-image ""
+	-tags ""
+	-keywords ""
+	-plugin ""
+	-helpUrl ""
+	-hotkeyCtx ""
+	-commandLanguage "python"
+	-command ("import d_hotkeys\nd_hotkeys.UI_Command.reset_transform_user_defined()")
 	reset_all_attrs;
 
 runTimeCommand
@@ -62,7 +62,7 @@ runTimeCommand
 	-helpUrl ""
 	-hotkeyCtx ""
 	-commandLanguage "python"
-	-command ("import _hotkey.d_hotkey\n_hotkey.d_hotkey.d_hotbox_press()")
+	-command ("import d_hotkeys\nd_hotkeys.ui_logic.d_hotbox_press()")
 	hotbox_press;
 
 //
@@ -93,16 +93,16 @@ nameCommand
 	hotbox_releaseNameCommand;
 
 nameCommand
-	-annotation "resetAllNameCommand"
-	-sourceType "mel"
-	-command ("reset_all_attrs")
-	resetAllNameCommand;
-
-nameCommand
 	-annotation "toggle_joint_optionNameCommand"
 	-sourceType "mel"
 	-command ("toggle_joint_option")
 	toggle_joint_optionNameCommand;
+
+nameCommand
+	-annotation "resetAllNameCommand"
+	-sourceType "mel"
+	-command ("reset_all_attrs")
+	resetAllNameCommand;
 
 //
 // The user hotkeys
@@ -110,11 +110,10 @@ nameCommand
 //
 // The hotkey set
 //
-hotkeySet -source "Maya_Default" -current hotkey;
+hotkeySet -source "Maya_Default" -current hotKey;
 //
 // The hotkey contexts and hotkeys
 //
-hotkey -keyShortcut "3" -alt -name ("toggle_joint_optionNameCommand");
 hotkey -keyShortcut "`" -name ("hotbox_pressNameCommand");
 hotkey -keyShortcut "`" -releaseName ("hotbox_releaseNameCommand");
 hotkey -keyShortcut "v" -sht -name ("PasteVertexWeightsNameCommand");
@@ -122,21 +121,22 @@ hotkey -keyShortcut "v" -sht -releaseName ("");
 hotkey -keyShortcut "c" -sht -name ("CopyVertexWeightsNameCommand");
 hotkey -keyShortcut "c" -sht -releaseName ("");
 hotkey -keyShortcut "`" -ctl -name ("resetAllNameCommand");
-hotkeyCtx -type "Editor" -addClient "hyperGraphPanel";
-hotkeyCtx -type "Editor" -addClient "polyTexturePlacementPanel";
-hotkeyCtx -type "Editor" -addClient "timeEditorPanel";
-hotkeyCtx -type "Editor" -addClient "posePanel";
-hotkeyCtx -type "Editor" -addClient "shapePanel";
-hotkeyCtx -type "Editor" -addClient "profilerPanel";
+hotkey -keyShortcut "3" -alt -name ("toggle_joint_optionNameCommand");
 hotkeyCtx -type "Editor" -addClient "hyperShadePanel";
-hotkeyCtx -type "Editor" -addClient "outlinerPanel";
+hotkeyCtx -type "Editor" -addClient "polyTexturePlacementPanel";
 hotkeyCtx -type "Editor" -addClient "nodeEditorPanel";
 hotkeyCtx -type "Editor" -addClient "graphEditor";
-hotkeyCtx -type "Tool" -addClient "polyCutUV";
-hotkeyCtx -type "Tool" -addClient "texCutContext";
+hotkeyCtx -type "Editor" -addClient "hyperGraphPanel";
+hotkeyCtx -type "Editor" -addClient "shapePanel";
+hotkeyCtx -type "Editor" -addClient "timeEditorPanel";
+hotkeyCtx -type "Editor" -addClient "outlinerPanel";
+hotkeyCtx -type "Editor" -addClient "posePanel";
+hotkeyCtx -type "Editor" -addClient "profilerPanel";
 hotkeyCtx -type "Tool" -addClient "sculptMeshCache";
-hotkeyCtx -type "Tool" -addClient "Unfold3DBrush";
-hotkeyCtx -type "Tool" -addClient "texSculptCacheContext";
+hotkeyCtx -type "Tool" -addClient "polyCutUV";
 hotkeyCtx -type "Tool" -addClient "xgmIGBrush";
-hotkeyCtx -type "Tool" -addClient "bpDraw";
+hotkeyCtx -type "Tool" -addClient "Unfold3DBrush";
+hotkeyCtx -type "Tool" -addClient "texCutContext";
+hotkeyCtx -type "Tool" -addClient "texSculptCacheContext";
 hotkeyCtx -type "Tool" -addClient "SymmetrizeUVBrush";
+hotkeyCtx -type "Tool" -addClient "bpDraw";

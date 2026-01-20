@@ -2,4 +2,3 @@
 PyYaml
 numpy
 loguru
-mayafbx
