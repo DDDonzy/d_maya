@@ -1,13 +1,16 @@
-from email.mime import base
-from functools import partial
 import re
+import contextlib
+from functools import partial
+
 
 from maya.api import OpenMaya as om
+from maya import cmds
+
 from PySide2.QtCore import Qt, QSize, QStringListModel
 from PySide2.QtWidgets import QLineEdit, QCompleter
 from PySide2.QtGui import QCursor
-from m_utils.apiundo import commit
 
+from m_utils.apiundo import commit
 from m_utils.ui.getMayaMainWindow import getMayaMainWindow
 from m_utils.create.generateUniqueName import generateUniqueName, adjustName
 
@@ -85,38 +88,34 @@ class RenameUI(QLineEdit):
         return False
 
 
+@contextlib.contextmanager
+def undoChunk():
+    cmds.undoInfo(openChunk=True)
+    try:
+        yield
+    finally:
+        cmds.undoInfo(closeChunk=True)
+
+
 def rename(text: str, obj: list = None):
     # if no obj input, use current selection and excluding shapes
 
     mSel = om.MGlobal.getActiveSelectionList()
     mIterSel = om.MItSelectionList(mSel)
+    with undoChunk():
+        for x in mIterSel:
+            mObj: om.MObject = x.getDependNode()
+            if mObj.hasFn(om.MFn.kShape):
+                continue
 
-    _doit = []
-    _undo = []
+            mDep: om.MFnDependencyNode = om.MFnDependencyNode(mObj)
+            baseName = mDep.uniqueName()
+            if "|" in baseName:
+                baseName = baseName.split("|")[-1]
+            name = generateUniqueName(adjustName(name=text, baseName=baseName))
+            mDep.setName(name)
 
-    for x in mIterSel:
-        mObj: om.MObject = x.getDependNode()
-        if mObj.hasFn(om.MFn.kShape):
-            continue
-
-        mDep: om.MFnDependencyNode = om.MFnDependencyNode(mObj)
-        baseName = mDep.uniqueName()
-        if "|" in baseName:
-            baseName = baseName.split("|")[-1]
-
-        _undo.append(lambda baseName=baseName, dependencyNode=mDep: dependencyNode.setName(baseName))
-        _doit.append(lambda name=text, baseName=baseName, dependencyNode=mDep: dependencyNode.setName(generateUniqueName(adjustName(name=name, baseName=baseName))))
-
-    def doit():
-        for f in _doit:
-            f()
-
-    def undo():
-        for f in _undo:
-            f()
-
-    doit()
-    commit(undo, doit)
+            commit(partial(mDep.setName, baseName), partial(mDep.setName, name))
 
 
 def showUI():
