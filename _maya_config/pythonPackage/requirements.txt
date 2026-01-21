@@ -2,3 +2,4 @@
 PyYaml
 numpy
 loguru
+maya-stubs

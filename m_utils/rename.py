@@ -1,9 +1,12 @@
+from email.mime import base
+from functools import partial
 import re
-from maya import cmds
+
 from maya.api import OpenMaya as om
 from PySide2.QtCore import Qt, QSize, QStringListModel
 from PySide2.QtWidgets import QLineEdit, QCompleter
 from PySide2.QtGui import QCursor
+from m_utils.apiundo import commit
 
 from m_utils.ui.getMayaMainWindow import getMayaMainWindow
 from m_utils.create.generateUniqueName import generateUniqueName, adjustName
@@ -58,8 +61,8 @@ class RenameUI(QLineEdit):
         self.setCursorPosition(cursorPosition)
 
     def _adjustText(self, text):
-        text = re.sub(r'[`·]', '', text)
-        text = re.sub(r'[^a-zA-Z0-9_#@]', '_', string=text)
+        text = re.sub(r"[`·]", "", text)
+        text = re.sub(r"[^a-zA-Z0-9_#@]", "_", string=text)
         if not text:
             return text
         if text[0].isdigit():
@@ -83,29 +86,43 @@ class RenameUI(QLineEdit):
 
 
 def rename(text: str, obj: list = None):
-    if not obj:
-        obj = cmds.ls(sl=1)
-        selShape = cmds.ls(sl=1, s=1)
-        for shape in selShape:
-            obj.remove(shape)
-    mSel = om.MSelectionList()
-    [mSel.add(x) for x in obj]
+    # if no obj input, use current selection and excluding shapes
 
-    cmds.undoInfo(openChunk=True)
+    mSel = om.MGlobal.getActiveSelectionList()
     mIterSel = om.MItSelectionList(mSel)
+
+    _doit = []
+    _undo = []
+
     for x in mIterSel:
-        baseName = x.getDagPath().partialPathName()
+        mObj: om.MObject = x.getDependNode()
+        if mObj.hasFn(om.MFn.kShape):
+            continue
+
+        mDep: om.MFnDependencyNode = om.MFnDependencyNode(mObj)
+        baseName = mDep.uniqueName()
         if "|" in baseName:
             baseName = baseName.split("|")[-1]
-        name = adjustName(name=text, baseName=baseName, num=1)
-        name = generateUniqueName(name)
-        cmds.rename(x.getDagPath().fullPathName(), name)
-    cmds.undoInfo(closeChunk=True)
+
+        _undo.append(lambda baseName=baseName, dependencyNode=mDep: dependencyNode.setName(baseName))
+        _doit.append(lambda name=text, baseName=baseName, dependencyNode=mDep: dependencyNode.setName(generateUniqueName(adjustName(name=name, baseName=baseName))))
+
+    def doit():
+        for f in _doit:
+            f()
+
+    def undo():
+        for f in _undo:
+            f()
+
+    doit()
+    commit(undo, doit)
 
 
 def showUI():
     rename_ui = RenameUI()
     rename_ui.show()
+
 
 if __name__ == "__main__":
     showUI()

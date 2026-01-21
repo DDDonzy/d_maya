@@ -16,21 +16,21 @@ def generateUniqueName(name):
     while cmds.objExists(name):
         # Find trailing digits: matches numbers at the end (ignoring non-digits after)
         # Example: "object123abc" matches "123"
-        match = re.search(r'(\d+)(?=[^0-9]*$)', string=name)
+        match = re.search(r"(\d+)(?=[^0-9]*$)", string=name)
         if match:
             indexStr = match.group(0)
             indexInt = int(indexStr) + 1
             # Keep zero-padding format: "001" -> "002"
             indexStr = f"{indexInt:0{len(indexStr)}}"
             # Replace the found digits with incremented number
-            name = re.sub(r'(\d+)(?=[^0-9]*$)', indexStr, name)
+            name = re.sub(r"(\d+)(?=[^0-9]*$)", indexStr, name)
         else:
             # No digits found, append "1"
             name = f"{name}{1}"
     return name
 
 
-def adjustName(name, baseName='', num=1):
+def adjustName(name, baseName=""):
     """
     Rationalized name
     Args:
@@ -43,29 +43,29 @@ def adjustName(name, baseName='', num=1):
     """
     if not name:
         return name
-    
+
     # Replace invalid characters with underscore (keep only letters, digits, _, #, @)
-    name = re.sub(r'[^a-zA-Z0-9_#@]', '_', string=name)
-    
+    name = re.sub(r"[^a-zA-Z0-9_#@]", "_", string=name)
+
     # Replace @ placeholder with baseName
     name = re.sub(r"\@", f"{baseName}", name)
-    
+
     # Replace # placeholder with number
-    name = re.sub(r"\#", f"{num}", name)
-    
+    name = re.sub(r"\#", f"{0}", name)
+
     # Merge multiple underscores into single underscore
-    name = re.sub(r'_{2,}', '_', name)
-    
+    name = re.sub(r"_{2,}", "_", name)
+
     # Remove leading underscore
-    if name[0] == "_":
-        name = name[1:]
-    
+    # if name[0] == "_":
+    #     name = name[1:]
+
     # Add underscore if starts with digit (Maya requirement)
     if name[0].isdigit():
         name = "_" + name
-    
-    # Remove trailing underscore
-    if name[-1] == "_":
-        name = name[0:-1]
-    
+
+    # # Remove trailing underscore
+    # if name[-1] == "_":
+    #     name = name[0:-1]
+
     return name

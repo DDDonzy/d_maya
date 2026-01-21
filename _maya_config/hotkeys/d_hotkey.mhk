@@ -110,7 +110,7 @@ nameCommand
 //
 // The hotkey set
 //
-hotkeySet -source "Maya_Default" -current hotKey;
+hotkeySet -source "Maya_Default" -current d_hotKey;
 //
 // The hotkey contexts and hotkeys
 //
