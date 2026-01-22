@@ -118,4 +118,5 @@ def sync_env_file():
     update_maya_modules(root, PYTHONPATH)
 
 
-sync_env_file()
+if __name__ == "__main__":
+    sync_env_file()
