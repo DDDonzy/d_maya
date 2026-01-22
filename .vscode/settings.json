@@ -1,0 +1,17 @@
+{
+    "python.analysis.extraPaths": [
+        "./",
+        "./_maya_config/hotkeys",
+        "./_maya_config/scripts",
+        "./_oldTools"
+    ],
+    "python.autoComplete.extraPaths": [
+        "./",
+        "./_maya_config/hotkeys",
+        "./_maya_config/scripts",
+        "./_oldTools"
+    ],
+    "python.defaultInterpreterPath": "C:/Program Files/Autodesk/Maya2024/bin/mayapy.exe",
+    "npm.scriptHover": false,
+    
+}

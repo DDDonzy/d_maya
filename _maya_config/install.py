@@ -9,6 +9,12 @@ module = this_python_file_path.parent / "modules" / "d_maya.mod"
 
 sys.path.append(str(project_path))
 
+
+from _maya_config.pythonPackage.installPackage import install_package  # noqa: E402
+
+install_package()
+
+
 import log  # noqa: E402
 
 
@@ -32,20 +38,6 @@ def install_module():
         log.error("Installation failed, original .mod file not found.")
 
 
-def install_hotkeys():
-    import _maya_config.hotkeys.d_hotkeys
-
-    _maya_config.hotkeys.d_hotkeys.install_hotkey()
-    log.success("Hotkeys installation complete.")
-
-
-def install_package():
-    from _maya_config.pythonPackage.installPackage import install_package
-
-    install_package()
-
-
 def onMayaDroppedPythonFile(*args, **kwargs):
     install_package()
     install_module()
-    install_hotkeys()
