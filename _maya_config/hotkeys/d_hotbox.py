@@ -1,4 +1,3 @@
-from pathlib import Path
 from functools import partial
 
 from maya import cmds, mel
