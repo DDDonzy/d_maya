@@ -1,4 +1,3 @@
-import re
 import json
 from pathlib import Path
 
@@ -88,11 +87,11 @@ def update_maya_modules(root: Path, paths: list):
         new_clean_paths.append(f"./{clean_p}" if clean_p and clean_p != "." else "./")
 
     combined_paths = list(dict.fromkeys(old_paths + new_clean_paths))
-s)
+
+    has_header = any(line.startswith("+") for line in existing_lines)
     final_content = []
 
     if not has_header:
-    has_header = any(line.startswith("+") for line in existing_line
         final_content.append(f"+ {MODULE_NAME} {VERSION} ./")
 
     final_content.extend(existing_lines)
