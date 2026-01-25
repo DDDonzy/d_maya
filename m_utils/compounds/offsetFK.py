@@ -2,18 +2,21 @@ import maya.cmds as cmds
 from m_utils.compounds.decomMatrix import decomMatrix
 from m_utils.create.createBase import CreateBase, CreateNode
 
+
 class offsetFK(CreateBase):
     """Create offset fk system"""
 
+    isDagAsset: bool = True
+
     def __init__(self, *args, **kwargs):
         """
-            Args:
-            *args: Variable length argument list.
-                args[0] (list): List of controllers if not provided in kwargs.
-                args[1] (list): List of offsets if not provided in kwargs.
-            **kwargs: Arbitrary keyword arguments.
-                controllerList (list): List of controllers. Default is an empty list.
-                offsetList (list): List of offsets. Default is an empty list.
+        Args:
+        *args: Variable length argument list.
+            args[0] (list): List of controllers if not provided in kwargs.
+            args[1] (list): List of offsets if not provided in kwargs.
+        **kwargs: Arbitrary keyword arguments.
+            controllerList (list): List of controllers. Default is an empty list.
+            offsetList (list): List of offsets. Default is an empty list.
         """
         # get parameter
         self.controllerList = kwargs.get("controllerList") or kwargs.get("cl") or []
@@ -37,17 +40,13 @@ class offsetFK(CreateBase):
             node_multMatrix = CreateNode("multMatrix", name=f"{next_control}_multMatrix_{self.thisType}1")
             node_decom = decomMatrix(name=next_offset)
             # get offset matrix from 'offset_obj' with 'next offset_obj'
-            cmds.connectAttr(f"{next_offset}.parentMatrix[0]",
-                             f"{node_multMatrix}.matrixIn[0]")
-            cmds.connectAttr(f"{offset}.parentInverseMatrix[0]",
-                             f"{node_multMatrix}.matrixIn[1]")
+            cmds.connectAttr(f"{next_offset}.parentMatrix[0]", f"{node_multMatrix}.matrixIn[0]")
+            cmds.connectAttr(f"{offset}.parentInverseMatrix[0]", f"{node_multMatrix}.matrixIn[1]")
             # controller constraint it
-            cmds.connectAttr(f"{control}.worldMatrix[0]",
-                             f"{node_multMatrix}.matrixIn[2]")
+            cmds.connectAttr(f"{control}.worldMatrix[0]", f"{node_multMatrix}.matrixIn[2]")
             # matrix to trs
-            cmds.connectAttr(f"{node_multMatrix}.matrixSum",
-                             node_decom.inputMatrix)
-            
+            cmds.connectAttr(f"{node_multMatrix}.matrixSum", node_decom.inputMatrix)
+
+
 if __name__ == "__main__":
-    offsetFK(controllerList=["ctrl1", "ctrl2"],
-             offsetList=["offset1", "offset2"])
+    offsetFK(controllerList=["ctrl1", "ctrl2"], offsetList=["offset1", "offset2"])

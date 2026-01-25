@@ -104,14 +104,17 @@ def lockAttrs(obj):
 
 rig_group = r"MotionSystem"
 for obj, dag in IterHierarchy(rig_group):
+    # 排除 骨骼 以及 非变换节点
     if cmds.objectType(obj, isAType="joint") or not cmds.objectType(obj, isAType="transform"):
         continue
+    # 如果是 控制器 则锁定指定属性
     elif isController(obj):
         for attr, value in lockAttr.items():
             try:
                 cmds.setAttr(f"{obj}.{attr}", lock=value["lock"], channelBox=value["channelBox"], keyable=value["keyable"])
             except RuntimeError:
                 pass
+    # 不是控制器 则锁定所有属性
     else:
         attrs = cmds.listAttr(obj)
         for attr in attrs:
@@ -120,6 +123,7 @@ for obj, dag in IterHierarchy(rig_group):
             except RuntimeError:
                 pass
 
+# 单独锁定旋转X,Y轴
 for x in lockRotateXYObjects:
     if cmds.objExists(x):
         try:
@@ -127,7 +131,7 @@ for x in lockRotateXYObjects:
             cmds.setAttr(f"{x}.rotateY", lock=True, channelBox=False, keyable=False)
         except RuntimeError:
             pass
-
+# 单独锁定平移属性
 for x in lockTranslateObjects:
     if cmds.objExists(x):
         try:

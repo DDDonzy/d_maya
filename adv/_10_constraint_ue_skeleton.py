@@ -1,4 +1,9 @@
-a = {
+import m_utils.compounds.matrixConstraint as matrixConstraint
+from m_utils.create.createBase import AssetCallback
+from maya import cmds
+
+constraint_data = {
+    "root": {"driver": "RootGround_M", "driven": "root", "offsetMatrix": [1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1]},
     "pelvis": {"driver": "Root_M", "driven": "pelvis", "offsetMatrix": [1.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, -0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0]},
     "spine_01": {"driver": "Spine1_M", "driven": "spine_01", "offsetMatrix": [1.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, -0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0]},
     "spine_02": {"driver": "Spine2_M", "driven": "spine_02", "offsetMatrix": [1.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, -0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0]},
@@ -8,7 +13,6 @@ a = {
     "neck_01": {"driver": "Neck_M", "driven": "neck_01", "offsetMatrix": [1.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, -0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0]},
     "neck_02": {"driver": "Neck1_M", "driven": "neck_02", "offsetMatrix": [1.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, -0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0]},
     "head": {"driver": "Head_M", "driven": "head", "offsetMatrix": [1.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, -0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0]},
-    
     "pinky_metacarpal_l": {"driver": "PinkyFingerRoot_L", "driven": "pinky_metacarpal_l", "offsetMatrix": [-1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]},
     "pinky_01_l": {"driver": "PinkyFinger1_L", "driven": "pinky_01_l", "offsetMatrix": [-1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]},
     "pinky_02_l": {"driver": "PinkyFinger2_L", "driven": "pinky_02_l", "offsetMatrix": [-1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]},
@@ -54,8 +58,6 @@ a = {
     "middletoe_02_l": {"driver": "FootMiddleFinger2_L", "driven": "middletoe_02_l", "offsetMatrix": [-1.0, -0.0, -0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, -0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]},
     "ringtoe_01_l": {"driver": "FootRingFinger1_L", "driven": "ringtoe_01_l", "offsetMatrix": [-1.0, -0.0, -0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, -0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]},
     "ringtoe_02_l": {"driver": "FootRingFinger2_L", "driven": "ringtoe_02_l", "offsetMatrix": [-1.0, -0.0, -0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, -0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]},
-    
-    
     "pinky_metacarpal_r": {"driver": "PinkyFingerRoot_R", "driven": "pinky_metacarpal_r", "offsetMatrix": [-1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]},
     "pinky_01_r": {"driver": "PinkyFinger1_R", "driven": "pinky_01_r", "offsetMatrix": [-1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]},
     "pinky_02_r": {"driver": "PinkyFinger2_R", "driven": "pinky_02_r", "offsetMatrix": [-1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]},
@@ -101,12 +103,10 @@ a = {
     "middletoe_02_r": {"driver": "FootMiddleFinger2_R", "driven": "middletoe_02_r", "offsetMatrix": [-1.0, -0.0, -0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, -0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]},
     "ringtoe_01_r": {"driver": "FootRingFinger1_R", "driven": "ringtoe_01_r", "offsetMatrix": [-1.0, -0.0, -0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, -0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]},
     "ringtoe_02_r": {"driver": "FootRingFinger2_R", "driven": "ringtoe_02_r", "offsetMatrix": [-1.0, -0.0, -0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, -0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]},
-
-
 }
 
 
-import m_utils.compounds.matrixConstraint as matrixConstraint
-for k,v in a.items():
-    con = matrixConstraint(v["driver"],k,mo=1)
-    cmds.setAttr(con.inputOffsetMatrix,v["offsetMatrix"],type="matrix")
+with AssetCallback(name="RIG_ASSET", force=False):
+    for k, v in constraint_data.items():
+        con = matrixConstraint(v["driver"], k, mo=1)
+        cmds.setAttr(con.inputOffsetMatrix, v["offsetMatrix"], type="matrix")

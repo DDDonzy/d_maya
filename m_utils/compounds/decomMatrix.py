@@ -5,7 +5,8 @@ from m_utils.create.createBase import CreateBase, CreateNode
 
 class decomMatrix(CreateBase):
     """Create decompose a transformation matrix."""
-    isDagAsset: bool = False
+
+    isDagAsset: bool = True
 
     def __init__(self, *args, **kwargs):
         """
@@ -47,13 +48,17 @@ class decomMatrix(CreateBase):
         self.outputScale = None
         self.outputShear = None
 
-        self.publishAttr(data={"inputMatrix": f"{node_mult}.matrixIn[0]",
-                               "inputRotateOrder": f"{node_decom}.inputRotateOrder",
-                               "inputRelativeSpaceMatrix": f"{node_matrixInverse}.inputMatrix",
-                               "outputTranslate": f"{node_decom}.outputTranslate",
-                               "outputRotate": f"{node_decom}.outputRotate",
-                               "outputScale": f"{node_decom}.outputScale",
-                               "outputShear": f"{node_decom}.outputShear"})
+        self.publishAttr(
+            data={
+                "inputMatrix": f"{node_mult}.matrixIn[0]",
+                "inputRotateOrder": f"{node_decom}.inputRotateOrder",
+                "inputRelativeSpaceMatrix": f"{node_matrixInverse}.inputMatrix",
+                "outputTranslate": f"{node_decom}.outputTranslate",
+                "outputRotate": f"{node_decom}.outputRotate",
+                "outputScale": f"{node_decom}.outputScale",
+                "outputShear": f"{node_decom}.outputShear",
+            }
+        )
 
         # Internal connects
         cmds.connectAttr(f"{node_matrixInverse}.outputMatrix", f"{node_mult}.matrixIn[1]")
@@ -73,8 +78,7 @@ class decomMatrix(CreateBase):
 
             self.inputJointOrient = None
             self.outputRotate = None
-            self.publishAttr(data={"inputJointOrient": f"{node_euler_to_quat}.inputRotate",
-                                   "outputRotate": f"{node_quat_to_euler}.outputRotate"})
+            self.publishAttr(data={"inputJointOrient": f"{node_euler_to_quat}.inputRotate", "outputRotate": f"{node_quat_to_euler}.outputRotate"})
 
         # External connects
         if cmds.objExists(self.name):

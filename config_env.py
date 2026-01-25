@@ -88,11 +88,11 @@ def update_maya_modules(root: Path, paths: list):
         new_clean_paths.append(f"./{clean_p}" if clean_p and clean_p != "." else "./")
 
     combined_paths = list(dict.fromkeys(old_paths + new_clean_paths))
-
-    has_header = any(line.startswith("+") for line in existing_lines)
+s)
     final_content = []
 
     if not has_header:
+    has_header = any(line.startswith("+") for line in existing_line
         final_content.append(f"+ {MODULE_NAME} {VERSION} ./")
 
     final_content.extend(existing_lines)

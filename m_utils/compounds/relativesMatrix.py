@@ -4,7 +4,8 @@ from m_utils.create.createBase import CreateBase, CreateNode
 
 class relativesMatrix(CreateBase):
     """Create relatives matrix node"""
-    isDagAsset: bool = False
+
+    isDagAsset: bool = True
 
     def create(self):
         node_multMatrix = CreateNode("multMatrix", name=self.createName("multMatrix"))
@@ -14,6 +15,4 @@ class relativesMatrix(CreateBase):
         self.inputMatrix = None
         self.inputRelativeMatrix = None
         self.outputMatrix = None
-        self.publishAttr(data={"inputMatrix": f"{node_multMatrix}.matrixIn[0]",
-                               "inputRelativeMatrix": f"{node_inverseMatrix}.inputMatrix",
-                               "outputMatrix": f"{node_multMatrix}.matrixSum"})
+        self.publishAttr(data={"inputMatrix": f"{node_multMatrix}.matrixIn[0]", "inputRelativeMatrix": f"{node_inverseMatrix}.inputMatrix", "outputMatrix": f"{node_multMatrix}.matrixSum"})

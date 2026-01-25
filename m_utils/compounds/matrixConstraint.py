@@ -6,7 +6,8 @@ from m_utils.transform import get_offsetMatrix, get_worldMatrix
 
 class matrixConstraint(CreateBase):
     """Create matrix constraint node"""
-    isDagAsset: bool = False
+
+    isDagAsset: bool = True
 
     def __init__(self, *args, **kwargs):
         """
@@ -42,25 +43,24 @@ class matrixConstraint(CreateBase):
     def create(self):
         self.hasJointOrient = cmds.objExists(f"{self.target}.jointOrient")
 
-        offsetMatrix = get_offsetMatrix(child_worldMatrix=get_worldMatrix(obj=self.target),
-                                        parent_worldMatrix=get_worldMatrix(obj=self.controller))
+        offsetMatrix = get_offsetMatrix(child_worldMatrix=get_worldMatrix(obj=self.target), parent_worldMatrix=get_worldMatrix(obj=self.controller))
 
         node_multMatrix = CreateNode("multMatrix", name=self.createName("multMatrix"))
 
-        node_decom = decomMatrix(name=self.name,
-                                 translate=self.translate,
-                                 rotate=self.rotate,
-                                 scale=self.scale,
-                                 shear=self.shear)
+        node_decom = decomMatrix(name=self.name, translate=self.translate, rotate=self.rotate, scale=self.scale, shear=self.shear)
 
-        self.publishAttr(data={"inputOffsetMatrix": f"{node_multMatrix}.matrixIn[0]",
-                               "inputControllerMatrix": f"{node_multMatrix}.matrixIn[1]",
-                               "inputRotateOrder": node_decom.inputRotateOrder,
-                               "inputRelativeSpaceMatrix": node_decom.inputRelativeSpaceMatrix,
-                               "outputTranslate": node_decom.outputTranslate,
-                               "outputRotate": node_decom.outputRotate,
-                               "outputScale": node_decom.outputScale,
-                               "outputShear": node_decom.outputShear})
+        self.publishAttr(
+            data={
+                "inputOffsetMatrix": f"{node_multMatrix}.matrixIn[0]",
+                "inputControllerMatrix": f"{node_multMatrix}.matrixIn[1]",
+                "inputRotateOrder": node_decom.inputRotateOrder,
+                "inputRelativeSpaceMatrix": node_decom.inputRelativeSpaceMatrix,
+                "outputTranslate": node_decom.outputTranslate,
+                "outputRotate": node_decom.outputRotate,
+                "outputScale": node_decom.outputScale,
+                "outputShear": node_decom.outputShear,
+            }
+        )
         if self.hasJointOrient:
             self.publishAttr(data={"inputTargetJointOrient": node_decom.inputJointOrient})
 
