@@ -11,5 +11,8 @@
         "./_maya_config/scripts",
         "./_maya_config/hotkeys"
     ],
-    "python.terminal.useEnvFile": true
+    "python.terminal.useEnvFile": true,
+    "cSpell.words": [
+        "userprefs"
+    ]
 }
