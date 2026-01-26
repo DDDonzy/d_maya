@@ -4,7 +4,7 @@ from maya import cmds
 from maya.api import OpenMaya as om
 
 from m_utils.bSpline import CurveData
-from m_utils.skin.fnSkin import D_FnSkin, weightsData
+from m_utils.deform.skin.fnSkin import D_FnSkin, WeightsData
 
 
 class CalWeights(D_FnSkin):
@@ -76,7 +76,7 @@ class CalWeights(D_FnSkin):
                            vtx_position=self.vtx_pos,
                            smooth=smooth,
                            degree=degree)
-        data = weightsData(mesh=self.shape.partialPathName(),
+        data = WeightsData(mesh=self.shape.partialPathName(),
                            component=self.componentList,
                            influenceIndex=[],
                            influenceName=self.inf_name,

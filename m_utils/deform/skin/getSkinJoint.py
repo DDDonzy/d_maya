@@ -10,7 +10,7 @@ def get_skinJoint(obj_list=None):
         if not cmds.objExists(obj):
             continue
 
-        history_list = get_history(obj, 'skinCluster')
+        history_list = get_history(obj, "skinCluster")
         if not history_list:
             skin_joint_list.extend([])
             continue
@@ -26,9 +26,10 @@ def get_skinJoint_cmd(createSet=False):
     obj_list = cmds.ls(sl=1)
     skin_joint_list = get_skinJoint(obj_list)
     if createSet and skin_joint_list:
-        cmds.sets(skin_joint_list, n='skinJointSet')
+        cmds.sets(skin_joint_list, n="skinJointSet")
     cmds.select(skin_joint_list)
     return skin_joint_list
 
 
-# get_skinJoint_cmd(True)
+if __name__ == "__main__":
+    get_skinJoint_cmd(True)

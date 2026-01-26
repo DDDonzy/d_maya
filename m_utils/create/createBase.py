@@ -1,4 +1,3 @@
-from maya.api import OpenMaya as om
 from maya import cmds
 from m_utils.create.assetCallback import AssetCallback
 
@@ -40,6 +39,8 @@ class CreateBase():
                 edit (bool): Alias for e. Default is False.
         """
         # init parameter
+        self.args = args
+        self.kwargs = kwargs
         self.thisType = self.__class__.__name__
 
         self.name: str = getNameFromFunctionParameter(*args, **kwargs)
