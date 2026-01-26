@@ -1,4 +1,3 @@
-
 import numpy as np
 from maya import cmds
 from maya.api import OpenMaya as om
@@ -72,16 +71,8 @@ class CalWeights(D_FnSkin):
 
     def calWeights(self, degree: int = 2, smooth: float = 0.3):
 
-        w = calWeightsBase(inf_position=self.inf_pos,
-                           vtx_position=self.vtx_pos,
-                           smooth=smooth,
-                           degree=degree)
-        data = WeightsData(mesh=self.shape.partialPathName(),
-                           component=self.componentList,
-                           influenceIndex=[],
-                           influenceName=self.inf_name,
-                           weights=w,
-                           blendWeights=[0]*len(self.componentList))
+        w = calWeightsBase(inf_position=self.inf_pos, vtx_position=self.vtx_pos, smooth=smooth, degree=degree)
+        data = WeightsData(mesh=self.shape.partialPathName(), component=self.componentList, influenceIndex=[], influenceName=self.inf_name, weights=w, blendWeights=[0] * len(self.componentList))
         self.auto_setWeights(data)
 
     @staticmethod
@@ -113,10 +104,7 @@ def lerp(t, start, end):
     return start + t * (end - start)
 
 
-def calWeightsBase(inf_position: om.MPointArray,
-                   vtx_position: om.MPointArray,
-                   smooth: float = 0.3,
-                   degree: int = 2):
+def calWeightsBase(inf_position: om.MPointArray, vtx_position: om.MPointArray, smooth: float = 0.3, degree: int = 2):
     inf_count = len(inf_position)
 
     if not isinstance(smooth, list):
@@ -131,23 +119,23 @@ def calWeightsBase(inf_position: om.MPointArray,
 
     for i in range(inf_count):
         if i == 0:
-            p1 = lerp(smooth[i], inf_position[i], inf_position[i+1])
+            p1 = lerp(smooth[i], inf_position[i], inf_position[i + 1])
             new_inf_position.extend([inf_position[i], p1])
             continue
 
-        if i == inf_count-1:
-            p1 = lerp(smooth[i], inf_position[i], inf_position[i-1])
+        if i == inf_count - 1:
+            p1 = lerp(smooth[i], inf_position[i], inf_position[i - 1])
             new_inf_position.extend([p1, inf_position[i]])
             continue
 
-        p1 = lerp(smooth[i], inf_position[i], inf_position[i-1])
-        p2 = lerp(smooth[i], inf_position[i], inf_position[i+1])
+        p1 = lerp(smooth[i], inf_position[i], inf_position[i - 1])
+        p2 = lerp(smooth[i], inf_position[i], inf_position[i + 1])
         new_inf_position.extend([p1, inf_position[i], p2])
 
     combine_list = [[0, 1]]
-    for i in range(2, len(new_inf_position)-2, 3):
-        combine_list.append([i, i+1, i+2])
-    combine_list.append([len(new_inf_position)-2, len(new_inf_position)-1])
+    for i in range(2, len(new_inf_position) - 2, 3):
+        combine_list.append([i, i + 1, i + 2])
+    combine_list.append([len(new_inf_position) - 2, len(new_inf_position) - 1])
 
     # curve
     cv = CurveData(new_inf_position, degree)
@@ -178,8 +166,8 @@ def sharpen_weights(weights, intensity):
     return result
 
 
-a = CalWeights("skinCluster3")
-a.setVertex([95, 96, 97, 98, 99, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 125, 126, 127,
-            128, 129, 225, 226, 227, 228, 229, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249])
-a.setInfluence(['R_LipCornerPart_SK', 'M_LipUpperPart_SK', 'L_LipCornerPart_SK'])
-a.calWeights(2, [0, 0.3, 0])
+if __name__ == "__main__":
+    a = CalWeights("skinCluster3")
+    a.setVertex([95, 96, 97, 98, 99, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 125, 126, 127, 128, 129, 225, 226, 227, 228, 229, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249])
+    a.setInfluence(["R_LipCornerPart_SK", "M_LipUpperPart_SK", "L_LipCornerPart_SK"])
+    a.calWeights(2, [0, 0.3, 0])
