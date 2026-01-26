@@ -113,6 +113,13 @@ class UI_Command:
 
     # --- Skin Tools ---
     @staticmethod
+    def bind_skin(*args, **kwargs):
+        if cmds.ls(sl=1,type="joint"):
+            mel.eval("SmoothBindSkin")
+        else:
+            from m_utils.deform.skin.autoProp import autoProp
+            autoProp(autoSkin=True)
+    @staticmethod
     def copy_weights_1_to_n(*args, **kwargs):
         from m_utils.deform.skin.copyWeightsOneToN import copyWeightsOneToN_cmd
         copyWeightsOneToN_cmd()
@@ -126,6 +133,11 @@ class UI_Command:
     def update_bind_skin(*args, **kwargs):
         from m_utils.deform.skin.updateBindSkin import updateBindSkin_cmd
         updateBindSkin_cmd()
+    
+    @staticmethod
+    def update_orig_mesh(*args, **kwargs):
+        from m_utils.deform.update_orig import update_orig_cmd
+        update_orig_cmd()
 
     # --- Rename / Scene Tools ---
     @staticmethod
@@ -223,7 +235,7 @@ class UI_Logic:
 
         # --- Skin Menu ---
         self.menuItem(label="Skin", subMenu=True, radialPosition="N")
-        self.menuItem(label="Bind Skin", radialPosition="N", image="smoothSkin.png", command="SmoothBindSkin")
+        self.menuItem(label="Bind Skin", radialPosition="N", image="smoothSkin.png", sourceType="python", command=UI_Command.bind_skin)
         self.menuItem(label="menuEditorMenuItem1", optionBox=True, command="SmoothBindSkinOptions")
         self.menuItem(label="Unbind Skin", radialPosition="S", image="detachSkin.png", command="DetachSkin")
         self.menuItem(label="Go to Bind Pose", radialPosition="W", image="goToBindPose.png", command="GoToBindPose")
@@ -241,6 +253,7 @@ class UI_Logic:
         self.menuItem(label="Remove Unused Influences", command="RemoveUnusedInfluences")
         self.menuItem(label="separator", divider=True, dividerLabel="separator")
         self.menuItem(label="Update Bind Pose", sourceType="python", command=UI_Command.update_bind_skin)
+        self.menuItem(label="Update Original Mesh", sourceType="python", command=UI_Command.update_orig_mesh)
         cmds.setParent("..", menu=True)
 
         # --- Rename Menu ---
