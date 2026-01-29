@@ -19,8 +19,8 @@ def setup_userprefs():
     cmds.optionVar(iv=("defaultWeight", 0))
 
     # Animations
-    cmds.optionVar(sv=("workingUnitTime", "60fps"))
-    cmds.optionVar(sv=("workingUnitTimeDefault", "60fps"))
+    cmds.optionVar(sv=("workingUnitTime", "ntscf"))
+    cmds.optionVar(sv=("workingUnitTimeDefault", "ntscf"))
 
     cmds.optionVar(fv=("playbackMin", 0))
     cmds.optionVar(fv=("playbackMinDefault", 0))
