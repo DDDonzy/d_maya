@@ -46,10 +46,14 @@ def clean_maya_advanced_inplace(input_file):
                     # 只有行首非空格的才是顶级命令开始
                     if not line.startswith((" ", "\t")):
                         if target_pattern.match(line):
-                            is_skipping = True
-                            modified = True
-                            removed_nodes.append(line.strip())
-                            continue
+                            # 如果节点名字是 “sceneConfigurationScriptNode” 或 “uiConfigurationScriptNode” 那么不删除
+                            if '"uiConfigurationScriptNode"' in line or '"sceneConfigurationScriptNode"' in line:
+                                is_skipping = False
+                            else:
+                                is_skipping = True
+                                modified = True
+                                removed_nodes.append(line.strip())
+                                continue
                         else:
                             is_skipping = False
 
