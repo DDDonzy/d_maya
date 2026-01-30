@@ -114,11 +114,27 @@ class UI_Command:
     # --- Skin Tools ---
     @staticmethod
     def bind_skin(*args, **kwargs):
-        if cmds.ls(sl=1,type="joint"):
-            mel.eval("SmoothBindSkin")
-        else:
+        selected = cmds.ls(sl=1)
+        selected_joints = []
+        selected_meshes = []
+        for obj in selected:
+            if cmds.objectType(obj,isAType="joint"):
+                selected_joints.append(obj)
+            if cmds.objectType(obj,isAType="transform"):
+                selected_meshes += cmds.ls(cmds.listRelatives(obj,shapes=1),ni=1,g=1)
+
+        if not selected_joints:
             from m_utils.deform.skin.autoProp import autoProp
             autoProp(autoSkin=True)
+        else:
+            from m_utils.dag.getHistory import get_history
+            for x in selected_meshes:
+                cmds.select(selected_joints,x,r=1)
+                if get_history(x,type="skinCluster"):
+                    mel.eval("AddInfluence")
+                else:
+                    mel.eval("SmoothBindSkin")
+            
     @staticmethod
     def copy_weights_1_to_n(*args, **kwargs):
         from m_utils.deform.skin.copyWeightsOneToN import copyWeightsOneToN_cmd
