@@ -1,14 +1,14 @@
 from m_utils.compounds.decomMatrix import decomMatrix
 from m_utils.compounds.matrixConstraint import matrixConstraint
-from m_utils.transform import *
-
+from m_utils.create.createBase import CreateBase, CreateNode
+from m_utils.create.generateUniqueName import generateUniqueName
+import m_utils.transform as t
 
 import maya.cmds as cmds
 import maya.api.OpenMaya as om
 import maya.api.OpenMayaAnim as oma
 
-from m_utils.create.createBase import CreateBase, CreateNode
-from m_utils.create.generateUniqueName import generateUniqueName
+
 
 import json
 
@@ -87,7 +87,7 @@ class uvPin(CreateBase):
         for i in range(num):
             info.append({"driven": targetList[i], "meshComponent": list(range(5 * i, 5 * i + 5))})
             # pos_ary
-            mult_matrix = get_worldMatrix(targetList[i])
+            mult_matrix = t.get_worldMatrix(targetList[i])
             for pos in base_vtx_pos_ary:
                 pos_ary.append(om.MPoint(pos) * size * mult_matrix)
             # face_connect_ary
@@ -120,7 +120,7 @@ class uvPin(CreateBase):
 
         try:
             cmds.addAttr(transform, ln="notes", dt="string")
-        except:
+        except Exception:
             pass
 
         infoStr = json.dumps(info, indent=4)
