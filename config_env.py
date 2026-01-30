@@ -1,3 +1,32 @@
+"""
+================================================================================
+描述:
+    此脚本用于自动化配置和同步 Maya 开发项目的运行环境。
+    它作为单一事实来源（Single Source of Truth），统一管理项目的 PYTHONPATH，
+    并将其分发到 VSCode、Maya 模块配置文件以及环境变量中。
+
+主要功能:
+    1. **项目根目录定位 (Project Root Resolution)**:
+       - 通过向上递归查找 `.env` 文件来确定项目的根目录。
+    
+    2. **VSCode 开发环境配置 (VSCode Settings Sync)**:
+       - 自动更新 `.vscode/settings.json`。
+       - 同步 `python.analysis.extraPaths` 和 `python.autoComplete.extraPaths`。
+       - 确保开发时的代码补全、智能感知（IntelliSense）与实际运行环境一致。
+
+    3. **Maya 模块文件生成 (Maya Module Generation)**:
+       - 生成或更新 `_maya_config/modules/d_maya.mod`。
+       - 配置 Maya 的模块定义及 PYTHONPATH 环境变量。
+       - 支持增量更新，保留非 PYTHONPATH 的自定义配置。
+
+    4. **环境文件同步 (.env Synchronization)**:
+       - 确保根目录下的 `.env` 文件包含最新的 PYTHONPATH 定义。
+
+使用方法:
+    直接运行此脚本即可应用配置：
+    $ python config_env.py
+================================================================================
+"""
 import json
 from pathlib import Path
 

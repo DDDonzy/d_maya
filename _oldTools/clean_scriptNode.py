@@ -90,13 +90,13 @@ def clean_maya_advanced_inplace(input_file):
 
 
 if __name__ == "__main__":
-    files = sys.argv[1:]
+    user_input = input("请输入要清理的 .ma 文件路径（多个路径请用空格分隔，按回车键开始执行）：")
+    files = user_input.split()
 
     if not files:
-        print("提示: 请将一个或多个 .ma 文件拖拽到 .bat 文件上。")
+        print("未输入任何文件路径，程序退出。")
     else:
         for f in files:
-            # 简单判断一下后缀，防止误处理
             if f.lower().endswith(".ma"):
                 clean_maya_advanced_inplace(f)
             else:
