@@ -42,4 +42,5 @@ def copyWeightsOneToN_cmd():
     copyWeightsOneToN(sour_mesh, target_mesh_list)
     return target_mesh_list
 
-# copyWeightsOneToN_cmd()
+if __name__ == "__main__":
+    copyWeightsOneToN_cmd()

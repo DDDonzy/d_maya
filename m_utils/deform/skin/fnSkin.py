@@ -1,14 +1,14 @@
 from dataclasses import dataclass
 import yaml
 
-from m_utils.dag.getHistory import get_history
-from m_utils.other.choseFile import choseFile
+from maya import cmds
+from maya.api import OpenMaya as om
+from maya.api import OpenMayaAnim as oma
 
 import log
 
-from maya.api import OpenMaya as om
-from maya.api import OpenMayaAnim as oma
-from maya import cmds
+from m_utils.dag.getHistory import get_history
+from m_utils.other.choseFile import choseFile
 
 
 @dataclass

@@ -69,7 +69,6 @@ class decomMatrix(CreateBase):
             node_prod_quat = CreateNode("quatProd", name=self.createName("prodQuat"))
             node_quat_to_euler = CreateNode("quatToEuler", name=self.createName("quatToEuler"))
 
-            cmds.connectAttr(f"{node_decom}.inputRotateOrder", f"{node_euler_to_quat}.inputRotateOrder")
             cmds.connectAttr(f"{node_decom}.inputRotateOrder", f"{node_quat_to_euler}.inputRotateOrder")
             cmds.connectAttr(f"{node_decom}.outputQuat", f"{node_prod_quat}.input1Quat")
             cmds.connectAttr(f"{node_euler_to_quat}.outputQuat", f"{node_invert_quat}.inputQuat")

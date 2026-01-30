@@ -2,6 +2,9 @@ from maya import cmds
 
 
 def setup_userprefs():
+    # File
+    cmds.optionVar(iv=("fileExecuteSN", 0))  # open file do not execute script
+
     # Rigging.Skin.Bind Skin preferences
     cmds.optionVar(iv=("bindTo", 2))
     cmds.optionVar(iv=("colorizeSkeleton", 0))
@@ -15,9 +18,16 @@ def setup_userprefs():
     cmds.optionVar(iv=("useGeometry", 0))
     cmds.optionVar(iv=("defaultWeight", 0))
 
-    # Set default time unit to 60 FPS
-    cmds.currentUnit(time='60fps')
+    # Animations
+    cmds.optionVar(sv=("workingUnitTime", "ntscf"))
+    cmds.optionVar(sv=("workingUnitTimeDefault", "ntscf"))
 
-    # Set default time range to 0-120 frames
-    cmds.playbackOptions(minTime=0, maxTime=120, animationStartTime=0, animationEndTime=120)
-    cmds.currentTime(0)
+    cmds.optionVar(fv=("playbackMin", 0))
+    cmds.optionVar(fv=("playbackMinDefault", 0))
+    cmds.optionVar(fv=("playbackMinRange", 0))
+    cmds.optionVar(fv=("playbackMinRangeDefault", 0))
+
+    cmds.optionVar(fv=("playbackMax", 100))
+    cmds.optionVar(fv=("playbackMaxDefault", 100))
+    cmds.optionVar(fv=("playbackMaxRange", 100))
+    cmds.optionVar(fv=("playbackMaxRangeDefault", 100))
