@@ -9,9 +9,11 @@ class UnitMatrixPin(om.MPxNode):
     TYPE_NAME = "unitMatrixPin"
     TYPE_ID = om.MTypeId(0x87001)
 
-    aInputMesh = om.MObject()
-    aOrigMesh = om.MObject()
-    aOutputMatrices = om.MObject()
+    attrInputMesh = om.MObject()
+    attrInputScaleMesh = om.MObject()
+    attrInputOrigMesh = om.MObject()
+
+    attrOutputMatrices = om.MObject()
 
     def __init__(self):
         super(UnitMatrixPin, self).__init__()
@@ -22,105 +24,107 @@ class UnitMatrixPin(om.MPxNode):
 
     @staticmethod
     def initialize():
-        tAttr = om.MFnTypedAttribute()
-        mAttr = om.MFnMatrixAttribute()
+        fn_typedAttr = om.MFnTypedAttribute()
+        fn_matrixAttr = om.MFnMatrixAttribute()
 
         # 输入变形后的网格
-        UnitMatrixPin.aInputMesh = tAttr.create("inputMesh", "in", om.MFnData.kMesh)
-        tAttr.storable = True
-        tAttr.writable = True
+        UnitMatrixPin.attrInputMesh = fn_typedAttr.create("inputMesh", "im", om.MFnData.kMesh)
+        fn_typedAttr.storable = True
+        fn_typedAttr.writable = True
+        # 输入用于计算缩放的参考网格
+        UnitMatrixPin.attrInputScaleMesh = fn_typedAttr.create("inputScaleMesh", "ism", om.MFnData.kMesh)
+        fn_typedAttr.storable = True
+        fn_typedAttr.writable = True
 
         # 输入原始参考网格
-        UnitMatrixPin.aOrigMesh = tAttr.create("origMesh", "orig", om.MFnData.kMesh)
-        tAttr.storable = True
-        tAttr.writable = True
+        UnitMatrixPin.attrInputOrigMesh = fn_typedAttr.create("origMesh", "iom", om.MFnData.kMesh)
+        fn_typedAttr.storable = True
+        fn_typedAttr.writable = True
 
         # 输出矩阵数组
-        UnitMatrixPin.aOutputMatrices = mAttr.create("outputMatrices", "out")
-        mAttr.array = True
-        mAttr.usesArrayDataBuilder = True
-        mAttr.storable = False
-        mAttr.writable = False
+        UnitMatrixPin.attrOutputMatrices = fn_matrixAttr.create("outputMatrices", "om")
+        fn_matrixAttr.array = True
+        fn_matrixAttr.usesArrayDataBuilder = True
+        fn_matrixAttr.storable = False
+        fn_matrixAttr.writable = False
 
-        UnitMatrixPin.addAttribute(UnitMatrixPin.aInputMesh)
-        UnitMatrixPin.addAttribute(UnitMatrixPin.aOrigMesh)
-        UnitMatrixPin.addAttribute(UnitMatrixPin.aOutputMatrices)
+        UnitMatrixPin.addAttribute(UnitMatrixPin.attrInputMesh)
+        UnitMatrixPin.addAttribute(UnitMatrixPin.attrInputScaleMesh)
+        UnitMatrixPin.addAttribute(UnitMatrixPin.attrInputOrigMesh)
+        UnitMatrixPin.addAttribute(UnitMatrixPin.attrOutputMatrices)
 
-        UnitMatrixPin.attributeAffects(UnitMatrixPin.aInputMesh, UnitMatrixPin.aOutputMatrices)
-        UnitMatrixPin.attributeAffects(UnitMatrixPin.aOrigMesh, UnitMatrixPin.aOutputMatrices)
-
-    def getSchedulingType(self):
-        return om.MPxNode.kParallel
+        UnitMatrixPin.attributeAffects(UnitMatrixPin.attrInputMesh, UnitMatrixPin.attrOutputMatrices)
+        UnitMatrixPin.attributeAffects(UnitMatrixPin.attrInputScaleMesh, UnitMatrixPin.attrOutputMatrices)
+        UnitMatrixPin.attributeAffects(UnitMatrixPin.attrInputOrigMesh, UnitMatrixPin.attrOutputMatrices)
 
     def compute(self, plug, dataBlock):
-        if plug != UnitMatrixPin.aOutputMatrices:
+        if plug != UnitMatrixPin.attrOutputMatrices:
             return
 
-        hInput = dataBlock.inputValue(UnitMatrixPin.aInputMesh)
-        hOrig = dataBlock.inputValue(UnitMatrixPin.aOrigMesh)
+        inputMesh_handle = dataBlock.inputValue(UnitMatrixPin.attrInputMesh)
+        inputScaleMesh_handle = dataBlock.inputValue(UnitMatrixPin.attrInputScaleMesh)
+        inputOrigMesh_handle = dataBlock.inputValue(UnitMatrixPin.attrInputOrigMesh)
 
-        mInputMesh = hInput.asMesh()
-        mOrigMesh = hOrig.asMesh()
+        inputMesh_mObject = inputMesh_handle.asMesh()
+        inputScaleMesh_mObject = inputScaleMesh_handle.asMesh()
+        inputOrigMesh_mObject = inputOrigMesh_handle.asMesh()
 
-        if mInputMesh.isNull() or mOrigMesh.isNull():
+        if inputMesh_mObject.isNull() or inputOrigMesh_mObject.isNull() or inputScaleMesh_mObject.isNull():
             return
 
         # 批量获取点数据，减少 API 调用次数
-        points = om.MFnMesh(mInputMesh).getPoints(om.MSpace.kWorld)
-        orig_points = om.MFnMesh(mOrigMesh).getPoints(om.MSpace.kWorld)
+        mesh_points = om.MFnMesh(inputMesh_mObject).getPoints(om.MSpace.kWorld)
+        scale_points = om.MFnMesh(inputScaleMesh_mObject).getPoints(om.MSpace.kWorld)
+        orig_points = om.MFnMesh(inputOrigMesh_mObject).getPoints(om.MSpace.kWorld)
 
-        num_points = len(points)
+        num_points = len(mesh_points)
         unit_count = num_points // 4
 
-        outArrayHandle = dataBlock.outputArrayValue(UnitMatrixPin.aOutputMatrices)
+        outArrayHandle = dataBlock.outputArrayValue(UnitMatrixPin.attrOutputMatrices)
         outBuilder = outArrayHandle.builder()
 
         for i in range(unit_count):
             idx = i * 4
 
             # --- 当前网格计算 ---
-            p_base = om.MVector(points[idx])
-            v_x = om.MVector(points[idx + 1]) - p_base
-            v_y = om.MVector(points[idx + 2]) - p_base
-            v_z = om.MVector(points[idx + 3]) - p_base
+            pos = om.MVector(mesh_points[idx])
+            axis_x = (om.MVector(mesh_points[idx + 1]) - pos).normalize()
+            axis_y = (om.MVector(mesh_points[idx + 2]) - pos).normalize()
+            axis_z = (om.MVector(mesh_points[idx + 3]) - pos).normalize()
+
+            axis_y = (axis_z ^ axis_x).normalize()
+            axis_x = (axis_y ^ axis_z).normalize()
+
+            # --- 缩放参考网格计算 ---
+            scale_pos = om.MVector(scale_points[idx])
+            axis_x_length = (om.MVector(scale_points[idx + 1]) - scale_pos).length()
+            axis_y_length = (om.MVector(scale_points[idx + 2]) - scale_pos).length()
+            axis_z_length = (om.MVector(scale_points[idx + 3]) - scale_pos).length()
 
             # --- 原始网格计算 ---
-            p_orig_base = om.MVector(orig_points[idx])
-            v_orig_x = om.MVector(orig_points[idx + 1]) - p_orig_base
-            v_orig_y = om.MVector(orig_points[idx + 2]) - p_orig_base
-            v_orig_z = om.MVector(orig_points[idx + 3]) - p_orig_base
+            orig_pos = om.MVector(orig_points[idx])
+            orig_axis_x_length = (om.MVector(orig_points[idx + 1]) - orig_pos).length()
+            orig_axis_y_length = (om.MVector(orig_points[idx + 2]) - orig_pos).length()
+            orig_axis_z_length = (om.MVector(orig_points[idx + 3]) - orig_pos).length()
 
-            # --- 缩放计算：使用逻辑判断替代 +0.0001 ---
-            # 获取原始向量长度
-            l_ox = v_orig_x.length()
-            l_oy = v_orig_y.length()
-            l_oz = v_orig_z.length()
-
-            # 计算缩放比例，如果原始长度为 0，则强制设为 1
-            sx = v_x.length() / l_ox if l_ox > 0 else 1.0
-            sy = v_y.length() / l_oy if l_oy > 0 else 1.0
-            sz = v_z.length() / l_oz if l_oz > 0 else 1.0
-
-            v_x = v_x.normalize() * sx
-            v_y = v_y.normalize() * sy
-            v_z = v_z.normalize() * sz
+            # --- 应用缩放 ---
+            axis_x *= axis_x_length / orig_axis_x_length if orig_axis_x_length != 0 else 1.0
+            axis_y *= axis_y_length / orig_axis_y_length if orig_axis_y_length != 0 else 1.0
+            axis_z *= axis_z_length / orig_axis_z_length if orig_axis_z_length != 0 else 1.0
 
             # --- 构建矩阵 ---
-            # 直接使用当前 v_x, v_y, v_z 构建包含缩放信息的矩阵
-            # 如果原始长度为0，这里构建出来的矩阵将基于 v_x 的实际长度
-
             new_matrix = om.MMatrix([
-                [v_x.x, v_x.y, v_x.z, 0.0],
-                [v_y.x, v_y.y, v_y.z, 0.0],
-                [v_z.x, v_z.y, v_z.z, 0.0],
-                [p_base.x, p_base.y, p_base.z, 1.0],
+                [axis_x.x, axis_x.y, axis_x.z, 0.0],
+                [axis_y.x, axis_y.y, axis_y.z, 0.0],
+                [axis_z.x, axis_z.y, axis_z.z, 0.0],
+                [pos.x, pos.y, pos.z, 1.0],
             ])
 
             hOut = outBuilder.addElement(i)
             hOut.setMMatrix(new_matrix)
 
         outArrayHandle.set(outBuilder)
-        # 核心性能优化：批量清理脏标记，防止 EM 多次触发计算
+
         outArrayHandle.setAllClean()
         dataBlock.setClean(plug)
 
