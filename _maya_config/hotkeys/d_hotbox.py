@@ -144,6 +144,11 @@ class UI_Command:
     def get_skin_joint(*args, **kwargs):
         from m_utils.deform.skin.getSkinJoint import get_skinJoint_cmd
         get_skinJoint_cmd()
+    
+    @staticmethod
+    def select_laster_influences(*args, **kwargs):
+        from m_utils.deform.skin.getSkinJoint import select_laster_influences_cmd
+        select_laster_influences_cmd()
 
     @staticmethod
     def update_bind_skin(*args, **kwargs):
@@ -262,6 +267,7 @@ class UI_Logic:
         self.menuItem(label="Copy Skin Weights Options", optionBox=True, command="CopySkinWeightsOptions")
 
         self.menuItem(label="Get Skin Influence", radialPosition="SE", sourceType="python", command=UI_Command.get_skin_joint)
+        self.menuItem(label="Select Last Influences", radialPosition="SW", sourceType="python", command=UI_Command.select_laster_influences)
 
         self.menuItem(label="Add Influence", image="addWrapInfluence.png", command="AddInfluence")
         self.menuItem(label="Add Influence Options", optionBox=True, command="AddInfluenceOptions")
