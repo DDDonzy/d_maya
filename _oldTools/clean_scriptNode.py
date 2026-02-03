@@ -2,8 +2,6 @@ import os
 import re
 
 import time
-import sys
-
 
 def time_decorator(func):
     def wrapper(*args, **kwargs):
