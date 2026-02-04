@@ -1,30 +1,30 @@
-- !<PoseInterpolatorData>
+- !<PoseInterpolator>
     name: M_Head_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: M_Head_pxyTransform
         driverTwistAxis: 1
         driverEulerTwist: false
         driverController:
         - Head_ctrl.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: DefaultPose
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: Head_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: Head_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.22928693890571594
@@ -40,23 +40,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Front
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: Head_ctrl.rotate
                 value:
-                    x: 0.7853981633974483
-                    y: 0.0
-                    z: 0.0
+                - 0.7853981633974483
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: Head_ctrl.rotate
                 value:
-                    x: 0.7853981633974483
-                    y: 0.0
-                    z: 0.0
+                - 0.7853981633974483
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.23892685770988464
@@ -72,23 +72,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Back
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: Head_ctrl.rotate
                 value:
-                    x: -0.9599310885968813
-                    y: 0.0
-                    z: 0.0
+                - -0.9599310885968813
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: Head_ctrl.rotate
                 value:
-                    x: -0.9599310885968813
-                    y: 0.0
-                    z: 0.0
+                - -0.9599310885968813
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.23890000581741333
@@ -104,23 +104,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Left
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: Head_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -0.7853981633974483
+                - 0.0
+                - 0.0
+                - -0.7853981633974483
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: Head_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -0.7853981633974483
+                - 0.0
+                - 0.0
+                - -0.7853981633974483
                 type: 8
         isEnabled: true
         poseFalloff: 0.22928693890571594
@@ -136,23 +136,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Right
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: Head_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.7853981633974483
+                - 0.0
+                - 0.0
+                - 0.7853981633974483
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: Head_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.7853981633974483
+                - 0.0
+                - 0.0
+                - 0.7853981633974483
                 type: 8
         isEnabled: true
         poseFalloff: 0.22928693890571594
@@ -174,33 +174,33 @@
     allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
+- !<PoseInterpolator>
     name: M_Neck_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: M_Neck_pxyTransform
         driverTwistAxis: 0
         driverEulerTwist: false
         driverController:
         - NeckFk01_ctrl.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: DefaultPose
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: NeckFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: NeckFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.25
@@ -216,23 +216,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Left
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: NeckFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.7853981633974483
+                - 0.0
+                - 0.0
+                - 0.7853981633974483
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: NeckFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.7853981633974483
+                - 0.0
+                - 0.0
+                - 0.7853981633974483
                 type: 8
         isEnabled: true
         poseFalloff: 0.25
@@ -248,23 +248,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Right
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: NeckFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -0.7853981633974483
+                - 0.0
+                - 0.0
+                - -0.7853981633974483
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: NeckFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -0.7853981633974483
+                - 0.0
+                - 0.0
+                - -0.7853981633974483
                 type: 8
         isEnabled: true
         poseFalloff: 0.25
@@ -280,23 +280,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Front
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: NeckFk01_ctrl.rotate
                 value:
-                    x: -0.7853981633974483
-                    y: 0.0
-                    z: 0.0
+                - -0.7853981633974483
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: NeckFk01_ctrl.rotate
                 value:
-                    x: -0.7853981633974483
-                    y: 0.0
-                    z: 0.0
+                - -0.7853981633974483
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.25
@@ -312,23 +312,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Back
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: NeckFk01_ctrl.rotate
                 value:
-                    x: 0.7853981633974483
-                    y: 0.0
-                    z: 0.0
+                - 0.7853981633974483
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: NeckFk01_ctrl.rotate
                 value:
-                    x: 0.7853981633974483
-                    y: 0.0
-                    z: 0.0
+                - 0.7853981633974483
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.25
@@ -350,33 +350,33 @@
     allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
+- !<PoseInterpolator>
     name: L_Clavicle_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: L_Clavicle_pxyTransform
         driverTwistAxis: 0
         driverEulerTwist: false
         driverController:
         - L_Clavicle_ctrl.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: DefaultPose
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_Clavicle_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_Clavicle_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.1388888955116272
@@ -392,23 +392,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Up
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_Clavicle_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.7853981633974483
+                - 0.0
+                - 0.0
+                - 0.7853981633974483
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_Clavicle_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.7853981633974483
+                - 0.0
+                - 0.0
+                - 0.7853981633974483
                 type: 8
         isEnabled: true
         poseFalloff: 0.25
@@ -424,23 +424,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Front
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_Clavicle_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: -0.7853981633974483
-                    z: 0.0
+                - 0.0
+                - -0.7853981633974483
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_Clavicle_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: -0.7853981633974483
-                    z: 0.0
+                - 0.0
+                - -0.7853981633974483
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.25
@@ -456,23 +456,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Back
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_Clavicle_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.7853981633974483
-                    z: 0.0
+                - 0.0
+                - 0.7853981633974483
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_Clavicle_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.7853981633974483
-                    z: 0.0
+                - 0.0
+                - 0.7853981633974483
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.25
@@ -488,23 +488,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Dw
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_Clavicle_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -0.4363323129985824
+                - 0.0
+                - 0.0
+                - -0.4363323129985824
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_Clavicle_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -0.4363323129985824
+                - 0.0
+                - 0.0
+                - -0.4363323129985824
                 type: 8
         isEnabled: true
         poseFalloff: 0.1388888955116272
@@ -526,33 +526,33 @@
     allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
+- !<PoseInterpolator>
     name: L_Shoulder_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: L_Shoulder_pxyTransform
         driverTwistAxis: 0
         driverEulerTwist: false
         driverController:
         - L_ArmFk01_ctrl.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: DefaultPose
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_ArmFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_ArmFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.5
@@ -568,23 +568,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Up
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_ArmFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 1.5707963267948966
+                - 0.0
+                - 0.0
+                - 1.5707963267948966
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_ArmFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 1.5707963267948966
+                - 0.0
+                - 0.0
+                - 1.5707963267948966
                 type: 8
         isEnabled: true
         poseFalloff: 0.5
@@ -600,23 +600,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Front
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_ArmFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: -1.5707963267948966
-                    z: 0.0
+                - 0.0
+                - -1.5707963267948966
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_ArmFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: -1.5707963267948966
-                    z: 0.0
+                - 0.0
+                - -1.5707963267948966
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.5
@@ -632,23 +632,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Back
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_ArmFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 1.5707963267948966
-                    z: 0.0
+                - 0.0
+                - 1.5707963267948966
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_ArmFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 1.5707963267948966
-                    z: 0.0
+                - 0.0
+                - 1.5707963267948966
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.5
@@ -664,23 +664,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Dw
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_ArmFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -1.5707963267948966
+                - 0.0
+                - 0.0
+                - -1.5707963267948966
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_ArmFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -1.5707963267948966
+                - 0.0
+                - 0.0
+                - -1.5707963267948966
                 type: 8
         isEnabled: true
         poseFalloff: 0.5
@@ -702,33 +702,33 @@
     allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
+- !<PoseInterpolator>
     name: L_Elbow_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: L_Elbow_pxyTransform
         driverTwistAxis: 0
         driverEulerTwist: false
         driverController:
         - L_ArmFk02_ctrl.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: DefaultPose
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_ArmFk02_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_ArmFk02_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 1.0
@@ -744,23 +744,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Swing140
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_ArmFk02_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: -2.443460952792061
-                    z: 0.0
+                - 0.0
+                - -2.443460952792061
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_ArmFk02_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: -2.174505290527928
-                    z: 0.0
+                - 0.0
+                - -2.174505290527928
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 1.0
@@ -782,26 +782,26 @@
     allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
+- !<PoseInterpolator>
     name: L_Wrist_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: L_Wrist_pxyTransform
         driverTwistAxis: 0
         driverEulerTwist: false
         driverController:
         - L_ArmFk03_ctrl.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: DefaultPose
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_ArmFk03_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.3333333432674408
@@ -817,16 +817,16 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Up
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_ArmFk03_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 1.5707963267948966
+                - 0.0
+                - 0.0
+                - 1.5707963267948966
                 type: 8
         isEnabled: true
         poseFalloff: 0.4999997913837433
@@ -842,16 +842,16 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Dw
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_ArmFk03_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -1.5707963267948966
+                - 0.0
+                - 0.0
+                - -1.5707963267948966
                 type: 8
         isEnabled: true
         poseFalloff: 0.4999997913837433
@@ -867,16 +867,16 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Back
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_ArmFk03_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 1.0471975511965976
-                    z: 0.0
+                - 0.0
+                - 1.0471975511965976
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.3333333432674408
@@ -892,16 +892,16 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Front
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_ArmFk03_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: -1.0471975511965976
-                    z: 0.0
+                - 0.0
+                - -1.0471975511965976
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.3333333432674408
@@ -923,33 +923,33 @@
     allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
+- !<PoseInterpolator>
     name: L_Hip_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: L_Hip_pxyTransform
         driverTwistAxis: 0
         driverEulerTwist: false
         driverController:
         - L_LegFk01_ctrl.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: DefaultPose
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_LegFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_LegFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.49999991059303284
@@ -965,23 +965,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Front
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_LegFk01_ctrl.rotate
                 value:
-                    x: -2.0943951023931953
-                    y: 0.0
-                    z: 0.0
+                - -2.0943951023931953
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_LegFk01_ctrl.rotate
                 value:
-                    x: -2.0943951023931953
-                    y: 0.0
-                    z: 0.0
+                - -2.0943951023931953
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.5
@@ -997,23 +997,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Back
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_LegFk01_ctrl.rotate
                 value:
-                    x: 1.5707963267948966
-                    y: 0.0
-                    z: 0.0
+                - 1.5707963267948966
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_LegFk01_ctrl.rotate
                 value:
-                    x: 1.5707963267948966
-                    y: 0.0
-                    z: 0.0
+                - 1.5707963267948966
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.5
@@ -1029,23 +1029,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Outer
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_LegFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 1.5707963267948966
+                - 0.0
+                - 0.0
+                - 1.5707963267948966
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_LegFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 1.5707963267948966
+                - 0.0
+                - 0.0
+                - 1.5707963267948966
                 type: 8
         isEnabled: true
         poseFalloff: 0.5
@@ -1061,23 +1061,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Inner
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_LegFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -1.0471975511965976
+                - 0.0
+                - 0.0
+                - -1.0471975511965976
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_LegFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -1.5707963267948966
+                - 0.0
+                - 0.0
+                - -1.5707963267948966
                 type: 8
         isEnabled: true
         poseFalloff: 0.5
@@ -1099,33 +1099,33 @@
     allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
+- !<PoseInterpolator>
     name: L_Knee_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: L_Knee_pxyTransform
         driverTwistAxis: 0
         driverEulerTwist: false
         driverController:
         - L_LegFk02_ctrl.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: DefaultPose
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_LegFk02_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_LegFk02_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 1.0
@@ -1141,23 +1141,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Swing155
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_LegFk02_ctrl.rotate
                 value:
-                    x: 2.705260340591211
-                    y: 0.0
-                    z: 0.0
+                - 2.705260340591211
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_LegFk02_ctrl.rotate
                 value:
-                    x: 2.705260340591211
-                    y: 0.0
-                    z: 0.0
+                - 2.705260340591211
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 1.0
@@ -1179,33 +1179,33 @@
     allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
+- !<PoseInterpolator>
     name: L_Ankle_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: L_Ankle_pxyTransform
         driverTwistAxis: 1
         driverEulerTwist: false
         driverController:
         - L_LegFk03_ctrl.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: DefaultPose
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_LegFk03_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_LegFk03_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.33284080028533936
@@ -1221,23 +1221,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Back
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_LegFk03_ctrl.rotate
                 value:
-                    x: 1.5707963267948966
-                    y: 0.0
-                    z: 0.0
+                - 1.5707963267948966
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_LegFk03_ctrl.rotate
                 value:
-                    x: 1.5707963267948966
-                    y: 0.0
-                    z: 0.0
+                - 1.5707963267948966
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.5
@@ -1253,23 +1253,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Front
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_LegFk03_ctrl.rotate
                 value:
-                    x: -1.0471975511965976
-                    y: 0.0
-                    z: 0.0
+                - -1.0471975511965976
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_LegFk03_ctrl.rotate
                 value:
-                    x: -1.0471975511965976
-                    y: 0.0
-                    z: 0.0
+                - -1.0471975511965976
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.3333333432674408
@@ -1285,23 +1285,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Inner
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_LegFk03_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -1.0471975511965976
+                - 0.0
+                - 0.0
+                - -1.0471975511965976
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_LegFk03_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -1.0471975511965976
+                - 0.0
+                - 0.0
+                - -1.0471975511965976
                 type: 8
         isEnabled: true
         poseFalloff: 0.33284080028533936
@@ -1317,23 +1317,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Outer
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_LegFk03_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 1.0471975511965976
+                - 0.0
+                - 0.0
+                - 1.0471975511965976
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: L_LegFk03_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 1.0471975511965976
+                - 0.0
+                - 0.0
+                - 1.0471975511965976
                 type: 8
         isEnabled: true
         poseFalloff: 0.33284080028533936
@@ -1355,33 +1355,33 @@
     allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
+- !<PoseInterpolator>
     name: R_Clavicle_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: R_Clavicle_pxyTransform
         driverTwistAxis: 0
         driverEulerTwist: false
         driverController:
         - R_Clavicle_ctrl.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: DefaultPose
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_Clavicle_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_Clavicle_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.1388888955116272
@@ -1397,23 +1397,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Up
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_Clavicle_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.7853981633974483
+                - 0.0
+                - 0.0
+                - 0.7853981633974483
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_Clavicle_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.7853981633974483
+                - 0.0
+                - 0.0
+                - 0.7853981633974483
                 type: 8
         isEnabled: true
         poseFalloff: 0.25
@@ -1429,23 +1429,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Front
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_Clavicle_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: -0.7853981633974483
-                    z: 0.0
+                - 0.0
+                - -0.7853981633974483
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_Clavicle_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: -0.7853981633974483
-                    z: 0.0
+                - 0.0
+                - -0.7853981633974483
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.25
@@ -1461,23 +1461,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Back
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_Clavicle_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.7853981633974483
-                    z: 0.0
+                - 0.0
+                - 0.7853981633974483
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_Clavicle_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.7853981633974483
-                    z: 0.0
+                - 0.0
+                - 0.7853981633974483
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.25
@@ -1493,23 +1493,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Dw
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_Clavicle_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -0.4363323129985824
+                - 0.0
+                - 0.0
+                - -0.4363323129985824
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_Clavicle_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -0.4363323129985824
+                - 0.0
+                - 0.0
+                - -0.4363323129985824
                 type: 8
         isEnabled: true
         poseFalloff: 0.1388888955116272
@@ -1531,33 +1531,33 @@
     allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
+- !<PoseInterpolator>
     name: R_Shoulder_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: R_Shoulder_pxyTransform
         driverTwistAxis: 0
         driverEulerTwist: false
         driverController:
         - R_ArmFk01_ctrl.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: DefaultPose
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_ArmFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_ArmFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.5
@@ -1573,23 +1573,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Up
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_ArmFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 1.5707963267948966
+                - 0.0
+                - 0.0
+                - 1.5707963267948966
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_ArmFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 1.5707963267948966
+                - 0.0
+                - 0.0
+                - 1.5707963267948966
                 type: 8
         isEnabled: true
         poseFalloff: 0.5
@@ -1605,23 +1605,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Front
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_ArmFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: -1.5707963267948966
-                    z: 0.0
+                - 0.0
+                - -1.5707963267948966
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_ArmFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: -1.5707963267948966
-                    z: 0.0
+                - 0.0
+                - -1.5707963267948966
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.5
@@ -1637,23 +1637,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Back
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_ArmFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 1.5707963267948966
-                    z: 0.0
+                - 0.0
+                - 1.5707963267948966
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_ArmFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 1.5707963267948966
-                    z: 0.0
+                - 0.0
+                - 1.5707963267948966
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.5
@@ -1669,23 +1669,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Dw
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_ArmFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -1.5707963267948966
+                - 0.0
+                - 0.0
+                - -1.5707963267948966
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_ArmFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -1.5707963267948966
+                - 0.0
+                - 0.0
+                - -1.5707963267948966
                 type: 8
         isEnabled: true
         poseFalloff: 0.5
@@ -1707,33 +1707,33 @@
     allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
+- !<PoseInterpolator>
     name: R_Elbow_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: R_Elbow_pxyTransform
         driverTwistAxis: 0
         driverEulerTwist: false
         driverController:
         - R_ArmFk02_ctrl.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: DefaultPose
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_ArmFk02_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_ArmFk02_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 1.0
@@ -1749,23 +1749,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Swing140
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_ArmFk02_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: -2.443460952792061
-                    z: 0.0
+                - 0.0
+                - -2.443460952792061
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_ArmFk02_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: -2.443460952792061
-                    z: 0.0
+                - 0.0
+                - -2.443460952792061
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 1.0
@@ -1787,33 +1787,33 @@
     allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
+- !<PoseInterpolator>
     name: R_Wrist_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: R_Wrist_pxyTransform
         driverTwistAxis: 0
         driverEulerTwist: false
         driverController:
         - R_ArmFk03_ctrl.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: DefaultPose
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_ArmFk03_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_ArmFk03_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.3333333432674408
@@ -1829,23 +1829,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Up
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_ArmFk03_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 1.5707963267948966
+                - 0.0
+                - 0.0
+                - 1.5707963267948966
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_ArmFk03_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 1.5707963267948966
+                - 0.0
+                - 0.0
+                - 1.5707963267948966
                 type: 8
         isEnabled: true
         poseFalloff: 0.4999997913837433
@@ -1861,23 +1861,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Dw
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_ArmFk03_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -1.5707963267948966
+                - 0.0
+                - 0.0
+                - -1.5707963267948966
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_ArmFk03_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -1.5707963267948966
+                - 0.0
+                - 0.0
+                - -1.5707963267948966
                 type: 8
         isEnabled: true
         poseFalloff: 0.4999997913837433
@@ -1893,23 +1893,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Back
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_ArmFk03_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 1.0471975511965976
-                    z: 0.0
+                - 0.0
+                - 1.0471975511965976
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_ArmFk03_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 1.0471975511965976
-                    z: 0.0
+                - 0.0
+                - 1.0471975511965976
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.3333333432674408
@@ -1925,23 +1925,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Front
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_ArmFk03_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: -1.0471975511965976
-                    z: 0.0
+                - 0.0
+                - -1.0471975511965976
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_ArmFk03_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: -1.0471975511965976
-                    z: 0.0
+                - 0.0
+                - -1.0471975511965976
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.3333333432674408
@@ -1963,33 +1963,33 @@
     allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
+- !<PoseInterpolator>
     name: R_Hip_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: R_Hip_pxyTransform
         driverTwistAxis: 0
         driverEulerTwist: false
         driverController:
         - R_LegFk01_ctrl.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: DefaultPose
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_LegFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_LegFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.5
@@ -2005,23 +2005,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Front
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_LegFk01_ctrl.rotate
                 value:
-                    x: -2.0943951023931953
-                    y: 0.0
-                    z: 0.0
+                - -2.0943951023931953
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_LegFk01_ctrl.rotate
                 value:
-                    x: -2.0943951023931953
-                    y: 0.0
-                    z: 0.0
+                - -2.0943951023931953
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.5
@@ -2037,23 +2037,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Back
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_LegFk01_ctrl.rotate
                 value:
-                    x: 1.5707963267948966
-                    y: 0.0
-                    z: 0.0
+                - 1.5707963267948966
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_LegFk01_ctrl.rotate
                 value:
-                    x: 1.5707963267948966
-                    y: 0.0
-                    z: 0.0
+                - 1.5707963267948966
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.5
@@ -2069,23 +2069,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Outer
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_LegFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 1.5707963267948966
+                - 0.0
+                - 0.0
+                - 1.5707963267948966
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_LegFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 1.5707963267948966
+                - 0.0
+                - 0.0
+                - 1.5707963267948966
                 type: 8
         isEnabled: true
         poseFalloff: 0.5
@@ -2101,23 +2101,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Inner
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_LegFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -1.0471975511965976
+                - 0.0
+                - 0.0
+                - -1.0471975511965976
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_LegFk01_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -1.0471975511965976
+                - 0.0
+                - 0.0
+                - -1.0471975511965976
                 type: 8
         isEnabled: true
         poseFalloff: 0.5
@@ -2139,33 +2139,33 @@
     allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
+- !<PoseInterpolator>
     name: R_Knee_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: R_Knee_pxyTransform
         driverTwistAxis: 0
         driverEulerTwist: false
         driverController:
         - R_LegFk02_ctrl.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: DefaultPose
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_LegFk02_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_LegFk02_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 1.0
@@ -2181,23 +2181,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Swing155
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_LegFk02_ctrl.rotate
                 value:
-                    x: 2.705260340591211
-                    y: 0.0
-                    z: 0.0
+                - 2.705260340591211
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_LegFk02_ctrl.rotate
                 value:
-                    x: 2.705260340591211
-                    y: 0.0
-                    z: 0.0
+                - 2.705260340591211
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 1.0
@@ -2219,33 +2219,33 @@
     allowNegativeWeights: false
     enableRotation: true
     enableTranslation: false
-- !<PoseInterpolatorData>
+- !<PoseInterpolator>
     name: R_Ankle_poseInterpolator
     driver:
-    - !<DriverData>
+    - !<Driver>
         driverObject: R_Ankle_pxyTransform
         driverTwistAxis: 1
         driverEulerTwist: false
         driverController:
         - R_LegFk03_ctrl.rotate
     pose:
-    - !<PoseData>
+    - !<Pose>
         poseName: DefaultPose
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_LegFk03_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_LegFk03_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 0.0
+                - 0.0
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.33284080028533936
@@ -2261,23 +2261,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Back
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_LegFk03_ctrl.rotate
                 value:
-                    x: 1.5707963267948966
-                    y: 0.0
-                    z: 0.0
+                - 1.5707963267948966
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_LegFk03_ctrl.rotate
                 value:
-                    x: 1.5707963267948966
-                    y: 0.0
-                    z: 0.0
+                - 1.5707963267948966
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.5
@@ -2293,23 +2293,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Front
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_LegFk03_ctrl.rotate
                 value:
-                    x: -1.0471975511965976
-                    y: 0.0
-                    z: 0.0
+                - -1.0471975511965976
+                - 0.0
+                - 0.0
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_LegFk03_ctrl.rotate
                 value:
-                    x: -1.0471975511965976
-                    y: 0.0
-                    z: 0.0
+                - -1.0471975511965976
+                - 0.0
+                - 0.0
                 type: 8
         isEnabled: true
         poseFalloff: 0.3333333432674408
@@ -2325,23 +2325,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Inner
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_LegFk03_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -1.0471975511965976
+                - 0.0
+                - 0.0
+                - -1.0471975511965976
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_LegFk03_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: -1.0471975511965976
+                - 0.0
+                - 0.0
+                - -1.0471975511965976
                 type: 8
         isEnabled: true
         poseFalloff: 0.3328000009059906
@@ -2357,23 +2357,23 @@
         -   - 0.0
             - 0.0
             - 0.0
-    - !<PoseData>
+    - !<Pose>
         poseName: Outer
         poseType: 1
         controllerData:
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_LegFk03_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 1.0471975511965976
+                - 0.0
+                - 0.0
+                - 1.0471975511965976
                 type: 8
-        -   - !<ControlData>
+        -   - !<ControllerDataItem>
                 name: R_LegFk03_ctrl.rotate
                 value:
-                    x: 0.0
-                    y: 0.0
-                    z: 1.0471975511965976
+                - 0.0
+                - 0.0
+                - 1.0471975511965976
                 type: 8
         isEnabled: true
         poseFalloff: 0.33284080028533936
