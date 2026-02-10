@@ -1,0 +1,42 @@
+F_Loop = RTG_Run_F_Lfoot_4
+F_Lfoot_Start = RTG_Run_F_Rfoot_050
+F_Rfoot_Start = RTG_Run_F_Rfoot_050 *
+F_Rfoot_Stop = RTG_Run_F_Lfoot_005
+F_Lfoot_Stop = RTG_Run_F_Rfoot_016_BATE_
+
+
+
+
+B_Loop = RTG_Run_B_Lfoot_001_BATE_
+B_Lfoot_Start = RTG_Run_B_Lfoot_001_BATE_
+B_Lfoot_Stop = RTG_Run_B_Lfoot_002
+B_Rfoot_Start = RTG_Run_B_Rfoot_008
+B_Rfoot_Stop = RTG_Run_B_Rfoot_008
+
+
+
+LP_loop = RTG_Run_LP_Lfoot_007
+LP_Lfoot_Start = RTG_Run_LP_Lfoot_007
+LP_Lfoot_Stop = RTG_Run_LP_Lfoot_007
+LP_Rfoot_Start = RTG_Run_LP_Rfoot_013_BATE_ * 
+LP_Rfoot_Stop = RTG_Run_LP_Rfoot_013_BATE_
+
+
+LN_Loop = RTG_Run_LN_Lfoot_006
+LN_Lfoot_Start = RTG_Run_LN_Lfoot_006
+LN_Lfoot_Stop = RTG_Run_LN_Lfoot_006
+LN_Rfoot_Start = RTG_Run_LN_Rfoot_001
+LN_Rfoot_Stop = RTG_Run_LN_Rfoot_001
+
+
+RP_Loop = RTG_Run_RP_Lfoot_032_BATE_
+RP_Lfoot_Start = RTG_Run_RP_Lfoot_032_BATE_
+RP_Lfoot_Stop = RTG_Run_RP_Lfoot_032_BATE_ + RTG_Run_RP_Lfoot_035
+RP_Rfoot_Start = RTG_Run_RP_Rfoot_002_BATE_ *
+RP_Rfoot_Stop = RTG_Run_RP_Rfoot_002_BATE_
+
+RN_Loop = RTG_Run_RN_Lfoot_002
+RN_Lfoot_Start = RTG_Run_RN_Lfoot_005
+RN_Lfoot_Stop = RTG_Run_RN_Lfoot_005
+RN_Rfoot_Start = RTG_Run_RN_Lfoot_002 *
+RN_Rfoot_Stop = RTG_Run_RN_Lfoot_002

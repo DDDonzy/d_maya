@@ -115,7 +115,7 @@ def run_solver():
     try:
         num_influences = len(skin_fn.influenceObjects())
         weights_all = np.array(weights_flat).reshape(num_verts, num_influences)
-    except:
+    except Exception:
         weights_all = np.array(weights_flat).reshape(num_verts, -1)
 
     rest_matrices = get_rest_matrices(CONFIG["BONES"])
