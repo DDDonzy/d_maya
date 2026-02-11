@@ -5,12 +5,14 @@ import maya.api.OpenMayaAnim as oma
 import numpy as np
 import math
 import traceback
+import pprint as pp
+
 
 CONFIG = {
-    "REST_MESH": "M_Head_base",
-    "TARGET_MESH": "M_Head_base1",
-    "SKIN_NODE": "M_Head_base_skinCluster",
-    "BONES": cmds.skinCluster("M_Head_base_skinCluster", q=1, inf=1),
+    "REST_MESH": "pCube1",
+    "TARGET_MESH": "pCube2",
+    "SKIN_NODE": "skinCluster1",
+    "BONES": cmds.skinCluster("skinCluster1", q=1, inf=1),
     "ITERATIONS": 5,
     "TOLERANCE": 1e-5,
     "WEIGHT_THR": 0.001,  # 既然使用了加权，阈值可以设小一点，让更多点参与贡献但低权重影响极小
@@ -20,100 +22,47 @@ CONFIG = {
 
 def get_dag_path(name):
     """通过名字获取 DAG Path"""
-
     try:
         sel = om.MSelectionList()
-
         sel.add(name)
-
         return sel.getDagPath(0)
-
-    except:
+    except Exception:
         return None
 
 
 def get_rest_matrices(bone_names):
     """记录初始矩阵 (用于角度限制参考)"""
-
     matrices = {}
-
     for name in bone_names:
         dag = get_dag_path(name)
-
         if dag:
             fn = om.MFnTransform(dag)
-
             matrices[name] = fn.transformation().asMatrix()
-
-    return matrices 
-
-
-def build_influence_map(skin_fn):
-    """
-
-    [优化] 预先构建 骨骼名 -> 索引 的映射字典
-
-    避免在循环中反复调用 influenceObjects (极慢)
-
-    """
-
-    inf_map = {}
-
-    influences = skin_fn.influenceObjects()
-
-    for i in range(len(influences)):
-        # 存储完整路径和短名，确保匹配成功率
-
-        full_name = influences[i].partialPathName()
-
-        short_name = full_name.split("|")[-1]
-
-        inf_map[full_name] = i
-
-        inf_map[short_name] = i
-
-    return inf_map
+    return matrices
 
 
 def constrain_angle(mat_current, mat_rest, max_deg):
     """全局角度限制"""
-
     tm_curr = om.MTransformationMatrix(mat_current)
-
     tm_rest = om.MTransformationMatrix(mat_rest)
-
     q_curr = tm_curr.rotation(True)
-
     q_rest = tm_rest.rotation(True)
-
     q_diff = q_curr * q_rest.inverse()
-
     if q_diff.w < 0:
         q_diff.negateIt()
-
         q_curr.negateIt()
-
     # 钳制数值防止 acos 越界
-
     val = max(min(q_diff.w, 1.0), -1.0)
-
     angle_rad = 2.0 * math.acos(val)
-
     angle_deg = math.degrees(angle_rad)
-
     if angle_deg <= max_deg:
         return mat_current
-
     t = math.radians(max_deg) / angle_rad
 
     # Slerp 插值回原始角度
-
     q_clamped = om.MQuaternion.slerp(q_rest, q_curr, t)
-
     tm_final = om.MTransformationMatrix(mat_current)
-
     tm_final.setRotation(q_clamped)
-
     return tm_final.asMatrix()
 
 
@@ -134,11 +83,17 @@ def run_solver_weighted():
         cmds.error("初始化失败，请检查模型名称和蒙皮节点。")
         return
 
+    # 顶点数
     num_verts = rest_fn.numVertices
-    p_target_all = np.array(target_fn.getPoints(om.MSpace.kWorld))[:, :3]
-    inf_map = build_influence_map(skin_fn)
+    # 雕刻模型点位置
+    p_target_all = np.array(target_fn.getPoints(om.MSpace.kObject))[:, :3]
+    # 蒙皮骨骼和对应的index
+    inf_map = {name: idx for idx, name in enumerate(cmds.skinCluster(CONFIG["SKIN_NODE"], q=1, inf=1))}
+    # maya 权重
     weights_flat, _ = skin_fn.getWeights(rest_dag, om.MObject())
+    # maya 权重转 np，按骨骼序列排序
     weights_all = np.array(weights_flat).reshape(num_verts, -1)
+    # bind pose 矩阵
     rest_matrices = get_rest_matrices(CONFIG["BONES"])
 
     # 2. 预计算骨骼数据 (加入权重数组缓存)
@@ -146,28 +101,30 @@ def run_solver_weighted():
     for bone_name in CONFIG["BONES"]:
         col_idx = inf_map.get(bone_name, -1)
         if col_idx == -1 or bone_name not in rest_matrices:
+            # 检测骨骼是否在蒙皮中
             continue
 
-        indices = np.where(weights_all[:, col_idx] > CONFIG["WEIGHT_THR"])[0]
+        indices = np.where(weights_all[:, col_idx] > CONFIG["WEIGHT_THR"])[0]  # 当前骨骼影响点的idx
         if len(indices) < 3:
+            # 只有影响点数大于3个点的骨骼才可以svd计算
             continue
 
         # 缓存该骨骼对应的权重，并进行归一化（可选，但推荐）
         w = weights_all[indices, col_idx]
 
         bone_cache.append({
-            "name": bone_name,
-            "indices": indices,
-            "W": w[:, np.newaxis],  # 变成 (N, 1) 方便 numpy 广播运算
-            "Q": p_target_all[indices],
+            "name": bone_name,  # 骨骼名称
+            "indices": indices,  # 当前骨骼点的点序号
+            "W": w[:, np.newaxis],  # 当前骨骼影响点的权重，变成 (N, 1) 方便 numpy 广播运算
+            "Q": p_target_all[indices],  # 当前骨骼影响的点，对应雕刻模型的位置
         })
+    pp.pprint(bone_cache)
 
     # 3. 迭代求解器
-    cmds.undoInfo(openChunk=True)
     try:
         for it in range(CONFIG["ITERATIONS"]):
             max_move = 0.0
-            p_current_all = np.array(rest_fn.getPoints(om.MSpace.kWorld))[:, :3]
+            p_current_all = np.array(rest_fn.getPoints(om.MSpace.kObject))[:, :3]
 
             for data in bone_cache:
                 bone_name, indices, Q, W = data["name"], data["indices"], data["Q"], data["W"]
@@ -224,7 +181,6 @@ def run_solver_weighted():
         print(f"Error: {e}")
         traceback.print_exc()
     finally:
-        cmds.undoInfo(closeChunk=True)
         cmds.refresh()
         print(">>> 加权计算完成")
 

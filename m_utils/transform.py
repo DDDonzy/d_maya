@@ -352,3 +352,12 @@ def reset_transform_cmd(transform=True, userDefined=False):
     for obj in cmds.ls(sl=1):
         reset_transform(obj, transform, userDefined)
     log.success("Reset value(all)." if userDefined else "Reset value.")
+
+
+def mirror_transform_cmd():
+    from m_utils.mirrorEnv import MIRROR_CONFIG
+
+    selected_objects = cmds.ls(sl=True)
+    exchange_list = MIRROR_CONFIG.exchange(selected_objects)
+    for idx, obj in enumerate(exchange_list):
+        mirror_transform(selected_objects[idx], obj)

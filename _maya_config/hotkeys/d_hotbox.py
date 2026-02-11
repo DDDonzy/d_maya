@@ -33,6 +33,11 @@ class UI_Command:
     def align_transform(*args, **kwargs):
         from m_utils.transform import align_transform_cmd
         align_transform_cmd()
+    
+    @staticmethod
+    def mirror_transform(*args, **kwargs):
+        from m_utils.transform import mirror_transform_cmd
+        mirror_transform_cmd()
 
     @staticmethod
     def lock_attr(*args, **kwargs):
@@ -227,7 +232,8 @@ class UI_Logic:
 
         # --- Transform Menu ---
         self.menuItem(label="Transform", subMenu=True, radialPosition="E")
-        self.menuItem(label="Align Transform", radialPosition="E", sourceType="python", command=UI_Command.align_transform)
+        self.menuItem(label="Align Transform", radialPosition="NE", sourceType="python", command=UI_Command.align_transform)
+        self.menuItem(label="Mirror Transform", radialPosition="E", sourceType="python", command=UI_Command.mirror_transform)
         self.menuItem(label="Lock Attributes", radialPosition="W", sourceType="python", command=UI_Command.lock_attr)
         self.menuItem(label="Show JointOrient", radialPosition="SW", sourceType="python", command=UI_Command.show_jo)
         self.menuItem(label="Show Locked", radialPosition="NW", sourceType="python", command=UI_Command.show_locked)
