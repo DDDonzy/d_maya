@@ -304,6 +304,7 @@ def mirror_transform(
     target_parent_matrix = get_parentMatrix(target_obj)
     flip_offsetMatrix = get_offsetMatrix(sour_parent_matrix_flip, target_parent_matrix)
     set_worldMatrix(target_obj, flip_offsetMatrix * sour_worldMatrix_flip)
+    log.trace("Mirror Transform: '{}' -> '{}'", source_obj, target_obj)
 
 
 def flip_transform(
@@ -361,3 +362,4 @@ def mirror_transform_cmd():
     exchange_list = MIRROR_CONFIG.exchange(selected_objects)
     for idx, obj in enumerate(exchange_list):
         mirror_transform(selected_objects[idx], obj)
+        log.success("Mirror Complete.")
