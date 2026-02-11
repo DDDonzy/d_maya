@@ -33,7 +33,7 @@ class ActionHandler:
 
         sel = cmds.ls(sl=1)
         for obj in sel:
-            BlendShapeNames.extend(get_history(obj, type="BlendShape"))
+            BlendShapeNames.extend(get_history(obj, type="blendShape"))
 
         treeviewSelectedBSD = mel.eval("getShapeEditorTreeviewSelection 1")
         BlendShapeNames.extend(treeviewSelectedBSD)

@@ -4,197 +4,230 @@ import maya.api.OpenMaya as om
 import maya.api.OpenMayaAnim as oma
 import numpy as np
 import math
+import traceback
 
-# ==================== 配置区域 (Config) ====================
 CONFIG = {
-    # 场景对象名称
-    "REST_MESH": "Rest_Mesh",  # 原始 T-Pose 模型
-    "TARGET_MESH": "Sculpt_Mesh",  # 雕刻好的目标模型
-    "SKIN_NODE": "skinCluster1",  # [手动输入] 蒙皮节点名称
-    # 需要计算的骨骼列表
-    "BONES": ["Bone_Root", "Bone_Top"],
-    # 求解参数
-    "ITERATIONS": 10,  # 迭代次数 (无阻尼模式下通常5-10次即可)
-    "TOLERANCE": 1e-5,  # 收敛精度
-    "WEIGHT_THR": 0.4,  # 权重阈值
-    # 限制参数
-    "MAX_ANGLE": 60.0,  # [全局限制] 最大允许旋转角度
+    "REST_MESH": "M_Head_base",
+    "TARGET_MESH": "M_Head_base1",
+    "SKIN_NODE": "M_Head_base_skinCluster",
+    "BONES": cmds.skinCluster("M_Head_base_skinCluster", q=1, inf=1),
+    "ITERATIONS": 5,
+    "TOLERANCE": 1e-5,
+    "WEIGHT_THR": 0.001,  # 既然使用了加权，阈值可以设小一点，让更多点参与贡献但低权重影响极小
+    "MAX_ANGLE": 60.0,
 }
-# ==========================================================
 
 
 def get_dag_path(name):
     """通过名字获取 DAG Path"""
+
     try:
         sel = om.MSelectionList()
+
         sel.add(name)
+
         return sel.getDagPath(0)
+
     except:
         return None
 
 
 def get_rest_matrices(bone_names):
     """记录初始矩阵 (用于角度限制参考)"""
+
     matrices = {}
+
     for name in bone_names:
         dag = get_dag_path(name)
+
         if dag:
             fn = om.MFnTransform(dag)
+
             matrices[name] = fn.transformation().asMatrix()
-    return matrices
+
+    return matrices 
 
 
-def get_influence_index(skin_fn, bone_name):
-    """获取骨骼索引"""
+def build_influence_map(skin_fn):
+    """
+
+    [优化] 预先构建 骨骼名 -> 索引 的映射字典
+
+    避免在循环中反复调用 influenceObjects (极慢)
+
+    """
+
+    inf_map = {}
+
     influences = skin_fn.influenceObjects()
+
     for i in range(len(influences)):
-        inf_name = influences[i].partialPathName()
-        if bone_name == inf_name or bone_name == inf_name.split("|")[-1]:
-            return i
-    return -1
+        # 存储完整路径和短名，确保匹配成功率
+
+        full_name = influences[i].partialPathName()
+
+        short_name = full_name.split("|")[-1]
+
+        inf_map[full_name] = i
+
+        inf_map[short_name] = i
+
+    return inf_map
 
 
 def constrain_angle(mat_current, mat_rest, max_deg):
     """全局角度限制"""
+
     tm_curr = om.MTransformationMatrix(mat_current)
+
     tm_rest = om.MTransformationMatrix(mat_rest)
 
     q_curr = tm_curr.rotation(True)
+
     q_rest = tm_rest.rotation(True)
 
     q_diff = q_curr * q_rest.inverse()
+
     if q_diff.w < 0:
         q_diff.negateIt()
+
         q_curr.negateIt()
 
+    # 钳制数值防止 acos 越界
+
     val = max(min(q_diff.w, 1.0), -1.0)
+
     angle_rad = 2.0 * math.acos(val)
+
     angle_deg = math.degrees(angle_rad)
 
     if angle_deg <= max_deg:
         return mat_current
 
     t = math.radians(max_deg) / angle_rad
+
+    # Slerp 插值回原始角度
+
     q_clamped = om.MQuaternion.slerp(q_rest, q_curr, t)
 
     tm_final = om.MTransformationMatrix(mat_current)
+
     tm_final.setRotation(q_clamped)
+
     return tm_final.asMatrix()
 
 
-def run_solver():
-    print(f">>> 开始计算 (SkinCluster: {CONFIG['SKIN_NODE']})...")
+def run_solver_weighted():
+    print(f">>> 开始加权计算 (SkinCluster: {CONFIG['SKIN_NODE']})...")
 
-    # 1. 初始化对象
+    # 1. 初始化对象与数据
     rest_dag = get_dag_path(CONFIG["REST_MESH"])
     target_dag = get_dag_path(CONFIG["TARGET_MESH"])
 
-    # 获取手动指定的 SkinCluster
     try:
         sel_skin = om.MSelectionList()
         sel_skin.add(CONFIG["SKIN_NODE"])
-        skin_node = sel_skin.getDependNode(0)
-        skin_fn = oma.MFnSkinCluster(skin_node)
+        skin_fn = oma.MFnSkinCluster(sel_skin.getDependNode(0))
+        rest_fn = om.MFnMesh(rest_dag)
+        target_fn = om.MFnMesh(target_dag)
     except:
-        cmds.error(f"初始化失败：找不到蒙皮节点 '{CONFIG['SKIN_NODE']}'，请检查名字是否正确。")
+        cmds.error("初始化失败，请检查模型名称和蒙皮节点。")
         return
 
-    if not (rest_dag and target_dag):
-        cmds.error(f"初始化失败：找不到模型。")
-        return
-
-    rest_fn = om.MFnMesh(rest_dag)
-    target_fn = om.MFnMesh(target_dag)
-
-    # 2. 数据准备
     num_verts = rest_fn.numVertices
-    p_target = np.array(target_fn.getPoints(om.MSpace.kWorld))[:, :3]
-
+    p_target_all = np.array(target_fn.getPoints(om.MSpace.kWorld))[:, :3]
+    inf_map = build_influence_map(skin_fn)
     weights_flat, _ = skin_fn.getWeights(rest_dag, om.MObject())
-    # 自动 Reshape 保护
-    try:
-        num_influences = len(skin_fn.influenceObjects())
-        weights_all = np.array(weights_flat).reshape(num_verts, num_influences)
-    except Exception:
-        weights_all = np.array(weights_flat).reshape(num_verts, -1)
-
+    weights_all = np.array(weights_flat).reshape(num_verts, -1)
     rest_matrices = get_rest_matrices(CONFIG["BONES"])
 
-    # 3. 迭代
+    # 2. 预计算骨骼数据 (加入权重数组缓存)
+    bone_cache = []
+    for bone_name in CONFIG["BONES"]:
+        col_idx = inf_map.get(bone_name, -1)
+        if col_idx == -1 or bone_name not in rest_matrices:
+            continue
+
+        indices = np.where(weights_all[:, col_idx] > CONFIG["WEIGHT_THR"])[0]
+        if len(indices) < 3:
+            continue
+
+        # 缓存该骨骼对应的权重，并进行归一化（可选，但推荐）
+        w = weights_all[indices, col_idx]
+
+        bone_cache.append({
+            "name": bone_name,
+            "indices": indices,
+            "W": w[:, np.newaxis],  # 变成 (N, 1) 方便 numpy 广播运算
+            "Q": p_target_all[indices],
+        })
+
+    # 3. 迭代求解器
     cmds.undoInfo(openChunk=True)
     try:
         for it in range(CONFIG["ITERATIONS"]):
             max_move = 0.0
-            p_current = np.array(rest_fn.getPoints(om.MSpace.kWorld))[:, :3]
+            p_current_all = np.array(rest_fn.getPoints(om.MSpace.kWorld))[:, :3]
 
-            for bone_name in CONFIG["BONES"]:
-                if bone_name not in rest_matrices:
-                    continue
+            for data in bone_cache:
+                bone_name, indices, Q, W = data["name"], data["indices"], data["Q"], data["W"]
+                P = p_current_all[indices]
 
-                col_idx = get_influence_index(skin_fn, bone_name)
-                if col_idx == -1:
-                    continue
+                # --- 加权 SVD 核心步骤 ---
+                # 1. 计算加权重心
+                sum_w = np.sum(W)
+                cen_P = np.sum(P * W, axis=0) / sum_w
+                cen_Q = np.sum(Q * W, axis=0) / sum_w
 
-                indices = np.where(weights_all[:, col_idx] > CONFIG["WEIGHT_THR"])[0]
-                if len(indices) < 3:
-                    continue
+                # 2. 去中心化
+                P_centered = P - cen_P
+                Q_centered = Q - cen_Q
 
-                P = p_current[indices]
-                Q = p_target[indices]
+                # 3. 构建加权协方差矩阵 H = (P*W)^T * Q
+                # W 是 (N, 1), P_centered 是 (N, 3), Q_centered 是 (N, 3)
+                H = np.dot((P_centered * W).T, Q_centered)
 
-                # SVD 核心
-                cen_P, cen_Q = np.mean(P, axis=0), np.mean(Q, axis=0)
-                H = np.dot((P - cen_P).T, (Q - cen_Q))
+                # 4. SVD 求解旋转
                 U, S, Vt = np.linalg.svd(H)
-                R = np.dot(Vt.T, U.T)
+                R_trans = np.dot(Vt.T, U.T).T  # 保持原代码的转置逻辑适配 Maya
 
-                if np.linalg.det(R) < 0:
+                if np.linalg.det(R_trans.T) < 0:  # 修正反射
                     Vt[2, :] *= -1
-                    R = np.dot(Vt.T, U.T)
+                    R_trans = np.dot(Vt.T, U.T).T
 
-                # Numpy -> Maya Matrix
-                R_maya = R.T
-                mat_list = [R_maya[0, 0], R_maya[0, 1], R_maya[0, 2], 0.0, R_maya[1, 0], R_maya[1, 1], R_maya[1, 2], 0.0, R_maya[2, 0], R_maya[2, 1], R_maya[2, 2], 0.0, 0.0, 0.0, 0.0, 1.0]
+                # --- 构造 Maya 矩阵 ---
+                mat_list = [R_trans[0, 0], R_trans[0, 1], R_trans[0, 2], 0.0, R_trans[1, 0], R_trans[1, 1], R_trans[1, 2], 0.0, R_trans[2, 0], R_trans[2, 1], R_trans[2, 2], 0.0, 0.0, 0.0, 0.0, 1.0]
                 mat_rot = om.MMatrix(mat_list)
 
-                # 计算位移 (无阻尼)
+                # 5. 计算加权位移 t = cen_Q - R * cen_P
                 cp_rot = om.MPoint(cen_P) * mat_rot
                 t_vec = om.MVector(cen_Q) - om.MVector(cp_rot)
 
                 mat_list[12], mat_list[13], mat_list[14] = t_vec.x, t_vec.y, t_vec.z
                 mat_delta = om.MMatrix(mat_list)
 
-                # 应用
-                bone_dag = get_dag_path(bone_name)
-                bone_fn = om.MFnTransform(bone_dag)
-
+                # --- 应用变换与约束 ---
+                bone_fn = om.MFnTransform(get_dag_path(bone_name))
                 mat_new = bone_fn.transformation().asMatrix() * mat_delta
-
-                # 全局限制
                 mat_final = constrain_angle(mat_new, rest_matrices[bone_name], CONFIG["MAX_ANGLE"])
 
                 tm_final = om.MTransformationMatrix(mat_final)
                 bone_fn.setTranslation(tm_final.translation(om.MSpace.kWorld), om.MSpace.kWorld)
                 bone_fn.setRotation(tm_final.rotation(True), om.MSpace.kWorld)
 
-                move_dist = t_vec.length()
-                if move_dist > max_move:
-                    max_move = move_dist
+                max_move = max(max_move, t_vec.length())
 
             if max_move < CONFIG["TOLERANCE"]:
-                print(f"迭代 {it + 1}: 完美收敛。")
+                print(f"迭代 {it + 1}: 已收敛。")
                 break
-
     except Exception as e:
         print(f"Error: {e}")
-        import traceback
-
         traceback.print_exc()
     finally:
         cmds.undoInfo(closeChunk=True)
         cmds.refresh()
-        print(">>> 计算完成")
+        print(">>> 加权计算完成")
 
 
 if __name__ == "__main__":
-    run_solver()
+    run_solver_weighted()
