@@ -5,7 +5,9 @@ import maya.api.OpenMayaAnim as oma
 import numpy as np
 import math
 import traceback
-import pprint as pp
+
+from m_utils import transform
+import m_utils.transform as transform
 
 
 CONFIG = {
@@ -118,11 +120,11 @@ def run_solver_weighted():
             "W": w[:, np.newaxis],  # 当前骨骼影响点的权重，变成 (N, 1) 方便 numpy 广播运算
             "Q": p_target_all[indices],  # 当前骨骼影响的点，对应雕刻模型的位置
         })
-    pp.pprint(bone_cache)
 
     # 3. 迭代求解器
     try:
         for it in range(CONFIG["ITERATIONS"]):
+            print(f">>> 迭代 {it}/{CONFIG['ITERATIONS']}")
             max_move = 0.0
             p_current_all = np.array(rest_fn.getPoints(om.MSpace.kObject))[:, :3]
 
@@ -164,14 +166,11 @@ def run_solver_weighted():
                 mat_delta = om.MMatrix(mat_list)
 
                 # --- 应用变换与约束 ---
-                bone_fn = om.MFnTransform(get_dag_path(bone_name))
-                mat_new = bone_fn.transformation().asMatrix() * mat_delta
+
+                mat_new = transform.get_worldMatrix(bone_name) * mat_delta
                 mat_final = constrain_angle(mat_new, rest_matrices[bone_name], CONFIG["MAX_ANGLE"])
 
-                tm_final = om.MTransformationMatrix(mat_final)
-                bone_fn.setTranslation(tm_final.translation(om.MSpace.kWorld), om.MSpace.kWorld)
-                bone_fn.setRotation(tm_final.rotation(True), om.MSpace.kWorld)
-
+                transform.set_worldMatrix(bone_name, mat_final)
                 max_move = max(max_move, t_vec.length())
 
             if max_move < CONFIG["TOLERANCE"]:

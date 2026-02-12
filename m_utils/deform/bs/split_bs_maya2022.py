@@ -59,7 +59,7 @@ def duplicate_mesh(source: str = None, name: str = None, materials=True) -> str:
 
 def split_sculpt_by_skin(skin_mesh, sculpt_mesh):
     try:
-        with AssetCallback("SplitSculpt_AST", isBlackBox=True) as assetBox:
+        with AssetCallback("SplitSculpt_AST", isBlackBox=False) as assetBox:
             # asset publish data
             publish_data = {}
             # get skin node
