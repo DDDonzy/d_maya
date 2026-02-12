@@ -58,7 +58,9 @@ def split_sculpt_by_skin(skin_mesh, sculpt_mesh):
     skin_mesh = "pSphere1"
     sculpt_mesh = "pSphere2"
 
-    with AssetCallback("SplitSculpt"):
+    with AssetCallback("SplitSculpt_AST", isBlackBox=True) as assetBox:
+        # asset publish data
+        publish_data = {}
         # get skin node
         node_skin = None
         his = cmds.listHistory(skin_mesh, pdo=1, il=1)
@@ -77,14 +79,25 @@ def split_sculpt_by_skin(skin_mesh, sculpt_mesh):
         cmds.connectAttr(f"{node_skin}.originalGeometry[0]", f"{falloffEval_node}.currentGeometry")
         cmds.connectAttr(f"{node_skin}.originalGeometry[0]", f"{falloffEval_node}.originalGeometry")
 
-    # duplicate
-    split_mesh = duplicate_mesh("pSphere1", name="Split_Mesh")
-    # get skin inference
-    inf_list = cmds.skinCluster(node_skin, q=1, inf=1)
-    node_bs = cmds.blendShape(split_mesh)[0]
-    for i, x in enumerate(inf_list):
-        cmds.blendShape(node_bs, e=1, t=(split_mesh, i, sculpt_mesh, 1))
-        cmds.aliasAttr(x.split(":")[-1], f"{node_bs}.w[{i}]")
-        cmds.setAttr(f"{node_bs}.w[{i}]", 0)
-        cmds.setAttr(f"{comFalloff_node}.weightInfoLayers[{i}].defaultWeight", 0)
-        cmds.connectAttr(f"{falloffEval_node}.perFunctionWeights[{i}].perFunctionVertexWeights", f"{node_bs}.inputTarget[0].inputTargetGroup[{i}].targetWeights")
+        # duplicate
+        split_mesh = duplicate_mesh("pSphere1", name=str(assetBox).replace("AST", "Mesh"))
+        # get skin inference
+        inf_list = cmds.skinCluster(node_skin, q=1, inf=1)
+        node_bs = cmds.blendShape(split_mesh)[0]
+        for i, x in enumerate(inf_list):
+            cmds.blendShape(node_bs, e=1, t=(split_mesh, i, sculpt_mesh, 1))
+            cmds.aliasAttr(x.split(":")[-1], f"{node_bs}.w[{i}]")
+            cmds.setAttr(f"{node_bs}.w[{i}]", 0)
+            cmds.setAttr(f"{comFalloff_node}.weightInfoLayers[{i}].defaultWeight", 0)
+            cmds.connectAttr(f"{falloffEval_node}.perFunctionWeights[{i}].perFunctionVertexWeights", f"{node_bs}.inputTarget[0].inputTargetGroup[{i}].targetWeights")
+            publish_data[x] = f"{node_bs}.w[{i}]"
+
+    cmds.container(assetBox, e=1, an=[split_mesh])
+    AssetCallback.publishAssetData(assetBox, isPublishAssetAttr=True, publishAttrData=publish_data)
+    cmds.setAttr(f"{assetBox}.rotate", l=1)
+    cmds.setAttr(f"{assetBox}.scale", l=1)
+    cmds.select(assetBox)
+
+
+if __name__ == "__main__":
+    split_sculpt_by_skin(skin_mesh="pSphere1", sculpt_mesh="pSphere2")
