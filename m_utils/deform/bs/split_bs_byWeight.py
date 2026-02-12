@@ -85,9 +85,12 @@ class SeparateBlendshape:
                 return
 
             try:
-                from m_utils.deform.bs.split_bs_maya2022 import split_sculpt_by_skin
+                import m_utils.deform.bs.split_bs_maya2022 as split
+                from importlib import reload
 
-                split_sculpt_by_skin(skin_mesh, target_mesh)
+                reload(split)
+
+                split.split_sculpt_by_skin(skin_mesh, target_mesh)
                 om.MGlobal.displayInfo("Separation completed using Node Method.")
             except ImportError:
                 om.MGlobal.displayError("Script 'split_bs_maya2022' not found in path.")

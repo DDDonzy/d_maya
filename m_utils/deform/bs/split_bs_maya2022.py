@@ -13,6 +13,7 @@ class DuplicateMeshCommand:
 
     def doit(self):
         mSel = om.MSelectionList()
+        print(self.source)
         mSel.add(self.source)
         source_shape_mDag = mSel.getDagPath(0)
         source_transform_mDag = om.MDagPath(source_shape_mDag)
@@ -55,8 +56,6 @@ def duplicate_mesh(source: str = None, name: str = None, materials=True) -> str:
 
 
 def split_sculpt_by_skin(skin_mesh, sculpt_mesh):
-    skin_mesh = "pSphere1"
-    sculpt_mesh = "pSphere2"
 
     with AssetCallback("SplitSculpt_AST", isBlackBox=True) as assetBox:
         # asset publish data
@@ -80,7 +79,7 @@ def split_sculpt_by_skin(skin_mesh, sculpt_mesh):
         cmds.connectAttr(f"{node_skin}.originalGeometry[0]", f"{falloffEval_node}.originalGeometry")
 
         # duplicate
-        split_mesh = duplicate_mesh("pSphere1", name=str(assetBox).replace("AST", "Mesh"))
+        split_mesh = duplicate_mesh(skin_mesh, name=str(assetBox).replace("AST", "Mesh"))
         # get skin inference
         inf_list = cmds.skinCluster(node_skin, q=1, inf=1)
         node_bs = cmds.blendShape(split_mesh)[0]
