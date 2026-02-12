@@ -1,170 +1,139 @@
-import numpy as np
 import maya.cmds as cmds
 import maya.api.OpenMaya as om
 import maya.api.OpenMayaAnim as oma
-from functools import partial
-import time
 
 
-class BaseCallBack(object):
-	def __init__(self, func, *args, **kwargs):
-		self.func = func
-		self.args = args
-		self.kwargs = kwargs
+class UndoCallback(object):
+    def __init__(self, func, *args, **kwargs):
+        self.func = func
+        self.args = args
+        self.kwargs = kwargs
+
+    def __call__(self, *args):
+        cmds.undoInfo(openChunk=True)
+        try:
+            return self.func(*self.args, **self.kwargs)
+        finally:
+            cmds.undoInfo(closeChunk=True)
 
 
-class UndoCallback(BaseCallBack):
-	def __call__(self, *args):
-		cmds.undoInfo(openChunk=1)
-		try:
-			return self.func(*self.args, **self.kwargs)
-		finally:
-			cmds.undoInfo(closeChunk=1)
+class SkinTool(oma.MFnSkinCluster):
+    def __init__(self, skinNodeName):
+        sel = om.MSelectionList().add(skinNodeName)
+        oma.MFnSkinCluster.__init__(self, sel.getDependNode(0))
+        self.skinNodeName = skinNodeName
+
+    def getSkinWeights(self, influenceIndex):
+
+        shapes = cmds.skinCluster(self.skinNodeName, q=True, g=True)
+        sel = om.MSelectionList().add(shapes[0])
+        path = sel.getDagPath(0)
+
+        singleIdComp = om.MFnSingleIndexedComponent()
+        vertexComp = singleIdComp.create(om.MFn.kMeshVertComponent)
+
+        weightData = self.getWeights(path, vertexComp, influenceIndex)
+        return weightData
 
 
-class D_skinTool(oma.MFnSkinCluster):
+class SeparateBlendshape:
+    def __init__(self):
+        self.win_name = "separateBlendshape_ui"
 
-	def __init__(self, skinNodeName):
-		self.skinNodeName = skinNodeName
-		self.reload(skinNodeName)
+    def showUI(self):
+        if cmds.window(self.win_name, q=True, ex=True):
+            cmds.deleteUI(self.win_name)
 
-	def reload(self, skinNodeName):
-		skinNodeMObject = self.toApiMObject(skinNodeName)
-		oma.MFnSkinCluster.__init__(self, skinNodeMObject)
+        win = cmds.window(self.win_name, title="SeparateBS by Skin ", wh=[400, 180], s=False)
+        cmds.columnLayout(adj=True, rs=5, p=win)
 
-	def toApiMObject(self, name):
-		MSelectionList = om.MSelectionList().add(name)
-		MObject = MSelectionList.getDependNode(0)
-		return MObject
+        cmds.separator(h=10, style="none")
+        self.skin_grp = cmds.textFieldButtonGrp(label="Skin Mesh:", bl="Load", adj=2, bc=self.load_sel_skin)
+        self.target_grp = cmds.textFieldButtonGrp(label="Target Mesh:", bl="Load", adj=2, bc=self.load_sel_target)
 
-	def toApiMDagPath(self, name):
-		MSelectionList = om.MSelectionList().add(name)
-		MDagPath = MSelectionList.getDagPath(0)
-		return MDagPath
+        cmds.separator(h=5)
+        is_maya_2022 = int(cmds.about(q=True, v=True)) >= 2022
+        self.use_new_method = cmds.checkBox(label="Use 2022+ Node Method (falloffEval)", v=is_maya_2022)
 
-	def getNameByDagPath(self, dagPath):
-		MSelectionList = om.MSelectionList().add(dagPath)
-		stringName = om.MFnDependencyNode(MSelectionList.getDependNode(0)).name()
-		return stringName
+        cmds.separator(h=10)
+        cmds.button(l="Separate", h=40, bgc=[0.36, 0.45, 0.36], c=UndoCallback(self.execute))
 
-	def getShape(self):
-		shape = cmds.skinCluster(self.skinNodeName, q=True, g=True)
-		return shape
+        cmds.showWindow(win)
 
-	def getSkinWeights(self, *infIndex):
-		meshMObject = self.toApiMDagPath(self.getShape()[0])
-		singleIdComp = om.MFnSingleIndexedComponent()
-		vertexComp = singleIdComp.create(om.MFn.kMeshVertComponent)
+    def load_sel_skin(self):
+        sel = cmds.ls(sl=True)
+        if sel:
+            cmds.textFieldButtonGrp(self.skin_grp, e=True, text=sel[0])
 
-		weightData = self.getWeights(meshMObject, vertexComp, *infIndex)
-		return weightData
+    def load_sel_target(self):
+        sel = cmds.ls(sl=True)
+        if sel:
+            cmds.textFieldButtonGrp(self.target_grp, e=True, text=sel[0])
 
-	def getInfluenceIndex(self, influenceName):
-		influenceIndex = cmds.skinCluster(self.skinNodeName, q=1, inf=1).index(influenceName)
-		return influenceIndex
+    def execute(self, *args):
+        skin_mesh = cmds.textFieldButtonGrp(self.skin_grp, q=True, text=True)
+        target_mesh = cmds.textFieldButtonGrp(self.target_grp, q=True, text=True)
+        use_node_method = cmds.checkBox(self.use_new_method, q=True, v=True)
 
-	def setInfluenceWeights(self, influenceIndex, weights):
-		meshMObject = self.toApiMDagPath(self.getShape()[0])
+        if not skin_mesh or not target_mesh:
+            om.MGlobal.displayError("Please load both meshes.")
+            return
 
-		singleIdComp = om.MFnSingleIndexedComponent()
-		vertexComp = singleIdComp.create(om.MFn.kMeshVertComponent)
-		try:
-			influenceIndexArray = om.MIntArray().append(influenceIndex)
-		except:
-			influenceIndexArray = influenceIndex
+        if use_node_method:
+            if int(cmds.about(q=True, v=True)) < 2022:
+                om.MGlobal.displayError("New method requires Maya 2022 or higher.")
+                return
 
-		self.setWeights(meshMObject, vertexComp, influenceIndexArray, weights, normalize=True, returnOldWeights=False)
+            try:
+                from m_utils.deform.bs.split_bs_maya2022 import split_sculpt_by_skin
 
-	def exportWeights(self):
-		weightsInfo = self.getSkinWeights()
-		influenceNameList = self.influenceObjects()
-		influenceNameList = [self.getNameByDagPath(x) for x in influenceNameList]
-		weights = weightsInfo[0]
-		influenceNum = weightsInfo[-1]
-		influenceIndexDict = {}
-		for x in range(len(influenceNameList)):
-			influenceIndexDict.update({str(x): influenceNameList[x]})
-		return influenceIndexDict, weights
+                split_sculpt_by_skin(skin_mesh, target_mesh)
+                om.MGlobal.displayInfo("Separation completed using Node Method.")
+            except ImportError:
+                om.MGlobal.displayError("Script 'split_bs_maya2022' not found in path.")
+        else:
+            self.old_logic_optimized(skin_mesh, target_mesh)
 
+    def old_logic_optimized(self, skin_mesh, target_mesh):
+        """优化后的旧逻辑：减少重复复制，加快属性设置速度"""
+        skin_node_name = self.get_skin_cluster(skin_mesh)
+        if not skin_node_name:
+            om.MGlobal.displayError("No skinCluster found on skin mesh.")
+            return
 
-class separateBlendshape():
-	def showUI(self):
-		if cmds.window('separateBlendshape_ui', q=1, ex=1): cmds.deleteUI('separateBlendshape_ui')
-		win = cmds.window('separateBlendshape_ui')
-		cmds.window(win, e=1, wh=[400, 155], title='SeparateBS by skin', s=0)
-		c_layout = cmds.columnLayout(p=win, adj=1)
-		cmds.separator(p=c_layout, h=20)
-		self.skin_textFieldButtonGrp = cmds.textFieldButtonGrp(p=c_layout, label='Skin Mesh    :',
-															   buttonLabel='Load Mesh', adjustableColumn3=1,
-															   columnAlign3=['left', 'left', 'left'],
-															   buttonCommand=partial(self.loadSkinMesh))
-		self.target_textFieldButtonGrp = cmds.textFieldButtonGrp(p=c_layout, label='Target Mesh :',
-																 buttonLabel='Load Mesh', adjustableColumn3=1,
-																 columnAlign3=['left', 'left', 'left'],
-																 buttonCommand=partial(self.loadTargetMesh))
-		cmds.separator(p=c_layout, h=30)
-		cmds.button(p=c_layout, l='Separate', h=30, command=UndoCallback(self.separateButton))
-		cmds.separator(p=c_layout, style='none', h=5)
-		cmds.text('by:Donzy      ', p=c_layout, h=15, align='right')
-		cmds.separator(p=c_layout, style='none', h=5)
-		cmds.showWindow(win)
+        skin_tool = SkinTool(skin_node_name)
+        inf_list = cmds.skinCluster(skin_node_name, q=True, inf=True)
+        vtx_count = cmds.polyEvaluate(skin_mesh, v=True)
 
-	def loadSkinMesh(self):
-		try:
-			sel = cmds.ls(sl=1)[0]
-			cmds.textFieldButtonGrp(self.skin_textFieldButtonGrp, e=1, text=sel)
-		except:
-			pass
+        base_copy = cmds.duplicate(skin_mesh, name="temp_base_split")[0]
 
-	def loadTargetMesh(self):
-		try:
-			sel = cmds.ls(sl=1)[0]
-			cmds.textFieldButtonGrp(self.target_textFieldButtonGrp, e=1, text=sel)
-		except:
-			pass
+        for i, inf in enumerate(inf_list):
+            inf_idx = inf_list.index(inf)
+            weights = skin_tool.getSkinWeights(inf_idx)
 
-	def getSkinNode(self, mesh):
-		hisList = cmds.listHistory(mesh, pdo=1)
-		for x in hisList:
-			if cmds.objectType(x) == 'skinCluster':
-				return x
+            res_mesh = cmds.duplicate(base_copy, name="split_{}_Target".format(inf.split(":")[-1]))[0]
 
-	def separateButton(self):
-		goON = True
-		skin_mesh = cmds.textFieldButtonGrp(self.skin_textFieldButtonGrp, q=1, text=1)
-		target_mesh = cmds.textFieldButtonGrp(self.target_textFieldButtonGrp, q=1, text=1)
-		for x in [skin_mesh, target_mesh]:
-			shapes = cmds.listRelatives(x, s=1)[0]
-			if cmds.objectType(shapes) != 'mesh':
-				om.MGlobal.displayError('Mesh has been error')
-				goON = False
+            bs = cmds.blendShape(target_mesh, res_mesh, name="tmp_bs")[0]
+            cmds.setAttr(bs + "." + target_mesh, 1)
 
-		if goON == False:
-			om.MGlobal.displayError('Mesh has been error')
-		else:
-			skinNode = D_skinTool(self.getSkinNode(skin_mesh))
-			skinInfluenceList = cmds.skinCluster(skin_mesh, q=1, inf=1)
-			for x in skinInfluenceList:
-				x_index = skinNode.getInfluenceIndex(x)
-				weigth = skinNode.getSkinWeights(x_index)
-				x_outputShape_d = cmds.createNode('mesh')
-				x_output_d = cmds.listRelatives(x_outputShape_d, parent=1)[0]
-				cmds.connectAttr(skin_mesh + '.outMesh', x_outputShape_d + '.inMesh')
-				x_output = cmds.duplicate(x_output_d, name='separateMesh_%s' % x_index)[0]
-				cmds.delete(x_output_d)
-				x_bs = cmds.blendShape(target_mesh, x_output)[0]
-				cmds.blendShape(x_bs, e=1, w=[(0, 1)])
-				vtxNum = cmds.getAttr(skin_mesh + '.vrts', s=1)
-				bsAttr_longName = x_bs + '.inputTarget[0]' + '.inputTargetGroup[0]' + '.targetWeights[0:%s]' % (
-						vtxNum - 1)
-				cmds.setAttr(bsAttr_longName, *weigth)
-				x_outputTarget = cmds.duplicate(x_output, name='separateTargetMesh_%s' % x_index)
-				dupShapes = cmds.listRelatives(x_outputTarget, s=1)
-				for s in dupShapes:
-					if 'Orig' in s:
-						cmds.delete(s)
-				cmds.delete(x_output)
+            attr_path = "{}.inputTarget[0].inputTargetGroup[0].targetWeights".format(bs)
+            cmds.setAttr("{}[0:{}]".format(attr_path, vtx_count - 1), *weights)
+
+            cmds.delete(res_mesh, ch=True)
+            om.MGlobal.displayInfo("Created: {}".format(res_mesh))
+
+        cmds.delete(base_copy)
+
+    def get_skin_cluster(self, mesh):
+        rel = cmds.listRelatives(mesh, s=True, f=True)
+        if not rel:
+            return None
+        history = cmds.listHistory(rel[0], pdo=True) or []
+        for node in history:
+            if cmds.nodeType(node) == "skinCluster":
+                return node
+        return None
 
 
-a = separateBlendshape()
-a.showUI()
+ui = SeparateBlendshape()
+ui.showUI()

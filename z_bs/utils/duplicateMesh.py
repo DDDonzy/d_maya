@@ -35,13 +35,22 @@ class DuplicateMeshCommand:
         return name
 
 
-def duplicate_mesh(source: str = None, name: str = None) -> str:
+def duplicate_mesh(source: str = None, name: str = None, materials=True) -> str:
     if not source:
         source = cmds.ls(sl=1)[0]
     if not name:
         name = f"{source}_duplicate"
     command = DuplicateMeshCommand(source=source, name=name)
-    return command.execute()
+    name = command.execute()
+    if materials:
+        try:
+            idx = cmds.getAttr("initialShadingGroup.dagSetMembers", mi=1)[-1] + 1
+            shape = cmds.listRelatives(name, s=1)[0]
+            idx = cmds.getAttr("initialShadingGroup.dagSetMembers", mi=1)[-1] + 1
+            cmds.connectAttr(f"{shape}.instObjGroups[0]", f"initialShadingGroup.dagSetMembers[{idx}]", f=1)
+        except Exception:
+            pass
+    return name
 
 
 if __name__ == "__main__":
