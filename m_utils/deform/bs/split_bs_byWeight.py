@@ -94,6 +94,8 @@ class SeparateBlendshape:
                 om.MGlobal.displayInfo("Separation completed using Node Method.")
             except ImportError:
                 om.MGlobal.displayError("Script 'split_bs_maya2022' not found in path.")
+            except Exception as e:
+                om.MGlobal.displayError(str(e))
         else:
             self.old_logic_optimized(skin_mesh, target_mesh)
 

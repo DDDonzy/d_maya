@@ -1,8 +1,10 @@
 from maya import cmds
 from maya.api import OpenMaya as om
-from m_utils.create.assetCallback import AssetCallback
 
+
+import log
 from m_utils import apiundo
+from m_utils.create.assetCallback import AssetCallback
 
 
 class DuplicateMeshCommand:
@@ -56,46 +58,50 @@ def duplicate_mesh(source: str = None, name: str = None, materials=True) -> str:
 
 
 def split_sculpt_by_skin(skin_mesh, sculpt_mesh):
+    try:
+        with AssetCallback("SplitSculpt_AST", isBlackBox=True) as assetBox:
+            # asset publish data
+            publish_data = {}
+            # get skin node
+            node_skin = None
+            his = cmds.listHistory(skin_mesh, pdo=1, il=1)
+            for node in his:
+                if cmds.objectType(node) == "skinCluster":
+                    node_skin = node
+            if not node_skin:
+                cmds.error("No skinCluster")
 
-    with AssetCallback("SplitSculpt_AST", isBlackBox=True) as assetBox:
-        # asset publish data
-        publish_data = {}
-        # get skin node
-        node_skin = None
-        his = cmds.listHistory(skin_mesh, pdo=1, il=1)
-        for node in his:
-            if cmds.objectType(node) == "skinCluster":
-                node_skin = node
-        if not node_skin:
-            cmds.error("No skinCluster")
+            # create weight node
+            comFalloff_node = cmds.createNode("componentFalloff", name=f"{skin_mesh}_componentFalloff")
+            falloffEval_node = cmds.createNode("falloffEval", name=f"{skin_mesh}_falloffEval")
+            cmds.connectAttr(f"{node_skin}.perInfluenceWeights", f"{comFalloff_node}.weightLayers")
+            cmds.connectAttr(f"{node_skin}.originalGeometry[0]", f"{comFalloff_node}.weightedGeometry")
+            cmds.connectAttr(f"{comFalloff_node}.outputWeightFunction", f"{falloffEval_node}.weightFunction")
+            cmds.connectAttr(f"{node_skin}.originalGeometry[0]", f"{falloffEval_node}.currentGeometry")
+            cmds.connectAttr(f"{node_skin}.originalGeometry[0]", f"{falloffEval_node}.originalGeometry")
 
-        # create weight node
-        comFalloff_node = cmds.createNode("componentFalloff", name=f"{skin_mesh}_componentFalloff")
-        falloffEval_node = cmds.createNode("falloffEval", name=f"{skin_mesh}_falloffEval")
-        cmds.connectAttr(f"{node_skin}.perInfluenceWeights", f"{comFalloff_node}.weightLayers")
-        cmds.connectAttr(f"{node_skin}.originalGeometry[0]", f"{comFalloff_node}.weightedGeometry")
-        cmds.connectAttr(f"{comFalloff_node}.outputWeightFunction", f"{falloffEval_node}.weightFunction")
-        cmds.connectAttr(f"{node_skin}.originalGeometry[0]", f"{falloffEval_node}.currentGeometry")
-        cmds.connectAttr(f"{node_skin}.originalGeometry[0]", f"{falloffEval_node}.originalGeometry")
+            # duplicate
+            split_mesh = duplicate_mesh(skin_mesh, name=str(assetBox).replace("AST", "Mesh"))
+            cmds.container(assetBox, e=1, an=[split_mesh])
+            # get skin inference
+            inf_list = cmds.skinCluster(node_skin, q=1, inf=1)
+            node_bs = cmds.blendShape(split_mesh)[0]
+            for i, x in enumerate(inf_list):
+                cmds.blendShape(node_bs, e=1, t=(split_mesh, i, sculpt_mesh, 1))
+                cmds.aliasAttr(x.split(":")[-1], f"{node_bs}.w[{i}]")
+                cmds.setAttr(f"{node_bs}.w[{i}]", 0)
+                cmds.setAttr(f"{comFalloff_node}.weightInfoLayers[{i}].defaultWeight", 0)
+                cmds.connectAttr(f"{falloffEval_node}.perFunctionWeights[{i}].perFunctionVertexWeights", f"{node_bs}.inputTarget[0].inputTargetGroup[{i}].targetWeights")
+                publish_data[x] = f"{node_bs}.w[{i}]"
 
-        # duplicate
-        split_mesh = duplicate_mesh(skin_mesh, name=str(assetBox).replace("AST", "Mesh"))
-        # get skin inference
-        inf_list = cmds.skinCluster(node_skin, q=1, inf=1)
-        node_bs = cmds.blendShape(split_mesh)[0]
-        for i, x in enumerate(inf_list):
-            cmds.blendShape(node_bs, e=1, t=(split_mesh, i, sculpt_mesh, 1))
-            cmds.aliasAttr(x.split(":")[-1], f"{node_bs}.w[{i}]")
-            cmds.setAttr(f"{node_bs}.w[{i}]", 0)
-            cmds.setAttr(f"{comFalloff_node}.weightInfoLayers[{i}].defaultWeight", 0)
-            cmds.connectAttr(f"{falloffEval_node}.perFunctionWeights[{i}].perFunctionVertexWeights", f"{node_bs}.inputTarget[0].inputTargetGroup[{i}].targetWeights")
-            publish_data[x] = f"{node_bs}.w[{i}]"
-
-    cmds.container(assetBox, e=1, an=[split_mesh])
-    AssetCallback.publishAssetData(assetBox, isPublishAssetAttr=True, publishAttrData=publish_data)
-    cmds.setAttr(f"{assetBox}.rotate", l=1)
-    cmds.setAttr(f"{assetBox}.scale", l=1)
-    cmds.select(assetBox)
+        AssetCallback.publishAssetData(assetBox, isPublishAssetAttr=True, publishAttrData=publish_data)
+        cmds.setAttr(f"{assetBox}.rotate", l=1)
+        cmds.setAttr(f"{assetBox}.scale", l=1)
+        cmds.select(assetBox)
+    except Exception as e:
+        cmds.delete(assetBox)
+        log.error(e)
+        raise
 
 
 if __name__ == "__main__":
