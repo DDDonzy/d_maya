@@ -1,42 +1,37 @@
-import maya.cmds as cmds
-import functools  # <-- 我们需要这个来实现简洁的按钮命令
-
 # -----------------------------------------------------------------
-# 1. 定义你的主脚本逻辑 (与之前相同)
+# 1. 定义你的主脚本逻辑
 # -----------------------------------------------------------------
 """
-运动学计算脚本
-基于基本的物理公式，计算角色在加速、匀速和减速阶段的运动数据。
-
-cal: p = v*t + 0.5*a*t^2
-p: 位移
-v: 初始速度
-t: 时间
-a: 加速度
+运动学计算脚本 (3D 向量版 + 动态 Root 管理)
 """
 
 import math
+import functools
 from typing import Dict, List
 
-from maya import cmds
+import maya.cmds as cmds
+
+# --- 全局配置常量 ---
+# 这是默认创建的 Locator 名称，如果场景里没有指定物体，点击赋值按钮会创建这个
+DEFAULT_ROOT_NAME = "rootMotion" 
 
 
 class UESpeed:
     FPS = 60
     # sprint
     sprint = 700
-    sprint_accel = 1000
-    sprint_decel = 1000
+    sprint_accel = 800
+    sprint_decel = 800
 
     # run speeds
-    run_f = 475
+    run_f = 500
     run_b = 320
     run_lp = 400
     run_ln = 400
     run_rp = 400
     run_rn = 400
     run_accel = 800
-    run_decel = 1000
+    run_decel = 800
 
     # walk speeds
     walk_f = 170
@@ -49,66 +44,68 @@ class UESpeed:
     walk_decel = 800
 
 
+# --- 辅助工具函数 ---
+
+def get_current_position(node: str) -> List[float]:
+    """获取物体当前的世界坐标 [x, y, z]"""
+    if not cmds.objExists(node):
+        raise ValueError(f"Object '{node}' does not exist.")
+    return cmds.xform(node, query=True, translation=True, worldSpace=True)
+
+
+def get_direction_vector(axis_attr: str, is_positive: bool) -> List[float]:
+    """
+    根据UI选择的轴和方向，返回归一化的方向向量。
+    """
+    direction = 1.0 if is_positive else -1.0
+    
+    if axis_attr == "tx":
+        return [direction, 0.0, 0.0]
+    elif axis_attr == "ty":
+        return [0.0, direction, 0.0]
+    elif axis_attr == "tz":
+        return [0.0, 0.0, direction]
+    else:
+        return [1.0, 0.0, 0.0] 
+
+
 def timeSliderBookmark(name: str, time: List[int], color: List[float], priority: int = 1) -> str:
-    """
-    在Maya时间轴上创建一个书签标记
-
-    Args:
-        name (str): 书签的名称
-        time (List[int]): 时间范围，包含开始帧和结束帧 [开始帧, 结束帧]
-        color (List[float]): RGB颜色值，范围0-1 [R, G, B]
-        priority (int, optional): 书签的优先级，默认为1
-
-    Returns:
-        str: 创建的timeSliderBookmark节点名称
-
-    Example:
-        # 创建一个名为"idle"的书签，时间范围10-50帧，颜色为灰色
-        bookmark_node = timeSliderBookmark("idle", [10, 50], [0.5, 0.5, 0.5])
-    """
-
-    bookmark = cmds.createNode("timeSliderBookmark", name=f"timeSliderBookmark_{name}")
+    """在Maya时间轴上创建一个书签标记"""
+    bookmark_name = f"timeSliderBookmark_{name}"
+    # 简单的防重名处理，实际项目中可以做更复杂的查找
+    bookmark = cmds.createNode("timeSliderBookmark", name=bookmark_name)
     cmds.setAttr(f"{bookmark}.name", name, type="string")
     cmds.setAttr(f"{bookmark}.color", *color)
     cmds.setAttr(f"{bookmark}.timeRangeStart", time[0])
     cmds.setAttr(f"{bookmark}.timeRangeStop", time[1])
     cmds.setAttr(f"{bookmark}.priority", priority)
-
     return bookmark
 
+
+# --- 核心计算函数 (纯数学计算，不依赖物体) ---
 
 def fn_loop(
     speed=500,
     loop_frames=60,
-    initial_pos=0.0,
+    start_pos_vec=[0.0, 0.0, 0.0],
+    direction_vec=[0.0, 0.0, 1.0],
     initial_frame=0,
     sample_fps=60,
 ):
-    """
-    计算匀速运动的位移数据。
-
-    Args:
-        speed (int, optional): 运动速度。默认为 500。
-        loop_frames (int, optional): 匀速运动持续的帧数。默认为 60。
-        initial_pos (float, optional): 起始位置。默认为 0.0。
-        initial_frame (int, optional): 起始帧。默认为 0。
-        sample_fps (int, optional): 采样帧率。默认为 FPS。
-
-    Returns:
-        dict ({str: list}): 包含运动数据的字典，具有以下键：
-            - "frames_range" (list): [start_frame, end_frame]
-            - "motion_data" (list): 包含 [frame, position] 嵌套列表。
-    """
     motion_info: Dict[str, list] = {
         "frames_range": [initial_frame, initial_frame + loop_frames],
-        "motion_data": [],
+        "motion_data": [],  # [frame, x, y, z]
     }
 
     for frame in range(loop_frames + 1):
         current_time = frame / float(sample_fps)
-        # 位移 = 初始位置 + 速度 * 时间
-        position = (abs(initial_pos) + speed * current_time) * (1 if initial_pos >= 0 else -1)
-        motion_info["motion_data"].append([initial_frame + frame, position])
+        scalar_dist = speed * current_time
+        
+        curr_x = start_pos_vec[0] + (direction_vec[0] * scalar_dist)
+        curr_y = start_pos_vec[1] + (direction_vec[1] * scalar_dist)
+        curr_z = start_pos_vec[2] + (direction_vec[2] * scalar_dist)
+
+        motion_info["motion_data"].append([initial_frame + frame, curr_x, curr_y, curr_z])
 
     timeSliderBookmark(name="loop", time=[initial_frame, initial_frame + loop_frames + 1], color=[0.6, 0.263, 0.431])
     return motion_info
@@ -118,32 +115,14 @@ def fn_accel(
     initial_speed=0.0,
     accel=1000.0,
     max_speed=500.0,
-    initial_pos=0.0,
+    start_pos_vec=[0.0, 0.0, 0.0],
+    direction_vec=[0.0, 0.0, 1.0],
     initial_frame=0,
     sample_fps=60,
 ):
-    """
-    计算匀加速运动的位移数据。
-
-    Args:
-        initial_speed (float, optional): 初始速度。默认为 0.0。
-        accel (float, optional): 加速度（正数）。默认为 1000.0。
-        max_speed (float, optional): 达到的最大速度。默认为 500.0。
-        initial_pos (float, optional): 初始位置。默认为 0.0。
-        initial_frame (int, optional): 初始帧。默认为 0。
-        sample_fps (int, optional): 采样帧率。默认为 FPS。
-
-    Returns:
-        dict ({str: list}): 包含运动数据的字典，具有以下键：
-            - "frames_range" (list): [start_frame, end_frame]
-            - "motion_data" (list): 包含 [frame, position] 嵌套列表。
-    """
     if accel <= 0:
         raise ValueError("加速度必须为正数。")
-    if initial_speed >= max_speed:
-        raise ValueError("初始速度必须小于最大速度。")
 
-    # 计算加速到最大速度所需的时间和帧数
     accel_times = (max_speed - initial_speed) / accel
     accel_frames = math.ceil(accel_times * sample_fps)
 
@@ -151,15 +130,20 @@ def fn_accel(
         "frames_range": [initial_frame, initial_frame + accel_frames],
         "motion_data": [],
     }
+    
     for frame in range(accel_frames + 1):
         current_time = frame / float(sample_fps)
         current_speed = initial_speed + accel * current_time
-        # 防止速度超过最大速度
         if current_speed > max_speed:
             current_speed = max_speed
-        # 位移 = 初始位置 + 初始速度*时间 + 0.5*加速度*时间^2
-        current_pos = initial_pos + initial_speed * current_time + 0.5 * accel * current_time**2
-        motion_info["motion_data"].append([initial_frame + frame, current_pos])
+            
+        scalar_dist = (initial_speed * current_time) + (0.5 * accel * (current_time**2))
+        
+        curr_x = start_pos_vec[0] + (direction_vec[0] * scalar_dist)
+        curr_y = start_pos_vec[1] + (direction_vec[1] * scalar_dist)
+        curr_z = start_pos_vec[2] + (direction_vec[2] * scalar_dist)
+
+        motion_info["motion_data"].append([initial_frame + frame, curr_x, curr_y, curr_z])
 
     timeSliderBookmark(name="accel", time=[initial_frame, initial_frame + accel_frames + 1], color=[0.67, 0.235, 0.235])
     return motion_info
@@ -169,32 +153,14 @@ def fn_decel(
     initial_speed=500.0,
     decel=1000.0,
     min_speed=0.0,
-    initial_pos=0.0,
+    start_pos_vec=[0.0, 0.0, 0.0],
+    direction_vec=[0.0, 0.0, 1.0],
     initial_frame=0,
     sample_fps=60,
 ):
-    """
-    计算匀减速运动的位移数据。
-
-    Args:
-        initial_speed (float, optional): 初始速度。默认为 500.0。
-        decel (float, optional): 减速度（正数）。默认为 1000.0。
-        min_speed (float, optional): 减速后的最小速度。默认为 0.0。
-        initial_pos (float, optional): 初始位置。默认为 0.0。
-        initial_frame (int, optional): 初始帧。默认为 0。
-        sample_fps (int, optional): 采样帧率。默认为 FPS。
-
-    Returns:
-        dict ({str: list}): 包含运动数据的字典，具有以下键：
-            - "frames_range" (list): [start_frame, end_frame]
-            - "motion_data" (list): 包含 [frame, position] 嵌套列表。
-    """
     if decel <= 0:
-        raise ValueError("减速度比如为正数")
-    if initial_speed <= min_speed:
-        raise ValueError("初始速度必须大于最小速度。")
+        raise ValueError("减速度必须为正数")
 
-    # 计算减速到最小速度所需的时间和帧数
     decel_times = (initial_speed - min_speed) / decel
     decel_frames = math.ceil(decel_times * sample_fps)
 
@@ -202,141 +168,113 @@ def fn_decel(
         "frames_range": [initial_frame, initial_frame + decel_frames],
         "motion_data": [],
     }
+    
     for frame in range(decel_frames + 1):
         current_time = frame / float(sample_fps)
-        # 位移 = 初始位置 + 初始速度*时间 - 0.5*减速度*时间^2
-        current_pos = initial_pos + initial_speed * current_time - 0.5 * decel * (current_time**2)
-        motion_info["motion_data"].append([initial_frame + frame, current_pos])
+        scalar_dist = (initial_speed * current_time) - (0.5 * decel * (current_time**2))
+        
+        curr_x = start_pos_vec[0] + (direction_vec[0] * scalar_dist)
+        curr_y = start_pos_vec[1] + (direction_vec[1] * scalar_dist)
+        curr_z = start_pos_vec[2] + (direction_vec[2] * scalar_dist)
+        
+        motion_info["motion_data"].append([initial_frame + frame, curr_x, curr_y, curr_z])
 
     timeSliderBookmark(name="decel", time=[initial_frame, initial_frame + decel_frames + 1], color=[0.749, 0.4, 0.235])
     return motion_info
 
 
-def pre_motion_data(motion_data: Dict[str, list]) -> Dict[str, list]:
+def key_motion_data(motion_data: Dict[str, list], target_node: str):
     """
-    预处理运动数据，将整个运动片段在时间和空间上向前移动一个自身的长度。
-
-    比如 现在有一段 减速运动数据，帧范围是 `[0, 30]`，位置是 `[0, 250]`，
-    那么处理后，帧范围变为 `[-30, 0]`，位置变为 `[-250cm, 0cm]`。
-
-    适用于在运动前后，再次插入运动，比如 accel -> loop 这种连续运动，
-    我们可以先生成 loop 数据，然后再生成 accel 数据，
-    使用 pre_motion_data 将 accel 数据向前移动，实现在loop之前插入 accel 动作。
-
-    Args:
-        motion_data ({str: list}): 输入的运动数据字典。
-            - "frames_range" (list): [start_frame, end_frame]
-            - "motion_data" (list): 包含 [frame, position] 嵌套列表。
-    Returns:
-        dict ({str: list}): 处理后的运动数据字典，其帧范围和位置数据都已向前平移。
-            - "frames_range" (list): [start_frame, end_frame]
-            - "motion_data" (list): 包含 [frame, position] 嵌套列表。
-    """
-
-    if not motion_data:
-        raise ValueError("Please input motion data")
-
-    # 获取原始运动的起止帧和位置信息
-    start_frame = motion_data["frames_range"][0]
-    end_frame = motion_data["frames_range"][-1]
-    motion_frames = end_frame - start_frame
-    start_pos = motion_data["motion_data"][0][-1]
-    end_pos = motion_data["motion_data"][-1][-1]
-    motion_pos = end_pos - start_pos
-
-    motion_data["frames_range"] = [start_frame - motion_frames, start_frame]
-    # 重新计算每一帧的帧号和位置
-    for frame in motion_data["motion_data"]:
-        current_frame = frame[0]
-        current_pos = frame[1]
-        frame[0] = current_frame - motion_frames
-        frame[1] = current_pos - motion_pos
-    return motion_data
-
-
-def key_motion_data(
-    motion_data: Dict[str, list],
-    object: str,
-    attr: str,
-    negative: bool = False,
-):
-    """
-    将运动数据应用为目标对象的关键帧动画。
-
-    Args:
-        motion_data (dict): 包含运动数据的字典，具有以下键：
-            - "frames_range" (list): [start_frame, end_frame]
-            - "motion_data" (list): 包含 [frame, position] 嵌套列表。
-        object_attribute (str): 目标属性名称（如 "translateX"）。
-        negative (bool, optional): 是否将位置取反。默认为 False。
+    将 3D 运动数据应用到指定的 target_node。
     """
     if not motion_data:
         raise ValueError("Please input motion data")
 
-    if negative:
-        negative = -1
-    else:
-        negative = 1
-    for frame in motion_data["motion_data"]:
-        cmds.setKeyframe(object, attribute=attr, value=frame[1] * negative, time=frame[0])
+    if not cmds.objExists(target_node):
+        raise RuntimeError(f"Target object '{target_node}' not found in scene.")
+    
+    for item in motion_data["motion_data"]:
+        frame = item[0]
+        val_x, val_y, val_z = item[1], item[2], item[3]
+        
+        cmds.setKeyframe(target_node, attribute="tx", value=val_x, time=frame)
+        cmds.setKeyframe(target_node, attribute="ty", value=val_y, time=frame)
+        cmds.setKeyframe(target_node, attribute="tz", value=val_z, time=frame)
 
 
-def run_script_with_ui_values(attr, is_positive, max_speed, accel, decel):
-    print(attr, is_positive, max_speed, accel, decel)
-    if not cmds.objExists("rootMotion"):
-        cmds.spaceLocator(name="rootMotion")
-        cmds.setAttr("rootMotion.localScale", *(100, 100, 100))
+# --- 脚本执行逻辑 (UI 对接层) ---
 
+def run_loop_script(target_node, attr_axis, is_positive, max_speed, accel, decel):
+    if not target_node:
+        cmds.warning("No Root object specified!")
+        return
+        
+    print(f"Loop -> Target:{target_node}, Axis:{attr_axis}, Speed:{max_speed}")
+    
     loop_frames = abs(int(cmds.playbackOptions(q=1, sst=1)) - int(cmds.playbackOptions(q=1, set=1)))
     start_frame = int(cmds.playbackOptions(q=1, sst=1))
+    
+    start_pos = get_current_position(target_node)
+    direction = get_direction_vector(attr_axis, is_positive)
 
     loop_data = fn_loop(
         speed=max_speed,
         loop_frames=loop_frames,
-        initial_pos=cmds.getAttr(f"rootMotion.{attr}"),
+        start_pos_vec=start_pos,
+        direction_vec=direction,
         initial_frame=start_frame,
         sample_fps=60,
     )
 
-    key_motion_data(loop_data, object="rootMotion", attr=attr, negative=not is_positive)
+    key_motion_data(loop_data, target_node)
 
 
-def run_accel_script(attr, is_positive, max_speed, accel, decel):
-    print(attr, is_positive, max_speed, accel, decel)
-    if not cmds.objExists("rootMotion"):
-        cmds.spaceLocator(name="rootMotion")
+def run_accel_script(target_node, attr_axis, is_positive, max_speed, accel, decel):
+    if not target_node:
+        cmds.warning("No Root object specified!")
+        return
 
+    print(f"Accel -> Target:{target_node}, Speed:{max_speed}")
+    
     start_frame = int(cmds.currentTime(q=1))
+    start_pos = get_current_position(target_node)
+    direction = get_direction_vector(attr_axis, is_positive)
 
     data = fn_accel(
         initial_speed=0.0,
         accel=accel,
         max_speed=max_speed,
-        initial_pos=cmds.getAttr(f"rootMotion.{attr}"),
+        start_pos_vec=start_pos,
+        direction_vec=direction,
         initial_frame=start_frame,
         sample_fps=60,
     )
 
-    key_motion_data(data, object="rootMotion", attr=attr, negative=not is_positive)
+    key_motion_data(data, target_node)
 
 
-def run_decel_script(attr, is_positive, max_speed, accel, decel):
-    print(attr, is_positive, max_speed, accel, decel)
-    if not cmds.objExists("rootMotion"):
-        cmds.spaceLocator(name="rootMotion")
+def run_decel_script(target_node, attr_axis, is_positive, max_speed, accel, decel):
+    if not target_node:
+        cmds.warning("No Root object specified!")
+        return
 
+    print(f"Decel -> Target:{target_node}, Speed:{max_speed}")
+    
     start_frame = int(cmds.currentTime(q=1))
+    start_pos = get_current_position(target_node)
+    direction = get_direction_vector(attr_axis, is_positive)
 
     data = fn_decel(
         initial_speed=max_speed,
         decel=decel,
         min_speed=0.0,
-        initial_pos=cmds.getAttr(f"rootMotion.{attr}"),
+        start_pos_vec=start_pos,
+        direction_vec=direction,
         initial_frame=start_frame,
         sample_fps=60,
     )
 
-    key_motion_data(data, object="rootMotion", attr=attr, negative=not is_positive)
+    key_motion_data(data, target_node)
 
 
 # -----------------------------------------------------------------
@@ -347,8 +285,38 @@ ui_elements = {}
 window_name = "simpleAxisUI"
 
 
+def on_assign_root_click(*args):
+    """
+    Root 栏目旁边的按钮回调：
+    1. 如果选择了物体 -> 将其填入文本框
+    2. 如果未选择物体 -> 创建默认 Locator (如果不存在) 并填入文本框
+    """
+    selection = cmds.ls(selection=True)
+    
+    target_name = ""
+    
+    if selection:
+        # 情况1: 有选择，使用选择的第一个物体
+        target_name = selection[0]
+    else:
+        # 情况2: 无选择，检查是否存在常量物体，不存在则创建
+        if not cmds.objExists(DEFAULT_ROOT_NAME):
+            cmds.spaceLocator(name=DEFAULT_ROOT_NAME)
+            cmds.setAttr(f"{DEFAULT_ROOT_NAME}.localScale", *(100, 100, 100))
+            print(f"Created default root: {DEFAULT_ROOT_NAME}")
+        target_name = DEFAULT_ROOT_NAME
+    
+    # 更新 UI 文本框
+    if target_name:
+        cmds.textFieldButtonGrp(ui_elements["root_field"], edit=True, text=target_name)
+        print(f"Root set to: {target_name}")
+
+
 def _query_common_ui_values():
-    """辅助函数，查询所有UI字段"""
+    """查询UI并返回: 目标物体名, 轴向, 方向, 速度参数"""
+    
+    # 获取 Root 物体名
+    target_root = cmds.textFieldButtonGrp(ui_elements["root_field"], query=True, text=True)
 
     selected_axis = cmds.radioCollection(ui_elements["axis_collection"], query=True, select=True)
     if selected_axis == "x_rb":
@@ -358,56 +326,42 @@ def _query_common_ui_values():
     elif selected_axis == "z_rb":
         attr = "tz"
     else:
-        attr = "tx"
+        attr = "tz"
 
     selected_dir = cmds.radioCollection(ui_elements["dir_collection"], query=True, select=True)
-    is_positive = selected_dir == "plus_rb"
+    is_positive = (selected_dir == "plus_rb")
 
     max_speed = cmds.floatFieldGrp(ui_elements["maxSpeed_field"], query=True, value1=True)
     accel = cmds.floatFieldGrp(ui_elements["accel_field"], query=True, value1=True)
     decel = cmds.floatFieldGrp(ui_elements["decel_field"], query=True, value1=True)
 
-    return attr, is_positive, max_speed, accel, decel
-
-
-# --- 主要运行按钮的回调 ---
+    return target_root, attr, is_positive, max_speed, accel, decel
 
 
 def on_loop_click(*args):
-    """当 'Loop' 按钮被点击时调用"""
-    attr, is_positive, max_speed, accel, decel = _query_common_ui_values()
-    run_script_with_ui_values(attr, is_positive, max_speed, accel, decel)
+    target, attr, is_pos, speed, acc, dec = _query_common_ui_values()
+    run_loop_script(target, attr, is_pos, speed, acc, dec)
 
 
 def on_accel_click(*args):
-    """当 'Accel' 按钮被点击时调用"""
-    attr, is_positive, max_speed, accel, decel = _query_common_ui_values()
-    run_accel_script(attr, is_positive, max_speed, accel, decel)
+    target, attr, is_pos, speed, acc, dec = _query_common_ui_values()
+    run_accel_script(target, attr, is_pos, speed, acc, dec)
 
 
 def on_decel_click(*args):
-    """当 'Decel' 按钮被点击时调用"""
-    attr, is_positive, max_speed, accel, decel = _query_common_ui_values()
-    run_decel_script(attr, is_positive, max_speed, accel, decel)
-
-
-# --- 新增：预设按钮的回调 ---
+    target, attr, is_pos, speed, acc, dec = _query_common_ui_values()
+    run_decel_script(target, attr, is_pos, speed, acc, dec)
 
 
 def set_speed_values(max_speed, accel, decel, *args):
-    """
-    这个函数会被所有预设按钮调用。
-    它会更新UI中的 float fields。
-    """
     try:
         cmds.floatFieldGrp(ui_elements["maxSpeed_field"], edit=True, value1=max_speed)
         cmds.floatFieldGrp(ui_elements["accel_field"], edit=True, value1=accel)
         cmds.floatFieldGrp(ui_elements["decel_field"], edit=True, value1=decel)
         print(f"Preset set: MaxSpeed={max_speed}, Accel={accel}, Decel={decel}")
     except KeyError:
-        cmds.warning("UI elements not found. Cannot set preset values.")
+        pass
     except RuntimeError:
-        # 这通常意味着窗口已被关闭
         pass
 
 
@@ -415,80 +369,93 @@ def set_speed_values(max_speed, accel, decel, *args):
 # 3. UI 创建
 # -----------------------------------------------------------------
 
-
 def create_simple_ui():
-    """
-    创建UI窗口
-    """
     global ui_elements, window_name
 
     if cmds.window(window_name, exists=True):
         cmds.deleteUI(window_name, window=True)
 
-    # 增加窗口高度以容纳新按钮
-    cmds.window(window_name, title="Select Axis", widthHeight=(260, 600), s=False)
+    cmds.window(window_name, title="UE Speed Tools", widthHeight=(280, 600), s=True)
 
-    main_layout = cmds.columnLayout(adjustableColumn=True, rowSpacing=10)
+    main_layout = cmds.columnLayout(adjustableColumn=True, rowSpacing=10, columnOffset=['both', 5])
 
-    # --- Axis (X, Y, Z) ---
+    # --- 1. Root 对象选择区域 (新增) ---
+    cmds.frameLayout(label="Target Root Settings", collapsable=False)
+    
+    # 查找默认物体逻辑
+    default_text = ""
+    # 尝试查找 *:FKRootGround_M
+    found_roots = cmds.ls("*:FKRootGround_M", recursive=True, long=False)
+    if not found_roots:
+        # 如果没找到带 namespace 的，也可以试着找不带的 FKRootGround_M
+        found_roots = cmds.ls("FKRootGround_M", recursive=True, long=False)
+        
+    if found_roots:
+        default_text = found_roots[0] # 取找到的第一个
+        print(f"Auto-detected root: {default_text}")
+    else:
+        # 如果也没找到 FKRootGround_M，检查是否有默认的 rootMotion
+        if cmds.objExists(DEFAULT_ROOT_NAME):
+             default_text = DEFAULT_ROOT_NAME
+    
+    ui_elements["root_field"] = cmds.textFieldButtonGrp(
+        label="Root:", 
+        text=default_text,
+        buttonLabel="<<<",
+        buttonCommand=on_assign_root_click,
+        columnWidth3=[70, 120, 80],
+        adjustableColumn=2
+    )
+    cmds.setParent("..") # End frameLayout
+
+    # --- 2. 轴向与方向选择 ---
+    cmds.frameLayout(label="Configuration", collapsable=False)
     ui_elements["axis_collection"] = cmds.radioCollection()
-    cmds.rowLayout(numberOfColumns=3)
+    cmds.rowLayout(numberOfColumns=3, columnWidth3=[80, 80, 80])
     cmds.radioButton("x_rb", label="X")
+    cmds.radioButton("y_rb", label="Y")
     cmds.radioButton("z_rb", label="Z", select=True)
-    cmds.setParent(main_layout)
+    cmds.setParent("..")
 
-    # --- Direction (+, -) ---
     ui_elements["dir_collection"] = cmds.radioCollection()
-    cmds.rowLayout(numberOfColumns=2)
+    cmds.rowLayout(numberOfColumns=2, columnWidth2=[120, 120])
     cmds.radioButton("plus_rb", label="+ (Positive)", select=True)
     cmds.radioButton("minus_rb", label="- (Negative)")
+    cmds.setParent("..")
     cmds.setParent(main_layout)
 
-    cmds.separator(h=10, style="in")
-
-    # --- 数值输入框 ---
+    # --- 3. 数值输入框 ---
     ui_elements["maxSpeed_field"] = cmds.floatFieldGrp(label="Max Speed", numberOfFields=1, value1=500.0, columnWidth2=[80, 100])
-
-    ui_elements["accel_field"] = cmds.floatFieldGrp(label="Accel", numberOfFields=1, value1=1000.0, columnWidth2=[80, 100])
-
-    ui_elements["decel_field"] = cmds.floatFieldGrp(label="Decel", numberOfFields=1, value1=1000.0, columnWidth2=[80, 100])
-
-    cmds.setParent(main_layout)
+    ui_elements["accel_field"] = cmds.floatFieldGrp(label="Accel", numberOfFields=1, value1=800.0, columnWidth2=[80, 100])
+    ui_elements["decel_field"] = cmds.floatFieldGrp(label="Decel", numberOfFields=1, value1=800.0, columnWidth2=[80, 100])
 
     cmds.separator(h=10, style="in")
 
-    # 布局参数: 4列, 间距为5, 每列宽度60
-    btn_width = 60
-    btn_spacing = 5
-
-    # --- Row 1: Run ---
-    cmds.rowLayout(numberOfColumns=4)
-    cmds.button(label="Run_F", w=60, command=functools.partial(set_speed_values, 500, 1000, 1000))
-    cmds.button(label="Run_LRP", w=60, command=functools.partial(set_speed_values, 450, 1000, 1000))
-    cmds.button(label="Run_LRN", w=60, command=functools.partial(set_speed_values, 400, 1000, 1000))
-    cmds.button(label="Run_B", w=60, command=functools.partial(set_speed_values, 400, 1000, 1000))
+    # --- 4. 预设按钮区域 ---
+    cmds.text(label="Run Presets:", align='left')
+    cmds.rowLayout(numberOfColumns=4, columnWidth4=[65, 65, 65, 65])
+    cmds.button(label="Run_F", command=functools.partial(set_speed_values, UESpeed.run_f, UESpeed.run_accel, UESpeed.run_decel))
+    cmds.button(label="Run_L/R", command=functools.partial(set_speed_values, UESpeed.run_lp, UESpeed.run_accel, UESpeed.run_decel))
+    cmds.button(label="Run_Side", command=functools.partial(set_speed_values, UESpeed.run_ln, UESpeed.run_accel, UESpeed.run_decel))
+    cmds.button(label="Run_B", command=functools.partial(set_speed_values, UESpeed.run_b, UESpeed.run_accel, UESpeed.run_decel))
     cmds.setParent(main_layout)
 
-    # --- Row 2: Walk ---
-    cmds.rowLayout(numberOfColumns=4)
-    cmds.button(label="Walk_F", w=60, command=functools.partial(set_speed_values, 170, 400, 800))
-    cmds.button(label="Walk_LRP", w=60, command=functools.partial(set_speed_values, 160, 400, 800))
-    cmds.button(label="Walk_LRN", w=60, command=functools.partial(set_speed_values, 150, 400, 800))
-    cmds.button(label="Walk_B", w=60, command=functools.partial(set_speed_values, 150, 400, 800))
+    cmds.text(label="Walk Presets:", align='left')
+    cmds.rowLayout(numberOfColumns=4, columnWidth4=[65, 65, 65, 65])
+    cmds.button(label="Walk_F", command=functools.partial(set_speed_values, UESpeed.walk_f, UESpeed.walk_accel, UESpeed.walk_decel))
+    cmds.button(label="Walk_L/R", command=functools.partial(set_speed_values, UESpeed.walk_lp, UESpeed.walk_accel, UESpeed.walk_decel))
+    cmds.button(label="Walk_Side", command=functools.partial(set_speed_values, UESpeed.walk_ln, UESpeed.walk_accel, UESpeed.walk_decel))
+    cmds.button(label="Walk_B", command=functools.partial(set_speed_values, UESpeed.walk_b, UESpeed.walk_accel, UESpeed.walk_decel))
     cmds.setParent(main_layout)
 
-    # --- Row 3: Sprint ---
-    cmds.rowLayout(numberOfColumns=1, adjustableColumn=1)
-    # 让这个按钮填满宽度
-    full_width = (btn_width * 4) + (btn_spacing * 3)
-    cmds.button(label="Sprint", command=functools.partial(set_speed_values, 700, 1000, 1000), width=full_width)
-    cmds.setParent(main_layout)
+    cmds.text(label="Sprint Preset:", align='left')
+    cmds.button(label="Sprint", command=functools.partial(set_speed_values, UESpeed.sprint, UESpeed.sprint_accel, UESpeed.sprint_decel))
 
-    # --- 最终运行按钮 ---
-    cmds.separator(h=15, style="in")
-    cmds.button(label="Loop", command=on_loop_click, height=30)
-    cmds.button(label="Accel", command=on_accel_click, height=30)
-    cmds.button(label="Decel", command=on_decel_click, height=30)
+    # --- 5. 动作执行按钮 ---
+    cmds.separator(h=20, style="double")
+    cmds.button(label="GENERATE LOOP", command=on_loop_click, height=40, backgroundColor=[0.2, 0.4, 0.3])
+    cmds.button(label="GENERATE ACCEL", command=on_accel_click, height=30)
+    cmds.button(label="GENERATE DECEL", command=on_decel_click, height=30)
 
     cmds.showWindow(window_name)
 
@@ -497,8 +464,4 @@ def create_simple_ui():
 # 4. 运行脚本
 # -----------------------------------------------------------------
 if __name__ == "__main__":
-    # 假设你的 loop 和 key_motion_data 已经定义好了
-    # (如果还没有，你需要先 source 或执行定义它们的脚本)
-
-    # 启动UI
     create_simple_ui()

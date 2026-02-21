@@ -1,7 +1,7 @@
-F_Loop = RTG_Run_F_Lfoot_4
-F_Lfoot_Start = RTG_Run_F_Rfoot_050
+F_Loop = RTG_Run_F_Lfoot_4                 (Done)
+F_Lfoot_Start = RTG_Run_F_Rfoot_050        (Done)           
 F_Rfoot_Start = RTG_Run_F_Rfoot_050 *
-F_Rfoot_Stop = RTG_Run_F_Lfoot_005
+F_Rfoot_Stop = RTG_Run_F_Lfoot_005         (Done)
 F_Lfoot_Stop = RTG_Run_F_Rfoot_016_BATE_
 
 

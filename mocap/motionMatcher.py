@@ -5,7 +5,7 @@ from maya import cmds
 from pathlib import Path
 
 __all__ = [
-    "pitchMatcher",
+    "motionMatcher",
     "install",
 ]
 
@@ -14,11 +14,11 @@ def maya_useNewAPI():
     pass
 
 
-kPluginNodeName = "pitchMatcher"
+kPluginNodeName = "motionMatcher"
 kPluginNodeId = om.MTypeId(0x0007F7F8)
 
 
-class _PitchMatcher(om.MPxNode):
+class _MotionMatcher(om.MPxNode):
     aInput = None
     aSpeed = None
     aStartFrame = None
@@ -135,7 +135,7 @@ class _PitchMatcher(om.MPxNode):
 
     @classmethod
     def creator(cls):
-        return _PitchMatcher()
+        return _MotionMatcher()
 
     @classmethod
     def initialize(cls):
@@ -175,7 +175,7 @@ class _PitchMatcher(om.MPxNode):
 def initializePlugin(mobject):
     mplugin = om.MFnPlugin(mobject, "Donzy", "1.0", "Any")
     try:
-        mplugin.registerNode(kPluginNodeName, kPluginNodeId, _PitchMatcher.creator, _PitchMatcher.initialize)
+        mplugin.registerNode(kPluginNodeName, kPluginNodeId, _MotionMatcher.creator, _MotionMatcher.initialize)
     except:
         om.MGlobal.displayError("Failed to register node: " + kPluginNodeName)
         raise
@@ -194,16 +194,16 @@ def install():
     cmds.loadPlugin(__file__.replace(".pyc", ".py"), quiet=True)
 
 
-def createPitchMatcherNode(*args, **kwargs):
+def createMotionMatcherNode(*args, **kwargs):
     if not cmds.pluginInfo(Path(__file__).stem, query=True, loaded=True):
         install()
-    node = cmds.createNode("pitchMatcher", *args, **kwargs)
+    node = cmds.createNode("motionMatcher", *args, **kwargs)
     return node
 
 
-def pitchMatcher(attr="z"):
+def motionMatcher(attr="z"):
     attrs = [f"*:IKLeg_R.t{attr}", f"*:IKLeg_L.t{attr}", f"*:RootX_M.t{attr}"]
-    node = createPitchMatcherNode()
+    node = createMotionMatcherNode()
 
     for i, x in enumerate(attrs):
         p = cmds.listConnections(x, p=1) or []
@@ -213,7 +213,7 @@ def pitchMatcher(attr="z"):
 
 
 def bakeAnimation():
-    nodes = cmds.ls(type="pitchMatcher")
+    nodes = cmds.ls(type="motionMatcher")
     attrs = []
     for x in nodes:
         outputs = cmds.listConnections(f"{x}.output", p=1)

@@ -1,0 +1,68 @@
+import maya.cmds as cmds
+import mocap.motionMatcher as motionMatcher  # 确保文件名一致
+
+
+class MotionMatcherUI:
+    def __init__(self):
+        self.window_name = "MotionMatcherUI"
+        self.title = "Motion Matcher Tool"
+        self.size = (300, 200)
+
+    def create(self):
+        if cmds.window(self.window_name, exists=True):
+            cmds.deleteUI(self.window_name, window=True)
+
+        self.window = cmds.window(self.window_name, title=self.title, widthHeight=self.size, sizeable=True)
+
+        # 使用 columnLayout，修正了参数
+        main_layout = cmds.columnLayout(adjustableColumn=True, rowSpacing=5)
+
+        # 1. 轴向选择区域
+        cmds.frameLayout(label="Configuration", borderStyle="etchedIn", marginWidth=10, marginHeight=10)
+        self.axis_radio_grp = cmds.radioButtonGrp(label="Axis: ", labelArray3=["X", "Y", "Z"], numberOfRadioButtons=3, select=3, columnWidth2=[50, 150])
+        cmds.setParent(main_layout)
+
+        # 2. 按钮区域
+        cmds.separator(height=10, style="none")
+
+        # 使用内边距布局让按钮不穿帮
+        cmds.columnLayout(adjustableColumn=True, rowSpacing=5, columnOffset=["both", 10])
+
+        cmds.button(label="Run Motion Matcher", command=self.on_run_matcher, backgroundColor=[0.3, 0.4, 0.5], height=35)
+
+        cmds.button(label="Select Matcher Nodes", command=self.on_select_nodes, height=25)
+
+        cmds.separator(height=10, style="in")
+
+        cmds.button(label="Bake Animation", command=self.on_bake_anim, backgroundColor=[0.5, 0.3, 0.3], height=35)
+
+        cmds.showWindow(self.window)
+
+    def get_selected_axis(self):
+        idx = cmds.radioButtonGrp(self.axis_radio_grp, query=True, select=True)
+        return ["x", "y", "z"][idx - 1]
+
+    def on_run_matcher(self, *args):
+        axis = self.get_selected_axis()
+        try:
+            node = motionMatcher.motionMatcher(attr=axis)
+            print(f"// Result: Created {node} for axis {axis} //")
+        except Exception as e:
+            cmds.error(f"Execution failed: {e}")
+
+    def on_select_nodes(self, *args):
+        nodes = cmds.ls(type="motionMatcher")
+        if nodes:
+            cmds.select(nodes)
+        else:
+            cmds.warning("No motionMatcher nodes found.")
+
+    def on_bake_anim(self, *args):
+        result = cmds.confirmDialog(title="Confirm Bake", message="Bake all motionMatcher nodes into keyframes?", button=["Bake", "Cancel"], defaultButton="Bake", cancelButton="Cancel")
+        if result == "Bake":
+            motionMatcher.bakeAnimation()
+
+
+# 启动 UI
+ui = MotionMatcherUI()
+ui.create()

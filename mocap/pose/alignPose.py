@@ -171,3 +171,8 @@ def pastePose():
     root_matrix = transform.get_worldMatrix(f"{namespace}:{root}")
     for func in func_list:
         func(root_matrix)
+
+
+if __name__ == "__main__":
+    # copyPose()
+    pastePose()

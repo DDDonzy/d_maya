@@ -154,18 +154,6 @@ def calWeightsBase(inf_position: om.MPointArray, vtx_position: om.MPointArray, s
     return combineWeight_nAry.T.reshape(-1)
 
 
-def sharpen_weights(weights, intensity):
-    if not isinstance(weights, np.ndarray):
-        weights = np.array(weights, dtype=np.float64)
-    max_val = weights.max()
-    weights = 1 / max_val * weights
-    weights[weights != 1] = 0
-    weights /= weights.sum()
-    result = weights + intensity * (weights - weights)
-    result /= result.sum()
-    return result
-
-
 if __name__ == "__main__":
     a = CalWeights("skinCluster3")
     a.setVertex([95, 96, 97, 98, 99, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 125, 126, 127, 128, 129, 225, 226, 227, 228, 229, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249])

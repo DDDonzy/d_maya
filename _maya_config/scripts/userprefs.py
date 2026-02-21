@@ -3,7 +3,7 @@ from maya import cmds
 
 def setup_userprefs():
     # File
-    cmds.optionVar(iv=("fileExecuteSN", 0))  # open file do not execute script
+    # cmds.optionVar(iv=("fileExecuteSN", 0))  # open file do not execute script
 
     # Rigging.Skin.Bind Skin preferences
     cmds.optionVar(iv=("bindTo", 2))

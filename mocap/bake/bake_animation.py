@@ -50,7 +50,6 @@ Animation Baking Core Functions
 """
 
 from maya import cmds
-from maya.api import OpenMaya as om
 from m_utils.compounds import matrixConstraint
 from m_utils.create.assetCallback import AssetCallback
 from mocap.bake.cal_pv import do_cal_pv
@@ -72,8 +71,6 @@ def find_object_ignoring_namespace(obj_name):
 def pre_bakeAnimations(
     target_namespace="TestCharacter_rig",
     source_namespace="Retarget_M_Blade_Stand_Idle",
-    main_t=True,
-    main_r=True,
 ):
     """
     烘焙预处理，生成约束等
@@ -94,7 +91,7 @@ def pre_bakeAnimations(
         )
         # 设置 global
         bake_list += do_set_global(target_namespace=target_namespace)
-        
+
         # 烘焙root运动
         rootMotion = find_object_ignoring_namespace("rootMotion")
         if rootMotion:
@@ -108,13 +105,11 @@ def bakeAnimations(target_namespace, source_namespace, time=(0, 1000)):
     asset, bake_list = pre_bakeAnimations(
         target_namespace=target_namespace,
         source_namespace=source_namespace,
-        main_t=True,
-        main_r=True,
     )
 
     cmds.bakeResults(
         bake_list,
-        at=["t", "r", "s"],
+        at=["t", "r"],
         t=time,
         sb=1,
         simulation=1,

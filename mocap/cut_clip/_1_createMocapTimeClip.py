@@ -1,8 +1,10 @@
 from maya import cmds
 
 # build clip
-cmds.select(cl=1)
-cmds.select("*:root")
+main = cmds.ls("Main", r=1)
+if not main:
+    raise BaseException("Can not find 'Main' Controls")
+cmds.select(main)
 cmds.TimeEditorCreateClip()
 
 start = 0
