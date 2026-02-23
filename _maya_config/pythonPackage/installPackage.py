@@ -41,13 +41,36 @@ Maya Python Environment - Batch Package Installer
 ================================================================================
 """
 
+from site import execusercustomize
 import sys
 import subprocess
 from pathlib import Path
 
 
-def install_requirements(requirements_file, executable_path=sys.executable):
+def get_compiler_python():
+    """
+    智能获取用于编译的 Python 解释器路径。
+    无论是在 mayapy、Maya 内部还是普通 Python 中运行，都能自动适配。
+    """
+    exe_path = Path(sys.executable)
+
+    # 1. 如果当前就是 mayapy.exe，直接返回
+    if "mayapy" in exe_path.name.lower():
+        return str(exe_path)
+
+    # 2. 如果当前是 maya.exe (Maya 脚本编辑器环境)
+    if "maya.exe" in exe_path.name.lower():
+        # 巧妙地在同一目录下寻找 mayapy.exe
+        mayapy_path = exe_path.with_name("mayapy.exe")
+        if mayapy_path.exists():
+            return str(mayapy_path)
+
+    return str(exe_path)
+
+
+def install_requirements(requirements_file):
     """# Runs the 'pip install -r' command to install packages."""
+    executable_path = get_compiler_python()
     command = [str(executable_path), "-m", "pip", "install", "-r", str(requirements_file)]
 
     print(f"{'':=^{120}}")
@@ -100,7 +123,7 @@ def install_package():
         return
 
     # Run the installation process
-    if install_requirements(requirements_file, Path(sys.executable).parent / "mayapy.exe"):
+    if install_requirements(requirements_file):
         import site
         import importlib
 

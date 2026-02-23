@@ -13,7 +13,10 @@
     ],
     "python.terminal.useEnvFile": true,
     "cSpell.words": [
+        "ompx",
         "ssdr",
         "userprefs"
-    ]
+    ],
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    "python-envs.pythonProjects": []
 }

@@ -1,44 +1,34 @@
-import os
+import ctypes
+import maya.OpenMaya as om1
 
-def batch_rename_files(folder_path, search_str, replace_str):
+
+
+def _get_bind_matrices_view(self, dataBlock, active_bones_count):
     """
-    批量重命名文件夹内的文件。
+    零拷贝获取 Bind Pre Matrix 的连续内存视图。
+    直接映射 Maya 底层 C++ 内存，返回给 Cython 核心使用。
+    """
+    if active_bones_count <= 0:
+        return None
+
+    bind_data_obj = dataBlock.inputValue(self.aBindPreMatrix).data()
+    if bind_data_obj is None or bind_data_obj.isNull():
+        return None
+
+    fn_bind_array = om1.MFnMatrixArrayData(bind_data_obj)
+    bind_m_array = fn_bind_array.array()
     
-    :param folder_path: 文件夹路径
-    :param search_str: 需要被替换的字符串
-    :param replace_str: 替换后的新字符串
-    """
-    # 检查路径是否存在
-    if not os.path.exists(folder_path):
-        print(f"错误：路径 '{folder_path}' 不存在。")
-        return
+    # 安全拦截：确保 Maya 里的矩阵数量足够本次解算
+    if bind_m_array.length() < active_bones_count:
+        return None
 
-    count = 0
-    # 遍历文件夹
-    for filename in os.listdir(folder_path):
-        # 检查文件名中是否包含目标字符串
-        if search_str in filename:
-            # 构建旧文件的完整路径
-            old_file_path = os.path.join(folder_path, filename)
-            
-            # 跳过文件夹，只处理文件
-            if os.path.isdir(old_file_path):
-                continue
-                
-            # 生成新文件名
-            new_filename = filename.replace(search_str, replace_str)
-            new_file_path = os.path.join(folder_path, new_filename)
+    # 1. 获取 C++ 原生连续内存首地址
+    addr_base = int(bind_m_array[0].this)
 
-            # 执行重命名
-            try:
-                os.rename(old_file_path, new_file_path)
-                print(f"成功: '{filename}' -> '{new_filename}'")
-                count += 1
-            except Exception as e:
-                print(f"重命名 '{filename}' 失败: {e}")
+    # 2. 定义 C 语言的一维 Double 数组类型 (每个 MMatrix 占 16 个 double)
+    ArrayType = ctypes.c_double * (active_bones_count * 16)
 
-    print(f"\n任务完成！共重命名了 {count} 个文件。")
+    # 3. 瞬间映射内存并返回视图！(绝对的 0.0000 毫秒开销)
+    bind_view = ArrayType.from_address(addr_base)
 
-# --- 使用示例 ---
-folder = r"N:\SourceAssets\Characters\Hero\Mocap\Xsens\FBX"
-batch_rename_files(folder, "Run_F_0", "Run_F_Rfoot_0")
+    return bind_view
