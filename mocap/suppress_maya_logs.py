@@ -41,9 +41,9 @@ def suppress_maya_logs(suppressError=True, suppressWarning=True, suppressInfo=Tr
         log.trace("Enable Maya scripts logs")
 
 
-
 if __name__ == "__main__":
     from mocap.mayapy import init_maya
+
     init_maya()
     with suppress_maya_logs():
         log.info("Open File")

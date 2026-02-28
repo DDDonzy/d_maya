@@ -1,59 +1,106 @@
 import math
 import maya.OpenMaya as om1  # type: ignore
 
-from . import cMemoryView
-from . import cWeightsCoreCython
+from .cMemoryView import CMemoryManager
+from . import cWeightsCoreCython  # 💥 需要重新导回 Cython 核心处理底层数组填充
 
 
 class WeightsHandle:
-    def __init__(self, source):
+    """
+    权重数据装配器：负责 Maya 侧对象的生命周期、扩容和高级数据写入。
+    底层内存暴露在 `memory` 中供核心层极速读取。
+    """
+
+    def __init__(self):
         self.plug = None
         self.data_handle = None
-        self.mesh_obj = om1.MObject()
+        self.mObj_mesh = None
+        self.fn_mesh = None
 
-        # True = 工具端 (MPlug)
-        # False = 计算端 (MDataHandle)
         self._is_plug_mode = False
-
-        # --- 模式 1: 工具端 ---
-        if isinstance(source, om1.MPlug):
-            self.plug = source
-            self._is_plug_mode = True
-            try:
-                self.mesh_obj = self.plug.asMDataHandle().asMesh()
-            except RuntimeError:
-                self.mesh_obj = om1.MObject()
-
-        # --- 模式 2: 计算端 ---
-        elif isinstance(source, om1.MDataHandle):
-            self.data_handle = source
-            self._is_plug_mode = False
-            try:
-                self.mesh_obj = self.data_handle.asMesh()
-            except RuntimeError:
-                self.mesh_obj = om1.MObject()
-
-        else:
-            raise TypeError("Source 必须是 MPlug (工具) 或 MDataHandle (计算)！")
-
-        self.mesh_fn = None
-        if not self.mesh_obj.isNull() and self.mesh_obj.hasFn(om1.MFn.kMesh):
-            self.mesh_fn = om1.MFnMesh(self.mesh_obj)
-
         self.max_capacity = 0
         self.length = 0
+
+        # 💥 唯一对外暴露的底层内存管家（供 Cython 计算层直接提取裸数据）
+        self.memory: CMemoryManager = None
+
+    # =========================================================================
+    # 1. 工厂方法
+    # =========================================================================
+    @classmethod
+    def from_plug(cls, plug: om1.MPlug):
+        instance = cls()
+        instance.plug = plug
+        instance._is_plug_mode = True
+        try:
+            instance.mObj_mesh = plug.asMObject()
+        except RuntimeError:
+            instance.mObj_mesh = om1.MObject()
+
+        instance._setup_mesh()
+        return instance
+
+    @classmethod
+    def from_data_handle(cls, data_handle: om1.MDataHandle):
+        instance = cls()
+        instance.data_handle = data_handle
+        instance._is_plug_mode = False
+        try:
+            instance.mObj_mesh = data_handle.asMesh()
+        except RuntimeError:
+            instance.mObj_mesh = om1.MObject()
+
+        instance._setup_mesh()
+        return instance
+
+    @classmethod
+    def from_mesh(cls, fn_mesh):
+        instance = cls()
+        instance._is_plug_mode = False
+
+        if isinstance(fn_mesh, om1.MFnMesh):
+            instance.fn_mesh = fn_mesh
+            instance.mObj_mesh = fn_mesh.object()
+        else:
+            instance.mObj_mesh = fn_mesh
+
+        instance._setup_mesh()
+        return instance
+
+    @classmethod
+    def from_attr_string(cls, attr_path: str):
+        sel = om1.MSelectionList()
+        try:
+            sel.add(attr_path)
+        except RuntimeError:
+            raise ValueError(f"找不到指定的属性路径: {attr_path}")
+
+        plug = om1.MPlug()
+        sel.getPlug(0, plug)
+        return cls.from_plug(plug)
+
+    # =========================================================================
+    # 2. 内部装配逻辑
+    # =========================================================================
+    def _setup_mesh(self):
+        if self.fn_mesh is None and self.mObj_mesh and not self.mObj_mesh.isNull() and self.mObj_mesh.hasFn(om1.MFn.kMesh):
+            self.fn_mesh = om1.MFnMesh(self.mObj_mesh)
+
         self._init_lengths()
 
     def _init_lengths(self):
-        if self.mesh_fn is None or self.mesh_fn.numVertices() == 0:
+        if self.fn_mesh is None or self.fn_mesh.numVertices() == 0:
             return
 
-        self.max_capacity = self.mesh_fn.numVertices() * 3
+        self.max_capacity = self.fn_mesh.numVertices() * 3
         if self.max_capacity == 0:
             return
 
-        ptr_addr = int(self.mesh_fn.getRawPoints())
-        full_view = cMemoryView.get_view_from_ptr(ptr_addr, "f", (self.max_capacity,))
+        # 💥 装配时，立刻初始化管家
+        ptr_addr = int(self.fn_mesh.getRawPoints())
+        self.memory = CMemoryManager.from_ptr(ptr_addr, "f", (self.max_capacity,))
+
+        full_view = self.memory.view
 
         vl = self.max_capacity
         if vl > 0 and full_view[vl - 1] < -0.5:
@@ -64,8 +111,11 @@ class WeightsHandle:
 
     @property
     def is_valid(self):
-        return (self.mesh_fn is not None) and (self.max_capacity > 0)
+        return (self.fn_mesh is not None) and (self.max_capacity > 0) and (self.memory is not None)
 
+    # =========================================================================
+    # 3. 容器生命周期管理
+    # =========================================================================
     def _rebuild_mesh(self, target_length: int):
         num_points = int(math.ceil(target_length / 3.0))
         num_points = max(3, num_points)
@@ -84,15 +134,18 @@ class WeightsHandle:
         new_mesh_fn = om1.MFnMesh()
         new_mesh_fn.create(num_points, 1, base_pts, v_count, v_list, mesh_data_obj)
 
-        self.mesh_obj = mesh_data_obj
-        self.mesh_fn = new_mesh_fn
+        self.mObj_mesh = mesh_data_obj
+        self.fn_mesh = new_mesh_fn
         self.max_capacity = num_points * 3
         self.length = target_length
 
+        ptr_addr = int(self.fn_mesh.getRawPoints())
+        self.memory = CMemoryManager.from_ptr(ptr_addr, "f", (self.max_capacity,))
+
         if self._is_plug_mode:
-            self.plug.setMObject(mesh_data_obj)  # 通知刷新
+            self.plug.setMObject(mesh_data_obj)
         elif self.data_handle is not None:
-            self.data_handle.setMObject(mesh_data_obj)  # 仅更新容器
+            self.data_handle.setMObject(mesh_data_obj)
 
     def resize(self, length: int):
         if length > self.max_capacity:
@@ -100,24 +153,23 @@ class WeightsHandle:
         else:
             self.length = length
 
-    def get_view(self, shape=None):
-        if not self.is_valid or self.length == 0:
-            return None
+    def commit(self):
+        """通知 Maya 数据已更新"""
+        if self._is_plug_mode and self.plug is not None and self.mObj_mesh is not None:
+            self.plug.setMObject(self.mObj_mesh)
 
-        ptr_addr = int(self.mesh_fn.getRawPoints())
-        full_view = cMemoryView.get_view_from_ptr(ptr_addr, "f", (self.max_capacity,))
-        exact_1d_view = full_view[: self.length]
-
-        if shape is not None:
-            return cMemoryView.reshape_view(exact_1d_view, shape)
-
-        return exact_1d_view
-
+    # =========================================================================
+    # 4. 高级数据写入接口 (保留高级方法，但全量采用内部管家提速)
+    # =========================================================================
     def set_weights(self, src_data):
+
+        src_mem_mgr = None
+
         if isinstance(src_data, (list, tuple)):
-            src_view = cMemoryView.get_view_from_list(src_data, "f")
-            if src_view is None:
+            src_mem_mgr = CMemoryManager.from_list(list(src_data), "f")
+            if src_mem_mgr is None or src_mem_mgr.view is None:
                 return
+            src_view = src_mem_mgr.view
         elif isinstance(src_data, memoryview):
             src_view = src_data
         else:
@@ -128,87 +180,46 @@ class WeightsHandle:
 
         self.resize(target_length)
 
-        dest_addr = int(self.mesh_fn.getRawPoints())
-        full_dest_view = cMemoryView.get_view_from_ptr(dest_addr, "f", (self.max_capacity,))
-
+        # 💥 极速原位拷贝 (直接使用内部管家)
+        full_dest_view = self.memory.view
         full_dest_view[: self.length] = flat_src
 
+        # 填充尾部无效数据为 -1.0
         if self.max_capacity > self.length:
             cWeightsCoreCython.fill_float_array(full_dest_view[self.length :], -1.0)
 
-        if self._is_plug_mode:
-            self.plug.setMObject(self.mesh_obj)
+        self.commit()
 
     def fill_with_value(self, value: float):
         if not self.is_valid or self.length == 0:
             return
 
-        dest_addr = int(self.mesh_fn.getRawPoints())
-        full_dest_view = cMemoryView.get_view_from_ptr(dest_addr, "f", (self.max_capacity,))
+        full_dest_view = self.memory.view
 
+        # 核心数据区填充
         cWeightsCoreCython.fill_float_array(full_dest_view[: self.length], value)
 
+        # 尾部无效区填充
         if self.max_capacity > self.length:
             cWeightsCoreCython.fill_float_array(full_dest_view[self.length :], -1.0)
 
-        if self._is_plug_mode:
-            self.plug.setMObject(self.mesh_obj)
+        self.commit()
 
 
-class CSkinWeightManager:
+class WeightsLayerData:
     """
-    节点权重管理器。
-    用于在 UI 工具端安全地解析 cSkinDeform 节点的权重图层结构。
+    权重层数据结构，用于在 Python 层管理图层信息。
     """
 
-    aWeights = "cWeights"
-    aWeightsLayer = "cWeightsLayer"
-    aWeightsLayerMask = "cWeightsLayerMask"
-    aWeightsLayerCompound = "cWeightsLayers"
-    aWeightsLayerEnabled = "cWeightsLayerEnabled"
+    def __init__(
+        self,
+        index: int,
+        enabled: bool,
+        weightsHandle: WeightsHandle,
+        maskHandle: WeightsHandle,
+    ):
 
-    def __init__(self, node_name: str):
-        self.node_name = node_name
-        self.weights = None
-        # 存储 Layer 字典的列表: [{'index': int, 'mesh': WeightsHandle, 'mask': WeightsHandle}]
-        self.layers = []
-
-        self._initialize_handles()
-
-    def _initialize_handles(self):
-        sel = om1.MSelectionList()
-        try:
-            sel.add(self.node_name)
-        except RuntimeError:
-            raise ValueError(f"❌ 场景中找不到节点 '{self.node_name}'！")
-
-        dep_node = om1.MObject()
-        sel.getDependNode(0, dep_node)
-        fn_node = om1.MFnDependencyNode(dep_node)
-
-        # 1. 解析 Base 层权重 (cBaseWeights)
-        plug_base = fn_node.findPlug(CSkinWeightManager.aWeights, False)
-        self.weights = WeightsHandle(plug_base)
-
-        # 2. 解析所有 Layers 图层权重
-        plug_layers = fn_node.findPlug(CSkinWeightManager.aWeightsLayerCompound, False)
-
-        if not plug_layers.isNull() and plug_layers.isArray():
-            attr_layer = fn_node.attribute(CSkinWeightManager.aWeightsLayer)
-            attr_layer_mask = fn_node.attribute(CSkinWeightManager.aWeightsLayerMask)
-
-            logical_indices = om1.MIntArray()
-            plug_layers.getExistingArrayAttributeIndices(logical_indices)
-
-            for i in range(logical_indices.length()):
-                idx = logical_indices[i]
-                plug_element = plug_layers.elementByLogicalIndex(idx)
-
-                plug_mesh = plug_element.child(attr_layer)
-                plug_mask = plug_element.child(attr_layer_mask)
-
-                self.layers.append({
-                    "index": idx,
-                    "weights": WeightsHandle(plug_mesh),
-                    "mask": WeightsHandle(plug_mask),
-                })
+        self.index: int = index
+        self.enabled: bool = enabled
+        self.weightsHandle: WeightsHandle = weightsHandle
+        self.maskHandle: WeightsHandle = maskHandle
