@@ -1,8 +1,4 @@
 from typing import TYPE_CHECKING
-
-from z_np.src import cMemoryView
-
-
 if TYPE_CHECKING:
     from z_np.src.cMemoryView import CMemoryManager
     from z_np.src.cSkinDeform import DeformerData
@@ -20,8 +16,6 @@ from m_utils.dag.getHistory import get_history
 
 from m_utils.time_decorator import time_decorator, time_block
 
-import time
-import array
 from . import cRaycastCython
 
 

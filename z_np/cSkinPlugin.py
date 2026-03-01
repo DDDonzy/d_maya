@@ -2,7 +2,7 @@ import maya.api.OpenMaya as om
 import maya.OpenMaya as om1  # type:ignore
 import maya.OpenMayaMPx as ompx  # type:ignore
 
-import z_np.src.cSkinDeform as cSkinDeform
+import z_np.src2.cSkinDeform2 as cSkinDeform
 
 NODE_NAME = "cSkinDeformer"
 NODE_ID = om1.MTypeId(0x00080033)

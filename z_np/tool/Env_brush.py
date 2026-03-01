@@ -28,3 +28,9 @@ def _test():
 
 
 cmds.evalDeferred(_test)
+
+
+
+cmds.createNode("WeightPreviewShape")
+cmds.connectAttr("cSkinDeformer1.refresh","WeightPreviewShape1.refresh")
+cmds.setAttr("WeightPreviewShape1.layer",-1)

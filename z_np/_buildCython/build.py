@@ -9,7 +9,7 @@ import numpy as np
 
 # ==================== 1. 核心路径定义 ====================
 # 源码目录 (绝对路径)
-SRC_DIR = Path(r"E:\d_maya\z_np\src").resolve()
+SRC_DIR = Path(r"E:\d_maya\z_np\src2").resolve()
 # 当前脚本路径
 CURRENT_SCRIPT = Path(__file__).resolve()
 

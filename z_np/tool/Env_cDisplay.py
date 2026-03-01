@@ -1,7 +1,7 @@
 import maya.cmds as cmds
 import maya.api.OpenMaya as om2
 import maya.api.OpenMayaAnim as oma2
-import z_np.src.cWeightsHandle as weightsHandle
+import z_np.src2.cWeightsHandle as weightsHandle
 
 import z_np.tool._reload as reload
 import z_np.tool._reloadPlugin as reloadPlugin
@@ -81,7 +81,7 @@ def convert_skin_to_cSkin(skin_cluster_name):
 
 
 
-reload.reload_modules_in_path(r"E:\d_maya\z_np\src")
+reload.reload_modules_in_path(r"E:\d_maya\z_np\src2")
 reloadPlugin.reload_all_plugins()
 
 

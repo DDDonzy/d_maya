@@ -1,8 +1,8 @@
 import math
 import maya.OpenMaya as om1  # type: ignore
 
-from .cMemoryView import CMemoryManager
-from . import cWeightsCoreCython  # 💥 需要重新导回 Cython 核心处理底层数组填充
+from z_np.src2.cMemoryView import CMemoryManager
+from z_np.src2 import cWeightsCoreCython  # 💥 需要重新导回 Cython 核心处理底层数组填充
 
 
 class WeightsHandle:

@@ -9,19 +9,6 @@ from z_np.src._cRegistry import GLOBAL_BRUSH_REGISTRY
 
 
 class WeightBrushCore:
-    # __slots__ = (
-    #     "radius",
-    #     "strength",
-    #     "falloff_type",
-    #     "mode",
-    #     "paintLayerIndex",
-    #     "paintInfluenceIndex",
-    #     "paintMask",
-    #     "_hit_indices_mgr",
-    #     "_hit_weights_mgr",
-    #     "_hit_count",
-    #     "cSkin",
-    # )
     # ==========================================
     # 🎨 1. 笔刷全局设置 (类属性：UI 随时修改，常驻内存)
     # ==========================================

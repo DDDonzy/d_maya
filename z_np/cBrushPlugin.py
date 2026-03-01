@@ -1,5 +1,5 @@
 import maya.api.OpenMaya as om
-from z_np.src.cBrush import WeightBrushContextCmd
+from z_np.src2.cBrush2 import WeightBrushContextCmd
 
 
 def maya_useNewAPI():

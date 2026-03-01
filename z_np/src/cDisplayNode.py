@@ -31,8 +31,8 @@ class WeightGeometryOverride(omr.MPxGeometryOverride):
     RENDER_LINE = True
     RENDER_POLYGONS = True
 
-    points_size = 8.0
-    lines_width = 1.0
+    points_size = 4.0
+    lines_width = 0.5
 
     def __init__(self, mObject):
         super(WeightGeometryOverride, self).__init__(mObject)

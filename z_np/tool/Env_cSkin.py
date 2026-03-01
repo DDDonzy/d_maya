@@ -94,7 +94,7 @@ def _test():
     print(list(w))
 
 
-reload.reload_modules_in_path(r"E:\d_maya\z_np\src")
+reload.reload_modules_in_path(r"E:\d_maya\z_np\src2")
 reloadPlugin.reload_all_plugins()
 
 cmds.evalDeferred(_test)

@@ -1,7 +1,7 @@
 from maya.api import OpenMaya as om
 from maya.api import OpenMayaRender as omr
 
-import z_np.src.cDisplayNode as cDisplay
+import z_np.src2.cDisplayNode2 as cDisplay
 
 
 def maya_useNewAPI():
