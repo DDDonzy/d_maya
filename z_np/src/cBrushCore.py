@@ -2,10 +2,10 @@ from typing import TYPE_CHECKING
 from dataclasses import dataclass
 
 if TYPE_CHECKING:
-    from z_np.src2.cSkinDeform2 import CythonSkinDeformer
+    from z_np.src.cSkinDeform import CythonSkinDeformer
 
-from z_np.src2.cMemoryView import CMemoryManager
-import z_np.src2.cBrush2Cython as cBrushCython
+from z_np.src.cMemoryView import CMemoryManager
+import z_np.src.cBrushCython as cBrushCython
 
 
 # ==========================================

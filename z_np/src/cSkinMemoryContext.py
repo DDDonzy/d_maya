@@ -1,16 +1,15 @@
 from __future__ import annotations
 
-from functools import partial
 
-from z_np.src2.cBrushCore2 import BrushSettings, BrushHitState
+from z_np.src.cBrushCore import BrushSettings, BrushHitState
 
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     import maya.OpenMaya as om1  # type: ignore
     import maya.api.OpenMaya as om2  # type: ignore
-    from z_np.src2.cMemoryView import CMemoryManager
-    from z_np.src2.cWeightsHandle import WeightsLayerData
+    from z_np.src.cMemoryView import CMemoryManager
+    from z_np.src.cWeightsHandle import WeightsLayerData
 
 
 class SkinMemoryContext:

@@ -5,11 +5,11 @@ import maya.api.OpenMayaUI as omui
 import maya.api.OpenMayaRender as omr
 
 if TYPE_CHECKING:
-    from z_np.src2.cSkinDeform2 import CythonSkinDeformer
+    from z_np.src.cSkinDeform import CythonSkinDeformer
 
-from z_np.src2._cRegistry2 import SkinRegistry
-from z_np.src2.cBrushCore2 import WeightBrushCore
-from z_np.src2 import cRaycast2Cython as cRaycastCython
+from z_np.src._cRegistry import SkinRegistry
+from z_np.src.cBrushCore import WeightBrushCore
+from z_np.src import cRaycastCython as cRaycastCython
 
 from m_utils.dag.getHistory import get_history
 

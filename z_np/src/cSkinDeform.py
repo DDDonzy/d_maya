@@ -3,16 +3,16 @@ import ctypes
 import maya.OpenMaya as om1  # type: ignore
 import maya.OpenMayaMPx as ompx  # type: ignore
 
-from z_np.src2.cMemoryView import CMemoryManager
-from z_np.src2 import cWeightsHandle as CWH
-from z_np.src2 import cSkinDeformCython
+from z_np.src.cMemoryView import CMemoryManager
+from z_np.src import cWeightsHandle as CWH
+from z_np.src import cSkinDeformCython
 
 
-from z_np.src2.cSkinMemoryContext import SkinMemoryContext
-from z_np.src2._cRegistry2 import SkinRegistry
+from z_np.src.cSkinMemoryContext import SkinMemoryContext
+from z_np.src._cRegistry import SkinRegistry
 
 
-from z_np.src2 import _profile
+from z_np.src import _profile
 
 
 class CythonSkinDeformer(ompx.MPxDeformerNode):
