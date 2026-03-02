@@ -9,13 +9,13 @@ import maya.api.OpenMayaRender as omr
 
 from . import cBoundingBoxCython
 from .cMemoryView import CMemoryManager
-from ._cRegistry2 import SkinRegistry
+from ._cRegistry import SkinRegistry
 from z_np.src2 import cColorCython as cColor
 from . import _profile
 
 
 if TYPE_CHECKING:
-    from .cSkinDeform2 import CythonSkinDeformer
+    from .cSkinDeform import CythonSkinDeformer
     # from typing import Callable
 
 
