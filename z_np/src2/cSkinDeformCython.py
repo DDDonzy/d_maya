@@ -14,14 +14,17 @@ from cython.parallel import prange  # type: ignore
 @cython.cfunc
 @cython.boundscheck(False)
 @cython.wraparound(False)
-@cython.exceptval(check=False)  # 等同于 noexcept
+@cython.exceptval(check=False)
 @cython.nogil
 def _compute_deform_matrices(
+    geo_arr: cython.p_double,
+    geo_inv_arr: cython.p_double,
     bind_arr: cython.p_double,
     influences_arr: cython.p_double,
     rotate_arr: cython.p_float,
     translate_arr: cython.p_float,
     influences_count: cython.int,
+    is_geo_identity: cython.bint,  # 💥 新增开关
 ) -> cython.void:
 
     b: cython.int
@@ -29,24 +32,51 @@ def _compute_deform_matrices(
     j: cython.int
     k: cython.int
 
-    # 声明固定大小的 C 二维数组作为计算临时变量
-    temp: cython.double[4][4] = cython.declare(cython.double[4][4])
+    T1: cython.double[4][4] = cython.declare(cython.double[4][4])
+    T2: cython.double[4][4] = cython.declare(cython.double[4][4])
+    Final: cython.double[4][4] = cython.declare(cython.double[4][4])
 
     for b in range(influences_count):
-        for i in range(4):
-            for j in range(4):
-                temp[i][j] = 0.0
-                for k in range(4):
-                    temp[i][j] += bind_arr[b * 16 + i * 4 + k] * influences_arr[b * 16 + k * 4 + j]
+        # 👑 通道 A：极限狂飙通道 (99%的情况，模型 Transform 为空)
+        if is_geo_identity:
+            # 既然 Geo 和 GeoInv 都是空气，直接 Final = BindPre * BoneWorld
+            for i in range(4):
+                for j in range(4):
+                    Final[i][j] = 0.0
+                    for k in range(4):
+                        Final[i][j] += bind_arr[b * 16 + i * 4 + k] * influences_arr[b * 16 + k * 4 + j]
 
-        # 将 double 强制转换为 float 存入结果
+        # 🐌 通道 B：全能兼容通道 (模型 Transform 被瞎挪动了，必须严谨计算)
+        else:
+            # 1. T1 = Geo * Bind
+            for i in range(4):
+                for j in range(4):
+                    T1[i][j] = 0.0
+                    for k in range(4):
+                        T1[i][j] += geo_arr[i * 4 + k] * bind_arr[b * 16 + k * 4 + j]
+
+            # 2. T2 = T1 * Bone
+            for i in range(4):
+                for j in range(4):
+                    T2[i][j] = 0.0
+                    for k in range(4):
+                        T2[i][j] += T1[i][k] * influences_arr[b * 16 + k * 4 + j]
+
+            # 3. Final = T2 * GeoInv
+            for i in range(4):
+                for j in range(4):
+                    Final[i][j] = 0.0
+                    for k in range(4):
+                        Final[i][j] += T2[i][k] * geo_inv_arr[k * 4 + j]
+
+        # 🎯 提取 3x3 旋转和 1x3 位移 (这部分代码共享)
         for i in range(3):
             for j in range(3):
-                rotate_arr[b * 9 + i * 3 + j] = cython.cast(cython.float, temp[i][j])
+                rotate_arr[b * 9 + i * 3 + j] = cython.cast(cython.float, Final[i][j])
 
-        translate_arr[b * 3 + 0] = cython.cast(cython.float, temp[3][0])
-        translate_arr[b * 3 + 1] = cython.cast(cython.float, temp[3][1])
-        translate_arr[b * 3 + 2] = cython.cast(cython.float, temp[3][2])
+        translate_arr[b * 3 + 0] = cython.cast(cython.float, Final[3][0])
+        translate_arr[b * 3 + 1] = cython.cast(cython.float, Final[3][1])
+        translate_arr[b * 3 + 2] = cython.cast(cython.float, Final[3][2])
 
 
 @cython.cfunc
@@ -107,10 +137,13 @@ def _run_skinning_core(
 # 2. Python 接口包装器 (智能提纯：接收视图 -> 提取指针 -> 喂给内核)
 # =====================================================================
 def compute_deform_matrices(
+    geo_matrix: cython.Py_ssize_t,     
+    geo_matrix_i: cython.Py_ssize_t,  
     bind_view: cython.double[:, :],
     dyn_view: cython.double[:, :],
     rot_view: cython.float[:, :],
     trans_view: cython.float[:, :],
+    geo_matrix_is_identity: cython.bint,
 ):
     """供 Python 调用的矩阵混合入口，完全基于 MemoryView"""
 
@@ -118,12 +151,24 @@ def compute_deform_matrices(
     num_bones: cython.int = bind_view.shape[0]
 
     # 获取底层原生 C 指针
+    geo_mat_ptr = cython.cast(cython.p_double, geo_matrix)
+    geo_mat_inv_ptr = cython.cast(cython.p_double, geo_matrix_i)
+
     bind_ptr = cython.cast(cython.p_double, cython.address(bind_view[0, 0]))
     dyn_ptr = cython.cast(cython.p_double, cython.address(dyn_view[0, 0]))
     rot_ptr = cython.cast(cython.p_float, cython.address(rot_view[0, 0]))
     trans_ptr = cython.cast(cython.p_float, cython.address(trans_view[0, 0]))
 
-    _compute_deform_matrices(bind_ptr, dyn_ptr, rot_ptr, trans_ptr, num_bones)
+    _compute_deform_matrices(
+        geo_mat_ptr,
+        geo_mat_inv_ptr,
+        bind_ptr,
+        dyn_ptr,
+        rot_ptr,
+        trans_ptr,
+        num_bones,
+        geo_matrix_is_identity,
+    )
 
 
 def run_skinning_core(

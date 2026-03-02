@@ -20,6 +20,7 @@ class SkinMemoryContext:
     """
 
     __slots__ = (
+        "geo_matrix",
         # 模型基础拓扑数据
         "vertex_count",
         "tri_indices_2D",
@@ -80,6 +81,7 @@ class SkinMemoryContext:
 
     def __init__(self):
         # fmt:off
+        self.geo_matrix: om1.MMatrix = None
         # ==========================================
         # 📐 1. 模型基础拓扑与空间数据
         # ==========================================

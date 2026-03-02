@@ -35,7 +35,5 @@ def reload_all_plugins():
                 om.MGlobal.displayError(f"FAILED LOAD: {plugin.name} - {e}")
         print("====================================================")
 
-    cmds.evalDeferred(_reload)
+    _reload()
 
-
-reload_all_plugins()

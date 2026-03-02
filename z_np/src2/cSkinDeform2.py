@@ -17,7 +17,7 @@ from z_np.src2 import _profile
 
 class CythonSkinDeformer(ompx.MPxDeformerNode):
     __slots__ = ("DATA",)
-
+    aGeomMatrix = om1.MObject()
     aWeights = om1.MObject()
     aWeightsLayer = om1.MObject()
     aWeightsLayerMask = om1.MObject()
@@ -29,12 +29,16 @@ class CythonSkinDeformer(ompx.MPxDeformerNode):
 
     def __init__(self):
         super(CythonSkinDeformer, self).__init__()
-
-        # 挂载外部统一的数据
         self.DATA: SkinMemoryContext = SkinMemoryContext()
+
         self._weights_is_dirty: bool = True
         self._influencesMatrix_is_dirty: bool = True
         self._bindPreMatrix_is_dirty: bool = True
+        self._geoMatrix_is_dirty: bool = True
+        self._geo_matrix = om1.MMatrix()
+        self._get_matrix_i = om1.MMatrix()
+        self._geo_matrix_is_identity = True
+
 
     def postConstructor(self):
         # 预先构建变形器需要的API对象，避免重复调用
@@ -66,26 +70,31 @@ class CythonSkinDeformer(ompx.MPxDeformerNode):
 
         elif plug == self.aBindPreMatrix:
             self._bindPreMatrix_is_dirty = True
+        elif plug == self.aGeomMatrix:
+            self._geoMatrix_is_dirty = True
 
         return super(CythonSkinDeformer, self).setDependentsDirty(plug, dirtyPlugArray)
 
     def preEvaluation(self, context, evaluationNode):
         if context.isNormal():
+            if evaluationNode.dirtyPlugExists(self.aGeomMatrix):
+                self._geoMatrix_is_dirty = True
+
             if evaluationNode.dirtyPlugExists(self.aInfluenceMatrix):
                 self._influencesMatrix_is_dirty = True
 
             if evaluationNode.dirtyPlugExists(self.aBindPreMatrix):
                 self._bindPreMatrix_is_dirty = True
-
-            if (
-                evaluationNode.dirtyPlugExists(self.aWeights)
+            # fmt:off
+            if (   evaluationNode.dirtyPlugExists(self.aWeights)
                 or evaluationNode.dirtyPlugExists(self.aWeightsLayerCompound)
                 or evaluationNode.dirtyPlugExists(self.aWeightsLayerMask)
                 or evaluationNode.dirtyPlugExists(self.aWeightsLayer)
                 or evaluationNode.dirtyPlugExists(self.aWeightsLayerEnabled)
                 or evaluationNode.dirtyPlugExists(self.aRefresh)
-            ):
+                ):
                 self._weights_is_dirty = True
+            # on 
 
         return super(CythonSkinDeformer, self).preEvaluation(context, evaluationNode)
 
@@ -144,9 +153,9 @@ class CythonSkinDeformer(ompx.MPxDeformerNode):
         # ==========================================
         # 💥 降维打击：直接利用第 2 步提取出的边 (Edges) 反推邻接关系！
         # 彻底抛弃娇贵的 MItMeshVertex，完美避开 Object does not exist 的底层 Bug！
-        
+
         adj_list = [[] for _ in range(current_vertex_count)]
-        
+
         # 遍历刚才提取出来的所有边
         for i in range(num_edges):
             v1 = edge_view[i * 2]
@@ -163,12 +172,12 @@ class CythonSkinDeformer(ompx.MPxDeformerNode):
         for i in range(current_vertex_count):
             neighbors = adj_list[i]
             indices_list.extend(neighbors)
-            
+
             offsets_list[i] = current_offset
             current_offset += len(neighbors)
-            
-        offsets_list[current_vertex_count] = current_offset # 封口
-        
+
+        offsets_list[current_vertex_count] = current_offset  # 封口
+
         # 安全存入黑板
         self.DATA.adj_offsets = CMemoryManager.from_list(offsets_list, "i")
         self.DATA.adj_indices = CMemoryManager.from_list(indices_list, "i")
@@ -177,11 +186,11 @@ class CythonSkinDeformer(ompx.MPxDeformerNode):
         # 💥 4. 终极优化：一次性申请笔刷计算需要的内存池！
         # ==========================================
         self.DATA.pool_node_epochs = CMemoryManager.allocate("i", (current_vertex_count,))
-        self.DATA.pool_dist        = CMemoryManager.allocate("f", (current_vertex_count,))
-        self.DATA.pool_queue       = CMemoryManager.allocate("i", (current_vertex_count,))
-        self.DATA.pool_in_queue    = CMemoryManager.allocate("b", (current_vertex_count,)) # 用 int8 当 bool 即可
-        self.DATA.pool_touched     = CMemoryManager.allocate("i", (current_vertex_count,))
-        
+        self.DATA.pool_dist = CMemoryManager.allocate("f", (current_vertex_count,))
+        self.DATA.pool_queue = CMemoryManager.allocate("i", (current_vertex_count,))
+        self.DATA.pool_in_queue = CMemoryManager.allocate("b", (current_vertex_count,))  # 用 int8 当 bool 即可
+        self.DATA.pool_touched = CMemoryManager.allocate("i", (current_vertex_count,))
+
         # 初始化世代簿全为 0
         epochs_view = self.DATA.pool_node_epochs.view
         for i in range(current_vertex_count):
@@ -255,7 +264,6 @@ class CythonSkinDeformer(ompx.MPxDeformerNode):
                         ctypes.memmove(dest_addr, src_addr, 128)            # (4*4)*8
                     self._influencesMatrix_is_dirty = False
             prof.step("3_GetInfluences")
-
             # ----------- Bind Pre Matrix -------------------------------------------
             if self._bindPreMatrix_is_dirty:
                 bind_data_obj = dataBlock.inputValue(self.aBindPreMatrix).data()
@@ -268,6 +276,15 @@ class CythonSkinDeformer(ompx.MPxDeformerNode):
                         self.DATA._bindPreMatrix_mgr = CMemoryManager.from_ptr(addr_base, "d", (length, 16))
                     self._bindPreMatrix_is_dirty = False
             prof.step("4_GetBindMatrix")
+            # -----------  Geometry Matrix ------------------
+            if self._geoMatrix_is_dirty:
+                geo_matrix_handle = dataBlock.inputValue(self.aGeomMatrix)
+                self._geo_matrix = geo_matrix_handle.asMatrix()
+                self._get_matrix_i = self._geo_matrix.inverse()
+                self._geo_matrix_is_identity = self._geo_matrix.isEquivalent(om1.MMatrix.identity)
+                self.DATA.geo_matrix = self._geo_matrix
+                self._geoMatrix_is_dirty = False
+            prof.step("4.1_GeometryMatrix")
             # endregion
 
             # region ----------- Weights --------------------------------------------------
@@ -282,10 +299,13 @@ class CythonSkinDeformer(ompx.MPxDeformerNode):
 
             # region ----------- Cal --------------------------------------------------
             cSkinDeformCython.compute_deform_matrices(
+                int(self._geo_matrix.this),
+                int(self._get_matrix_i.this),
                 self.DATA._bindPreMatrix_mgr.view,
                 self.DATA._influencesMatrix_mgr.view,
                 self.DATA._rotateMatrix_mgr.view,
                 self.DATA._translateVector_mgr.view,
+                self._geo_matrix_is_identity,
             )
             prof.step("6_PreData")
 
@@ -365,6 +385,11 @@ class CythonSkinDeformer(ompx.MPxDeformerNode):
         nAttr = om1.MFnNumericAttribute()
         cAttr = om1.MFnCompoundAttribute()
 
+        cls.aGeomMatrix           = mAttr.create("geomMatrix", "gm")
+        mAttr.setHidden(True)
+        mAttr.setKeyable(False)
+        cls.addAttribute(cls.aGeomMatrix)
+
         cls.aWeights              = tAttr.create("cWeights", "cw", om1.MFnData.kMesh)
         tAttr.setHidden(True)
         cls.addAttribute(cls.aWeights)
@@ -400,15 +425,17 @@ class CythonSkinDeformer(ompx.MPxDeformerNode):
 
         outputGeom = ompx.cvar.MPxGeometryFilter_outputGeom
 
+        cls.attributeAffects(cls.aGeomMatrix, cls.aRefresh)
         cls.attributeAffects(cls.aWeights, cls.aRefresh)
         cls.attributeAffects(cls.aInfluenceMatrix, cls.aRefresh)
         cls.attributeAffects(cls.aBindPreMatrix, cls.aRefresh)
         cls.attributeAffects(cls.aWeightsLayerCompound, cls.aRefresh)
 
+        cls.attributeAffects(cls.aGeomMatrix, outputGeom)
         cls.attributeAffects(cls.aWeights, outputGeom)
         cls.attributeAffects(cls.aInfluenceMatrix, outputGeom)
         cls.attributeAffects(cls.aBindPreMatrix, outputGeom)
         cls.attributeAffects(cls.aWeightsLayerCompound, outputGeom)
-
         cls.attributeAffects(cls.aRefresh, outputGeom)
+
         # fmt:on

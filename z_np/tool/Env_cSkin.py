@@ -75,6 +75,7 @@ def convert_skin_to_cSkin(skin_cluster_name):
         cmds.connectAttr(f"{influence}.worldMatrix[0]", f"{deformer}.matrix[{idx}]")
 
     set_bindMatrixArray(deformer, "bindPreMatrixArray", bindMatrix_list)
+    cmds.connectAttr(f"{skin_cluster_name}.geomMatrix", f"{deformer}.geomMatrix")
     cmds.setAttr(f"{skin_cluster_name}.envelope", 0.0)
     return deformer
 
@@ -91,10 +92,17 @@ def _test():
     w, _ = get_skinWeights(sk_node)
     a = weightsHandle.WeightsHandle.from_attr_string(f"{cSkin}.cWeights")
     a.set_weights(list(w))
-    print(list(w))
 
 
 reload.reload_modules_in_path(r"E:\d_maya\z_np\src2")
 reloadPlugin.reload_all_plugins()
 
 cmds.evalDeferred(_test)
+
+
+# display
+
+
+cmds.createNode("WeightPreviewShape")
+cmds.connectAttr("cSkinDeformer1.refresh", "WeightPreviewShape1.refresh")
+cmds.setAttr("WeightPreviewShape1.layer", -1)
