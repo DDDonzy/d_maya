@@ -25,7 +25,6 @@ class CythonSkinDeformer(ompx.MPxDeformerNode):
     aWeightsLayerCompound = om1.MObject()
     aInfluenceMatrix = om1.MObject()
     aBindPreMatrix = om1.MObject()
-    aRefresh = om1.MObject()
 
     def __init__(self):
         super(CythonSkinDeformer, self).__init__()
@@ -43,7 +42,6 @@ class CythonSkinDeformer(ompx.MPxDeformerNode):
     def postConstructor(self):
         # 预先构建变形器需要的API对象，避免重复调用
         self.mObject = self.thisMObject()
-        self.plug_refresh = om1.MPlug(self.mObject, self.aRefresh)  # 提前获取 refresh 的plug ，避免api开销
 
         # 数据储存到全局内存 (将自身的关键 API 对象写入数据总线)
         self.DATA.mObject = self.mObject
@@ -55,7 +53,6 @@ class CythonSkinDeformer(ompx.MPxDeformerNode):
 
     def setDependentsDirty(self, plug, dirtyPlugArray):
         weights_plugs = (
-            self.aRefresh,
             self.aWeights,
             self.aWeightsLayerCompound,
             self.aWeightsLayerMask,
@@ -91,7 +88,6 @@ class CythonSkinDeformer(ompx.MPxDeformerNode):
                 or evaluationNode.dirtyPlugExists(self.aWeightsLayerMask)
                 or evaluationNode.dirtyPlugExists(self.aWeightsLayer)
                 or evaluationNode.dirtyPlugExists(self.aWeightsLayerEnabled)
-                or evaluationNode.dirtyPlugExists(self.aRefresh)
                 ):
                 self._weights_is_dirty = True
             # on 
@@ -202,11 +198,9 @@ class CythonSkinDeformer(ompx.MPxDeformerNode):
     def _setDirty(self):
         """
         - 用于笔刷调用，提醒Deform，更新权重
-        - 设置自身 “refresh” 属性，refresh 影响 outputGeometry
         """
-        current_val = self.plug_refresh.asInt()
-        self.plug_refresh.setInt((current_val + 1) % 2)
-        self._weights_is_dirty = True
+        pass
+
 
     def deform(self, dataBlock: om1.MDataBlock, geoIter, localToWorldMatrix, multiIndex):
         with _profile.MicroProfiler(target_runs=100, enable=False) as prof:
@@ -415,27 +409,12 @@ class CythonSkinDeformer(ompx.MPxDeformerNode):
         cAttr.addChild(cls.aWeightsLayer)
         cAttr.addChild(cls.aWeightsLayerMask)
         cls.addAttribute(cls.aWeightsLayerCompound)
-        cls.aRefresh              = nAttr.create("refresh", "rf", om1.MFnNumericData.kInt, 0)
-        nAttr.setStorable(False)
-        nAttr.setHidden(True)
-        nAttr.setKeyable(False)
-        nAttr.setWritable(False)
-        nAttr.setReadable(True)
-        cls.addAttribute(cls.aRefresh)
 
         outputGeom = ompx.cvar.MPxGeometryFilter_outputGeom
-
-        cls.attributeAffects(cls.aGeomMatrix, cls.aRefresh)
-        cls.attributeAffects(cls.aWeights, cls.aRefresh)
-        cls.attributeAffects(cls.aInfluenceMatrix, cls.aRefresh)
-        cls.attributeAffects(cls.aBindPreMatrix, cls.aRefresh)
-        cls.attributeAffects(cls.aWeightsLayerCompound, cls.aRefresh)
 
         cls.attributeAffects(cls.aGeomMatrix, outputGeom)
         cls.attributeAffects(cls.aWeights, outputGeom)
         cls.attributeAffects(cls.aInfluenceMatrix, outputGeom)
         cls.attributeAffects(cls.aBindPreMatrix, outputGeom)
         cls.attributeAffects(cls.aWeightsLayerCompound, outputGeom)
-        cls.attributeAffects(cls.aRefresh, outputGeom)
-
         # fmt:on

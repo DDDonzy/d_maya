@@ -104,5 +104,5 @@ cmds.evalDeferred(_test)
 
 
 cmds.createNode("WeightPreviewShape")
-cmds.connectAttr("cSkinDeformer1.refresh", "WeightPreviewShape1.refresh")
+cmds.connectAttr("cSkinDeformer1.outputGeometry[0]", "WeightPreviewShape1.inDeformMesh")
 cmds.setAttr("WeightPreviewShape1.layer", -1)

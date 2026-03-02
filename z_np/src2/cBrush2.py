@@ -90,9 +90,7 @@ class WeightBrushContext(omui.MPxContext):
         self.cSkin = None
         self.__init__()
 
-    # ----------------------------------------------------------------------
-    # 事件流转 (Events -> Raycast -> Process)
-    # ----------------------------------------------------------------------
+
     def doPress(self, event, drawMgr, context):
         self._shoot_ray_and_process(event, True, drawMgr)
 
@@ -106,7 +104,7 @@ class WeightBrushContext(omui.MPxContext):
         self._isPressed = False
 
     def _raycast(self, ray_source_MPoint, ray_dir_MVector):
-        """💥 对齐最新 cRaycast2Cython，直接接收三维坐标"""
+        """ cRaycast2Cython，直接接收三维坐标"""
         source_arr = tuple(ray_source_MPoint)[0:3]
         dir_arr = tuple(ray_dir_MVector)
 
@@ -161,7 +159,6 @@ class WeightBrushContext(omui.MPxContext):
         # 4. 炮兵开火
         if is_pressed:
             self.core.apply_weight_math()
-            self.cSkin._setDirty()  
 
         self._refresh_viewport()
         

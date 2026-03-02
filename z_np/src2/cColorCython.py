@@ -141,3 +141,35 @@ def render_brush_gradient(
             color_view[v_idx, 1] = bg_g + w * (fg_g - bg_g)
             color_view[v_idx, 2] = bg_b + w * (fg_b - bg_b)
             color_view[v_idx, 3] = bg_a + w * (fg_a - bg_a)
+
+
+# =====================================================================
+# 3. 渲染管线辅助函数 (直接向 Maya VP2 缓冲区写入数据)
+# =====================================================================
+@cython.cfunc
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nogil
+def _offset_indices_direct(
+    src_ptr: cython.p_uint,
+    dst_ptr: cython.p_uint,
+    count: cython.int,
+    offset: cython.uint,
+) -> cython.void:
+    # 👆 💥 加上 -> cython.void:
+    i: cython.int
+    for i in range(count):
+        dst_ptr[i] = src_ptr[i] + offset
+
+
+def offset_indices_direct(
+    src_addr: cython.Py_ssize_t,
+    dst_addr: cython.Py_ssize_t,
+    count: cython.int,
+    offset: cython.int,
+):
+    """Python 包装器：接收整型地址，强转为 unsigned int 指针"""
+    src_ptr = cython.cast(cython.p_uint, src_addr)
+    dst_ptr = cython.cast(cython.p_uint, dst_addr)
+
+    _offset_indices_direct(src_ptr, dst_ptr, count, cython.cast(cython.uint, offset))
