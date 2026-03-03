@@ -3,7 +3,7 @@ import os
 import importlib
 
 
-def reload_modules_in_path(target_dir):
+def reload_modules_in_path(target_dir=r"E:\d_maya\gskin\src"):
     """
     自动重载指定路径下的所有已加载的 Python 模块。
 
@@ -41,3 +41,7 @@ def reload_modules_in_path(target_dir):
 
     print(f"\n--- Total Reloaded: {len(reloaded_list)} modules ---")
     return reloaded_list
+
+
+if __name__ == "__main__":
+    reload_modules_in_path()
