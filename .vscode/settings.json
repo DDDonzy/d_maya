@@ -18,7 +18,10 @@
         "ompx",
         "ssdr",
         "tris",
-        "userprefs"
+        "userprefs",
+        "verts"
     ],
-    "python-envs.defaultEnvManager": "ms-python.python:system"
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    "python.defaultInterpreterPath": "C:\\Program Files\\Autodesk\\Maya2024\\bin\\mayapy.exe",
+    "python.terminal.activateEnvironment": false
 }
