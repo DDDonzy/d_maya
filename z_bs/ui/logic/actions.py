@@ -351,7 +351,7 @@ class ActionHandler:
             log.error("Selected object is not a mesh.")
             return
 
-        bs.extend(get_history(mesh, "BlendShape"))
+        bs.extend(get_history(mesh, "blendShape"))
         _set()
 
     def setBlendShapeManagerFilter(self, filter_str: str):
