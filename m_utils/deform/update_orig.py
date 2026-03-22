@@ -24,7 +24,7 @@ def update_orig(sourceMesh: str, deformerMesh: str):
             orig_plug.setMObject(bake_data)
 
         _doit()
-        apiundo.commit(_undo, _doit)
+        apiundo.commit(_doit, _undo)
 
 
 def update_orig_cmd():

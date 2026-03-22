@@ -162,7 +162,7 @@ def set_matrix(obj: str, matrix: om.MMatrix, worldSpace: bool = False) -> None:
     def undo_it():
         fnTransform.setTransformation(original_transform)
 
-    apiundo.commit(undo_it, do_it)
+    apiundo.commit(do_it, undo_it)
     do_it()
     log.trace("Set Matrix: '{}' -> {}.", obj, local_matrix)
 

@@ -55,8 +55,8 @@ def mayaInvertAddTarget():
                           target=currentItem.targetIdx,
                           ibw=(currentItem.inbetweenIdx-5000)/1000)
 
-    apiundo.commit(lambda *args, **kwargs: doit(fnMesh, basePos),
-                   lambda *args, **kwargs: doit(fnMesh, pos),)
+    apiundo.commit(lambda *args, **kwargs: doit(fnMesh, pos),
+                   lambda *args, **kwargs: doit(fnMesh, basePos),)
     doit(fnMesh, pos)
 
 

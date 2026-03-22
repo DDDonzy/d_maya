@@ -44,7 +44,7 @@ class skinClusterToLocal(CreateBase):
             for index, matrix in self.bindPreMatrixBake.items():
                 cmds.setAttr(f"{skin_bindPreMatrix}[{index}]", matrix, type="matrix")
 
-        commit(_undo, self.create)
+        commit(self.create,_undo)
 
     def create(self):
         self.skinNode = self.skinNode

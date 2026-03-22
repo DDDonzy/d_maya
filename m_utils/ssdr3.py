@@ -214,7 +214,7 @@ class SSDR:
             redo()
 
         finally:
-            apiundo.commit(redo=redo, undo=undo)
+            apiundo.commit(redo, undo)
 
     def run(self, iterations=20):
         """

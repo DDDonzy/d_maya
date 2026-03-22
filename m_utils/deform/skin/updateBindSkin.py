@@ -25,7 +25,7 @@ def updateBindSkin(node_skin):
             cmds.setAttr(f"{node_skin}.bindPreMatrix[{i}]", inf_pre_matrix, type="matrix")
             log.trace(f"UPDATE BIND SKIN: {node_skin}.bindPreMatrix[{i}] ---> {inf_pre_matrix}")
 
-    commit(_undo, _doit)
+    commit(_doit, _undo)
     _doit()
     log.success(f"UPDATE BIND SKIN: {node_skin}")
 

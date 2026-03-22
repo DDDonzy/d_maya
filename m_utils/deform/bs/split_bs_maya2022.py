@@ -35,7 +35,7 @@ class DuplicateMeshCommand:
 
     def execute(self):
         name = self.doit()
-        apiundo.commit(self.undo, self.doit)
+        apiundo.commit(self.doit, self.undo)
         return name
 
 

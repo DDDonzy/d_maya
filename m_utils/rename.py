@@ -115,7 +115,7 @@ def rename(text: str, obj: list = None):
             name = generateUniqueName(adjustName(name=text, baseName=baseName))
             mDep.setName(name)
 
-            commit(partial(mDep.setName, baseName), partial(mDep.setName, name))
+            commit(partial(mDep.setName, name),partial(mDep.setName, baseName))
 
 
 def showUI():

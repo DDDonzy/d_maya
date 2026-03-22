@@ -272,7 +272,7 @@ def add_sculptGeo(sculptGeo, targetData: TargetData = None, addInbetween=True):
     def undo():
         pasted_delta(targetData, baseData)
 
-    apiundo.commit(undo, doit)
+    apiundo.commit(doit,undo)
     doit()
 
 
@@ -299,7 +299,7 @@ def pasted_delta(targetData: TargetData, data):
     def undo():
         iti_plug.setMObject(baseData)
 
-    apiundo.commit(undo, doit)
+    apiundo.commit(doit,undo)
     doit()
 
 
