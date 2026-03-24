@@ -1,0 +1,61 @@
+[tool.ruff]
+
+target-version = "py310" 
+
+line-length = 300
+
+# 排除不需要进行代码检查的目录，提升检查速度并避免误报
+exclude = [
+    ".git",          # Git 目录
+    "__pycache__",   # 编译缓存
+    ".venv",         # 虚拟环境
+    "venv",          # 虚拟环境
+    "build",         # 构建输出
+    "dist",          # 打包输出
+]
+
+
+
+[tool.ruff.lint]
+
+select = [
+    # --- 核心错误防御 ---
+    "E",    # pycodestyle Error: 基础代码风格错误 (如缩进错误、语法级排版问题)。
+    "F",    # Pyflakes: 致命逻辑错误 (如变量未定义、未使用的 import、重复字典键等)。这是最重要的防线！
+
+    # --- 潜在 Bug 猎手 ---
+    "B",    # flake8-bugbear: 发现常见的代码陷阱和不良实践 (如函数默认参数使用了可变对象 `def foo(a=[])`)。
+    "RET",  # flake8-return: 优化 return 语句 (如检查不必要的 else 分支，鼓励尽早 return)。
+    "ARG",  # flake8-unused-arguments: 检查函数中定义了但未使用的参数 (清理废弃代码)。
+
+    # --- 现代 Python 魔法 ---
+    "UP",   # pyupgrade: 自动将旧版 Python 语法升级为现代写法 (如老旧的 format() 升级为 f-string，更新类型注解写法)。
+    "SIM",  # flake8-simplify: 代码精简大师，教你用更 Pythonic 的方式重构冗长的 if-else 或循环。
+    "PTH",  # flake8-use-pathlib: 鼓励使用现代化的 pathlib 替代老旧的 os.path.join()。
+
+    # --- Ruff 专属 ---
+    "RUF",  # Ruff-specific rules: Ruff 团队开发的一些独家高价值检查 (如检查错误的 # noqa 注释)。
+]
+
+
+ignore = [
+    "I",    # isort: 完全关闭导入顺序检查 (Import sorting)。避免因第三方库 (如 maya) 或相对导入顺序引发的大量报错。
+    "E501", # Line too long: 虽然上面设置了 line-length=120，但为了彻底避免因长字符串或长 URL 导致的报错，直接禁用行长检查。
+    "F403", # 'from module import *' used: 允许使用星号导入 (虽然不推荐，但在某些老旧脚本或特定库的初始化中很常见)。
+    "F405", # Name may be undefined, or defined from star imports: 配合 F403，不再追究来自星号导入的变量未定义问题。
+    "SIM105", # Use `contextlib.suppress(...)` instead of `try`-`except`-`pass`: 允许保留传统的 try-except-pass 结构，不强制要求替换。
+]
+
+
+# ==========================================
+# 4. 格式化工具配置 (Formatter Configuration)
+# ==========================================
+[tool.ruff.format]
+# 强制使用单引号代替双引号 (看团队喜好，可选 'double' 或 'single')
+quote-style = "double"
+
+# 缩进使用空格 (推荐)
+indent-style = "space"
+
+# 遇到多行结尾时，是否在最后一个元素后加逗号 (推荐开启，方便差异比对和后续添加)
+skip-magic-trailing-comma = false
