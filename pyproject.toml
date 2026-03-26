@@ -45,6 +45,8 @@ ignore = [
     "F405", # Name may be undefined, or defined from star imports: 配合 F403，不再追究来自星号导入的变量未定义问题。
     "SIM105", # Use `contextlib.suppress(...)` instead of `try`-`except`-`pass`: 允许保留传统的 try-except-pass 结构，不强制要求替换。
     "RUF002",
+    "RUF003",
+    "ARG002",
 ]
 
 
