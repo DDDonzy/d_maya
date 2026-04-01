@@ -76,6 +76,12 @@ class UI_Command:
         from m_utils.other.zeroPivot import zeroPivot
 
         zeroPivot()
+    
+    @staticmethod
+    def parent_hierarchy_chain(*args, **kwargs):
+        from m_utils.dag.parentHierarchyChain import parent_hierarchy_chain
+
+        parent_hierarchy_chain()
 
     # --- Curve Tools ---
     @staticmethod
@@ -275,6 +281,7 @@ class UI_Logic:
         self.menuItem(label="Show Local Axes", radialPosition="S", sourceType="python", command=UI_Command.show_local_axes)
         self.menuItem(label="separator", divider=True, dividerLabel="separator")
         self.menuItem(label="Zero Pivot", sourceType="python", command=UI_Command.zero_pivot)
+        self.menuItem(label="Parent Hierarchy Chain", sourceType="python", command=UI_Command.parent_hierarchy_chain)
         cmds.setParent("..", menu=True)
 
         # --- Curve Menu ---
