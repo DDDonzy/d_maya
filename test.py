@@ -1,32 +1,39 @@
-import time
-import ctypes
-import array
+import shutil
+from pathlib import Path
 
+def sync_mocap_files():
+    # 1. 定义路径
+    path_a = Path(r"N:\SourceAssets\Characters\Hero\Mocap\Xsens\20260329\FBX")
+    path_b = Path(r"N:\SourceAssets\Characters\Hero\Mocap\Xsens\20260329\MVN")
+    path_c = Path(r"N:\SourceAssets\Characters\Hero\Mocap\Xsens\20260329")
 
-# 测试数据量：300万个 float (float32 为 4 字节，总计约 11.44 MB)
-COUNT = 3_000_000
+    # 确保目标文件夹 C 存在
+    path_c.mkdir(parents=True, exist_ok=True)
 
-def benchmark_memory_copy():
-    print(f"开始测试 {COUNT} 个 float32 的内存拷贝性能...\n")
+    print(f"正在扫描文件夹 B: {path_b}...")
 
+    # 2. 遍历 B 文件夹
+    count = 0
+    for file_b in path_b.iterdir():
+        # 检查是否为文件且没有后缀
+        if file_b.is_file() and file_b.suffix == "":
+            file_name = file_b.name
+            target_fbx = path_a / f"{file_name}.FBX"
 
+            # 3. 在 A 路径下寻找对应的 .FBX
+            if target_fbx.exists():
+                dest_path = path_c / target_fbx.name
+                
+                try:
+                    shutil.copy2(target_fbx, dest_path)
+                    print(f"[成功] 已复制: {target_fbx.name}")
+                    count += 1
+                except Exception as e:
+                    print(f"[错误] 复制失败 {target_fbx.name}: {e}")
+            else:
+                print(f"[缺失] A 文件夹中找不到: {target_fbx.name}")
 
-    # --- 4. ctypes.memmove (最接近你 Maya 插件底层的逻辑) ---
-    # 直接操作内存地址，跳过所有 Python 对象包装
-    # 创建两个连续内存块
-    BufferType = ctypes.c_float * COUNT
-    src_buffer = BufferType()
-    dst_buffer = BufferType()
-    
-    start = time.perf_counter()
-    # 核心：直接从源地址拷贝 N 字节到目标地址
-    ctypes.memmove(
-        ctypes.addressof(dst_buffer), 
-        ctypes.addressof(src_buffer), 
-        COUNT * ctypes.sizeof(ctypes.c_float)
-    )
-    end = time.perf_counter()
-    print(f"4. ctypes.memmove (地址偏移): {(end - start) * 1000:.4f} ms")
+    print(f"\n任务完成！共复制了 {count} 个文件到 {path_c}")
 
 if __name__ == "__main__":
-    benchmark_memory_copy()
+    sync_mocap_files()
