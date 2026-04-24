@@ -2,7 +2,7 @@
 
 target-version = "py310" 
 
-line-length = 300
+line-length = 320
 
 # 排除不需要进行代码检查的目录，提升检查速度并避免误报
 exclude = [
@@ -47,6 +47,7 @@ ignore = [
     "RUF002",
     "RUF003",
     "ARG002",
+    "RUF023",
 ]
 
 
