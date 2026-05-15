@@ -96,8 +96,8 @@ def loadHandPose():
 
 
 if __name__ == "__main__":
-    task_file = list(Path(r"N:\SourceAssets\Characters\Hero\Mocap\Xsens\20260329\Retarget").glob("*.fbx"))  # 扫描目录
-    output_dir = Path(r"N:\SourceAssets\Characters\Hero\Mocap\Xsens\20260329\Bake")  # 输出目录
+    task_file = list(Path(r"N:\SourceAssets\Characters\Hero\Mocap\Xsens\20260419\Retarget").glob("*.fbx"))  # 扫描目录
+    output_dir = Path(r"N:\SourceAssets\Characters\Hero\Mocap\Xsens\20260419\Bake")  # 输出目录
     fbx_output_dir = Path(r"N:\SourceAssets\Characters\Hero\Animations\FBX")  # FBX 输出目录，用于配置Game Exporter节点，不导出fbx
     rig_file = r"N:\SourceAssets\Characters\Hero\Rigs\Rig_Hero.ma"  # 绑定角色文件
 

@@ -97,11 +97,28 @@ def undoChunk():
         cmds.undoInfo(closeChunk=True)
 
 
-def rename(text: str, obj: list = None):
+def _getMSelectionList(obj: list | None = None):
+    if obj is not None:
+        return om.MGlobal.getActiveSelectionList()
+
+    mSel = om.MSelectionList()
+    for sel in obj:
+        try:
+            mSel.add(sel)
+        except RuntimeError:
+            om.MGlobal.displayWarning(f"Object {sel} does not exist and will be skipped.")
+    return mSel
+
+
+def rename(text: str, obj: list | None = None):
     # if no obj input, use current selection and excluding shapes
 
-    mSel = om.MGlobal.getActiveSelectionList()
+    mSel = _getMSelectionList(obj)
+    if mSel.length() == 0:
+        om.MGlobal.displayError("No valid objects to rename.")
+        return []
     mIterSel = om.MItSelectionList(mSel)
+    new_name = []
     with undoChunk():
         for x in mIterSel:
             mObj: om.MObject = x.getDependNode()
@@ -114,8 +131,10 @@ def rename(text: str, obj: list = None):
                 baseName = baseName.split("|")[-1]
             name = generateUniqueName(adjustName(name=text, baseName=baseName))
             mDep.setName(name)
+            new_name.append(name)
 
-            commit(partial(mDep.setName, name),partial(mDep.setName, baseName))
+            commit(partial(mDep.setName, name), partial(mDep.setName, baseName))
+    return new_name
 
 
 def showUI():

@@ -18,6 +18,18 @@ class UI_Command:
 
     # --- Transform Tools ---
     @staticmethod
+    def export_pose(*args, **kwargs):
+        from m_utils.poseManager import export_poseData
+
+        export_poseData()
+
+    @staticmethod
+    def import_pose(*args, **kwargs):
+        from m_utils.poseManager import import_poseData
+
+        import_poseData()
+
+    @staticmethod
     def reset_transform(*args, **kwargs):
         from m_utils.transform import reset_transform_cmd
 
@@ -76,7 +88,7 @@ class UI_Command:
         from m_utils.other.zeroPivot import zeroPivot
 
         zeroPivot()
-    
+
     @staticmethod
     def parent_hierarchy_chain(*args, **kwargs):
         from m_utils.dag.parentHierarchyChain import parent_hierarchy_chain
@@ -282,6 +294,9 @@ class UI_Logic:
         self.menuItem(label="separator", divider=True, dividerLabel="separator")
         self.menuItem(label="Zero Pivot", sourceType="python", command=UI_Command.zero_pivot)
         self.menuItem(label="Parent Hierarchy Chain", sourceType="python", command=UI_Command.parent_hierarchy_chain)
+        self.menuItem(label="separator", divider=True, dividerLabel="separator")
+        self.menuItem(label="Import Pose", sourceType="python", command=UI_Command.import_pose)
+        self.menuItem(label="Export Pose", sourceType="python", command=UI_Command.export_pose)
         cmds.setParent("..", menu=True)
 
         # --- Curve Menu ---

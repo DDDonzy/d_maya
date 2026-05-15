@@ -1,7 +1,9 @@
-from math import inf
+from maya import cmds
 import maya.api.OpenMaya as om
 import maya.api.OpenMayaAnim as oma
+
 import numpy as np
+
 import m_utils.apiundo as apiundo
 from m_utils.dag.getHistory import get_history
 
@@ -14,14 +16,15 @@ class SSDR:
         skin_mesh,
         sculpt_mesh,
         weight_tolerance=0.001,
-        user_input_influences: list[str] = None,
+        user_input_influences: list[str] | None = None,
     ):
         """初始化SSDR求解器
 
         Args:
             skin_mesh (str): 蒙皮网格名称
             sculpt_mesh (str): 目标网格名称
-            weight_tolerance (float): 权重阈值，低于此值的影响忽略
+            weight_tolerance (float): 权重阈值, 低于此值的影响忽略
+            user_input_influences (list[str] | None): 用户指定的影响节点列表, 如果提供则只求解这些节点, 否则求解所有影响节点
         """
         self.skin_mesh_name = skin_mesh
         self.sculpt_mesh_name = sculpt_mesh
@@ -96,7 +99,7 @@ class SSDR:
     def _get_active_influences(self):
         """筛选出需要求解的影响节点（影响顶点数>=3）"""
         self.active_influences = []
-        filleter = True if self.user_input_influences else False
+        filleter = bool(self.user_input_influences)
 
         for inf_idx, inf_dag in enumerate(self.influences):
             if filleter and inf_dag.partialPathName() not in self.user_input_influences:
@@ -108,15 +111,17 @@ class SSDR:
                 continue
 
             inf_fn = om.MFnTransform(inf_dag)
-            self.active_influences.append({
-                "index": inf_idx,
-                "dag": inf_dag,
-                "transform": inf_fn,
-                "base_xform": inf_fn.transformation(),
-                "vert_indices": affected_vertices,
-                "vert_weights": self.weights[affected_vertices, inf_idx][:, np.newaxis],
-                "sculpt_points": self.sculpt_points[affected_vertices],
-            })
+            self.active_influences.append(
+                {
+                    "index": inf_idx,
+                    "dag": inf_dag,
+                    "transform": inf_fn,
+                    "base_xform": inf_fn.transformation(),
+                    "vert_indices": affected_vertices,
+                    "vert_weights": self.weights[affected_vertices, inf_idx][:, np.newaxis],
+                    "sculpt_points": self.sculpt_points[affected_vertices],
+                }
+            )
 
     def calculate_skin_points(self):
         """使用当前骨骼矩阵计算皮肤网格点位置
@@ -182,7 +187,7 @@ class SSDR:
         Args:
             iterations (int): 迭代次数
         """
-        print(f">>> 开始SSDR求解 ({self.skin_mesh_name})，共{iterations}次迭代")
+        print(f">>> 开始SSDR求解 ({self.skin_mesh_name})  共{iterations}次迭代")
 
         for iter_idx in range(iterations):
             print(f">>> 迭代 {iter_idx + 1}/{iterations}")
@@ -190,31 +195,57 @@ class SSDR:
 
         print(">>> 求解完成")
 
-    def apply_to_scene(self):
-        """将求解结果应用到场景（带undo/redo）"""
+    @staticmethod
+    def apply_to_scene_replace_object(name):
+        return name + "_ssdr"
+
+    def apply_to_scene(self, replace_object_func=None):
+        """将求解结果应用到场景（带undo/redo），支持对象替换"""
+
+        # 1. 构建执行计划：存储 (目标对象Transform, 新矩阵, 旧矩阵)
+        execution_plan = []
+
+        for data in self.active_influences:
+            orig_dag = data["dag"]
+            world_mat = self.influences_world_matrices[data["index"]]
+
+            # 确定目标对象名称
+            target_name = replace_object_func(orig_dag.partialPathName()) if replace_object_func else orig_dag.partialPathName()
+
+            if not cmds.objExists(target_name):
+                continue
+
+            # 获取目标 DAG
+            sel = om.MSelectionList()
+            sel.add(target_name)
+            target_dag = sel.getDagPath(0)
+            target_fn = om.MFnTransform(target_dag)
+
+            # 2. 计算：使用目标对象自身的父级逆矩阵 (修复空间偏移 Bug)
+            parent_inv_mat = target_dag.exclusiveMatrixInverse()
+            target_local_mat = om.MMatrix(world_mat) * parent_inv_mat
+
+            # 缓存新旧矩阵
+            old_mat = target_fn.transformation()
+            new_mat = om.MTransformationMatrix(target_local_mat)
+
+            execution_plan.append({"fn": target_fn, "new": new_mat, "old": old_mat})
+
+        # 3. 定义 redo 和 undo
+        def redo():
+            for item in execution_plan:
+                item["fn"].setTransformation(item["new"])
+
+        def undo():
+            for item in execution_plan:
+                item["fn"].setTransformation(item["old"])
+
+        # 4. 执行
         try:
-            final_transforms = {}
-
-            # 计算最终的局部矩阵
-            for data in self.active_influences:
-                world_mat = self.influences_world_matrices[data["index"]]
-                local_mat = om.MMatrix(world_mat) * data["dag"].exclusiveMatrixInverse()
-                final_transforms[data["transform"]] = local_mat
-
-            # 定义redo和undo操作
-            def redo():
-                for fn, mat in final_transforms.items():
-                    fn.setTransformation(om.MTransformationMatrix(mat))
-
-            def undo():
-                for data in self.active_influences:
-                    data["transform"].setTransformation(data["base_xform"])
-
-            # 执行变换
             redo()
-
-        finally:
             apiundo.commit(redo, undo)
+        except Exception as e:
+            print(f"应用失败: {e}")
 
     def run(self, iterations=20):
         """
@@ -224,7 +255,7 @@ class SSDR:
             iterations (int): 迭代次数，默认20
         """
         self.solve(iterations)
-        self.apply_to_scene()
+        self.apply_to_scene(self.apply_to_scene_replace_object)
 
 
 # 使用示例
