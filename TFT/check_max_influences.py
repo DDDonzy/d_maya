@@ -22,17 +22,15 @@ for x in list(inf_list):
 
         iter_obj = cmds.listRelatives(iter_obj, p=1)[0]
 
-        if iter_obj:
-            if iter_obj not in inf_list:
-                inf_list.add(iter_obj)
+        if iter_obj and iter_obj not in inf_list:
+            inf_list.add(iter_obj)
 
 
 influence_count = len(inf_list)
 print(f"Influences Num: {influence_count}")
 
 
-if influence_count >= 256:
-
+if influence_count >= 256:  # noqa: SIM108
     msg = f'Influences Num: <font color="red">{influence_count}</font>'
 else:
     msg = f'Influences Num: <font color="#00FFFF">{influence_count}</font>'

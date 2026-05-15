@@ -2,41 +2,41 @@
 FBXResetExport;
 // FBX Version
 string $FbxVersion[] = `FBXExportFileVersion -vl`;
-FBXExportFileVersion -v $FbxVersion[0];            // The latest version
+FBXExportFileVersion -v $FbxVersion[0];  // The latest version
 
 // --- Advanced Options ---
 FBXExportUpAxis "y";
-FBXExportInAscii -v false;                          // false = Binary   true = ASCII
-FBXExportGenerateLog -v false;                     // Generate Log File
+FBXExportInAscii     -v false;  // false = Binary   true = ASCII
+FBXExportGenerateLog -v false;  // Generate Log File
 
 // --- Relatives ---
-FBXExportIncludeChildren -v false;                  // Include children nodes
-FBXExportInputConnections -v false;                 // connections
-FBXExportEmbeddedTextures  -v false;                // Embedded Textures
-FBXExportReferencedAssetsContent -v true;          // Export referenced assets content
+FBXExportIncludeChildren         -v false;  // Include children nodes
+FBXExportInputConnections        -v false;  // connections
+FBXExportEmbeddedTextures        -v false;  // Embedded Textures
+FBXExportReferencedAssetsContent -v true;   // Export referenced assets content
 
 // --- Geometry ---
-FBXExportSmoothingGroups -v false;                   // Smoothing Groups
-FBXExportHardEdges -v false;                        // "Split Vertex Normals"
-FBXExportTangents -v false;                          // Tangents
-FBXExportTriangulate -v false;                      // Triangulate
-FBXExportInstances -v false;                         // Instances
+FBXExportSmoothingGroups -v false;  // Smoothing Groups
+FBXExportHardEdges       -v false;  // "Split Vertex Normals"
+FBXExportTangents        -v false;  // Tangents
+FBXExportTriangulate     -v false;  // Triangulate
+FBXExportInstances       -v false;  // Instances
 
 // --- Deform ---
-FBXExportSkins -v true;                             // Skin
-FBXExportShapes -v true;                            // BlendShape
+FBXExportSkins  -v true;  // Skin
+FBXExportShapes -v true;  // BlendShape
 
 // --- Skeleton ---
 FBXExportConstraints -v false;
-FBXExportSkeletonDefinitions -v false;               // Skeleton Definitions
+FBXExportSkeletonDefinitions -v false;  // Skeleton Definitions
 
 // --- Camera and Light ---
 FBXExportCameras -v false;
 FBXExportLights -v false;
 
 // --- Animation ---
-// FBXExportAnimationOnly -v true ;                     // Animation Only  开启后会导致joint变为 transform,不方便预览
-FBXExportBakeComplexAnimation -v true;              // Bake animation
-// FBXExportBakeComplexStart -v 0;                     // Time Start
-// FBXExportBakeComplexEnd -v 100;                     // Time End
-FBXExportBakeComplexStep -v 1;                      // Bake Step
+                                        // FBXExportAnimationOnly -v true ;                     // Animation Only  开启后会导致joint变为 transform,不方便预览
+FBXExportBakeComplexAnimation -v true;  // Bake animation
+                                        // FBXExportBakeComplexStart -v 0;                     // Time Start
+                                        // FBXExportBakeComplexEnd -v 100;                     // Time End
+FBXExportBakeComplexStep      -v 1;     // Bake Step

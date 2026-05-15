@@ -96,8 +96,13 @@ def loadHandPose():
 
 
 if __name__ == "__main__":
+<<<<<<< HEAD
     task_file = list(Path(r"N:\SourceAssets\Characters\Hero\Mocap\Xsens\20260419\Retarget").glob("*.fbx"))  # 扫描目录
     output_dir = Path(r"N:\SourceAssets\Characters\Hero\Mocap\Xsens\20260419\Bake")  # 输出目录
+=======
+    task_file = list(Path(r"N:\SourceAssets\Characters\Hero\Mocap\Xsens\UE_Retarget").glob("*.fbx"))  # 扫描目录
+    output_dir = Path(r"N:\SourceAssets\Characters\Hero\Mocap\Xsens\Bake")  # 输出目录
+>>>>>>> 873e6e9bd66b0c897deff3b062b6e31ef64c7161
     fbx_output_dir = Path(r"N:\SourceAssets\Characters\Hero\Animations\FBX")  # FBX 输出目录，用于配置Game Exporter节点，不导出fbx
     rig_file = r"N:\SourceAssets\Characters\Hero\Rigs\Rig_Hero.ma"  # 绑定角色文件
 
@@ -141,7 +146,7 @@ if __name__ == "__main__":
             keyframes = cmds.keyframe(f"{mocap_namespace}pelvis", query=True, timeChange=True)
             start = keyframes[0]
             end = keyframes[-1]
-            cmds.playbackOptions(ast=start, aet=end, min=start, max=end)  # 设置播放范围开始时间
+            cmds.playbackOptions(ast=start, aet=end, min=2, max=4)  # 设置播放范围开始时间
             log.debug(f"Set Playback Range: {start} - {end}")
 
             log.debug("Load hand Pose.")
