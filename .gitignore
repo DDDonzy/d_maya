@@ -1,4 +1,39 @@
+# ===== Python =====
+__pycache__/
 *.pyc
-__pycache__
-*.ropeproject
-*.pyd
+*.pyo
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# ===== 虚拟环境 =====
+.venv/
+venv/
+env/
+.python-version
+
+# ===== 系统文件 =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== Maya =====
+*.mayaSwatches/
+*.swatches
+incrementalSave/
+*.ma.swatches
+*.mb.swatches
+mayaLog
+*.bak
+
+# ===== 日志 / 临时 =====
+*.log
+*.tmp
+*.cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
