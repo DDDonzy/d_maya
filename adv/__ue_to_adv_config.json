@@ -2,7 +2,12 @@
     "RootGround": {
         "driver": "root",
         "driven": "RootGround",
-        "offsetMatrix": [1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1]
+        "offsetMatrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+    },
+    "RootWeapon": {
+        "driver": "root",
+        "driven": "RootWeapon",
+        "offsetMatrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
     },
     "Root": {
         "driver": "pelvis",
@@ -26,12 +31,12 @@
     },
     "Chest": {
         "driver": "spine_04",
-        "driven": "Chest",
+        "driven": "Spine4",
         "offsetMatrix": [1, 0, 0, 0, 0, -1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1]
     },
     "ChestEnd": {
         "driver": "spine_05",
-        "driven": "ChestEnd",
+        "driven": "Spine5",
         "offsetMatrix": [1, 0, 0, 0, 0, -1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1]
     },
     "Scapula": {

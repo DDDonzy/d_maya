@@ -12,7 +12,7 @@ cmds.parent("head_grp", mesh)
 cmds.parent(bones, w=1)
 cmds.parent("RIG_ASSET", rig)
 cmds.parent("Group", rig)
-cmds.parent("CAM:CAMERA", rig)
+cmds.parent("CAMERA", rig)
 cmds.delete("rig")
 
 

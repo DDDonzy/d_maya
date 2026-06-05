@@ -42,6 +42,7 @@ Mocap to Rig - Batch Animation Baking Pipeline
 ================================================================================
 """
 
+from maya.api import OpenMaya as om
 from maya import cmds
 from pathlib import Path
 
@@ -52,6 +53,7 @@ from mocap.bake.bake_animation import bakeAnimations
 from mocap.gameExportInfo import create_exportData
 from mocap.mayapy import init_maya
 from mocap.suppress_maya_logs import suppress_maya_logs
+
 
 
 def clean_unknown_data():
@@ -88,21 +90,17 @@ def loadHandPose():
     """加载手部姿势"""
     import sys
 
-    if r"C:\Users\Donzy\Downloads\studiolibrary-2.20.2\src" not in sys.path:
-        sys.path.insert(0, r"C:\Users\Donzy\Downloads\studiolibrary-2.20.2\src")
+    if r"C:\Users\Donzy\Documents\maya\studiolibrary-2.21.3\src" not in sys.path:
+        sys.path.insert(0, r"C:\Users\Donzy\Documents\maya\studiolibrary-2.21.3\src")
     import mutils  # type: ignore
 
-    mutils.loadPose(r"C:\Users\Donzy\Desktop\pose\Hero\Hand\Hand_R_Weapon.pose\pose.json", namespaces=":", key=True)
+    # mutils.loadPose(r"C:\Users\Donzy\Desktop\pose\Hero\Hand\Hand_R_Weapon.pose\pose.json", namespaces=":", key=True)
+    mutils.loadPose(r"N:\SourceAssets\Characters\Hero\Animations\Pose\hand\hand_noWeapon.pose\pose.json", namespaces=":", key=True) 
 
 
 if __name__ == "__main__":
-<<<<<<< HEAD
-    task_file = list(Path(r"N:\SourceAssets\Characters\Hero\Mocap\Xsens\20260419\Retarget").glob("*.fbx"))  # 扫描目录
-    output_dir = Path(r"N:\SourceAssets\Characters\Hero\Mocap\Xsens\20260419\Bake")  # 输出目录
-=======
-    task_file = list(Path(r"N:\SourceAssets\Characters\Hero\Mocap\Xsens\UE_Retarget").glob("*.fbx"))  # 扫描目录
-    output_dir = Path(r"N:\SourceAssets\Characters\Hero\Mocap\Xsens\Bake")  # 输出目录
->>>>>>> 873e6e9bd66b0c897deff3b062b6e31ef64c7161
+    task_file = list(Path(r"C:\Users\Donzy\Desktop\xxxxxx\Game\Game\Mocap\Xsens\Animations\20260531\Retarget").glob("*.fbx"))  # 扫描目录
+    output_dir = Path(r"C:\Users\Donzy\Desktop\xxxxxx\Game\Game\Mocap\Xsens\Animations\20260531\Bake")  # 输出目录
     fbx_output_dir = Path(r"N:\SourceAssets\Characters\Hero\Animations\FBX")  # FBX 输出目录，用于配置Game Exporter节点，不导出fbx
     rig_file = r"N:\SourceAssets\Characters\Hero\Rigs\Rig_Hero.ma"  # 绑定角色文件
 
@@ -142,16 +140,20 @@ if __name__ == "__main__":
                 cmds.file(mocap_file, reference=True, namespace="MOCAP", force=1)  # 引用MOCAP
                 log.debug("Clip Reference Complete")
 
+
             # 获取FBX文件开始结束时间
             keyframes = cmds.keyframe(f"{mocap_namespace}pelvis", query=True, timeChange=True)
             start = keyframes[0]
             end = keyframes[-1]
-            cmds.playbackOptions(ast=start, aet=end, min=2, max=4)  # 设置播放范围开始时间
+            cmds.playbackOptions(ast=start, aet=end, min=start, max=end)  # 设置播放范围开始时间
             log.debug(f"Set Playback Range: {start} - {end}")
 
             log.debug("Load hand Pose.")
             loadHandPose()  # 加载手部姿势
             log.debug("Load Hand Pose complete.")
+            cmds.setAttr("RIG:FKRootWeapon_M.parentSpace", 3)  # 锁定手部控制器旋转属性
+
+
 
             # bake Animation
             log.debug("Baking...")
@@ -170,6 +172,11 @@ if __name__ == "__main__":
                     "Name": (start, end),
                 },
             }
+
+            # 处理武器
+            
+
+
             create_exportData(export_node)
             log.debug("Set Export Path Complete")
 

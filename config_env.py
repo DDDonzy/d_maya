@@ -8,7 +8,7 @@
 主要功能:
     1. **项目根目录定位 (Project Root Resolution)**:
        - 通过向上递归查找 `.env` 文件来确定项目的根目录。
-    
+
     2. **VSCode 开发环境配置 (VSCode Settings Sync)**:
        - 自动更新 `.vscode/settings.json`。
        - 同步 `python.analysis.extraPaths` 和 `python.autoComplete.extraPaths`。
@@ -27,6 +27,7 @@
     $ python config_env.py
 ================================================================================
 """
+
 import json
 from pathlib import Path
 
@@ -40,13 +41,14 @@ PYTHONPATH = [
 ]
 
 
-def get_project_root() -> Path:
+def get_project_root() -> Path|None :
     """
     向上查找包含 .env 文件的目录作为根目录。
     """
     for parent in Path(__file__).resolve().parents:
         if (parent / ".env").exists():
             return parent
+    return None
 
 
 def update_vscode_settings(root: Path, paths: list):
@@ -107,7 +109,7 @@ def update_maya_modules(root: Path, paths: list):
             line = line.strip()
             if "PYTHONPATH" in line:
                 continue
-            elif line:
+            if line:
                 existing_lines.append(line)
 
     new_clean_paths = []

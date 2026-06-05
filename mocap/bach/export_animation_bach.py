@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import sys 
+sys.path.append(r"E:\d_maya")  # add script path to sys.path
 import log
 from mocap.mayapy import init_maya
 from mocap.suppress_maya_logs import suppress_maya_logs
@@ -9,7 +11,7 @@ import mocap.FBX_Export.fbx_preset as fbx_preset
 from maya import cmds, mel
 
 
-EXPORT_SETS = "Export_Animation_Sets"
+EXPORT_SETS = "Export_ANI_Body"
 
 
 #  run maya.exe
@@ -17,8 +19,8 @@ init_maya()
 
 
 # project file path
-task_file = list(Path(r"N:\SourceAssets\Characters\Hero\Mocap\Xsens\Anim").glob("*.ma"))
-fbx_output_dir = Path(r"N:\SourceAssets\Characters\Hero\Mocap\Xsens\Anim\FBX")
+task_file = list(Path(r"N:\SourceAssets\Characters\Hero\Mocap\Xsens\20260531\Anim").glob("*.ma"))
+fbx_output_dir = Path(r"N:\SourceAssets\Characters\Hero\Mocap\Xsens\20260531\Anim\FBX")
 rig_file = r"N:\SourceAssets\Characters\Hero\Rigs\RIG_Hero.ma"
 rig_namespace = "RIG"
 rig_reference_node = "RIGRN"
@@ -32,7 +34,7 @@ for maya_file in task_file:
     # get export data
     log.debug("get export data")
     export_info = {
-        "exportPath": "N:/SourceAssets/Characters/Hero/Animations/FBX",
+        "exportPath": "N:\SourceAssets\Characters\Hero\Mocap\Xsens\20260531\Anim\FBX",
         "exportName": "",
         "clip": {
             maya_file.stem: (cmds.playbackOptions(q=1, min=1), cmds.playbackOptions(q=1, max=1)),

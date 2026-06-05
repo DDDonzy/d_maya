@@ -102,7 +102,7 @@ def _getMSelectionList(obj: list | None = None):
         return om.MGlobal.getActiveSelectionList()
 
     mSel = om.MSelectionList()
-    for sel in obj:
+    for sel in cmds.ls(sl=1):
         try:
             mSel.add(sel)
         except RuntimeError:

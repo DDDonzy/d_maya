@@ -174,6 +174,6 @@ def bake_reLocator():
 
 
 if __name__ == "__main__":
-    reLocator()
+    # reLocator()
 
-    # bake_reLocator()
+    bake_reLocator()

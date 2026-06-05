@@ -8,8 +8,7 @@ from m_utils.compounds import matrixConstraint
 bake_dict = {
     "FKAnkle_L": {"PARENT": "foot_l"},
     "FKAnkle_R": {"PARENT": "foot_r"},
-    "FKChestEnd_M": {"PARENT": "spine_05"},
-    "FKChest_M": {"PARENT": "spine_04"},
+
     "FKElbow_L": {"PARENT": "lowerarm_l"},
     "FKElbow_R": {"PARENT": "lowerarm_r"},
     "FKHead_M": {"PARENT": "head"},
@@ -18,14 +17,26 @@ bake_dict = {
     "FKKnee_L": {"PARENT": "calf_l"},
     "FKKnee_R": {"PARENT": "calf_r"},
     "FKNeck_M": {"PARENT": "neck_01"},
-    "FKRoot_M": {"PARENT": "pelvis"},
     "FKScapula_L": {"PARENT": "clavicle_l"},
     "FKScapula_R": {"PARENT": "clavicle_r"},
     "FKShoulder_L": {"PARENT": "upperarm_l"},
     "FKShoulder_R": {"PARENT": "upperarm_r"},
+
+    "FKRoot_M": {"PARENT": "pelvis"},
+    "RootX_M": {"PARENT": "pelvis"},
+
     "FKSpine1_M": {"PARENT": "spine_01"},
     "FKSpine2_M": {"PARENT": "spine_02"},
     "FKSpine3_M": {"PARENT": "spine_03"},
+    "FKSpine4_M": {"PARENT": "spine_04"},
+    "FKSpine5_M": {"PARENT": "spine_05"},
+
+    "IKSpine1_M": {"PARENT": "pelvis"},
+    # "IKSpine2_M": {"PARENT": "spine_02"},  不加入烘焙，ik1和ik3 会自动拟合 ik2位置
+    "IKSpine3_M": {"PARENT": "spine_04"},
+    "IKhybridSpine1_M": {"PARENT": "pelvis"},
+    "IKhybridSpine3_M": {"PARENT": "spine_04"},
+
     "FKToes_L": {"PARENT": "ball_l"},
     "FKToes_R": {"PARENT": "ball_r"},
     "FKWrist_L": {"PARENT": "hand_l"},
@@ -34,13 +45,12 @@ bake_dict = {
     "IKArm_R": {"PARENT": "hand_r"},
     "IKLeg_L": {"PARENT": "foot_l"},
     "IKLeg_R": {"PARENT": "foot_r"},
-    "IKSpine1_M": {"PARENT": "pelvis"},
-    "IKSpine3_M": {"PARENT": "spine_04"},
     "IKToes_L": {"PARENT": "ball_l"},
     "IKToes_R": {"PARENT": "ball_r"},
-    "IKhybridSpine1_M": {"PARENT": "pelvis"},
-    "IKhybridSpine3_M": {"PARENT": "spine_04"},
-    "RootX_M": {"PARENT": "pelvis"},
+    # weapon
+    "FKRootWeapon_M": {"PARENT": "weapon_hand_r"},
+
+
 }
 
 

@@ -2,7 +2,7 @@
     "root": {
         "driver": "RootGround_M",
         "driven": "root",
-        "offsetMatrix": [1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1]
+        "offsetMatrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
     },
     "pelvis": {
         "driver": "Root_M",
@@ -25,12 +25,12 @@
         "offsetMatrix": [1.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, -0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
     },
     "spine_04": {
-        "driver": "Chest_M",
+        "driver": "Spine4_M",
         "driven": "spine_04",
         "offsetMatrix": [1.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, -0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
     },
     "spine_05": {
-        "driver": "ChestEnd_M",
+        "driver": "Spine5_M",
         "driven": "spine_05",
         "offsetMatrix": [1.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, -0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
     },
@@ -164,26 +164,6 @@
         "driven": "lowerarm_l",
         "offsetMatrix": [-1.0, 0.0, 0.0, 0.0, 0.0, 1.0, -0.0, 0.0, -0.0, -0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
     },
-    "lowerarm_twist_02_l": {
-        "driver": "ElbowPart1_L",
-        "driven": "lowerarm_twist_02_l",
-        "offsetMatrix": [-1.0, 0.0, 0.0, 0.0, 0.0, 1.0, -0.0, 0.0, -0.0, -0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
-    },
-    "lowerarm_twist_01_l": {
-        "driver": "ElbowPart2_L",
-        "driven": "lowerarm_twist_01_l",
-        "offsetMatrix": [-1.0, 0.0, 0.0, 0.0, 0.0, 1.0, -0.0, 0.0, -0.0, -0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
-    },
-    "upperarm_twist_01_l": {
-        "driver": "ShoulderPart1_L",
-        "driven": "upperarm_twist_01_l",
-        "offsetMatrix": [-1.0, 0.0, 0.0, 0.0, 0.0, 1.0, -0.0, 0.0, -0.0, -0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
-    },
-    "upperarm_twist_02_l": {
-        "driver": "ShoulderPart2_L",
-        "driven": "upperarm_twist_02_l",
-        "offsetMatrix": [-1.0, 0.0, 0.0, 0.0, 0.0, 1.0, -0.0, 0.0, -0.0, -0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
-    },
     "thigh_l": {
         "driver": "Hip_L",
         "driven": "thigh_l",
@@ -197,26 +177,6 @@
     "foot_l": {
         "driver": "Ankle_L",
         "driven": "foot_l",
-        "offsetMatrix": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
-    },
-    "calf_twist_02_l": {
-        "driver": "KneePart1_L",
-        "driven": "calf_twist_02_l",
-        "offsetMatrix": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
-    },
-    "calf_twist_01_l": {
-        "driver": "KneePart2_L",
-        "driven": "calf_twist_01_l",
-        "offsetMatrix": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
-    },
-    "thigh_twist_01_l": {
-        "driver": "HipPart1_L",
-        "driven": "thigh_twist_01_l",
-        "offsetMatrix": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
-    },
-    "thigh_twist_02_l": {
-        "driver": "HipPart2_L",
-        "driven": "thigh_twist_02_l",
         "offsetMatrix": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
     },
     "ball_l": {
@@ -389,26 +349,6 @@
         "driven": "lowerarm_r",
         "offsetMatrix": [-1.0, 0.0, 0.0, 0.0, 0.0, 1.0, -0.0, 0.0, -0.0, -0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
     },
-    "lowerarm_twist_02_r": {
-        "driver": "ElbowPart1_R",
-        "driven": "lowerarm_twist_02_r",
-        "offsetMatrix": [-1.0, 0.0, 0.0, 0.0, 0.0, 1.0, -0.0, 0.0, -0.0, -0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
-    },
-    "lowerarm_twist_01_r": {
-        "driver": "ElbowPart2_R",
-        "driven": "lowerarm_twist_01_r",
-        "offsetMatrix": [-1.0, 0.0, 0.0, 0.0, 0.0, 1.0, -0.0, 0.0, -0.0, -0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
-    },
-    "upperarm_twist_01_r": {
-        "driver": "ShoulderPart1_R",
-        "driven": "upperarm_twist_01_r",
-        "offsetMatrix": [-1.0, 0.0, 0.0, 0.0, 0.0, 1.0, -0.0, 0.0, -0.0, -0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
-    },
-    "upperarm_twist_02_r": {
-        "driver": "ShoulderPart2_R",
-        "driven": "upperarm_twist_02_r",
-        "offsetMatrix": [-1.0, 0.0, 0.0, 0.0, 0.0, 1.0, -0.0, 0.0, -0.0, -0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
-    },
     "thigh_r": {
         "driver": "Hip_R",
         "driven": "thigh_r",
@@ -422,26 +362,6 @@
     "foot_r": {
         "driver": "Ankle_R",
         "driven": "foot_r",
-        "offsetMatrix": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
-    },
-    "calf_twist_02_r": {
-        "driver": "KneePart1_R",
-        "driven": "calf_twist_02_r",
-        "offsetMatrix": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
-    },
-    "calf_twist_01_r": {
-        "driver": "KneePart2_R",
-        "driven": "calf_twist_01_r",
-        "offsetMatrix": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
-    },
-    "thigh_twist_01_r": {
-        "driver": "HipPart1_R",
-        "driven": "thigh_twist_01_r",
-        "offsetMatrix": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
-    },
-    "thigh_twist_02_r": {
-        "driver": "HipPart2_R",
-        "driven": "thigh_twist_02_r",
         "offsetMatrix": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
     },
     "ball_r": {

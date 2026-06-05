@@ -5,7 +5,9 @@ from m_utils.create.createBase import AssetCallback
 from maya import cmds
 
 # 使用 Path 获取当前脚本所在目录，并拼接 JSON 文件路径
-config_path = Path(r"E:\d_maya\adv\__ue_to_adv_config.json")
+
+file_list = cmds.fileDialog2(dialogStyle=2, caption="Constraint Data", fileFilter="Constraint Data (*.json)", fileMode=1)
+config_path = Path(file_list[0])
 
 with config_path.open("r", encoding="utf-8") as f:
     fit_constraint_data = json.load(f)
